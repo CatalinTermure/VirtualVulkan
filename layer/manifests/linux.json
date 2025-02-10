@@ -1,0 +1,23 @@
+{
+  "file_format_version": "1.2.1",
+  "layer": {
+    "name": "VK_LAYER_VVK_virtual_vulkan",
+    "type": "INSTANCE",
+    "library_path": "./libvirtualvulkanlayer.so",
+    "library_arch": "64",
+    "api_version": "1.4.303",
+    "implementation_version": "1",
+    "description": "Remote rendering layer",
+    "functions": {
+      "vkNegotiateLoaderLayerInterfaceVersion": "VVK_NegotiateLoaderLayerInterfaceVersion"
+    },
+    "instance_extensions": [],
+    "device_extensions": [],
+    "enable_environment": {
+      "VVK_ENABLE": "1"
+    },
+    "disable_environment": {
+      "VVK_DISABLE": ""
+    }
+  }
+}

@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package vvk.server;
+
+import "vvk_types.proto";
+
+service VvkServer {
+  // We will use a single bidirection streaming RPC to call all the Vulkan functions
+  // This is because we must guarantee that the order of the calls is the same as the order of the calls in the Vulkan API
+  rpc CallMethods (stream VvkRequest) returns (stream VvkResponse) {}
+}
+
+message VvkRequest {
+  string method = 1;
+  oneof params {
+    VkCreateInstanceParams vkCreateInstance = 2;
+  }
+}
+
+message VvkResponse {
+  uint32 result = 1;
+  oneof response {
+    uint64 pInstance = 2;
+  }
+}
+
+message VkCreateInstanceParams {
+  repeated VkInstanceCreateInfo pCreateInfo = 1; // const VkInstanceCreateInfo* pCreateInfo
+  repeated VkAllocationCallbacks pAllocator = 2; // const VkAllocationCallbacks* pAllocator
+  uint64 pInstance = 3; // VkInstance* pInstance
+}
