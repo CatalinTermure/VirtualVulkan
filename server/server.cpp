@@ -3,6 +3,7 @@
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.h>
 
+#include "function_execution.h"
 #include "vvk_server.pb.h"
 
 namespace vvk::server {
@@ -13,6 +14,7 @@ grpc::Status VvkServerImpl::CallMethods(grpc::ServerContext* context,
   while (stream->Read(&request)) {
     VvkResponse response;
     spdlog::info("Calling {}", request.method());
+    UnpackAndExecuteFunction(request);
     response.set_result(VK_SUCCESS);
     stream->Write(response);
   }

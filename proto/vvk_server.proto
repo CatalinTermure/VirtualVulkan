@@ -1,3 +1,5 @@
+// GENERATED FILE - DO NOT EDIT
+// clang-format off
 syntax = "proto3";
 
 package vvk.server;
@@ -20,12 +22,14 @@ message VvkRequest {
 message VvkResponse {
   uint32 result = 1;
   oneof response {
-    uint64 pInstance = 2;
+    uint64 dummy = 10000;
   }
 }
 
 message VkCreateInstanceParams {
   repeated VkInstanceCreateInfo pCreateInfo = 1; // const VkInstanceCreateInfo* pCreateInfo
   repeated VkAllocationCallbacks pAllocator = 2; // const VkAllocationCallbacks* pAllocator
-  uint64 pInstance = 3; // VkInstance* pInstance
+  repeated uint64 pInstance = 3; // VkInstance* pInstance NON-CONST POINTER
 }
+
+
