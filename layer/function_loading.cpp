@@ -19,6 +19,7 @@ namespace {
 std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = {
     {"vkGetDeviceProcAddr", reinterpret_cast<PFN_vkVoidFunction>(GetDeviceProcAddr)},
     {"vkCreateInstance", reinterpret_cast<PFN_vkVoidFunction>(CreateInstance)},
+    {"vkDestroyInstance", reinterpret_cast<PFN_vkVoidFunction>(DestroyInstance)},
 };
 
 }  // namespace
