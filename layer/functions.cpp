@@ -2,6 +2,9 @@
 
 #include <spdlog/spdlog.h>
 #include <vulkan/vk_layer.h>
+#include <vvk_server.grpc.pb.h>
+#include <vvk_server.pb.h>
+#include <vvk_types.pb.h>
 
 #include <cassert>
 #include <unordered_map>
@@ -25,11 +28,11 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
   // TODO: what from the pNext chain do we need to pass to remote server?
 
   // find the next layer's GetInstanceProcAddr(GIPA) function
-  const void* pNextChain = pCreateInfo->pNext;
+  const void* p_next_chain = pCreateInfo->pNext;
   const VkLayerInstanceCreateInfo* layer_instance_info = nullptr;
-  while (pNextChain) {
-    layer_instance_info = reinterpret_cast<const VkLayerInstanceCreateInfo*>(pNextChain);
-    pNextChain = layer_instance_info->pNext;
+  while (p_next_chain) {
+    layer_instance_info = reinterpret_cast<const VkLayerInstanceCreateInfo*>(p_next_chain);
+    p_next_chain = layer_instance_info->pNext;
     if (layer_instance_info->sType != VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO) {
       continue;
     }
@@ -51,6 +54,26 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
   if (!nxtCreateInstance) {
     spdlog::error("Failed to fetch vkCreateInstance from next layer");
     return VK_ERROR_INITIALIZATION_FAILED;
+  }
+
+  // call remote create instance
+  {
+    // remove loader instance create info from the pNext chain
+    // the loader seems to insert these structs at the beginning of the pNext chain
+    // so we can remove it by copying the instance create info and skipping the loader instance create info structs
+    VkInstanceCreateInfo remote_create_info = *pCreateInfo;
+    VkBaseInStructure* next_struct = reinterpret_cast<VkBaseInStructure*>(const_cast<void*>(remote_create_info.pNext));
+    VkBaseInStructure* curr_struct = reinterpret_cast<VkBaseInStructure*>(&remote_create_info);
+    while (next_struct) {
+      spdlog::debug("next_struct->sType: {}", (int)next_struct->sType);
+      if (next_struct->sType == VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO) {
+        curr_struct->pNext = next_struct->pNext;
+        next_struct = const_cast<VkBaseInStructure*>(next_struct->pNext);
+      } else {
+        curr_struct = reinterpret_cast<VkBaseInStructure*>(next_struct);
+        next_struct = const_cast<VkBaseInStructure*>(next_struct->pNext);
+      }
+    }
   }
 
   VkResult result = nxtCreateInstance(pCreateInfo, pAllocator, pInstance);
