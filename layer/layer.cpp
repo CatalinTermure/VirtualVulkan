@@ -19,6 +19,7 @@ VVK_NegotiateLoaderLayerInterfaceVersion(VkNegotiateLayerInterface* pVersionStru
   }
 
   spdlog::set_level(spdlog::level::debug);
+  spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [VvkLayer] [%^%l%$] %v");
 
   pVersionStruct->sType = LAYER_NEGOTIATE_INTERFACE_STRUCT;
   pVersionStruct->pNext = nullptr;
