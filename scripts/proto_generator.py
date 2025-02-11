@@ -32,6 +32,7 @@ COMMANDS_TO_GENERATE = [
 C_TYPE_TO_PROTO_TYPE = {
     "uint32_t": "uint32",
     "char*": "string",
+    "char**": "repeated string",
     "VkDeviceSize": "uint64",
     "VkBool32": "bool",
     "float": "float",
@@ -63,6 +64,8 @@ class RetVal:
 
 def get_proto_type(generator: BaseGenerator, param: Param | Member | RetVal) -> str:
     param_type = param.type + ("*" if param.pointer else "")
+    if "const char* const*" in param.cDeclaration:
+        param_type = "char**"
     if param.fixedSizeArray:
         if param.type == 'char':
             return "string"
