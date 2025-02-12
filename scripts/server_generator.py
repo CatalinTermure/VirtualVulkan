@@ -2,7 +2,7 @@ from xml.etree import ElementTree
 from reg import Registry
 from generators.base_generator import BaseGenerator, BaseGeneratorOptions, SetTargetApiName, SetMergedApiNames
 from generators.vulkan_object import Param, Member
-from .commons import first_letter_upper, is_output_command, COMMANDS_TO_GENERATE, RetVal
+from .commons import first_letter_upper, COMMANDS_TO_GENERATE, RetVal
 import copy
 
 C_TYPE_TO_PROTO_TYPE = {
@@ -16,6 +16,10 @@ C_TYPE_TO_PROTO_TYPE = {
     "int32_t": "int32",
     "uint8_t": "uint32",
 }
+
+TRIVIAL_TYPES = [
+    "uint32_t",
+]
 
 required_structs: set[str] = set()
 
@@ -61,90 +65,120 @@ class ServerSrcGenerator(BaseGenerator):
     def __init__(self):
         BaseGenerator.__init__(self)
 
-    def generate(self):
-        additional_messages = []
-        params_types_oneof = []
-        response_types_oneof = []
+    def fill_struct_from_proto(self, struct_type: str, name: str, proto_accessor: str) -> str:
         out = []
-        params_index = 2
-        response_index = 2
+        struct = self.vk.structs[struct_type]
+        for member in struct.members:
+            if member.name == "sType":
+                out.append(f'  {name}.sType = {struct.sType};\n')
+            elif member.name == "pNext":
+                out.append(
+                    f'  {name}.pNext = nullptr; // pNext chains are currently unsupported\n')
+            elif "Flags" in member.type or member.type in TRIVIAL_TYPES:
+                out.append(
+                    f'  {name}.{member.name} = ({proto_accessor}.{member.name.lower()}());\n')
+            elif member.type in self.vk.structs:
+                assert (member.pointer and member.const)
+                out.append(
+                    f'  assert({proto_accessor}.{member.name.lower()}_size() == 1);\n')
+
+                aux_var_name = f'{name}_{member.name}'
+                out.append(f'  {member.type} {aux_var_name};\n')
+                out.append(self.fill_struct_from_proto(
+                    member.type, aux_var_name, f'{proto_accessor}.{member.name.lower()}(0)'))
+                out.append(
+                    f'  {name}.{member.name} = &{aux_var_name};\n')
+            elif 'const char* const*' in member.cDeclaration:
+                aux_var_name = f'{name}_{member.name}'
+                out.append(
+                    f'  std::vector<const char*> {aux_var_name};\n')
+                out.append(
+                    f'  for (int i = 0; i < {proto_accessor}.{member.name.lower()}_size(); i++)')
+                out.append(' {\n')
+                out.append(
+                    f'    {aux_var_name}.push_back({proto_accessor}.{member.name.lower()}(i).data());\n')
+                out.append('  }\n')
+                out.append(
+                    f'  {name}.{member.name} = {aux_var_name}.data();\n')
+            elif member.pointer and member.const and member.type == 'char':
+                out.append(
+                    f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}().data();\n')
+            else:
+                out.append(f'  // Unsupported member: {member.cDeclaration}\n')
+        return "".join(out)
+
+    def generate(self):
+        out = []
         out.append("// GENERATED FILE - DO NOT EDIT\n")
         out.append("// clang-format off\n")
-        out.append('''syntax = "proto3";
+        out.append('''#include "implementations.h"
 
-package vvk.server;
+#include <vulkan/vulkan.h>
 
-import "vvk_types.proto";
+#include <cassert>
+#include <unordered_map>
+#include <vector>
 
-service VvkServer {
-  // We will use a single bidirection streaming RPC to call all the Vulkan functions
-  // This is because we must guarantee that the order of the calls is the same as the order of the calls in the Vulkan API
-  rpc CallMethods (stream VvkRequest) returns (stream VvkResponse) {}
+namespace {
+std::unordered_map<void*, void*> client_to_server_handles;
 }
 
-message VvkRequest {
-  string method = 1;
-  oneof params {
-''')
-        for command in self.vk.commands.values():
-            if command.name not in COMMANDS_TO_GENERATE:
-                continue
-            capitalized_name = first_letter_upper(command.name)
-            if is_output_command(self, command.name):
-                output_params: list[Param | RetVal] = []
-                if command.returnType != 'void' and command.returnType != 'VkResult':
-                    output_params.append(
-                        RetVal(name="result",
-                               type=command.returnType,
-                               const=False,
-                               pointer=False,
-                               fixedSizeArray=[],
-                               cDeclaration=f"{command.returnType} result"))
-                for param in command.params:
-                    if param.pointer and not param.const:
-                        param_not_pointer = copy.deepcopy(param)
-                        param_not_pointer.pointer = False
-                        output_params.append(param_not_pointer)
-
-                response_types_oneof.append(
-                    f'    {capitalized_name}Response {command.name} = {response_index};\n')
-                response_index += 1
-
-                additional_messages.append(
-                    f"message {capitalized_name}Response {{\n")
-                for index, param in enumerate(output_params):
-                    additional_messages.append(
-                        f"  {get_param_proto_declaration(self, param, index + 1)}\n")
-                additional_messages.append("}\n\n")
-            else:
-                pass
-
-            params_types_oneof.append(
-                f'    {capitalized_name}Params {command.name} = {params_index};\n')
-            params_index += 1
-
-            additional_messages.append(
-                f"message {capitalized_name}Params {{\n")
-            for index, param in enumerate(command.params):
-                additional_messages.append(
-                    f"  {get_param_proto_declaration(self, param, index + 1)}\n")
-            additional_messages.append("}\n\n")
-
-        out.extend(params_types_oneof)
-
-        out.append('''  }
-}
-
-message VvkResponse {
-  uint32 result = 1;
-  oneof response {
 ''')
 
-        out.extend(response_types_oneof)
+        for cmd_name in COMMANDS_TO_GENERATE:
+            out.append(
+                f'''void UnpackAndExecute{first_letter_upper(cmd_name)}(const vvk::server::VvkRequest &request,
+                                      vvk::server::VvkResponse* response) ''')
+            out.append("{\n")
+            out.append(f'  assert(request.method() == "{cmd_name}");\n\n')
+            param_accessor = f'request.{cmd_name.lower()}()'
+            command = self.vk.commands[cmd_name]
+            # to get the pointer params, you need the pointee type
+            for param in command.params:
+                if param.type in ["VkAllocationCallbacks"]:
+                    continue
+                elif param.const and param.pointer:
+                    out.append(
+                        f'  assert({param_accessor}.{param.name.lower()}_size() == 1);\n')
+                    out.append(f'  {param.type} {param.name};\n')
+                    out.append(self.fill_struct_from_proto(
+                        param.type, param.name, f'{param_accessor}.{param.name.lower()}(0)'))
+                elif param.pointer and not param.const and param.type in self.vk.handles:
+                    out.append(
+                        f'  assert({param_accessor}.{param.name.lower()}_size() == 1);\n')
+                    out.append(
+                        f'  {param.type} client_{param.name} = reinterpret_cast<{param.type}>({param_accessor}.{param.name.lower()}(0));\n')
+                    out.append(f'  {param.type} server_{param.name};\n')
+                out.append("\n")
+            # call the function
+            if command.returnType == "VkResult":
+                out.append(f'  VkResult result = {cmd_name}(')
+            actual_parameters = []
+            for param in command.params:
+                if param.type in ["VkAllocationCallbacks"]:
+                    actual_parameters.append("nullptr")
+                    continue
+                if param.const and param.pointer:
+                    actual_parameters.append(f'&{param.name}')
+                    continue
+                if param.pointer and not param.const and param.type in self.vk.handles:
+                    actual_parameters.append(f'&server_{param.name}')
+                    continue
+                print("UNHANDLED PARAM:", cmd_name, param.name)
+            out.append(", ".join(actual_parameters))
+            out.append(");\n")
 
-        out.append('  }\n}\n\n')
+            # populate the response
+            if command.returnType == "VkResult":
+                out.append("  response->set_result(result);\n")
 
-        out.extend(additional_messages)
+            # for commands which output handles, populate the handle map
+            for param in command.params:
+                if param.pointer and not param.const and param.type in self.vk.handles:
+                    out.append(
+                        f'  client_to_server_handles[client_{param.name}] = server_{param.name};\n')
+
+            out.append("}\n")
 
         self.write("".join(out))
 
@@ -172,7 +206,7 @@ def generate_server_src():
     SetMergedApiNames('vulkan')
     opts = BaseGeneratorOptions(
         customFileName="implementations.cpp",
-        customDirectory="./ignore",
+        customDirectory="./server",
     )
     gen = ServerSrcGenerator()
     reg = Registry(gen, opts)
