@@ -4,3 +4,5 @@
 
 void UnpackAndExecuteVkCreateInstance(const vvk::server::VvkRequest &request,
                                       vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkDestroyInstance(const vvk::server::VvkRequest &request,
+                                      vvk::server::VvkResponse* response);

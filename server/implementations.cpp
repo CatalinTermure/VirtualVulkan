@@ -52,4 +52,12 @@ void UnpackAndExecuteVkCreateInstance(const vvk::server::VvkRequest &request,
   response->set_result(result);
   client_to_server_handles[client_pInstance] = server_pInstance;
 }
+void UnpackAndExecuteVkDestroyInstance(const vvk::server::VvkRequest &request,
+                                      vvk::server::VvkResponse* response) {
+  assert(request.method() == "vkDestroyInstance");
+
+
+  vkDestroyInstance(reinterpret_cast<VkInstance>(client_to_server_handles.at(reinterpret_cast<void*>(request.vkdestroyinstance().instance()))), nullptr);
+  response->set_result(VK_SUCCESS);
+}
 

@@ -153,24 +153,29 @@ std::unordered_map<void*, void*> client_to_server_handles;
             # call the function
             if command.returnType == "VkResult":
                 out.append(f'  VkResult result = {cmd_name}(')
+            elif command.returnType == "void":
+                out.append(f'  {cmd_name}(')
             actual_parameters = []
             for param in command.params:
                 if param.type in ["VkAllocationCallbacks"]:
                     actual_parameters.append("nullptr")
-                    continue
-                if param.const and param.pointer:
+                elif param.const and param.pointer:
                     actual_parameters.append(f'&{param.name}')
-                    continue
-                if param.pointer and not param.const and param.type in self.vk.handles:
+                elif param.pointer and not param.const and param.type in self.vk.handles:
                     actual_parameters.append(f'&server_{param.name}')
-                    continue
-                print("UNHANDLED PARAM:", cmd_name, param.name)
+                elif not param.pointer and param.type in self.vk.handles:
+                    actual_parameters.append(
+                        f'reinterpret_cast<{param.type}>(client_to_server_handles.at(reinterpret_cast<void*>({param_accessor}.{param.name.lower()}())))')
+                else:
+                    print("UNHANDLED PARAM:", cmd_name, param.name)
             out.append(", ".join(actual_parameters))
             out.append(");\n")
 
             # populate the response
             if command.returnType == "VkResult":
                 out.append("  response->set_result(result);\n")
+            elif command.returnType == "void":
+                out.append("  response->set_result(VK_SUCCESS);\n")
 
             # for commands which output handles, populate the handle map
             for param in command.params:

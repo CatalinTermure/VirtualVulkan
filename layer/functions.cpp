@@ -141,6 +141,10 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
     if (!reader_writer->Read(&response)) {
       spdlog::error("Failed to read response from server");
     }
+
+    if (response.result() != VK_SUCCESS) {
+      spdlog::error("Failed to create instance on server");
+    }
   }
 
   return result;
@@ -160,6 +164,26 @@ VKAPI_ATTR void VKAPI_CALL DestroyInstance(VkInstance instance, const VkAllocati
   }
 
   nxtDestroyInstance(instance, pAllocator);
+  {
+    vvk::server::VvkRequest request;
+    request.set_method("vkDestroyInstance");
+    request.mutable_vkdestroyinstance()->set_instance(reinterpret_cast<uint64_t>(instance));
+
+    auto reader_writer = g_instance_infos.at(instance).command_stream.get();
+
+    if (!reader_writer->Write(request)) {
+      spdlog::error("Failed to write request to server");
+    }
+
+    vvk::server::VvkResponse response;
+    if (!reader_writer->Read(&response)) {
+      spdlog::error("Failed to read response from server");
+    }
+
+    if (response.result() != VK_SUCCESS) {
+      spdlog::error("Failed to destroy instance on server");
+    }
+  }
 
   g_instance_infos.erase(instance);
 }
