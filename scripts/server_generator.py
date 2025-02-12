@@ -1,64 +1,12 @@
 from xml.etree import ElementTree
 from reg import Registry
 from generators.base_generator import BaseGenerator, BaseGeneratorOptions, SetTargetApiName, SetMergedApiNames
-from generators.vulkan_object import Param, Member
-from .commons import first_letter_upper, COMMANDS_TO_GENERATE, RetVal
-import copy
-
-C_TYPE_TO_PROTO_TYPE = {
-    "uint32_t": "uint32",
-    "char*": "string",
-    "char**": "repeated string",
-    "VkDeviceSize": "uint64",
-    "VkBool32": "bool",
-    "float": "float",
-    "size_t": "uint64",
-    "int32_t": "int32",
-    "uint8_t": "uint32",
-}
+from .commons import first_letter_upper, COMMANDS_TO_GENERATE
 
 TRIVIAL_TYPES = [
     "uint32_t",
+    "VkBool32",
 ]
-
-required_structs: set[str] = set()
-
-
-def get_proto_type(generator: BaseGenerator, param: Param | Member | RetVal) -> str:
-    param_type = param.type + ("*" if param.pointer else "")
-    if "const char* const*" in param.cDeclaration:
-        param_type = "char**"
-    if param.fixedSizeArray:
-        if param.type == 'char':
-            return "string"
-        non_pointer_param = copy.deepcopy(param)
-        non_pointer_param.fixedSizeArray = None
-        return f'repeated {get_proto_type(generator, non_pointer_param)}'
-    if param_type in C_TYPE_TO_PROTO_TYPE:
-        return C_TYPE_TO_PROTO_TYPE[param_type]
-    if param.pointer:
-        non_pointer_param = copy.deepcopy(param)
-        non_pointer_param.pointer = False
-        return f'repeated {get_proto_type(generator, non_pointer_param)}'
-    if param.type in generator.vk.handles:
-        return "uint64"
-    if param.type in generator.vk.structs:
-        required_structs.add(param.type)
-        return param.type
-    if param.type in generator.vk.enums:
-        required_structs.add(param.type)
-        return param.type
-    if param.type in generator.vk.bitmasks:
-        return "uint32"
-    if "Flags" in param.type:
-        return "uint32"
-    return "UnknownType"
-
-
-def get_param_proto_declaration(generator: BaseGenerator, param: Param | Member, index: int) -> str:
-    param_type = get_proto_type(generator, param)
-    comment = " NON-CONST POINTER" if param.pointer and not param.const else ""
-    return f"{param_type} {param.name} = {index}; // {param.cDeclaration.strip()}" + comment
 
 
 class ServerSrcGenerator(BaseGenerator):
@@ -76,7 +24,7 @@ class ServerSrcGenerator(BaseGenerator):
                     f'  {name}.pNext = nullptr; // pNext chains are currently unsupported\n')
             elif "Flags" in member.type or member.type in TRIVIAL_TYPES:
                 out.append(
-                    f'  {name}.{member.name} = ({proto_accessor}.{member.name.lower()}());\n')
+                    f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}();\n')
             elif member.type in self.vk.structs:
                 assert (member.pointer and member.const)
                 out.append(
@@ -100,11 +48,12 @@ class ServerSrcGenerator(BaseGenerator):
                 out.append('  }\n')
                 out.append(
                     f'  {name}.{member.name} = {aux_var_name}.data();\n')
-            elif member.pointer and member.const and member.type == 'char':
+            elif member.pointer and member.const:
                 out.append(
                     f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}().data();\n')
             else:
                 out.append(f'  // Unsupported member: {member.cDeclaration}\n')
+                print("UNSUPPORTED MEMBER:", name, member.cDeclaration)
         return "".join(out)
 
     def generate(self):
