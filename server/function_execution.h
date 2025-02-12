@@ -5,5 +5,5 @@
 #include "vvk_server.pb.h"
 
 namespace vvk::server {
-void UnpackAndExecuteFunction(const vvk::server::VvkRequest &request);
+void UnpackAndExecuteFunction(const vvk::server::VvkRequest &request, vvk::server::VvkResponse *response);
 }

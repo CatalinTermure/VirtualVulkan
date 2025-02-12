@@ -154,89 +154,15 @@ class ServerHeaderGenerator(BaseGenerator):
         BaseGenerator.__init__(self)
 
     def generate(self):
-        additional_messages = []
-        params_types_oneof = []
-        response_types_oneof = []
         out = []
-        params_index = 2
-        response_index = 2
         out.append("// GENERATED FILE - DO NOT EDIT\n")
         out.append("// clang-format off\n")
-        out.append('''syntax = "proto3";
+        out.append('#include "vvk_server.pb.h"\n\n')
 
-package vvk.server;
-
-import "vvk_types.proto";
-
-service VvkServer {
-  // We will use a single bidirection streaming RPC to call all the Vulkan functions
-  // This is because we must guarantee that the order of the calls is the same as the order of the calls in the Vulkan API
-  rpc CallMethods (stream VvkRequest) returns (stream VvkResponse) {}
-}
-
-message VvkRequest {
-  string method = 1;
-  oneof params {
-''')
-        for command in self.vk.commands.values():
-            if command.name not in COMMANDS_TO_GENERATE:
-                continue
-            capitalized_name = first_letter_upper(command.name)
-            if is_output_command(self, command.name):
-                output_params: list[Param | RetVal] = []
-                if command.returnType != 'void' and command.returnType != 'VkResult':
-                    output_params.append(
-                        RetVal(name="result",
-                               type=command.returnType,
-                               const=False,
-                               pointer=False,
-                               fixedSizeArray=[],
-                               cDeclaration=f"{command.returnType} result"))
-                for param in command.params:
-                    if param.pointer and not param.const:
-                        param_not_pointer = copy.deepcopy(param)
-                        param_not_pointer.pointer = False
-                        output_params.append(param_not_pointer)
-
-                response_types_oneof.append(
-                    f'    {capitalized_name}Response {command.name} = {response_index};\n')
-                response_index += 1
-
-                additional_messages.append(
-                    f"message {capitalized_name}Response {{\n")
-                for index, param in enumerate(output_params):
-                    additional_messages.append(
-                        f"  {get_param_proto_declaration(self, param, index + 1)}\n")
-                additional_messages.append("}\n\n")
-            else:
-                pass
-
-            params_types_oneof.append(
-                f'    {capitalized_name}Params {command.name} = {params_index};\n')
-            params_index += 1
-
-            additional_messages.append(
-                f"message {capitalized_name}Params {{\n")
-            for index, param in enumerate(command.params):
-                additional_messages.append(
-                    f"  {get_param_proto_declaration(self, param, index + 1)}\n")
-            additional_messages.append("}\n\n")
-
-        out.extend(params_types_oneof)
-
-        out.append('''  }
-}
-
-message VvkResponse {
-  uint32 result = 1;
-  oneof response {
-''')
-
-        out.extend(response_types_oneof)
-
-        out.append('  }\n}\n\n')
-
-        out.extend(additional_messages)
+        for command in COMMANDS_TO_GENERATE:
+            out.append(
+                f'''void UnpackAndExecute{first_letter_upper(command)}(const vvk::server::VvkRequest &request,
+                                      vvk::server::VvkResponse* response);{"\n" if command != COMMANDS_TO_GENERATE[-1] else ""}''')
 
         self.write("".join(out))
 
@@ -260,7 +186,7 @@ def generate_server_header():
     SetMergedApiNames('vulkan')
     opts = BaseGeneratorOptions(
         customFileName="implementations.h",
-        customDirectory="./ignore",
+        customDirectory="./server",
     )
     gen = ServerHeaderGenerator()
     reg = Registry(gen, opts)

@@ -14,8 +14,7 @@ grpc::Status VvkServerImpl::CallMethods(grpc::ServerContext* context,
   while (stream->Read(&request)) {
     VvkResponse response;
     spdlog::info("Calling {}", request.method());
-    UnpackAndExecuteFunction(request);
-    response.set_result(VK_SUCCESS);
+    UnpackAndExecuteFunction(request, &response);
     stream->Write(response);
   }
   return grpc::Status();
