@@ -8,7 +8,7 @@ add_library(
 )
 target_include_directories(VirtualVulkanLayer PRIVATE ../)
 
-target_link_libraries(VirtualVulkanLayer PRIVATE spdlog::spdlog vvkproto)
+target_link_libraries(VirtualVulkanLayer PRIVATE spdlog::spdlog vvkproto VirtualVulkanCommons)
 set_target_properties(VirtualVulkanLayer PROPERTIES PREFIX "lib")
 set_target_properties(VirtualVulkanLayer PROPERTIES OUTPUT_NAME "virtualvulkanlayer")
 set_target_properties(VirtualVulkanLayer PROPERTIES SUFFIX ".so")

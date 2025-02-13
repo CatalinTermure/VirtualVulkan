@@ -12,6 +12,8 @@
 #include <unordered_map>
 #include <utility>
 
+#include "commons/remote_call.h"
+
 namespace vvk {
 
 namespace {
@@ -106,45 +108,9 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
       }
     }
 
-    vvk::server::VvkRequest request;
-    request.set_method("vkCreateInstance");
-    vvk::server::VkInstanceCreateInfo* proto_create_info = request.mutable_vkcreateinstance()->add_pcreateinfo();
-    proto_create_info->set_flags(static_cast<uint32_t>(remote_create_info.flags));
-
-    {
-      vvk::server::VkApplicationInfo* proto_application_info = proto_create_info->add_papplicationinfo();
-      proto_application_info->set_papplicationname(remote_create_info.pApplicationInfo->pApplicationName);
-      proto_application_info->set_applicationversion(remote_create_info.pApplicationInfo->applicationVersion);
-      proto_application_info->set_penginename(remote_create_info.pApplicationInfo->pEngineName);
-      proto_application_info->set_engineversion(remote_create_info.pApplicationInfo->engineVersion);
-      proto_application_info->set_apiversion(remote_create_info.pApplicationInfo->apiVersion);
-    }
-
-    proto_create_info->set_enabledlayercount(remote_create_info.enabledLayerCount);
-    for (uint32_t i = 0; i < remote_create_info.enabledLayerCount; ++i) {
-      proto_create_info->add_ppenabledlayernames(remote_create_info.ppEnabledLayerNames[i]);
-    }
-    proto_create_info->set_enabledextensioncount(remote_create_info.enabledExtensionCount);
-    for (uint32_t i = 0; i < remote_create_info.enabledExtensionCount; ++i) {
-      proto_create_info->add_ppenabledextensionnames(remote_create_info.ppEnabledExtensionNames[i]);
-    }
-
-    request.mutable_vkcreateinstance()->add_pinstance(reinterpret_cast<uint64_t>(*pInstance));
-
     auto reader_writer = g_instance_infos.at(*pInstance).command_stream.get();
 
-    if (!reader_writer->Write(request)) {
-      spdlog::error("Failed to write request to server");
-    }
-
-    vvk::server::VvkResponse response;
-    if (!reader_writer->Read(&response)) {
-      spdlog::error("Failed to read response from server");
-    }
-
-    if (response.result() != VK_SUCCESS) {
-      spdlog::error("Failed to create instance on server");
-    }
+    PackAndCallVkCreateInstance(reader_writer, &remote_create_info, pAllocator, pInstance);
   }
 
   return result;
@@ -164,26 +130,9 @@ VKAPI_ATTR void VKAPI_CALL DestroyInstance(VkInstance instance, const VkAllocati
   }
 
   nxtDestroyInstance(instance, pAllocator);
-  {
-    vvk::server::VvkRequest request;
-    request.set_method("vkDestroyInstance");
-    request.mutable_vkdestroyinstance()->set_instance(reinterpret_cast<uint64_t>(instance));
 
-    auto reader_writer = g_instance_infos.at(instance).command_stream.get();
-
-    if (!reader_writer->Write(request)) {
-      spdlog::error("Failed to write request to server");
-    }
-
-    vvk::server::VvkResponse response;
-    if (!reader_writer->Read(&response)) {
-      spdlog::error("Failed to read response from server");
-    }
-
-    if (response.result() != VK_SUCCESS) {
-      spdlog::error("Failed to destroy instance on server");
-    }
-  }
+  auto reader_writer = g_instance_infos.at(instance).command_stream.get();
+  PackAndCallVkDestroyInstance(reader_writer, instance, pAllocator);
 
   g_instance_infos.erase(instance);
 }
