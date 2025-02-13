@@ -14,18 +14,14 @@
 
 namespace vvk {
 
-namespace {
-
-std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = {
-    {"vkGetDeviceProcAddr", reinterpret_cast<PFN_vkVoidFunction>(GetDeviceProcAddr)},
-    {"vkCreateInstance", reinterpret_cast<PFN_vkVoidFunction>(CreateInstance)},
-    {"vkDestroyInstance", reinterpret_cast<PFN_vkVoidFunction>(DestroyInstance)},
-};
-
-}  // namespace
+#define GET_PROC_ADDR(func_name)                            \
+  if (strcmp(pName, "vk" #func_name) == 0) {                \
+    return reinterpret_cast<PFN_vkVoidFunction>(func_name); \
+  }
 
 PFN_vkVoidFunction GetInstanceProcAddr(VkInstance instance, const char* pName) {
   spdlog::trace("Loading instance function: {}", pName);
+  GET_PROC_ADDR("GetDeviceProcAddr");
   auto it = g_name_to_func_ptr.find(pName);
   if (it != g_name_to_func_ptr.end()) {
     return it->second;
