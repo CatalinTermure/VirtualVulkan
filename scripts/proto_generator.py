@@ -145,7 +145,6 @@ message VvkRequest {
 message VvkResponse {
   uint32 result = 1;
   oneof response {
-    uint64 dummy = 10000;
 ''')
 
         out.extend(response_types_oneof)

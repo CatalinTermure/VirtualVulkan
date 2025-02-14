@@ -31,12 +31,7 @@ def first_letter_upper(name: str) -> str:
 
 
 def is_output_command(generator: BaseGenerator, command: str) -> bool:
-    if "vkEnumerate" in command:
-        return True
-    handle_types = [handle.name for handle in generator.vk.handles.values()]
     for param in generator.vk.commands[command].params:
         if param.pointer and not param.const:
-            if param.type in handle_types:
-                continue
             return True
     return False

@@ -23,8 +23,12 @@ message VvkRequest {
 message VvkResponse {
   uint32 result = 1;
   oneof response {
-    uint64 dummy = 10000;
+    VkCreateInstanceResponse vkCreateInstance = 2;
   }
+}
+
+message VkCreateInstanceResponse {
+  uint64 pInstance = 1; // VkInstance* pInstance
 }
 
 message VkCreateInstanceParams {

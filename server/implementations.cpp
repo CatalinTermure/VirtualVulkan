@@ -41,18 +41,17 @@ void UnpackAndExecuteVkCreateInstance(const vvk::server::VvkRequest &request,
     pCreateInfo_ppEnabledExtensionNames.push_back(request.vkcreateinstance().pcreateinfo().ppenabledextensionnames(i).data());
   }
   pCreateInfo.ppEnabledExtensionNames = pCreateInfo_ppEnabledExtensionNames.data();
-
   VkInstance client_pInstance = reinterpret_cast<VkInstance>(request.vkcreateinstance().pinstance());
   VkInstance server_pInstance;
-
   VkResult result = vkCreateInstance(&pCreateInfo, nullptr, &server_pInstance);
+  assert(client_to_server_handles.count(reinterpret_cast<void*>(client_pInstance)) == 0);
+  response->mutable_vkcreateinstance()->set_pinstance(reinterpret_cast<uint64_t>(server_pInstance));
   response->set_result(result);
   client_to_server_handles[client_pInstance] = server_pInstance;
 }
 void UnpackAndExecuteVkDestroyInstance(const vvk::server::VvkRequest &request,
                                       vvk::server::VvkResponse* response) {
   assert(request.method() == "vkDestroyInstance");
-
 
   vkDestroyInstance(reinterpret_cast<VkInstance>(client_to_server_handles.at(reinterpret_cast<void*>(request.vkdestroyinstance().instance()))), nullptr);
   response->set_result(VK_SUCCESS);

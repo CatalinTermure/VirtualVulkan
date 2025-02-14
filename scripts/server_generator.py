@@ -80,6 +80,7 @@ std::unordered_map<void*, void*> client_to_server_handles;
 ''')
 
         for cmd_name in COMMANDS_TO_GENERATE:
+            after_call_code = []
             out.append(
                 f'''void UnpackAndExecute{first_letter_upper(cmd_name)}(const vvk::server::VvkRequest &request,
                                       vvk::server::VvkResponse* response) ''')
@@ -104,10 +105,13 @@ std::unordered_map<void*, void*> client_to_server_handles;
                         out.append(
                             f'  {param.type} client_{param.name} = reinterpret_cast<{param.type}>({param_accessor}.{param.name.lower()}());\n')
                         out.append(f'  {param.type} server_{param.name};\n')
+                        after_call_code.append(
+                            f'  assert(client_to_server_handles.count(reinterpret_cast<void*>(client_{param.name})) == 0);\n')
+                        after_call_code.append(
+                            f'  response->mutable_{cmd_name.lower()}()->set_{param.name.lower()}(reinterpret_cast<uint64_t>(server_{param.name}));\n')
                     else:
                         log("non zero length param:",
                             cmd_name, param.cDeclaration)
-                out.append("\n")
             # call the function
             if command.returnType == "VkResult":
                 out.append(f'  VkResult result = {cmd_name}(')
@@ -128,6 +132,8 @@ std::unordered_map<void*, void*> client_to_server_handles;
                     log("UNHANDLED PARAM:", cmd_name, param.name)
             out.append(", ".join(actual_parameters))
             out.append(");\n")
+
+            out.extend(after_call_code)
 
             # populate the response
             if command.returnType == "VkResult":
