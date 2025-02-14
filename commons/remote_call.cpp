@@ -54,5 +54,27 @@ void PackAndCallVkDestroyInstance(grpc::ClientReaderWriter<vvk::server::VvkReque
     spdlog::error("Failed to read response from server");
   }
 }
+VkResult PackAndCallVkEnumeratePhysicalDevices(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkInstance instance, uint32_t* pPhysicalDeviceCount, VkPhysicalDevice* pPhysicalDevices) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkEnumeratePhysicalDevices");
+  request.mutable_vkenumeratephysicaldevices()->set_instance(reinterpret_cast<uint64_t>(instance));
+  request.mutable_vkenumeratephysicaldevices()->set_pphysicaldevicecount(*pPhysicalDeviceCount);
+  if (pPhysicalDevices) {
+    // the value we set is just a sentinel value, only its presence should be checked
+    request.mutable_vkenumeratephysicaldevices()->add_pphysicaldevices(reinterpret_cast<uint64_t>(pPhysicalDevices));
+  } else {
+    request.mutable_vkenumeratephysicaldevices()->set_pphysicaldevicecount(0);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  return static_cast<VkResult>(response.result());
+}
 }  // namespace vvk
 

@@ -12,6 +12,7 @@ const std::unordered_map<std::string, std::function<void(const vvk::server::VvkR
     g_jump_table = {
         {"vkCreateInstance", UnpackAndExecuteVkCreateInstance},
         {"vkDestroyInstance", UnpackAndExecuteVkDestroyInstance},
+        {"vkEnumeratePhysicalDevices", UnpackAndExecuteVkEnumeratePhysicalDevices},
 };
 
 }  // namespace

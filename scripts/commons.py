@@ -23,6 +23,7 @@ class RetVal:
 COMMANDS_TO_GENERATE = [
     "vkCreateInstance",
     "vkDestroyInstance",
+    "vkEnumeratePhysicalDevices",
 ]
 
 

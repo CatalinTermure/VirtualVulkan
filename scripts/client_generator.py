@@ -102,6 +102,23 @@ namespace vvk {
                         out.append(
                             f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}(reinterpret_cast<uint64_t>(*{param.name}));\n')
                     else:
+                        # only vkEnumerate* commands return multiple handles
+                        assert ("vkEnumerate" in cmd_name)
+
+                        out.append(f'  if ({param.name}) {{\n')
+                        out.append(
+                            "    // the value we set is just a sentinel value, only its presence should be checked\n")
+                        out.append(
+                            f'    request.mutable_{cmd_name.lower()}()->add_{param.name.lower()}(reinterpret_cast<uint64_t>({param.name}));\n')
+                        out.append("  } else {\n")
+                        out.append(
+                            f'    request.mutable_{cmd_name.lower()}()->set_{param.length.lower()}(0);\n')
+                        out.append("  }\n")
+                elif param.pointer and not param.const:
+                    if param.length is None:
+                        out.append(
+                            f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}(*{param.name});\n')
+                    else:
                         log("non zero length param:",
                             cmd_name, param.cDeclaration)
                 elif param.type in self.vk.handles:

@@ -137,4 +137,18 @@ VKAPI_ATTR void VKAPI_CALL DestroyInstance(VkInstance instance, const VkAllocati
   g_instance_infos.erase(instance);
 }
 
+VKAPI_ATTR VkResult VKAPI_CALL EnumeratePhysicalDevices(VkInstance instance, uint32_t* pPhysicalDeviceCount,
+                                                        VkPhysicalDevice* pPhysicalDevices) {
+  spdlog::trace("EnumeratePhysicalDevices");
+
+  PFN_vkEnumeratePhysicalDevices nxt_enumerate_physical_devices = reinterpret_cast<PFN_vkEnumeratePhysicalDevices>(
+      g_instance_infos.at(instance).nxt_gipa(instance, "vkEnumeratePhysicalDevices"));
+  if (!nxt_enumerate_physical_devices) {
+    spdlog::error("Failed to fetch vkEnumeratePhysicalDevices from next layer");
+    return VK_ERROR_UNKNOWN;
+  }
+
+  return nxt_enumerate_physical_devices(instance, pPhysicalDeviceCount, pPhysicalDevices);
+}
+
 }  // namespace vvk

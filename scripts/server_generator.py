@@ -81,6 +81,7 @@ std::unordered_map<void*, void*> client_to_server_handles;
 
         for cmd_name in COMMANDS_TO_GENERATE:
             after_call_code = []
+            actual_parameters = []
             out.append(
                 f'''void UnpackAndExecute{first_letter_upper(cmd_name)}(const vvk::server::VvkRequest &request,
                                       vvk::server::VvkResponse* response) ''')
@@ -88,11 +89,12 @@ std::unordered_map<void*, void*> client_to_server_handles;
             out.append(f'  assert(request.method() == "{cmd_name}");\n\n')
             param_accessor = f'request.{cmd_name.lower()}()'
             command = self.vk.commands[cmd_name]
-            # to get the pointer params, you need the pointee type
             for param in command.params:
                 if param.type in ["VkAllocationCallbacks"]:
+                    actual_parameters.append("nullptr")
                     continue
                 elif param.const and param.pointer:
+                    actual_parameters.append(f'&{param.name}')
                     if param.length is None:
                         out.append(f'  {param.type} {param.name};\n')
                         out.append(self.fill_struct_from_proto(
@@ -102,6 +104,7 @@ std::unordered_map<void*, void*> client_to_server_handles;
                             cmd_name, param.cDeclaration)
                 elif param.pointer and not param.const and param.type in self.vk.handles:
                     if param.length is None:
+                        actual_parameters.append(f'&server_{param.name}')
                         out.append(
                             f'  {param.type} client_{param.name} = reinterpret_cast<{param.type}>({param_accessor}.{param.name.lower()}());\n')
                         out.append(f'  {param.type} server_{param.name};\n')
@@ -109,27 +112,55 @@ std::unordered_map<void*, void*> client_to_server_handles;
                             f'  assert(client_to_server_handles.count(reinterpret_cast<void*>(client_{param.name})) == 0);\n')
                         after_call_code.append(
                             f'  response->mutable_{cmd_name.lower()}()->set_{param.name.lower()}(reinterpret_cast<uint64_t>(server_{param.name}));\n')
+                        after_call_code.append(
+                            f'  client_to_server_handles[client_{param.name}] = server_{param.name};\n')
                     else:
-                        log("non zero length param:",
-                            cmd_name, param.cDeclaration)
-            # call the function
-            if command.returnType == "VkResult":
-                out.append(f'  VkResult result = {cmd_name}(')
-            elif command.returnType == "void":
-                out.append(f'  {cmd_name}(')
-            actual_parameters = []
-            for param in command.params:
-                if param.type in ["VkAllocationCallbacks"]:
-                    actual_parameters.append("nullptr")
-                elif param.const and param.pointer:
+                        # only vkEnumerate* commands return multiple handles
+                        assert ("vkEnumerate" in cmd_name)
+                        assert (param.length in [
+                                p.name for p in command.params])
+                        actual_parameters.append(f'{param.name}')
+                        length_param = [
+                            p for p in command.params if p.name == param.length][0]
+                        out.append(
+                            f'  std::vector<{param.type}> aux_{param.name};\n')
+                        out.append(f'  {param.type}* {param.name};\n')
+                        out.append(
+                            f'  if ({length_param.name} == 0) {{\n')
+                        out.append(f'    {param.name} = nullptr;\n')
+                        out.append("  } else {\n")
+                        out.append(
+                            f'    aux_{param.name}.resize({length_param.name});\n')
+                        out.append(
+                            f'    {param.name} = aux_{param.name}.data();\n')
+                        out.append("  }\n")
+
+                        after_call_code.append(
+                            f'  if ({param_accessor}.{length_param.name.lower()}() != 0) {{\n')
+                        after_call_code.append(
+                            f'    for (int i = 0; i < {length_param.name}; i++) {{\n')
+                        after_call_code.append(
+                            f'      response->mutable_{cmd_name.lower()}()->add_{param.name.lower()}(reinterpret_cast<uint64_t>({param.name}[i]));\n')
+                        after_call_code.append("    }\n")
+                        after_call_code.append("  }\n")
+                elif param.pointer and not param.const:
                     actual_parameters.append(f'&{param.name}')
-                elif param.pointer and not param.const and param.type in self.vk.handles:
-                    actual_parameters.append(f'&server_{param.name}')
+                    out.append(
+                        f'  {param.type} {param.name} = {param_accessor}.{param.name.lower()}();\n')
+                    after_call_code.append(
+                        f'  response->mutable_{cmd_name.lower()}()->set_{param.name.lower()}({param.name});\n')
                 elif not param.pointer and param.type in self.vk.handles:
                     actual_parameters.append(
                         f'reinterpret_cast<{param.type}>(client_to_server_handles.at(reinterpret_cast<void*>({param_accessor}.{param.name.lower()}())))')
                 else:
                     log("UNHANDLED PARAM:", cmd_name, param.name)
+
+            # call the function
+            if command.returnType == "VkResult":
+                out.append(f'  VkResult result = {cmd_name}(')
+            elif command.returnType == "void":
+                out.append(f'  {cmd_name}(')
+
             out.append(", ".join(actual_parameters))
             out.append(");\n")
 
@@ -140,12 +171,6 @@ std::unordered_map<void*, void*> client_to_server_handles;
                 out.append("  response->set_result(result);\n")
             elif command.returnType == "void":
                 out.append("  response->set_result(VK_SUCCESS);\n")
-
-            # for commands which output handles, populate the handle map
-            for param in command.params:
-                if param.pointer and not param.const and param.type in self.vk.handles:
-                    out.append(
-                        f'  client_to_server_handles[client_{param.name}] = server_{param.name};\n')
 
             out.append("}\n")
 

@@ -46,8 +46,8 @@ void UnpackAndExecuteVkCreateInstance(const vvk::server::VvkRequest &request,
   VkResult result = vkCreateInstance(&pCreateInfo, nullptr, &server_pInstance);
   assert(client_to_server_handles.count(reinterpret_cast<void*>(client_pInstance)) == 0);
   response->mutable_vkcreateinstance()->set_pinstance(reinterpret_cast<uint64_t>(server_pInstance));
-  response->set_result(result);
   client_to_server_handles[client_pInstance] = server_pInstance;
+  response->set_result(result);
 }
 void UnpackAndExecuteVkDestroyInstance(const vvk::server::VvkRequest &request,
                                       vvk::server::VvkResponse* response) {
@@ -55,5 +55,27 @@ void UnpackAndExecuteVkDestroyInstance(const vvk::server::VvkRequest &request,
 
   vkDestroyInstance(reinterpret_cast<VkInstance>(client_to_server_handles.at(reinterpret_cast<void*>(request.vkdestroyinstance().instance()))), nullptr);
   response->set_result(VK_SUCCESS);
+}
+void UnpackAndExecuteVkEnumeratePhysicalDevices(const vvk::server::VvkRequest &request,
+                                      vvk::server::VvkResponse* response) {
+  assert(request.method() == "vkEnumeratePhysicalDevices");
+
+  uint32_t pPhysicalDeviceCount = request.vkenumeratephysicaldevices().pphysicaldevicecount();
+  std::vector<VkPhysicalDevice> aux_pPhysicalDevices;
+  VkPhysicalDevice* pPhysicalDevices;
+  if (pPhysicalDeviceCount == 0) {
+    pPhysicalDevices = nullptr;
+  } else {
+    aux_pPhysicalDevices.resize(pPhysicalDeviceCount);
+    pPhysicalDevices = aux_pPhysicalDevices.data();
+  }
+  VkResult result = vkEnumeratePhysicalDevices(reinterpret_cast<VkInstance>(client_to_server_handles.at(reinterpret_cast<void*>(request.vkenumeratephysicaldevices().instance()))), &pPhysicalDeviceCount, pPhysicalDevices);
+  response->mutable_vkenumeratephysicaldevices()->set_pphysicaldevicecount(pPhysicalDeviceCount);
+  if (request.vkenumeratephysicaldevices().pphysicaldevicecount() != 0) {
+    for (int i = 0; i < pPhysicalDeviceCount; i++) {
+      response->mutable_vkenumeratephysicaldevices()->add_pphysicaldevices(reinterpret_cast<uint64_t>(pPhysicalDevices[i]));
+    }
+  }
+  response->set_result(result);
 }
 
