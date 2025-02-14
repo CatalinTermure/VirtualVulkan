@@ -16,36 +16,33 @@ void UnpackAndExecuteVkCreateInstance(const vvk::server::VvkRequest &request,
                                       vvk::server::VvkResponse* response) {
   assert(request.method() == "vkCreateInstance");
 
-  assert(request.vkcreateinstance().pcreateinfo_size() == 1);
   VkInstanceCreateInfo pCreateInfo;
   pCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
   pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
-  pCreateInfo.flags = request.vkcreateinstance().pcreateinfo(0).flags();
-  assert(request.vkcreateinstance().pcreateinfo(0).papplicationinfo_size() == 1);
+  pCreateInfo.flags = request.vkcreateinstance().pcreateinfo().flags();
   VkApplicationInfo pCreateInfo_pApplicationInfo;
   pCreateInfo_pApplicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
   pCreateInfo_pApplicationInfo.pNext = nullptr; // pNext chains are currently unsupported
-  pCreateInfo_pApplicationInfo.pApplicationName = request.vkcreateinstance().pcreateinfo(0).papplicationinfo(0).papplicationname().data();
-  pCreateInfo_pApplicationInfo.applicationVersion = request.vkcreateinstance().pcreateinfo(0).papplicationinfo(0).applicationversion();
-  pCreateInfo_pApplicationInfo.pEngineName = request.vkcreateinstance().pcreateinfo(0).papplicationinfo(0).penginename().data();
-  pCreateInfo_pApplicationInfo.engineVersion = request.vkcreateinstance().pcreateinfo(0).papplicationinfo(0).engineversion();
-  pCreateInfo_pApplicationInfo.apiVersion = request.vkcreateinstance().pcreateinfo(0).papplicationinfo(0).apiversion();
+  pCreateInfo_pApplicationInfo.pApplicationName = request.vkcreateinstance().pcreateinfo().papplicationinfo().papplicationname().data();
+  pCreateInfo_pApplicationInfo.applicationVersion = request.vkcreateinstance().pcreateinfo().papplicationinfo().applicationversion();
+  pCreateInfo_pApplicationInfo.pEngineName = request.vkcreateinstance().pcreateinfo().papplicationinfo().penginename().data();
+  pCreateInfo_pApplicationInfo.engineVersion = request.vkcreateinstance().pcreateinfo().papplicationinfo().engineversion();
+  pCreateInfo_pApplicationInfo.apiVersion = request.vkcreateinstance().pcreateinfo().papplicationinfo().apiversion();
   pCreateInfo.pApplicationInfo = &pCreateInfo_pApplicationInfo;
-  pCreateInfo.enabledLayerCount = request.vkcreateinstance().pcreateinfo(0).enabledlayercount();
+  pCreateInfo.enabledLayerCount = request.vkcreateinstance().pcreateinfo().enabledlayercount();
   std::vector<const char*> pCreateInfo_ppEnabledLayerNames;
-  for (int i = 0; i < request.vkcreateinstance().pcreateinfo(0).ppenabledlayernames_size(); i++) {
-    pCreateInfo_ppEnabledLayerNames.push_back(request.vkcreateinstance().pcreateinfo(0).ppenabledlayernames(i).data());
+  for (int i = 0; i < request.vkcreateinstance().pcreateinfo().ppenabledlayernames_size(); i++) {
+    pCreateInfo_ppEnabledLayerNames.push_back(request.vkcreateinstance().pcreateinfo().ppenabledlayernames(i).data());
   }
   pCreateInfo.ppEnabledLayerNames = pCreateInfo_ppEnabledLayerNames.data();
-  pCreateInfo.enabledExtensionCount = request.vkcreateinstance().pcreateinfo(0).enabledextensioncount();
+  pCreateInfo.enabledExtensionCount = request.vkcreateinstance().pcreateinfo().enabledextensioncount();
   std::vector<const char*> pCreateInfo_ppEnabledExtensionNames;
-  for (int i = 0; i < request.vkcreateinstance().pcreateinfo(0).ppenabledextensionnames_size(); i++) {
-    pCreateInfo_ppEnabledExtensionNames.push_back(request.vkcreateinstance().pcreateinfo(0).ppenabledextensionnames(i).data());
+  for (int i = 0; i < request.vkcreateinstance().pcreateinfo().ppenabledextensionnames_size(); i++) {
+    pCreateInfo_ppEnabledExtensionNames.push_back(request.vkcreateinstance().pcreateinfo().ppenabledextensionnames(i).data());
   }
   pCreateInfo.ppEnabledExtensionNames = pCreateInfo_ppEnabledExtensionNames.data();
 
-  assert(request.vkcreateinstance().pinstance_size() == 1);
-  VkInstance client_pInstance = reinterpret_cast<VkInstance>(request.vkcreateinstance().pinstance(0));
+  VkInstance client_pInstance = reinterpret_cast<VkInstance>(request.vkcreateinstance().pinstance());
   VkInstance server_pInstance;
 
   VkResult result = vkCreateInstance(&pCreateInfo, nullptr, &server_pInstance);

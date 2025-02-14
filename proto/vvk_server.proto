@@ -28,14 +28,14 @@ message VvkResponse {
 }
 
 message VkCreateInstanceParams {
-  repeated VkInstanceCreateInfo pCreateInfo = 1; // const VkInstanceCreateInfo* pCreateInfo
-  repeated VkAllocationCallbacks pAllocator = 2; // const VkAllocationCallbacks* pAllocator
-  repeated uint64 pInstance = 3; // VkInstance* pInstance NON-CONST POINTER
+  VkInstanceCreateInfo pCreateInfo = 1; // const VkInstanceCreateInfo* pCreateInfo
+  VkAllocationCallbacks pAllocator = 2; // const VkAllocationCallbacks* pAllocator
+  uint64 pInstance = 3; // VkInstance* pInstance NON-CONST POINTER
 }
 
 message VkDestroyInstanceParams {
   uint64 instance = 1; // VkInstance instance
-  repeated VkAllocationCallbacks pAllocator = 2; // const VkAllocationCallbacks* pAllocator
+  VkAllocationCallbacks pAllocator = 2; // const VkAllocationCallbacks* pAllocator
 }
 
 

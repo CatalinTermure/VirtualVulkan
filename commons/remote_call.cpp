@@ -10,10 +10,10 @@ namespace vvk {
 VkResult PackAndCallVkCreateInstance(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, const VkInstanceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkInstance* pInstance) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreateInstance");
-  vvk::server::VkInstanceCreateInfo* pCreateInfo_proto = request.mutable_vkcreateinstance()->add_pcreateinfo();
+  vvk::server::VkInstanceCreateInfo* pCreateInfo_proto = request.mutable_vkcreateinstance()->mutable_pcreateinfo();
   // pNext chains are currently not supported
   pCreateInfo_proto->set_flags(pCreateInfo->flags);
-  vvk::server::VkApplicationInfo* pCreateInfo_proto_pApplicationInfo_proto = pCreateInfo_proto->add_papplicationinfo();
+  vvk::server::VkApplicationInfo* pCreateInfo_proto_pApplicationInfo_proto = pCreateInfo_proto->mutable_papplicationinfo();
   // pNext chains are currently not supported
   pCreateInfo_proto_pApplicationInfo_proto->set_papplicationname(pCreateInfo->pApplicationInfo->pApplicationName);
   pCreateInfo_proto_pApplicationInfo_proto->set_applicationversion(pCreateInfo->pApplicationInfo->applicationVersion);
@@ -28,7 +28,7 @@ VkResult PackAndCallVkCreateInstance(grpc::ClientReaderWriter<vvk::server::VvkRe
   for (int i = 0; i < pCreateInfo->enabledExtensionCount; i++) {
     pCreateInfo_proto->add_ppenabledextensionnames(pCreateInfo->ppEnabledExtensionNames[i]);
   }
-  request.mutable_vkcreateinstance()->add_pinstance(reinterpret_cast<uint64_t>(*pInstance));
+  request.mutable_vkcreateinstance()->set_pinstance(reinterpret_cast<uint64_t>(*pInstance));
   vvk::server::VvkResponse response;
 
   if (!stream->Write(request)) {

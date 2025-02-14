@@ -9,6 +9,10 @@ TRIVIAL_TYPES = [
 ]
 
 
+def log(*args):
+    print("client_generator:", *args)
+
+
 class ClientSrcGenerator(BaseGenerator):
     def __init__(self):
         BaseGenerator.__init__(self)
@@ -28,18 +32,22 @@ class ClientSrcGenerator(BaseGenerator):
                 out.append(
                     f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
             elif member.pointer and member.const and member.type in self.vk.structs:
-                out.append(
-                    f'  vvk::server::{member.type}* {name}_{member.name}_proto = {name}->add_{member.name.lower()}();\n')
-                out.append(self.fill_proto_from_struct(
-                    member.type, f'{name}_{member.name}_proto', f'{struct_accessor}->{member.name}'))
+                if member.length is None:
+                    out.append(
+                        f'  vvk::server::{member.type}* {name}_{member.name}_proto = {name}->mutable_{member.name.lower()}();\n')
+                    out.append(self.fill_proto_from_struct(
+                        member.type, f'{name}_{member.name}_proto', f'{struct_accessor}->{member.name}'))
+                else:
+                    log("non zero length member:",
+                        struct_type, member.cDeclaration)
             elif 'const char* const*' in member.cDeclaration:
                 count_variable = struct.members[indx - 1]
                 if 'Count' not in count_variable.name:
-                    print("ERROR: Count variable not found")
+                    log("ERROR: Count variable not found")
                     out.append('  // ERROR: Count variable not found\n')
                     exit(1)
                 if count_variable.type != 'uint32_t':
-                    print("ERROR: Count variable is not uint32_t")
+                    log("ERROR: Count variable is not uint32_t")
                     out.append('  // ERROR: Count variable not uint32_t\n')
                     exit(1)
                 out.append(
@@ -52,7 +60,7 @@ class ClientSrcGenerator(BaseGenerator):
                     f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
             else:
                 out.append(f'  // Unsupported member: {member.cDeclaration}\n')
-                print("UNSUPPORTED MEMBER:", struct_type, member.cDeclaration)
+                log("UNSUPPORTED MEMBER:", struct_type, member.cDeclaration)
         return "".join(out)
 
     def generate(self):
@@ -84,20 +92,28 @@ namespace vvk {
                 if param.type in ['VkAllocationCallbacks']:
                     continue
                 elif param.pointer and param.const and param.type in self.vk.structs:
-                    out.append(
-                        f'  vvk::server::{param.type}* {param.name}_proto = request.mutable_{cmd_name.lower()}()->add_{param.name.lower()}();\n')
-                    out.append(self.fill_proto_from_struct(
-                        param.type, f'{param.name}_proto', f'{param.name}'))
+                    if param.length is None:
+                        out.append(
+                            f'  vvk::server::{param.type}* {param.name}_proto = request.mutable_{cmd_name.lower()}()->mutable_{param.name.lower()}();\n')
+                        out.append(self.fill_proto_from_struct(
+                            param.type, f'{param.name}_proto', f'{param.name}'))
+                    else:
+                        log("non zero length param:",
+                            cmd_name, param.cDeclaration)
                 elif param.pointer and not param.const and param.type in self.vk.handles:
-                    out.append(
-                        f'  request.mutable_{cmd_name.lower()}()->add_{param.name.lower()}(reinterpret_cast<uint64_t>(*{param.name}));\n')
+                    if param.length is None:
+                        out.append(
+                            f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}(reinterpret_cast<uint64_t>(*{param.name}));\n')
+                    else:
+                        log("non zero length param:",
+                            cmd_name, param.cDeclaration)
                 elif param.type in self.vk.handles:
                     out.append(
                         f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}(reinterpret_cast<uint64_t>({param.name}));\n')
                 else:
                     out.append(
                         f"  // Unsupported param: {param.cDeclaration}\n")
-                    print("UNSUPPORTED PARAM:", cmd_name, param.cDeclaration)
+                    log("UNSUPPORTED PARAM:", cmd_name, param.cDeclaration)
 
             out.append("  vvk::server::VvkResponse response;\n")
 

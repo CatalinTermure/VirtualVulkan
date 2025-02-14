@@ -2619,7 +2619,7 @@ message VkApplicationInfo {
 
 message VkInstanceCreateInfo {
   uint32 flags = 1; // VkInstanceCreateFlags flags
-  repeated VkApplicationInfo pApplicationInfo = 2; // const VkApplicationInfo* pApplicationInfo
+  VkApplicationInfo pApplicationInfo = 2; // const VkApplicationInfo* pApplicationInfo
   uint32 enabledLayerCount = 3; // uint32_t enabledLayerCount
   repeated string ppEnabledLayerNames = 4; // const char* const* ppEnabledLayerNames
   uint32 enabledExtensionCount = 5; // uint32_t enabledExtensionCount

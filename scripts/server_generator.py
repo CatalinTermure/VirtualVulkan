@@ -9,6 +9,10 @@ TRIVIAL_TYPES = [
 ]
 
 
+def log(*args):
+    print("server_generator:", *args)
+
+
 class ServerSrcGenerator(BaseGenerator):
     def __init__(self):
         BaseGenerator.__init__(self)
@@ -27,15 +31,16 @@ class ServerSrcGenerator(BaseGenerator):
                     f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}();\n')
             elif member.type in self.vk.structs:
                 assert (member.pointer and member.const)
-                out.append(
-                    f'  assert({proto_accessor}.{member.name.lower()}_size() == 1);\n')
-
-                aux_var_name = f'{name}_{member.name}'
-                out.append(f'  {member.type} {aux_var_name};\n')
-                out.append(self.fill_struct_from_proto(
-                    member.type, aux_var_name, f'{proto_accessor}.{member.name.lower()}(0)'))
-                out.append(
-                    f'  {name}.{member.name} = &{aux_var_name};\n')
+                if member.length is None:
+                    aux_var_name = f'{name}_{member.name}'
+                    out.append(f'  {member.type} {aux_var_name};\n')
+                    out.append(self.fill_struct_from_proto(
+                        member.type, aux_var_name, f'{proto_accessor}.{member.name.lower()}()'))
+                    out.append(
+                        f'  {name}.{member.name} = &{aux_var_name};\n')
+                else:
+                    log("non zero length member:",
+                        struct_type, member.cDeclaration)
             elif 'const char* const*' in member.cDeclaration:
                 aux_var_name = f'{name}_{member.name}'
                 out.append(
@@ -53,7 +58,7 @@ class ServerSrcGenerator(BaseGenerator):
                     f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}().data();\n')
             else:
                 out.append(f'  // Unsupported member: {member.cDeclaration}\n')
-                print("UNSUPPORTED MEMBER:", name, member.cDeclaration)
+                log("UNSUPPORTED MEMBER:", name, member.cDeclaration)
         return "".join(out)
 
     def generate(self):
@@ -87,17 +92,21 @@ std::unordered_map<void*, void*> client_to_server_handles;
                 if param.type in ["VkAllocationCallbacks"]:
                     continue
                 elif param.const and param.pointer:
-                    out.append(
-                        f'  assert({param_accessor}.{param.name.lower()}_size() == 1);\n')
-                    out.append(f'  {param.type} {param.name};\n')
-                    out.append(self.fill_struct_from_proto(
-                        param.type, param.name, f'{param_accessor}.{param.name.lower()}(0)'))
+                    if param.length is None:
+                        out.append(f'  {param.type} {param.name};\n')
+                        out.append(self.fill_struct_from_proto(
+                            param.type, param.name, f'{param_accessor}.{param.name.lower()}()'))
+                    else:
+                        log("non zero length param:",
+                            cmd_name, param.cDeclaration)
                 elif param.pointer and not param.const and param.type in self.vk.handles:
-                    out.append(
-                        f'  assert({param_accessor}.{param.name.lower()}_size() == 1);\n')
-                    out.append(
-                        f'  {param.type} client_{param.name} = reinterpret_cast<{param.type}>({param_accessor}.{param.name.lower()}(0));\n')
-                    out.append(f'  {param.type} server_{param.name};\n')
+                    if param.length is None:
+                        out.append(
+                            f'  {param.type} client_{param.name} = reinterpret_cast<{param.type}>({param_accessor}.{param.name.lower()}());\n')
+                        out.append(f'  {param.type} server_{param.name};\n')
+                    else:
+                        log("non zero length param:",
+                            cmd_name, param.cDeclaration)
                 out.append("\n")
             # call the function
             if command.returnType == "VkResult":
@@ -116,7 +125,7 @@ std::unordered_map<void*, void*> client_to_server_handles;
                     actual_parameters.append(
                         f'reinterpret_cast<{param.type}>(client_to_server_handles.at(reinterpret_cast<void*>({param_accessor}.{param.name.lower()}())))')
                 else:
-                    print("UNHANDLED PARAM:", cmd_name, param.name)
+                    log("UNHANDLED PARAM:", cmd_name, param.name)
             out.append(", ".join(actual_parameters))
             out.append(");\n")
 

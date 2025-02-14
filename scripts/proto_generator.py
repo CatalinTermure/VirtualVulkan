@@ -36,7 +36,10 @@ def get_proto_type(generator: BaseGenerator, param: Param | Member | RetVal) -> 
     if param.pointer:
         non_pointer_param = copy.deepcopy(param)
         non_pointer_param.pointer = False
-        return f'repeated {get_proto_type(generator, non_pointer_param)}'
+        if param.length:
+            return f'repeated {get_proto_type(generator, non_pointer_param)}'
+        else:
+            return get_proto_type(generator, non_pointer_param)
     if param.type in generator.vk.handles:
         return "uint64"
     if param.type in generator.vk.structs:
@@ -103,9 +106,12 @@ message VvkRequest {
                                cDeclaration=f"{command.returnType} result"))
                 for param in command.params:
                     if param.pointer and not param.const:
-                        param_not_pointer = copy.deepcopy(param)
-                        param_not_pointer.pointer = False
-                        output_params.append(param_not_pointer)
+                        if param.length:
+                            output_params.append(param)
+                        else:
+                            param_not_pointer = copy.deepcopy(param)
+                            param_not_pointer.pointer = False
+                            output_params.append(param_not_pointer)
 
                 response_types_oneof.append(
                     f'    {capitalized_name}Response {command.name} = {response_index};\n')
