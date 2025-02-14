@@ -20,7 +20,7 @@ class ClientSrcGenerator(BaseGenerator):
     def fill_proto_from_struct(self, struct_type: str, name: str, struct_accessor: str) -> str:
         out = []
         struct = self.vk.structs[struct_type]
-        for indx, member in enumerate(struct.members):
+        for member in struct.members:
             if member.name in ['sType']:
                 continue
             elif member.name == 'pNext':
@@ -41,20 +41,17 @@ class ClientSrcGenerator(BaseGenerator):
                     log("non zero length member:",
                         struct_type, member.cDeclaration)
             elif 'const char* const*' in member.cDeclaration:
-                count_variable = struct.members[indx - 1]
-                if 'Count' not in count_variable.name:
-                    log("ERROR: Count variable not found")
-                    out.append('  // ERROR: Count variable not found\n')
-                    exit(1)
-                if count_variable.type != 'uint32_t':
-                    log("ERROR: Count variable is not uint32_t")
-                    out.append('  // ERROR: Count variable not uint32_t\n')
-                    exit(1)
-                out.append(
-                    f'  for (int i = 0; i < {struct_accessor}->{count_variable.name}; i++) {{\n')
-                out.append(
-                    f'    {name}->add_{member.name.lower()}({struct_accessor}->{member.name}[i]);\n')
-                out.append('  }\n')
+                if member.length in [member.name for member in struct.members]:
+                    count_variable = [
+                        count_var for count_var in struct.members if count_var.name == member.length][0]
+                    out.append(
+                        f'  for (int i = 0; i < {struct_accessor}->{count_variable.name}; i++) {{\n')
+                    out.append(
+                        f'    {name}->add_{member.name.lower()}({struct_accessor}->{member.name}[i]);\n')
+                    out.append('  }\n')
+                else:
+                    log("unknown length member:",
+                        struct_type, member.cDeclaration)
             elif member.pointer and member.const:
                 out.append(
                     f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
