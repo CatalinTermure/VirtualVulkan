@@ -2626,4 +2626,133 @@ message VkInstanceCreateInfo {
   repeated string ppEnabledExtensionNames = 6; // const char* const* ppEnabledExtensionNames
 }
 
+message VkPhysicalDeviceLimits {
+  uint32 maxImageDimension1D = 1; // uint32_t maxImageDimension1D
+  uint32 maxImageDimension2D = 2; // uint32_t maxImageDimension2D
+  uint32 maxImageDimension3D = 3; // uint32_t maxImageDimension3D
+  uint32 maxImageDimensionCube = 4; // uint32_t maxImageDimensionCube
+  uint32 maxImageArrayLayers = 5; // uint32_t maxImageArrayLayers
+  uint32 maxTexelBufferElements = 6; // uint32_t maxTexelBufferElements
+  uint32 maxUniformBufferRange = 7; // uint32_t maxUniformBufferRange
+  uint32 maxStorageBufferRange = 8; // uint32_t maxStorageBufferRange
+  uint32 maxPushConstantsSize = 9; // uint32_t maxPushConstantsSize
+  uint32 maxMemoryAllocationCount = 10; // uint32_t maxMemoryAllocationCount
+  uint32 maxSamplerAllocationCount = 11; // uint32_t maxSamplerAllocationCount
+  uint64 bufferImageGranularity = 12; // VkDeviceSize bufferImageGranularity
+  uint64 sparseAddressSpaceSize = 13; // VkDeviceSize sparseAddressSpaceSize
+  uint32 maxBoundDescriptorSets = 14; // uint32_t maxBoundDescriptorSets
+  uint32 maxPerStageDescriptorSamplers = 15; // uint32_t maxPerStageDescriptorSamplers
+  uint32 maxPerStageDescriptorUniformBuffers = 16; // uint32_t maxPerStageDescriptorUniformBuffers
+  uint32 maxPerStageDescriptorStorageBuffers = 17; // uint32_t maxPerStageDescriptorStorageBuffers
+  uint32 maxPerStageDescriptorSampledImages = 18; // uint32_t maxPerStageDescriptorSampledImages
+  uint32 maxPerStageDescriptorStorageImages = 19; // uint32_t maxPerStageDescriptorStorageImages
+  uint32 maxPerStageDescriptorInputAttachments = 20; // uint32_t maxPerStageDescriptorInputAttachments
+  uint32 maxPerStageResources = 21; // uint32_t maxPerStageResources
+  uint32 maxDescriptorSetSamplers = 22; // uint32_t maxDescriptorSetSamplers
+  uint32 maxDescriptorSetUniformBuffers = 23; // uint32_t maxDescriptorSetUniformBuffers
+  uint32 maxDescriptorSetUniformBuffersDynamic = 24; // uint32_t maxDescriptorSetUniformBuffersDynamic
+  uint32 maxDescriptorSetStorageBuffers = 25; // uint32_t maxDescriptorSetStorageBuffers
+  uint32 maxDescriptorSetStorageBuffersDynamic = 26; // uint32_t maxDescriptorSetStorageBuffersDynamic
+  uint32 maxDescriptorSetSampledImages = 27; // uint32_t maxDescriptorSetSampledImages
+  uint32 maxDescriptorSetStorageImages = 28; // uint32_t maxDescriptorSetStorageImages
+  uint32 maxDescriptorSetInputAttachments = 29; // uint32_t maxDescriptorSetInputAttachments
+  uint32 maxVertexInputAttributes = 30; // uint32_t maxVertexInputAttributes
+  uint32 maxVertexInputBindings = 31; // uint32_t maxVertexInputBindings
+  uint32 maxVertexInputAttributeOffset = 32; // uint32_t maxVertexInputAttributeOffset
+  uint32 maxVertexInputBindingStride = 33; // uint32_t maxVertexInputBindingStride
+  uint32 maxVertexOutputComponents = 34; // uint32_t maxVertexOutputComponents
+  uint32 maxTessellationGenerationLevel = 35; // uint32_t maxTessellationGenerationLevel
+  uint32 maxTessellationPatchSize = 36; // uint32_t maxTessellationPatchSize
+  uint32 maxTessellationControlPerVertexInputComponents = 37; // uint32_t maxTessellationControlPerVertexInputComponents
+  uint32 maxTessellationControlPerVertexOutputComponents = 38; // uint32_t maxTessellationControlPerVertexOutputComponents
+  uint32 maxTessellationControlPerPatchOutputComponents = 39; // uint32_t maxTessellationControlPerPatchOutputComponents
+  uint32 maxTessellationControlTotalOutputComponents = 40; // uint32_t maxTessellationControlTotalOutputComponents
+  uint32 maxTessellationEvaluationInputComponents = 41; // uint32_t maxTessellationEvaluationInputComponents
+  uint32 maxTessellationEvaluationOutputComponents = 42; // uint32_t maxTessellationEvaluationOutputComponents
+  uint32 maxGeometryShaderInvocations = 43; // uint32_t maxGeometryShaderInvocations
+  uint32 maxGeometryInputComponents = 44; // uint32_t maxGeometryInputComponents
+  uint32 maxGeometryOutputComponents = 45; // uint32_t maxGeometryOutputComponents
+  uint32 maxGeometryOutputVertices = 46; // uint32_t maxGeometryOutputVertices
+  uint32 maxGeometryTotalOutputComponents = 47; // uint32_t maxGeometryTotalOutputComponents
+  uint32 maxFragmentInputComponents = 48; // uint32_t maxFragmentInputComponents
+  uint32 maxFragmentOutputAttachments = 49; // uint32_t maxFragmentOutputAttachments
+  uint32 maxFragmentDualSrcAttachments = 50; // uint32_t maxFragmentDualSrcAttachments
+  uint32 maxFragmentCombinedOutputResources = 51; // uint32_t maxFragmentCombinedOutputResources
+  uint32 maxComputeSharedMemorySize = 52; // uint32_t maxComputeSharedMemorySize
+  repeated uint32 maxComputeWorkGroupCount = 53; // uint32_t maxComputeWorkGroupCount[3]
+  uint32 maxComputeWorkGroupInvocations = 54; // uint32_t maxComputeWorkGroupInvocations
+  repeated uint32 maxComputeWorkGroupSize = 55; // uint32_t maxComputeWorkGroupSize[3]
+  uint32 subPixelPrecisionBits = 56; // uint32_t subPixelPrecisionBits
+  uint32 subTexelPrecisionBits = 57; // uint32_t subTexelPrecisionBits
+  uint32 mipmapPrecisionBits = 58; // uint32_t mipmapPrecisionBits
+  uint32 maxDrawIndexedIndexValue = 59; // uint32_t maxDrawIndexedIndexValue
+  uint32 maxDrawIndirectCount = 60; // uint32_t maxDrawIndirectCount
+  float maxSamplerLodBias = 61; // float maxSamplerLodBias
+  float maxSamplerAnisotropy = 62; // float maxSamplerAnisotropy
+  uint32 maxViewports = 63; // uint32_t maxViewports
+  repeated uint32 maxViewportDimensions = 64; // uint32_t maxViewportDimensions[2]
+  repeated float viewportBoundsRange = 65; // float viewportBoundsRange[2]
+  uint32 viewportSubPixelBits = 66; // uint32_t viewportSubPixelBits
+  uint64 minMemoryMapAlignment = 67; // size_t minMemoryMapAlignment
+  uint64 minTexelBufferOffsetAlignment = 68; // VkDeviceSize minTexelBufferOffsetAlignment
+  uint64 minUniformBufferOffsetAlignment = 69; // VkDeviceSize minUniformBufferOffsetAlignment
+  uint64 minStorageBufferOffsetAlignment = 70; // VkDeviceSize minStorageBufferOffsetAlignment
+  int32 minTexelOffset = 71; // int32_t minTexelOffset
+  uint32 maxTexelOffset = 72; // uint32_t maxTexelOffset
+  int32 minTexelGatherOffset = 73; // int32_t minTexelGatherOffset
+  uint32 maxTexelGatherOffset = 74; // uint32_t maxTexelGatherOffset
+  float minInterpolationOffset = 75; // float minInterpolationOffset
+  float maxInterpolationOffset = 76; // float maxInterpolationOffset
+  uint32 subPixelInterpolationOffsetBits = 77; // uint32_t subPixelInterpolationOffsetBits
+  uint32 maxFramebufferWidth = 78; // uint32_t maxFramebufferWidth
+  uint32 maxFramebufferHeight = 79; // uint32_t maxFramebufferHeight
+  uint32 maxFramebufferLayers = 80; // uint32_t maxFramebufferLayers
+  uint32 framebufferColorSampleCounts = 81; // VkSampleCountFlags framebufferColorSampleCounts
+  uint32 framebufferDepthSampleCounts = 82; // VkSampleCountFlags framebufferDepthSampleCounts
+  uint32 framebufferStencilSampleCounts = 83; // VkSampleCountFlags framebufferStencilSampleCounts
+  uint32 framebufferNoAttachmentsSampleCounts = 84; // VkSampleCountFlags framebufferNoAttachmentsSampleCounts
+  uint32 maxColorAttachments = 85; // uint32_t maxColorAttachments
+  uint32 sampledImageColorSampleCounts = 86; // VkSampleCountFlags sampledImageColorSampleCounts
+  uint32 sampledImageIntegerSampleCounts = 87; // VkSampleCountFlags sampledImageIntegerSampleCounts
+  uint32 sampledImageDepthSampleCounts = 88; // VkSampleCountFlags sampledImageDepthSampleCounts
+  uint32 sampledImageStencilSampleCounts = 89; // VkSampleCountFlags sampledImageStencilSampleCounts
+  uint32 storageImageSampleCounts = 90; // VkSampleCountFlags storageImageSampleCounts
+  uint32 maxSampleMaskWords = 91; // uint32_t maxSampleMaskWords
+  bool timestampComputeAndGraphics = 92; // VkBool32 timestampComputeAndGraphics
+  float timestampPeriod = 93; // float timestampPeriod
+  uint32 maxClipDistances = 94; // uint32_t maxClipDistances
+  uint32 maxCullDistances = 95; // uint32_t maxCullDistances
+  uint32 maxCombinedClipAndCullDistances = 96; // uint32_t maxCombinedClipAndCullDistances
+  uint32 discreteQueuePriorities = 97; // uint32_t discreteQueuePriorities
+  repeated float pointSizeRange = 98; // float pointSizeRange[2]
+  repeated float lineWidthRange = 99; // float lineWidthRange[2]
+  float pointSizeGranularity = 100; // float pointSizeGranularity
+  float lineWidthGranularity = 101; // float lineWidthGranularity
+  bool strictLines = 102; // VkBool32 strictLines
+  bool standardSampleLocations = 103; // VkBool32 standardSampleLocations
+  uint64 optimalBufferCopyOffsetAlignment = 104; // VkDeviceSize optimalBufferCopyOffsetAlignment
+  uint64 optimalBufferCopyRowPitchAlignment = 105; // VkDeviceSize optimalBufferCopyRowPitchAlignment
+  uint64 nonCoherentAtomSize = 106; // VkDeviceSize nonCoherentAtomSize
+}
+
+message VkPhysicalDeviceSparseProperties {
+  bool residencyStandard2DBlockShape = 1; // VkBool32 residencyStandard2DBlockShape
+  bool residencyStandard2DMultisampleBlockShape = 2; // VkBool32 residencyStandard2DMultisampleBlockShape
+  bool residencyStandard3DBlockShape = 3; // VkBool32 residencyStandard3DBlockShape
+  bool residencyAlignedMipSize = 4; // VkBool32 residencyAlignedMipSize
+  bool residencyNonResidentStrict = 5; // VkBool32 residencyNonResidentStrict
+}
+
+message VkPhysicalDeviceProperties {
+  uint32 apiVersion = 1; // uint32_t apiVersion
+  uint32 driverVersion = 2; // uint32_t driverVersion
+  uint32 vendorID = 3; // uint32_t vendorID
+  uint32 deviceID = 4; // uint32_t deviceID
+  VkPhysicalDeviceType deviceType = 5; // VkPhysicalDeviceType deviceType
+  string deviceName = 6; // char deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE]
+  repeated uint32 pipelineCacheUUID = 7; // uint8_t pipelineCacheUUID[VK_UUID_SIZE]
+  VkPhysicalDeviceLimits limits = 8; // VkPhysicalDeviceLimits limits
+  VkPhysicalDeviceSparseProperties sparseProperties = 9; // VkPhysicalDeviceSparseProperties sparseProperties
+}
+
 

@@ -3,6 +3,7 @@
 #include <spdlog/spdlog.h>
 
 #include "implementations.h"
+#include "manual_implementations.h"
 
 namespace vvk::server {
 
@@ -10,9 +11,10 @@ namespace {
 
 const std::unordered_map<std::string, std::function<void(const vvk::server::VvkRequest&, vvk::server::VvkResponse*)>>
     g_jump_table = {
-        {"vkCreateInstance", UnpackAndExecuteVkCreateInstance},
+        {"vkCreateInstance", UnpackAndExecuteVkCreateInstanceManual},
         {"vkDestroyInstance", UnpackAndExecuteVkDestroyInstance},
         {"vkEnumeratePhysicalDevices", UnpackAndExecuteVkEnumeratePhysicalDevices},
+        {"vkGetPhysicalDeviceProperties", UnpackAndExecuteVkGetPhysicalDeviceProperties},
 };
 
 }  // namespace

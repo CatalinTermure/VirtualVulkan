@@ -8,7 +8,9 @@
 #include <vvk_types.pb.h>
 
 #include <cassert>
+#include <functional>
 #include <memory>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 
@@ -43,6 +45,18 @@ class InstanceInfo {
 };
 
 std::unordered_map<VkInstance, InstanceInfo> g_instance_infos;
+std::unordered_map<VkPhysicalDevice, VkInstance> g_physical_device_to_instance;
+
+template <typename FooType, typename RetType, typename... Args>
+RetType CallDownInstanceFunc(std::string_view func_name, VkInstance instance, Args... args) {
+  FooType nxt_func = reinterpret_cast<FooType>(g_instance_infos.at(instance).nxt_gipa(instance, func_name.data()));
+  if (!nxt_func) {
+    spdlog::error("Failed to fetch {} from next layer", func_name);
+    return VK_ERROR_UNKNOWN;
+  }
+
+  return nxt_func(instance, args...);
+}
 
 }  // namespace
 
@@ -110,7 +124,9 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
 
     auto reader_writer = g_instance_infos.at(*pInstance).command_stream.get();
 
-    PackAndCallVkCreateInstance(reader_writer, &remote_create_info, pAllocator, pInstance);
+    // We don't want to overwrite the local instance handle with the remote one
+    VkInstance remote_instance = *pInstance;
+    PackAndCallVkCreateInstance(reader_writer, &remote_create_info, pAllocator, &remote_instance);
   }
 
   return result;
@@ -141,14 +157,27 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumeratePhysicalDevices(VkInstance instance, uin
                                                         VkPhysicalDevice* pPhysicalDevices) {
   spdlog::trace("EnumeratePhysicalDevices");
 
-  PFN_vkEnumeratePhysicalDevices nxt_enumerate_physical_devices = reinterpret_cast<PFN_vkEnumeratePhysicalDevices>(
-      g_instance_infos.at(instance).nxt_gipa(instance, "vkEnumeratePhysicalDevices"));
-  if (!nxt_enumerate_physical_devices) {
-    spdlog::error("Failed to fetch vkEnumeratePhysicalDevices from next layer");
-    return VK_ERROR_UNKNOWN;
+  VkResult result = CallDownInstanceFunc<PFN_vkEnumeratePhysicalDevices, VkResult>(
+      "vkEnumeratePhysicalDevices", instance, pPhysicalDeviceCount, pPhysicalDevices);
+  if (result != VK_SUCCESS) {
+    return result;
   }
 
-  return nxt_enumerate_physical_devices(instance, pPhysicalDeviceCount, pPhysicalDevices);
+  if (pPhysicalDevices != nullptr) {
+    for (uint32_t i = 0; i < *pPhysicalDeviceCount; i++) {
+      g_physical_device_to_instance[pPhysicalDevices[i]] = instance;
+    }
+  }
+
+  return result;
+}
+
+VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceProperties(VkPhysicalDevice physicalDevice,
+                                                       VkPhysicalDeviceProperties* pProperties) {
+  VkInstance instance = g_physical_device_to_instance.at(physicalDevice);
+
+  PackAndCallVkGetPhysicalDeviceProperties(g_instance_infos.at(instance).command_stream.get(), physicalDevice,
+                                           pProperties);
 }
 
 }  // namespace vvk

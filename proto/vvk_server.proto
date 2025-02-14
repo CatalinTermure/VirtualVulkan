@@ -18,6 +18,7 @@ message VvkRequest {
     VkCreateInstanceParams vkCreateInstance = 2;
     VkDestroyInstanceParams vkDestroyInstance = 3;
     VkEnumeratePhysicalDevicesParams vkEnumeratePhysicalDevices = 4;
+    VkGetPhysicalDevicePropertiesParams vkGetPhysicalDeviceProperties = 5;
   }
 }
 
@@ -26,6 +27,7 @@ message VvkResponse {
   oneof response {
     VkCreateInstanceResponse vkCreateInstance = 2;
     VkEnumeratePhysicalDevicesResponse vkEnumeratePhysicalDevices = 3;
+    VkGetPhysicalDevicePropertiesResponse vkGetPhysicalDeviceProperties = 4;
   }
 }
 
@@ -53,6 +55,15 @@ message VkEnumeratePhysicalDevicesParams {
   uint64 instance = 1; // VkInstance instance
   uint32 pPhysicalDeviceCount = 2; // uint32_t* pPhysicalDeviceCount NON-CONST POINTER
   repeated uint64 pPhysicalDevices = 3; // VkPhysicalDevice* pPhysicalDevices NON-CONST POINTER
+}
+
+message VkGetPhysicalDevicePropertiesResponse {
+  VkPhysicalDeviceProperties pProperties = 1; // VkPhysicalDeviceProperties* pProperties
+}
+
+message VkGetPhysicalDevicePropertiesParams {
+  uint64 physicalDevice = 1; // VkPhysicalDevice physicalDevice
+  VkPhysicalDeviceProperties pProperties = 2; // VkPhysicalDeviceProperties* pProperties NON-CONST POINTER
 }
 
 
