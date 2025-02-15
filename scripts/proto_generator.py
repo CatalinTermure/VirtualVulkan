@@ -4,6 +4,7 @@ from generators.base_generator import BaseGenerator, BaseGeneratorOptions, SetTa
 from generators.vulkan_object import Param, Member
 from .commons import first_letter_upper, is_output_command, COMMANDS_TO_GENERATE, RetVal
 import copy
+import inflection
 
 
 C_TYPE_TO_PROTO_TYPE = {
@@ -180,10 +181,34 @@ message VkAllocationCallbacks {
 
 ''')
 
+        tree: ElementTree.ElementTree = self.registry.tree
+
         for enum in self.vk.enums.values():
+            field_definitions: list[tuple[int, str]] = []
             out.append(f"enum {enum.name} {{\n")
-            for index, value in enumerate(enum.fields):
-                out.append(f"  {value.name} = {index};\n")
+            enum_values: set[int] = set()
+            does_alias = False
+            for field in enum.fields:
+                elem = tree.find(f".//enum[@name='{field.name}']")
+                enum_value = self.enumToValue(elem, True)[0]
+                field_definitions.append(
+                    (enum_value, f"  {field.name} = {enum_value};\n"))
+                if enum_value in enum_values:
+                    does_alias = True
+                enum_values.add(enum_value)
+            if does_alias:
+                out.append("  option allow_alias = true;\n")
+            if 0 not in enum_values:
+                out.append(
+                    f"  {inflection.underscore(enum.name).upper()}_UNKNOWN = 0;  // This is not part of the Vulkan spec, but proto3 enums must start with 0\n")
+            elif field_definitions[0][0] != 0:
+                # swap the first element with the element that has value 0 so that the first element is the one with value 0
+                for i, (value, _) in enumerate(field_definitions):
+                    if value == 0:
+                        field_definitions[0], field_definitions[i] = field_definitions[i], field_definitions[0]
+                        break
+            out.extend([definition for (_, definition)
+                       in field_definitions])
             out.append("}\n\n")
 
         manually_overridden_structs = {
