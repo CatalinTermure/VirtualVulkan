@@ -3,11 +3,6 @@ from reg import Registry
 from generators.base_generator import BaseGenerator, BaseGeneratorOptions, SetTargetApiName, SetMergedApiNames
 from .commons import first_letter_upper, COMMANDS_TO_GENERATE, fill_proto_from_struct, fill_struct_from_proto
 
-TRIVIAL_TYPES = [
-    "uint32_t",
-    "VkBool32",
-]
-
 
 def log(*args):
     print("server_generator:", *args)

@@ -4,7 +4,6 @@ from dataclasses import dataclass
 
 @dataclass
 class RetVal:
-    """<command/param>"""
     name: str
     type: str  # ex) void, VkFormat, etc
 
@@ -20,6 +19,11 @@ class RetVal:
     cDeclaration: str
 
 
+@dataclass
+class TypeInfo:
+    cast_to: str | None
+
+
 COMMANDS_TO_GENERATE = [
     "vkCreateInstance",
     "vkDestroyInstance",
@@ -27,17 +31,15 @@ COMMANDS_TO_GENERATE = [
     "vkGetPhysicalDeviceProperties",
 ]
 
-TRIVIAL_TYPES = [
-    "uint32_t",
-    "VkBool32",
-    "float",
-    "size_t",
-    "int32_t",
-]
 
-TYPES_TO_CAST = {
-    "VkDeviceSize": "uint64_t",
-    "uint8_t": "uint32_t",
+TRIVIAL_TYPES: dict[str, TypeInfo] = {
+    "uint32_t": TypeInfo(cast_to=None),
+    "VkBool32": TypeInfo(cast_to=None),
+    "float": TypeInfo(cast_to=None),
+    "size_t": TypeInfo(cast_to=None),
+    "int32_t": TypeInfo(cast_to=None),
+    "VkDeviceSize": TypeInfo(cast_to="uint64_t"),
+    "uint8_t": TypeInfo(cast_to="uint32_t"),
 }
 
 
@@ -60,25 +62,24 @@ def fill_struct_from_proto(generator: BaseGenerator, struct_type: str, name: str
             out.append(
                 f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
         elif member.type in TRIVIAL_TYPES:
+            type_info = TRIVIAL_TYPES[member.type]
             if member.fixedSizeArray:
                 out.append(
                     f'  for (int i = 0; i < {member.length}; i++) {{\n')
-                out.append(
-                    f'    {name}.{member.name}[i] = {proto_accessor}.{member.name.lower()}(i);\n')
+                if type_info.cast_to is None:
+                    out.append(
+                        f'    {name}.{member.name}[i] = {proto_accessor}.{member.name.lower()}(i);\n')
+                else:
+                    out.append(
+                        f'    {name}.{member.name}[i] = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}(i));\n')
                 out.append('  }\n')
             else:
-                out.append(
-                    f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}();\n')
-        elif member.type in TYPES_TO_CAST:
-            if member.fixedSizeArray:
-                out.append(
-                    f'  for (int i = 0; i < {member.length}; i++) {{\n')
-                out.append(
-                    f'    {name}.{member.name}[i] = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}(i));\n')
-                out.append('  }\n')
-            else:
-                out.append(
-                    f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
+                if type_info.cast_to is None:
+                    out.append(
+                        f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}();\n')
+                else:
+                    out.append(
+                        f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
         elif member.pointer and member.const and member.type in generator.vk.structs:
             if member.length is None:
                 aux_var_name = f'{name}_{member.name}'
@@ -88,8 +89,24 @@ def fill_struct_from_proto(generator: BaseGenerator, struct_type: str, name: str
                 out.append(
                     f'  {name}.{member.name} = &{aux_var_name};\n')
             else:
-                print("non zero length member:",
-                      struct_type, member.cDeclaration)
+                if member.length in [member.name for member in struct.members]:
+                    count_variable = [
+                        count_var for count_var in struct.members if count_var.name == member.length][0]
+                    out.append(
+                        f'  std::vector<{member.type}> {name}_{member.name}({proto_accessor}.{count_variable.name.lower()}());\n')
+                    out.append(
+                        f'  {name}.{member.name} = {name}_{member.name}.data();\n')
+                    out.append(
+                        f'  for (int i = 0; i < {proto_accessor}.{count_variable.name.lower()}(); i++)')
+                    out.append(' {\n')
+                    struct_filling = fill_struct_from_proto(
+                        generator, member.type, f'{name}_{member.name}[i]', f'{proto_accessor}.{member.name.lower()}(i)').splitlines()
+                    for line in struct_filling:
+                        out.append(f'  {line}\n')
+                    out.append('  }\n')
+                else:
+                    print("unknown length member:",
+                          struct_type, member.cDeclaration)
         elif not member.pointer and member.type in generator.vk.structs:
             out.append(fill_struct_from_proto(generator, member.type,
                                               f'{name}.{member.name}', f'{proto_accessor}.{member.name.lower()}()'))
@@ -126,25 +143,24 @@ def fill_proto_from_struct(generator: BaseGenerator, struct_type: str, name: str
             out.append(
                 f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
         elif member.type in TRIVIAL_TYPES:
+            type_info = TRIVIAL_TYPES[member.type]
             if member.fixedSizeArray:
                 out.append(
                     f'  for (int i = 0; i < {member.length}; i++) {{\n')
-                out.append(
-                    f'    {name}->add_{member.name.lower()}({struct_accessor}->{member.name}[i]);\n')
+                if type_info.cast_to is None:
+                    out.append(
+                        f'    {name}->add_{member.name.lower()}({struct_accessor}->{member.name}[i]);\n')
+                else:
+                    out.append(
+                        f'    {name}->add_{member.name.lower()}(static_cast<{type_info.cast_to}>({struct_accessor}->{member.name}[i]));\n')
                 out.append('  }\n')
             else:
-                out.append(
-                    f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
-        elif member.type in TYPES_TO_CAST:
-            if member.fixedSizeArray:
-                out.append(
-                    f'  for (int i = 0; i < {member.length}; i++) {{\n')
-                out.append(
-                    f'    {name}->add_{member.name.lower()}(static_cast<{TYPES_TO_CAST[member.type]}>({struct_accessor}->{member.name}[i]));\n')
-                out.append('  }\n')
-            else:
-                out.append(
-                    f'  {name}->set_{member.name.lower()}(static_cast<{TYPES_TO_CAST[member.type]}>({struct_accessor}->{member.name}));\n')
+                if type_info.cast_to is None:
+                    out.append(
+                        f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
+                else:
+                    out.append(
+                        f'  {name}->set_{member.name.lower()}(static_cast<{type_info.cast_to}>({struct_accessor}->{member.name}));\n')
         elif "Flags" in member.type:
             out.append(
                 f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
