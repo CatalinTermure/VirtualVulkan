@@ -19,6 +19,8 @@ message VvkRequest {
     VkDestroyInstanceParams vkDestroyInstance = 3;
     VkEnumeratePhysicalDevicesParams vkEnumeratePhysicalDevices = 4;
     VkGetPhysicalDevicePropertiesParams vkGetPhysicalDeviceProperties = 5;
+    VkCreateDeviceParams vkCreateDevice = 6;
+    VkDestroyDeviceParams vkDestroyDevice = 7;
   }
 }
 
@@ -28,6 +30,7 @@ message VvkResponse {
     VkCreateInstanceResponse vkCreateInstance = 2;
     VkEnumeratePhysicalDevicesResponse vkEnumeratePhysicalDevices = 3;
     VkGetPhysicalDevicePropertiesResponse vkGetPhysicalDeviceProperties = 4;
+    VkCreateDeviceResponse vkCreateDevice = 5;
   }
 }
 
@@ -64,6 +67,22 @@ message VkGetPhysicalDevicePropertiesResponse {
 message VkGetPhysicalDevicePropertiesParams {
   uint64 physicalDevice = 1; // VkPhysicalDevice physicalDevice
   VkPhysicalDeviceProperties pProperties = 2; // VkPhysicalDeviceProperties* pProperties NON-CONST POINTER
+}
+
+message VkCreateDeviceResponse {
+  uint64 pDevice = 1; // VkDevice* pDevice
+}
+
+message VkCreateDeviceParams {
+  uint64 physicalDevice = 1; // VkPhysicalDevice physicalDevice
+  VkDeviceCreateInfo pCreateInfo = 2; // const VkDeviceCreateInfo* pCreateInfo
+  VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
+  uint64 pDevice = 4; // VkDevice* pDevice NON-CONST POINTER
+}
+
+message VkDestroyDeviceParams {
+  uint64 device = 1; // VkDevice device
+  VkAllocationCallbacks pAllocator = 2; // const VkAllocationCallbacks* pAllocator
 }
 
 

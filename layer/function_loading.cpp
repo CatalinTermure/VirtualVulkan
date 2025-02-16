@@ -14,6 +14,48 @@
 
 namespace vvk {
 
+namespace {
+
+VkResult VKAPI_CALL EnumerateInstanceLayerProperties(uint32_t* pPropertyCount, VkLayerProperties* pProperties) {
+  if (pProperties == nullptr) {
+    *pPropertyCount = 1;
+    return VK_SUCCESS;
+  }
+
+  assert(*pPropertyCount == 1);
+
+  strncpy(pProperties->layerName, "VK_LAYER_VVK_virtual_vulkan", 256);
+  strncpy(pProperties->description, "Remote rendering layer", 256);
+  pProperties->implementationVersion = 1;
+  pProperties->specVersion = VK_API_VERSION_1_4;
+
+  return VK_SUCCESS;
+}
+
+VkResult VKAPI_CALL EnumerateInstanceExtensionProperties(const char* pLayerName, uint32_t* pPropertyCount,
+                                                         VkExtensionProperties* pProperties) {
+  if (pProperties == nullptr) {
+    *pPropertyCount = 0;
+    return VK_SUCCESS;
+  }
+
+  assert(*pPropertyCount == 0);
+
+  return VK_SUCCESS;
+}
+
+VkResult VKAPI_CALL EnumerateDeviceLayerProperties(VkPhysicalDevice physicalDevice, uint32_t* pPropertyCount,
+                                                   VkLayerProperties* pProperties) {
+  return EnumerateInstanceLayerProperties(pPropertyCount, pProperties);
+}
+
+VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(VkPhysicalDevice physicalDevice, const char* pLayerName,
+                                                       uint32_t* pPropertyCount, VkExtensionProperties* pProperties) {
+  return EnumerateInstanceExtensionProperties(pLayerName, pPropertyCount, pProperties);
+}
+
+}  // namespace
+
 #define GET_PROC_ADDR(func_name)                            \
   if (strcmp(pName, "vk" #func_name) == 0) {                \
     return reinterpret_cast<PFN_vkVoidFunction>(func_name); \
@@ -21,7 +63,11 @@ namespace vvk {
 
 PFN_vkVoidFunction GetInstanceProcAddr(VkInstance instance, const char* pName) {
   spdlog::trace("Loading instance function: {}", pName);
-  GET_PROC_ADDR("GetDeviceProcAddr");
+  GET_PROC_ADDR(GetDeviceProcAddr);
+  GET_PROC_ADDR(EnumerateInstanceLayerProperties);
+  GET_PROC_ADDR(EnumerateInstanceExtensionProperties);
+  GET_PROC_ADDR(EnumerateDeviceLayerProperties);
+  GET_PROC_ADDR(EnumerateDeviceExtensionProperties);
   auto it = g_name_to_func_ptr.find(pName);
   if (it != g_name_to_func_ptr.end()) {
     return it->second;

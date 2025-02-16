@@ -44,7 +44,14 @@ class InstanceInfo {
   }
 };
 
+struct DeviceInfo {
+  PFN_vkGetDeviceProcAddr nxt_gdpa;
+  VkPhysicalDevice physical_device;
+  VkInstance instance;
+};
+
 std::unordered_map<VkInstance, InstanceInfo> g_instance_infos;
+std::unordered_map<VkDevice, DeviceInfo> g_device_infos;
 std::unordered_map<VkPhysicalDevice, VkInstance> g_physical_device_to_instance;
 
 template <typename FooType, typename RetType, typename... Args>
@@ -58,6 +65,37 @@ RetType CallDownInstanceFunc(std::string_view func_name, VkInstance instance, Ar
   return nxt_func(instance, args...);
 }
 
+template <typename T, VkStructureType sType>
+T* FindLayerLinkInfo(const void* p_next_chain) {
+  const T* layer_info = nullptr;
+  while (p_next_chain) {
+    layer_info = reinterpret_cast<const T*>(p_next_chain);
+    p_next_chain = layer_info->pNext;
+    if (layer_info->sType != sType) {
+      continue;
+    }
+    if (layer_info->function == VK_LAYER_LINK_INFO) {
+      break;
+    }
+  }
+  return const_cast<T*>(layer_info);
+}
+
+void RemoveStructsFromChain(VkBaseInStructure* base_struct, VkStructureType sType) {
+  VkBaseInStructure* next_struct = const_cast<VkBaseInStructure*>(base_struct->pNext);
+  VkBaseInStructure* curr_struct = base_struct;
+  while (next_struct) {
+    spdlog::trace("next_struct->sType: {}", static_cast<int>(next_struct->sType));
+    if (next_struct->sType == sType) {
+      curr_struct->pNext = next_struct->pNext;
+      next_struct = const_cast<VkBaseInStructure*>(next_struct->pNext);
+    } else {
+      curr_struct = next_struct;
+      next_struct = const_cast<VkBaseInStructure*>(next_struct->pNext);
+    }
+  }
+}
+
 }  // namespace
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreateInfo,
@@ -68,18 +106,8 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
 
   // find the next layer's GetInstanceProcAddr(GIPA) function
   const void* p_next_chain = pCreateInfo->pNext;
-  const VkLayerInstanceCreateInfo* layer_instance_info = nullptr;
-  while (p_next_chain) {
-    layer_instance_info = reinterpret_cast<const VkLayerInstanceCreateInfo*>(p_next_chain);
-    p_next_chain = layer_instance_info->pNext;
-    if (layer_instance_info->sType != VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO) {
-      continue;
-    }
-    spdlog::trace("layer_instance_info->function: {}", static_cast<int>(layer_instance_info->function));
-    if (layer_instance_info->function == VK_LAYER_LINK_INFO) {
-      break;
-    }
-  }
+  const VkLayerInstanceCreateInfo* layer_instance_info =
+      FindLayerLinkInfo<VkLayerInstanceCreateInfo, VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO>(p_next_chain);
   PFN_vkGetInstanceProcAddr nxt_gipa = layer_instance_info->u.pLayerInfo->pfnNextGetInstanceProcAddr;
   assert(nxt_gipa);
 
@@ -109,18 +137,8 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
     // the loader seems to insert these structs at the beginning of the pNext chain
     // so we can remove it by copying the instance create info and skipping the loader instance create info structs
     VkInstanceCreateInfo remote_create_info = *pCreateInfo;
-    VkBaseInStructure* next_struct = reinterpret_cast<VkBaseInStructure*>(const_cast<void*>(remote_create_info.pNext));
-    VkBaseInStructure* curr_struct = reinterpret_cast<VkBaseInStructure*>(&remote_create_info);
-    while (next_struct) {
-      spdlog::debug("next_struct->sType: {}", static_cast<int>(next_struct->sType));
-      if (next_struct->sType == VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO) {
-        curr_struct->pNext = next_struct->pNext;
-        next_struct = const_cast<VkBaseInStructure*>(next_struct->pNext);
-      } else {
-        curr_struct = reinterpret_cast<VkBaseInStructure*>(next_struct);
-        next_struct = const_cast<VkBaseInStructure*>(next_struct->pNext);
-      }
-    }
+    RemoveStructsFromChain(reinterpret_cast<VkBaseInStructure*>(&remote_create_info),
+                           VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO);
 
     auto reader_writer = g_instance_infos.at(*pInstance).command_stream.get();
 
@@ -135,7 +153,6 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
 VKAPI_ATTR void VKAPI_CALL DestroyInstance(VkInstance instance, const VkAllocationCallbacks* pAllocator) {
   spdlog::trace("DestroyInstance");
 
-  // find the next layer's GetInstanceProcAddr(GIPA) function
   PFN_vkGetInstanceProcAddr nxt_gipa = g_instance_infos.at(instance).nxt_gipa;
 
   PFN_vkDestroyInstance nxtDestroyInstance =
@@ -180,4 +197,66 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceProperties(VkPhysicalDevice physical
                                            pProperties);
 }
 
+VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo* pCreateInfo,
+                                            const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) {
+  // find the next layer's GetDeviceProcAddr(GDPA) function
+  const void* p_next_chain = pCreateInfo->pNext;
+  const VkLayerDeviceCreateInfo* layer_device_info =
+      FindLayerLinkInfo<VkLayerDeviceCreateInfo, VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO>(p_next_chain);
+  PFN_vkGetDeviceProcAddr nxt_gdpa = layer_device_info->u.pLayerInfo->pfnNextGetDeviceProcAddr;
+  assert(nxt_gdpa);
+
+  // advance the linked list for the next layer
+  {
+    VkLayerDeviceCreateInfo* layer_device_info_mut = const_cast<VkLayerDeviceCreateInfo*>(layer_device_info);
+    layer_device_info_mut->u.pLayerInfo = layer_device_info->u.pLayerInfo->pNext;
+  }
+
+  const InstanceInfo& instance_info = g_instance_infos.at(g_physical_device_to_instance.at(physicalDevice));
+
+  PFN_vkCreateDevice nxtCreateDevice =
+      reinterpret_cast<PFN_vkCreateDevice>(instance_info.nxt_gipa(nullptr, "vkCreateDevice"));
+  if (!nxtCreateDevice) {
+    spdlog::error("Failed to fetch vkCreateDevice from next layer");
+    return VK_ERROR_INITIALIZATION_FAILED;
+  }
+
+  VkResult result = nxtCreateDevice(physicalDevice, pCreateInfo, pAllocator, pDevice);
+
+  DeviceInfo device_info;
+  device_info.nxt_gdpa = nxt_gdpa;
+  device_info.physical_device = physicalDevice;
+  device_info.instance = g_physical_device_to_instance.at(physicalDevice);
+
+  g_device_infos[*pDevice] = device_info;
+
+  {
+    VkDeviceCreateInfo remote_create_info = *pCreateInfo;
+    RemoveStructsFromChain(reinterpret_cast<VkBaseInStructure*>(&remote_create_info),
+                           VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO);
+    VkDevice remote_device = *pDevice;
+
+    PackAndCallVkCreateDevice(instance_info.command_stream.get(), physicalDevice, &remote_create_info, pAllocator,
+                              &remote_device);
+  }
+
+  return result;
+}
+
+VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCallbacks* pAllocator) {
+  PFN_vkGetDeviceProcAddr nxt_gdpa = g_device_infos.at(device).nxt_gdpa;
+
+  PFN_vkDestroyDevice nxtDestroyDevice = reinterpret_cast<PFN_vkDestroyDevice>(nxt_gdpa(device, "vkDestroyDevice"));
+  if (!nxtDestroyDevice) {
+    spdlog::error("Failed to fetch vkDestroyDevice from next layer");
+    return;
+  }
+
+  nxtDestroyDevice(device, pAllocator);
+
+  auto reader_writer = g_instance_infos.at(g_device_infos.at(device).instance).command_stream.get();
+  PackAndCallVkDestroyDevice(reader_writer, device, pAllocator);
+
+  g_device_infos.erase(device);
+}
 }  // namespace vvk

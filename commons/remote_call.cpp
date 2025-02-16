@@ -232,5 +232,114 @@ void PackAndCallVkGetPhysicalDeviceProperties(grpc::ClientReaderWriter<vvk::serv
   pProperties_ref.sparseProperties.residencyAlignedMipSize = response.vkgetphysicaldeviceproperties().pproperties().sparseproperties().residencyalignedmipsize();
   pProperties_ref.sparseProperties.residencyNonResidentStrict = response.vkgetphysicaldeviceproperties().pproperties().sparseproperties().residencynonresidentstrict();
 }
+VkResult PackAndCallVkCreateDevice(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCreateDevice");
+  request.mutable_vkcreatedevice()->set_physicaldevice(reinterpret_cast<uint64_t>(physicalDevice));
+  vvk::server::VkDeviceCreateInfo* pCreateInfo_proto = request.mutable_vkcreatedevice()->mutable_pcreateinfo();
+  // pNext chains are currently not supported
+  pCreateInfo_proto->set_flags(pCreateInfo->flags);
+  pCreateInfo_proto->set_queuecreateinfocount(pCreateInfo->queueCreateInfoCount);
+  for (int i = 0; i < pCreateInfo->queueCreateInfoCount; i++) {
+    vvk::server::VkDeviceQueueCreateInfo* pCreateInfo_proto_pQueueCreateInfos_proto = pCreateInfo_proto->add_pqueuecreateinfos();
+    // pNext chains are currently not supported
+    pCreateInfo_proto_pQueueCreateInfos_proto->set_flags((&pCreateInfo->pQueueCreateInfos[i])->flags);
+    pCreateInfo_proto_pQueueCreateInfos_proto->set_queuefamilyindex((&pCreateInfo->pQueueCreateInfos[i])->queueFamilyIndex);
+    pCreateInfo_proto_pQueueCreateInfos_proto->set_queuecount((&pCreateInfo->pQueueCreateInfos[i])->queueCount);
+    for (int i = 0; i < (&pCreateInfo->pQueueCreateInfos[i])->queueCount; i++) {
+      pCreateInfo_proto_pQueueCreateInfos_proto->add_pqueuepriorities((&pCreateInfo->pQueueCreateInfos[i])->pQueuePriorities[i]);
+    }
+  }
+  pCreateInfo_proto->set_enabledlayercount(pCreateInfo->enabledLayerCount);
+  for (int i = 0; i < pCreateInfo->enabledLayerCount; i++) {
+    pCreateInfo_proto->add_ppenabledlayernames(pCreateInfo->ppEnabledLayerNames[i]);
+  }
+  pCreateInfo_proto->set_enabledextensioncount(pCreateInfo->enabledExtensionCount);
+  for (int i = 0; i < pCreateInfo->enabledExtensionCount; i++) {
+    pCreateInfo_proto->add_ppenabledextensionnames(pCreateInfo->ppEnabledExtensionNames[i]);
+  }
+  vvk::server::VkPhysicalDeviceFeatures* pCreateInfo_proto_pEnabledFeatures_proto = pCreateInfo_proto->mutable_penabledfeatures();
+  pCreateInfo_proto_pEnabledFeatures_proto->set_robustbufferaccess(pCreateInfo->pEnabledFeatures->robustBufferAccess);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_fulldrawindexuint32(pCreateInfo->pEnabledFeatures->fullDrawIndexUint32);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_imagecubearray(pCreateInfo->pEnabledFeatures->imageCubeArray);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_independentblend(pCreateInfo->pEnabledFeatures->independentBlend);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_geometryshader(pCreateInfo->pEnabledFeatures->geometryShader);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_tessellationshader(pCreateInfo->pEnabledFeatures->tessellationShader);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_samplerateshading(pCreateInfo->pEnabledFeatures->sampleRateShading);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_dualsrcblend(pCreateInfo->pEnabledFeatures->dualSrcBlend);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_logicop(pCreateInfo->pEnabledFeatures->logicOp);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_multidrawindirect(pCreateInfo->pEnabledFeatures->multiDrawIndirect);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_drawindirectfirstinstance(pCreateInfo->pEnabledFeatures->drawIndirectFirstInstance);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_depthclamp(pCreateInfo->pEnabledFeatures->depthClamp);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_depthbiasclamp(pCreateInfo->pEnabledFeatures->depthBiasClamp);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_fillmodenonsolid(pCreateInfo->pEnabledFeatures->fillModeNonSolid);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_depthbounds(pCreateInfo->pEnabledFeatures->depthBounds);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_widelines(pCreateInfo->pEnabledFeatures->wideLines);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_largepoints(pCreateInfo->pEnabledFeatures->largePoints);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_alphatoone(pCreateInfo->pEnabledFeatures->alphaToOne);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_multiviewport(pCreateInfo->pEnabledFeatures->multiViewport);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_sampleranisotropy(pCreateInfo->pEnabledFeatures->samplerAnisotropy);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_texturecompressionetc2(pCreateInfo->pEnabledFeatures->textureCompressionETC2);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_texturecompressionastc_ldr(pCreateInfo->pEnabledFeatures->textureCompressionASTC_LDR);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_texturecompressionbc(pCreateInfo->pEnabledFeatures->textureCompressionBC);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_occlusionqueryprecise(pCreateInfo->pEnabledFeatures->occlusionQueryPrecise);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_pipelinestatisticsquery(pCreateInfo->pEnabledFeatures->pipelineStatisticsQuery);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_vertexpipelinestoresandatomics(pCreateInfo->pEnabledFeatures->vertexPipelineStoresAndAtomics);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_fragmentstoresandatomics(pCreateInfo->pEnabledFeatures->fragmentStoresAndAtomics);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shadertessellationandgeometrypointsize(pCreateInfo->pEnabledFeatures->shaderTessellationAndGeometryPointSize);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shaderimagegatherextended(pCreateInfo->pEnabledFeatures->shaderImageGatherExtended);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shaderstorageimageextendedformats(pCreateInfo->pEnabledFeatures->shaderStorageImageExtendedFormats);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shaderstorageimagemultisample(pCreateInfo->pEnabledFeatures->shaderStorageImageMultisample);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shaderstorageimagereadwithoutformat(pCreateInfo->pEnabledFeatures->shaderStorageImageReadWithoutFormat);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shaderstorageimagewritewithoutformat(pCreateInfo->pEnabledFeatures->shaderStorageImageWriteWithoutFormat);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shaderuniformbufferarraydynamicindexing(pCreateInfo->pEnabledFeatures->shaderUniformBufferArrayDynamicIndexing);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shadersampledimagearraydynamicindexing(pCreateInfo->pEnabledFeatures->shaderSampledImageArrayDynamicIndexing);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shaderstoragebufferarraydynamicindexing(pCreateInfo->pEnabledFeatures->shaderStorageBufferArrayDynamicIndexing);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shaderstorageimagearraydynamicindexing(pCreateInfo->pEnabledFeatures->shaderStorageImageArrayDynamicIndexing);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shaderclipdistance(pCreateInfo->pEnabledFeatures->shaderClipDistance);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shaderculldistance(pCreateInfo->pEnabledFeatures->shaderCullDistance);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shaderfloat64(pCreateInfo->pEnabledFeatures->shaderFloat64);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shaderint64(pCreateInfo->pEnabledFeatures->shaderInt64);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shaderint16(pCreateInfo->pEnabledFeatures->shaderInt16);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shaderresourceresidency(pCreateInfo->pEnabledFeatures->shaderResourceResidency);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_shaderresourceminlod(pCreateInfo->pEnabledFeatures->shaderResourceMinLod);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_sparsebinding(pCreateInfo->pEnabledFeatures->sparseBinding);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_sparseresidencybuffer(pCreateInfo->pEnabledFeatures->sparseResidencyBuffer);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_sparseresidencyimage2d(pCreateInfo->pEnabledFeatures->sparseResidencyImage2D);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_sparseresidencyimage3d(pCreateInfo->pEnabledFeatures->sparseResidencyImage3D);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_sparseresidency2samples(pCreateInfo->pEnabledFeatures->sparseResidency2Samples);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_sparseresidency4samples(pCreateInfo->pEnabledFeatures->sparseResidency4Samples);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_sparseresidency8samples(pCreateInfo->pEnabledFeatures->sparseResidency8Samples);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_sparseresidency16samples(pCreateInfo->pEnabledFeatures->sparseResidency16Samples);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_sparseresidencyaliased(pCreateInfo->pEnabledFeatures->sparseResidencyAliased);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_variablemultisamplerate(pCreateInfo->pEnabledFeatures->variableMultisampleRate);
+  pCreateInfo_proto_pEnabledFeatures_proto->set_inheritedqueries(pCreateInfo->pEnabledFeatures->inheritedQueries);
+  request.mutable_vkcreatedevice()->set_pdevice(reinterpret_cast<uint64_t>(*pDevice));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pDevice = reinterpret_cast<VkDevice>(response.vkcreatedevice().pdevice());
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkDestroyDevice(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkAllocationCallbacks* pAllocator) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkDestroyDevice");
+  request.mutable_vkdestroydevice()->set_device(reinterpret_cast<uint64_t>(device));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 

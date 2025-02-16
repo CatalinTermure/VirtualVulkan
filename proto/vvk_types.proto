@@ -2637,6 +2637,64 @@ message VkInstanceCreateInfo {
   repeated string ppEnabledExtensionNames = 6; // const char* const* ppEnabledExtensionNames
 }
 
+message VkPhysicalDeviceFeatures {
+  bool robustBufferAccess = 1; // VkBool32 robustBufferAccess
+  bool fullDrawIndexUint32 = 2; // VkBool32 fullDrawIndexUint32
+  bool imageCubeArray = 3; // VkBool32 imageCubeArray
+  bool independentBlend = 4; // VkBool32 independentBlend
+  bool geometryShader = 5; // VkBool32 geometryShader
+  bool tessellationShader = 6; // VkBool32 tessellationShader
+  bool sampleRateShading = 7; // VkBool32 sampleRateShading
+  bool dualSrcBlend = 8; // VkBool32 dualSrcBlend
+  bool logicOp = 9; // VkBool32 logicOp
+  bool multiDrawIndirect = 10; // VkBool32 multiDrawIndirect
+  bool drawIndirectFirstInstance = 11; // VkBool32 drawIndirectFirstInstance
+  bool depthClamp = 12; // VkBool32 depthClamp
+  bool depthBiasClamp = 13; // VkBool32 depthBiasClamp
+  bool fillModeNonSolid = 14; // VkBool32 fillModeNonSolid
+  bool depthBounds = 15; // VkBool32 depthBounds
+  bool wideLines = 16; // VkBool32 wideLines
+  bool largePoints = 17; // VkBool32 largePoints
+  bool alphaToOne = 18; // VkBool32 alphaToOne
+  bool multiViewport = 19; // VkBool32 multiViewport
+  bool samplerAnisotropy = 20; // VkBool32 samplerAnisotropy
+  bool textureCompressionETC2 = 21; // VkBool32 textureCompressionETC2
+  bool textureCompressionASTC_LDR = 22; // VkBool32 textureCompressionASTC_LDR
+  bool textureCompressionBC = 23; // VkBool32 textureCompressionBC
+  bool occlusionQueryPrecise = 24; // VkBool32 occlusionQueryPrecise
+  bool pipelineStatisticsQuery = 25; // VkBool32 pipelineStatisticsQuery
+  bool vertexPipelineStoresAndAtomics = 26; // VkBool32 vertexPipelineStoresAndAtomics
+  bool fragmentStoresAndAtomics = 27; // VkBool32 fragmentStoresAndAtomics
+  bool shaderTessellationAndGeometryPointSize = 28; // VkBool32 shaderTessellationAndGeometryPointSize
+  bool shaderImageGatherExtended = 29; // VkBool32 shaderImageGatherExtended
+  bool shaderStorageImageExtendedFormats = 30; // VkBool32 shaderStorageImageExtendedFormats
+  bool shaderStorageImageMultisample = 31; // VkBool32 shaderStorageImageMultisample
+  bool shaderStorageImageReadWithoutFormat = 32; // VkBool32 shaderStorageImageReadWithoutFormat
+  bool shaderStorageImageWriteWithoutFormat = 33; // VkBool32 shaderStorageImageWriteWithoutFormat
+  bool shaderUniformBufferArrayDynamicIndexing = 34; // VkBool32 shaderUniformBufferArrayDynamicIndexing
+  bool shaderSampledImageArrayDynamicIndexing = 35; // VkBool32 shaderSampledImageArrayDynamicIndexing
+  bool shaderStorageBufferArrayDynamicIndexing = 36; // VkBool32 shaderStorageBufferArrayDynamicIndexing
+  bool shaderStorageImageArrayDynamicIndexing = 37; // VkBool32 shaderStorageImageArrayDynamicIndexing
+  bool shaderClipDistance = 38; // VkBool32 shaderClipDistance
+  bool shaderCullDistance = 39; // VkBool32 shaderCullDistance
+  bool shaderFloat64 = 40; // VkBool32 shaderFloat64
+  bool shaderInt64 = 41; // VkBool32 shaderInt64
+  bool shaderInt16 = 42; // VkBool32 shaderInt16
+  bool shaderResourceResidency = 43; // VkBool32 shaderResourceResidency
+  bool shaderResourceMinLod = 44; // VkBool32 shaderResourceMinLod
+  bool sparseBinding = 45; // VkBool32 sparseBinding
+  bool sparseResidencyBuffer = 46; // VkBool32 sparseResidencyBuffer
+  bool sparseResidencyImage2D = 47; // VkBool32 sparseResidencyImage2D
+  bool sparseResidencyImage3D = 48; // VkBool32 sparseResidencyImage3D
+  bool sparseResidency2Samples = 49; // VkBool32 sparseResidency2Samples
+  bool sparseResidency4Samples = 50; // VkBool32 sparseResidency4Samples
+  bool sparseResidency8Samples = 51; // VkBool32 sparseResidency8Samples
+  bool sparseResidency16Samples = 52; // VkBool32 sparseResidency16Samples
+  bool sparseResidencyAliased = 53; // VkBool32 sparseResidencyAliased
+  bool variableMultisampleRate = 54; // VkBool32 variableMultisampleRate
+  bool inheritedQueries = 55; // VkBool32 inheritedQueries
+}
+
 message VkPhysicalDeviceLimits {
   uint32 maxImageDimension1D = 1; // uint32_t maxImageDimension1D
   uint32 maxImageDimension2D = 2; // uint32_t maxImageDimension2D
@@ -2764,6 +2822,24 @@ message VkPhysicalDeviceProperties {
   repeated uint32 pipelineCacheUUID = 7; // uint8_t pipelineCacheUUID[VK_UUID_SIZE]
   VkPhysicalDeviceLimits limits = 8; // VkPhysicalDeviceLimits limits
   VkPhysicalDeviceSparseProperties sparseProperties = 9; // VkPhysicalDeviceSparseProperties sparseProperties
+}
+
+message VkDeviceQueueCreateInfo {
+  uint32 flags = 1; // VkDeviceQueueCreateFlags flags
+  uint32 queueFamilyIndex = 2; // uint32_t queueFamilyIndex
+  uint32 queueCount = 3; // uint32_t queueCount
+  repeated float pQueuePriorities = 4; // const float* pQueuePriorities
+}
+
+message VkDeviceCreateInfo {
+  uint32 flags = 1; // VkDeviceCreateFlags flags
+  uint32 queueCreateInfoCount = 2; // uint32_t queueCreateInfoCount
+  repeated VkDeviceQueueCreateInfo pQueueCreateInfos = 3; // const VkDeviceQueueCreateInfo* pQueueCreateInfos
+  uint32 enabledLayerCount = 4; // uint32_t enabledLayerCount
+  repeated string ppEnabledLayerNames = 5; // const char* const* ppEnabledLayerNames
+  uint32 enabledExtensionCount = 6; // uint32_t enabledExtensionCount
+  repeated string ppEnabledExtensionNames = 7; // const char* const* ppEnabledExtensionNames
+  VkPhysicalDeviceFeatures pEnabledFeatures = 8; // const VkPhysicalDeviceFeatures* pEnabledFeatures
 }
 
 

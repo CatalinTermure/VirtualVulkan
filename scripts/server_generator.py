@@ -135,6 +135,10 @@ void SetPhysicalDevice(VkPhysicalDevice physical_device) {
 
             out.extend(after_call_code)
 
+            if "vkDestroy" in cmd_name:
+                out.append(
+                    f'  client_to_server_handles.erase(reinterpret_cast<void*>({param_accessor}.{command.params[0].name.lower()}()));\n')
+
             # populate the response
             if command.returnType == "VkResult":
                 out.append("  response->set_result(result);\n")

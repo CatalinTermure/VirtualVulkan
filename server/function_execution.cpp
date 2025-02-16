@@ -15,6 +15,8 @@ const std::unordered_map<std::string, std::function<void(const vvk::server::VvkR
         {"vkDestroyInstance", UnpackAndExecuteVkDestroyInstance},
         {"vkEnumeratePhysicalDevices", UnpackAndExecuteVkEnumeratePhysicalDevices},
         {"vkGetPhysicalDeviceProperties", UnpackAndExecuteVkGetPhysicalDeviceProperties},
+        {"vkCreateDevice", UnpackAndExecuteVkCreateDevice},
+        {"vkDestroyDevice", UnpackAndExecuteVkDestroyDevice},
 };
 
 }  // namespace
