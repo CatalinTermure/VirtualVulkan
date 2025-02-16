@@ -29,6 +29,7 @@ void RunServer(uint16_t port) {
 }
 
 int main(int argc, char** argv) {
+  spdlog::set_level(spdlog::level::debug);
   RunServer(50051);
   return 0;
 }

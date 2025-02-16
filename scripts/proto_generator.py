@@ -59,6 +59,8 @@ def get_proto_type(generator: BaseGenerator, param: Param | Member | RetVal) -> 
 def get_param_proto_declaration(generator: BaseGenerator, param: Param | Member, index: int) -> str:
     param_type = get_proto_type(generator, param)
     comment = " NON-CONST POINTER" if param.pointer and not param.const else ""
+    if param.optional and "repeated" not in param_type:
+        param_type = "optional " + param_type
     return f"{param_type} {param.name} = {index}; // {param.cDeclaration.strip()}" + comment
 
 

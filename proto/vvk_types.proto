@@ -2621,19 +2621,19 @@ enum VkShaderGroupShaderKHR {
 }
 
 message VkApplicationInfo {
-  string pApplicationName = 1; // const char* pApplicationName
+  optional string pApplicationName = 1; // const char* pApplicationName
   uint32 applicationVersion = 2; // uint32_t applicationVersion
-  string pEngineName = 3; // const char* pEngineName
+  optional string pEngineName = 3; // const char* pEngineName
   uint32 engineVersion = 4; // uint32_t engineVersion
   uint32 apiVersion = 5; // uint32_t apiVersion
 }
 
 message VkInstanceCreateInfo {
-  uint32 flags = 1; // VkInstanceCreateFlags flags
-  VkApplicationInfo pApplicationInfo = 2; // const VkApplicationInfo* pApplicationInfo
-  uint32 enabledLayerCount = 3; // uint32_t enabledLayerCount
+  optional uint32 flags = 1; // VkInstanceCreateFlags flags
+  optional VkApplicationInfo pApplicationInfo = 2; // const VkApplicationInfo* pApplicationInfo
+  optional uint32 enabledLayerCount = 3; // uint32_t enabledLayerCount
   repeated string ppEnabledLayerNames = 4; // const char* const* ppEnabledLayerNames
-  uint32 enabledExtensionCount = 5; // uint32_t enabledExtensionCount
+  optional uint32 enabledExtensionCount = 5; // uint32_t enabledExtensionCount
   repeated string ppEnabledExtensionNames = 6; // const char* const* ppEnabledExtensionNames
 }
 
@@ -2776,16 +2776,16 @@ message VkPhysicalDeviceLimits {
   uint32 maxFramebufferWidth = 78; // uint32_t maxFramebufferWidth
   uint32 maxFramebufferHeight = 79; // uint32_t maxFramebufferHeight
   uint32 maxFramebufferLayers = 80; // uint32_t maxFramebufferLayers
-  uint32 framebufferColorSampleCounts = 81; // VkSampleCountFlags framebufferColorSampleCounts
-  uint32 framebufferDepthSampleCounts = 82; // VkSampleCountFlags framebufferDepthSampleCounts
-  uint32 framebufferStencilSampleCounts = 83; // VkSampleCountFlags framebufferStencilSampleCounts
-  uint32 framebufferNoAttachmentsSampleCounts = 84; // VkSampleCountFlags framebufferNoAttachmentsSampleCounts
+  optional uint32 framebufferColorSampleCounts = 81; // VkSampleCountFlags framebufferColorSampleCounts
+  optional uint32 framebufferDepthSampleCounts = 82; // VkSampleCountFlags framebufferDepthSampleCounts
+  optional uint32 framebufferStencilSampleCounts = 83; // VkSampleCountFlags framebufferStencilSampleCounts
+  optional uint32 framebufferNoAttachmentsSampleCounts = 84; // VkSampleCountFlags framebufferNoAttachmentsSampleCounts
   uint32 maxColorAttachments = 85; // uint32_t maxColorAttachments
-  uint32 sampledImageColorSampleCounts = 86; // VkSampleCountFlags sampledImageColorSampleCounts
-  uint32 sampledImageIntegerSampleCounts = 87; // VkSampleCountFlags sampledImageIntegerSampleCounts
-  uint32 sampledImageDepthSampleCounts = 88; // VkSampleCountFlags sampledImageDepthSampleCounts
-  uint32 sampledImageStencilSampleCounts = 89; // VkSampleCountFlags sampledImageStencilSampleCounts
-  uint32 storageImageSampleCounts = 90; // VkSampleCountFlags storageImageSampleCounts
+  optional uint32 sampledImageColorSampleCounts = 86; // VkSampleCountFlags sampledImageColorSampleCounts
+  optional uint32 sampledImageIntegerSampleCounts = 87; // VkSampleCountFlags sampledImageIntegerSampleCounts
+  optional uint32 sampledImageDepthSampleCounts = 88; // VkSampleCountFlags sampledImageDepthSampleCounts
+  optional uint32 sampledImageStencilSampleCounts = 89; // VkSampleCountFlags sampledImageStencilSampleCounts
+  optional uint32 storageImageSampleCounts = 90; // VkSampleCountFlags storageImageSampleCounts
   uint32 maxSampleMaskWords = 91; // uint32_t maxSampleMaskWords
   bool timestampComputeAndGraphics = 92; // VkBool32 timestampComputeAndGraphics
   float timestampPeriod = 93; // float timestampPeriod
@@ -2825,21 +2825,21 @@ message VkPhysicalDeviceProperties {
 }
 
 message VkDeviceQueueCreateInfo {
-  uint32 flags = 1; // VkDeviceQueueCreateFlags flags
+  optional uint32 flags = 1; // VkDeviceQueueCreateFlags flags
   uint32 queueFamilyIndex = 2; // uint32_t queueFamilyIndex
   uint32 queueCount = 3; // uint32_t queueCount
   repeated float pQueuePriorities = 4; // const float* pQueuePriorities
 }
 
 message VkDeviceCreateInfo {
-  uint32 flags = 1; // VkDeviceCreateFlags flags
+  optional uint32 flags = 1; // VkDeviceCreateFlags flags
   uint32 queueCreateInfoCount = 2; // uint32_t queueCreateInfoCount
   repeated VkDeviceQueueCreateInfo pQueueCreateInfos = 3; // const VkDeviceQueueCreateInfo* pQueueCreateInfos
-  uint32 enabledLayerCount = 4; // uint32_t enabledLayerCount
+  optional uint32 enabledLayerCount = 4; // uint32_t enabledLayerCount
   repeated string ppEnabledLayerNames = 5; // const char* const* ppEnabledLayerNames
-  uint32 enabledExtensionCount = 6; // uint32_t enabledExtensionCount
+  optional uint32 enabledExtensionCount = 6; // uint32_t enabledExtensionCount
   repeated string ppEnabledExtensionNames = 7; // const char* const* ppEnabledExtensionNames
-  VkPhysicalDeviceFeatures pEnabledFeatures = 8; // const VkPhysicalDeviceFeatures* pEnabledFeatures
+  optional VkPhysicalDeviceFeatures pEnabledFeatures = 8; // const VkPhysicalDeviceFeatures* pEnabledFeatures
 }
 
 

@@ -1,4 +1,4 @@
-from generators.base_generator import BaseGenerator
+from generators.base_generator import BaseGenerator, Member
 from dataclasses import dataclass
 
 
@@ -50,186 +50,158 @@ def indent(text: str, spaces: int) -> str:
     return '\n'.join(' ' * spaces + line for line in lines) + '\n'
 
 
+def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, name: str, proto_accessor: str, member: Member) -> str:
+    out = []
+    struct = generator.vk.structs[struct_type]
+    if member.name == "sType":
+        out.append(f'  {name}.sType = {struct.sType};\n')
+    elif member.type == 'char' and member.fixedSizeArray:
+        out.append(
+            f'  strncpy({name}.{member.name}, {proto_accessor}.{member.name.lower()}().c_str(), {member.length});\n')
+    elif "Flags" in member.type:
+        out.append(
+            f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}();\n')
+    elif member.type in generator.vk.enums:
+        out.append(
+            f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
+    elif member.type in TRIVIAL_TYPES:
+        type_info = TRIVIAL_TYPES[member.type]
+        if member.fixedSizeArray:
+            out.append(
+                f'  for (int i = 0; i < {member.length}; i++) {{\n')
+            if type_info.cast_to is None:
+                out.append(
+                    f'    {name}.{member.name}[i] = {proto_accessor}.{member.name.lower()}(i);\n')
+            else:
+                out.append(
+                    f'    {name}.{member.name}[i] = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}(i));\n')
+            out.append('  }\n')
+        elif member.length is None:
+            if type_info.cast_to is None:
+                out.append(
+                    f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}();\n')
+            else:
+                out.append(
+                    f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
+        else:
+            if member.length in [member.name for member in struct.members]:
+                count_variable = [
+                    count_var for count_var in struct.members if count_var.name == member.length][0]
+                aux_var = f'{name}_{member.name}'
+                out.append(
+                    f'  std::vector<{member.type}> {aux_var}({proto_accessor}.{count_variable.name.lower()}());\n')
+                out.append(
+                    f'  for (int i = 0; i < {proto_accessor}.{count_variable.name.lower()}(); i++)')
+                out.append(' {\n')
+                out.append(
+                    f'    {aux_var}[i] = {proto_accessor}.{member.name.lower()}(i);\n')
+                out.append('  }\n')
+                out.append(
+                    f'  {name}.{member.name} = {aux_var}.data();\n')
+            else:
+                print("unknown length member:",
+                      struct_type, member.cDeclaration)
+    elif member.pointer and member.const and member.type in generator.vk.structs:
+        if member.length is None:
+            aux_var_name = f'{name}_{member.name}'
+            out.append(f'  {member.type} {aux_var_name} = {{}};\n')
+            out.append(fill_struct_from_proto(generator,
+                                              member.type, aux_var_name, f'{proto_accessor}.{member.name.lower()}()'))
+            out.append(
+                f'  {name}.{member.name} = &{aux_var_name};\n')
+        else:
+            if member.length in [member.name for member in struct.members]:
+                count_variable = [
+                    count_var for count_var in struct.members if count_var.name == member.length][0]
+                out.append(
+                    f'  std::vector<{member.type}> {name}_{member.name}({proto_accessor}.{count_variable.name.lower()}());\n')
+                out.append(
+                    f'  {name}.{member.name} = {name}_{member.name}.data();\n')
+                out.append(
+                    f'  for (int i = 0; i < {proto_accessor}.{count_variable.name.lower()}(); i++)')
+                out.append(' {\n')
+                out.append(
+                    f'    {member.type} &{name}_{member.name}_i = {name}_{member.name}[i];\n')
+                out.append(indent(fill_struct_from_proto(
+                    generator, member.type, f'{name}_{member.name}_i', f'{proto_accessor}.{member.name.lower()}(i)'), 2))
+                out.append('  }\n')
+            else:
+                print("unknown length member:",
+                      struct_type, member.cDeclaration)
+    elif not member.pointer and member.type in generator.vk.structs:
+        out.append(fill_struct_from_proto(generator, member.type,
+                                          f'{name}.{member.name}', f'{proto_accessor}.{member.name.lower()}()'))
+    elif 'const char* const*' in member.cDeclaration:
+        aux_var_name = f'{name}_{member.name}'
+        out.append(
+            f'  std::vector<const char*> {aux_var_name};\n')
+        out.append(
+            f'  for (int i = 0; i < {proto_accessor}.{member.name.lower()}_size(); i++)')
+        out.append(' {\n')
+        out.append(
+            f'    {aux_var_name}.push_back({proto_accessor}.{member.name.lower()}(i).data());\n')
+        out.append('  }\n')
+        out.append(
+            f'  {name}.{member.name} = {aux_var_name}.data();\n')
+    elif member.pointer and member.const:
+        out.append(
+            f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}().data();\n')
+    else:
+        out.append(f'  // Unsupported member: {member.cDeclaration}\n')
+        print("UNSUPPORTED MEMBER:", name, member.cDeclaration)
+    return "".join(out)
+
+
 def fill_struct_from_proto(generator: BaseGenerator, struct_type: str, name: str, proto_accessor: str) -> str:
     out = []
     struct = generator.vk.structs[struct_type]
     for member in struct.members:
-        if member.name == "sType":
-            out.append(f'  {name}.sType = {struct.sType};\n')
-        elif member.name == "pNext":
-            out.append(
-                f'  {name}.pNext = nullptr; // pNext chains are currently unsupported\n')
-        elif member.type == 'char' and member.fixedSizeArray:
-            out.append(
-                f'  strncpy({name}.{member.name}, {proto_accessor}.{member.name.lower()}().c_str(), {member.length});\n')
-        elif "Flags" in member.type:
-            out.append(
-                f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}();\n')
-        elif member.type in generator.vk.enums:
-            out.append(
-                f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
-        elif member.type in TRIVIAL_TYPES:
-            type_info = TRIVIAL_TYPES[member.type]
-            if member.fixedSizeArray:
+        if member.optional or member.optionalPointer:
+            if member.name == "pNext":
                 out.append(
-                    f'  for (int i = 0; i < {member.length}; i++) {{\n')
-                if type_info.cast_to is None:
-                    out.append(
-                        f'    {name}.{member.name}[i] = {proto_accessor}.{member.name.lower()}(i);\n')
-                else:
-                    out.append(
-                        f'    {name}.{member.name}[i] = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}(i));\n')
+                    f'  {name}.pNext = nullptr; // pNext chains are currently unsupported\n')
+            else:
+                out.append(
+                    f'  if ({proto_accessor}.has_{member.name.lower()}()) {{\n')
+                out.append(
+                    indent(__fill_struct_member_from_proto(generator, struct_type, name, proto_accessor, member), 2))
                 out.append('  }\n')
-            elif member.length is None:
-                if type_info.cast_to is None:
-                    out.append(
-                        f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}();\n')
-                else:
-                    out.append(
-                        f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
-            else:
-                if member.length in [member.name for member in struct.members]:
-                    count_variable = [
-                        count_var for count_var in struct.members if count_var.name == member.length][0]
-                    aux_var = f'{name}_{member.name}'
-                    out.append(
-                        f'  std::vector<{member.type}> {aux_var}({proto_accessor}.{count_variable.name.lower()}());\n')
-                    out.append(
-                        f'  for (int i = 0; i < {proto_accessor}.{count_variable.name.lower()}(); i++)')
-                    out.append(' {\n')
-                    out.append(
-                        f'    {aux_var}[i] = {proto_accessor}.{member.name.lower()}(i);\n')
-                    out.append('  }\n')
-                    out.append(
-                        f'  {name}.{member.name} = {aux_var}.data();\n')
-                else:
-                    print("unknown length member:",
-                          struct_type, member.cDeclaration)
-        elif member.pointer and member.const and member.type in generator.vk.structs:
-            if member.length is None:
-                aux_var_name = f'{name}_{member.name}'
-                out.append(f'  {member.type} {aux_var_name};\n')
-                out.append(fill_struct_from_proto(generator,
-                                                  member.type, aux_var_name, f'{proto_accessor}.{member.name.lower()}()'))
-                out.append(
-                    f'  {name}.{member.name} = &{aux_var_name};\n')
-            else:
-                if member.length in [member.name for member in struct.members]:
-                    count_variable = [
-                        count_var for count_var in struct.members if count_var.name == member.length][0]
-                    out.append(
-                        f'  std::vector<{member.type}> {name}_{member.name}({proto_accessor}.{count_variable.name.lower()}());\n')
-                    out.append(
-                        f'  {name}.{member.name} = {name}_{member.name}.data();\n')
-                    out.append(
-                        f'  for (int i = 0; i < {proto_accessor}.{count_variable.name.lower()}(); i++)')
-                    out.append(' {\n')
-                    out.append(
-                        f'    {member.type} &{name}_{member.name}_i = {name}_{member.name}[i];\n')
-                    out.append(indent(fill_struct_from_proto(
-                        generator, member.type, f'{name}_{member.name}_i', f'{proto_accessor}.{member.name.lower()}(i)'), 2))
-                    out.append('  }\n')
-                else:
-                    print("unknown length member:",
-                          struct_type, member.cDeclaration)
-        elif not member.pointer and member.type in generator.vk.structs:
-            out.append(fill_struct_from_proto(generator, member.type,
-                                              f'{name}.{member.name}', f'{proto_accessor}.{member.name.lower()}()'))
-        elif 'const char* const*' in member.cDeclaration:
-            aux_var_name = f'{name}_{member.name}'
-            out.append(
-                f'  std::vector<const char*> {aux_var_name};\n')
-            out.append(
-                f'  for (int i = 0; i < {proto_accessor}.{member.name.lower()}_size(); i++)')
-            out.append(' {\n')
-            out.append(
-                f'    {aux_var_name}.push_back({proto_accessor}.{member.name.lower()}(i).data());\n')
-            out.append('  }\n')
-            out.append(
-                f'  {name}.{member.name} = {aux_var_name}.data();\n')
-        elif member.pointer and member.const:
-            out.append(
-                f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}().data();\n')
         else:
-            out.append(f'  // Unsupported member: {member.cDeclaration}\n')
-            print("UNSUPPORTED MEMBER:", name, member.cDeclaration)
+            out.append(__fill_struct_member_from_proto(
+                generator, struct_type, name, proto_accessor, member))
     return "".join(out)
 
 
-def fill_proto_from_struct(generator: BaseGenerator, struct_type: str, name: str, struct_accessor: str) -> str:
+def __fill_proto_from_member(generator: BaseGenerator, struct_type: str, name: str, struct_accessor: str, member: Member) -> str:
     out = []
     struct = generator.vk.structs[struct_type]
-    for member in struct.members:
-        if member.name in ['sType']:
-            continue
-        elif member.name == 'pNext':
-            out.append("  // pNext chains are currently not supported\n")
-        elif member.type == 'char' and member.fixedSizeArray:
+    if member.name in ['sType']:
+        return ""
+    elif member.name == 'pNext':
+        out.append("  // pNext chains are currently not supported\n")
+    elif member.type == 'char' and member.fixedSizeArray:
+        out.append(
+            f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
+    elif member.type in TRIVIAL_TYPES:
+        type_info = TRIVIAL_TYPES[member.type]
+        if member.fixedSizeArray:
             out.append(
-                f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
-        elif member.type in TRIVIAL_TYPES:
-            type_info = TRIVIAL_TYPES[member.type]
-            if member.fixedSizeArray:
+                f'  for (int i = 0; i < {member.length}; i++) {{\n')
+            if type_info.cast_to is None:
                 out.append(
-                    f'  for (int i = 0; i < {member.length}; i++) {{\n')
-                if type_info.cast_to is None:
-                    out.append(
-                        f'    {name}->add_{member.name.lower()}({struct_accessor}->{member.name}[i]);\n')
-                else:
-                    out.append(
-                        f'    {name}->add_{member.name.lower()}(static_cast<{type_info.cast_to}>({struct_accessor}->{member.name}[i]));\n')
-                out.append('  }\n')
-            elif member.length is None:
-                if type_info.cast_to is None:
-                    out.append(
-                        f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
-                else:
-                    out.append(
-                        f'  {name}->set_{member.name.lower()}(static_cast<{type_info.cast_to}>({struct_accessor}->{member.name}));\n')
+                    f'    {name}->add_{member.name.lower()}({struct_accessor}->{member.name}[i]);\n')
             else:
-                if member.length in [member.name for member in struct.members]:
-                    count_variable = [
-                        count_var for count_var in struct.members if count_var.name == member.length][0]
-                    out.append(
-                        f'  for (int i = 0; i < {struct_accessor}->{count_variable.name}; i++) {{\n')
-                    out.append(
-                        f'    {name}->add_{member.name.lower()}({struct_accessor}->{member.name}[i]);\n')
-                    out.append('  }\n')
-                else:
-                    print("unknown length member:",
-                          struct_type, member.cDeclaration)
-        elif "Flags" in member.type:
-            out.append(
-                f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
-        elif member.type in generator.vk.enums:
-            out.append(
-                f'  {name}->set_{member.name.lower()}(static_cast<vvk::server::{member.type}>({struct_accessor}->{member.name}));\n')
-        elif member.pointer and member.const and member.type in generator.vk.structs:
-            if member.length is None:
                 out.append(
-                    f'  vvk::server::{member.type}* {name}_{member.name}_proto = {name}->mutable_{member.name.lower()}();\n')
-                out.append(fill_proto_from_struct(generator,
-                                                  member.type, f'{name}_{member.name}_proto', f'{struct_accessor}->{member.name}'))
+                    f'    {name}->add_{member.name.lower()}(static_cast<{type_info.cast_to}>({struct_accessor}->{member.name}[i]));\n')
+            out.append('  }\n')
+        elif member.length is None:
+            if type_info.cast_to is None:
+                out.append(
+                    f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
             else:
-                if member.length in [member.name for member in struct.members]:
-                    count_variable = [
-                        count_var for count_var in struct.members if count_var.name == member.length][0]
-                    out.append(
-                        f'  for (int i = 0; i < {struct_accessor}->{count_variable.name}; i++) {{\n')
-                    out.append(
-                        f'    vvk::server::{member.type}* {name}_{member.name}_proto = {name}->add_{member.name.lower()}();\n')
-                    out.append(indent(fill_proto_from_struct(generator,
-                                                             member.type, f'{name}_{member.name}_proto', f'(&{struct_accessor}->{member.name}[i])'), 2))
-                    out.append('  }\n')
-                else:
-                    print("unknown length member:",
-                          struct_type, member.cDeclaration)
-        elif not member.pointer and member.type in generator.vk.structs:
-            out.append(
-                f'  vvk::server::{member.type}* {name}_{member.name}_proto = {name}->mutable_{member.name.lower()}();\n')
-            out.append(fill_proto_from_struct(generator,
-                                              member.type, f'{name}_{member.name}_proto', f'(&{struct_accessor}->{member.name})'))
-        elif 'const char* const*' in member.cDeclaration:
+                out.append(
+                    f'  {name}->set_{member.name.lower()}(static_cast<{type_info.cast_to}>({struct_accessor}->{member.name}));\n')
+        else:
             if member.length in [member.name for member in struct.members]:
                 count_variable = [
                     count_var for count_var in struct.members if count_var.name == member.length][0]
@@ -241,12 +213,70 @@ def fill_proto_from_struct(generator: BaseGenerator, struct_type: str, name: str
             else:
                 print("unknown length member:",
                       struct_type, member.cDeclaration)
-        elif member.pointer and member.const:
+    elif "Flags" in member.type:
+        out.append(
+            f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
+    elif member.type in generator.vk.enums:
+        out.append(
+            f'  {name}->set_{member.name.lower()}(static_cast<vvk::server::{member.type}>({struct_accessor}->{member.name}));\n')
+    elif member.pointer and member.const and member.type in generator.vk.structs:
+        if member.length is None:
             out.append(
-                f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
+                f'  vvk::server::{member.type}* {name}_{member.name}_proto = {name}->mutable_{member.name.lower()}();\n')
+            out.append(fill_proto_from_struct(generator,
+                                              member.type, f'{name}_{member.name}_proto', f'{struct_accessor}->{member.name}'))
         else:
-            out.append(f'  // Unsupported member: {member.cDeclaration}\n')
-            print("UNSUPPORTED MEMBER:", struct_type, member.cDeclaration)
+            if member.length in [member.name for member in struct.members]:
+                count_variable = [
+                    count_var for count_var in struct.members if count_var.name == member.length][0]
+                out.append(
+                    f'  for (int i = 0; i < {struct_accessor}->{count_variable.name}; i++) {{\n')
+                out.append(
+                    f'    vvk::server::{member.type}* {name}_{member.name}_proto = {name}->add_{member.name.lower()}();\n')
+                out.append(indent(fill_proto_from_struct(generator,
+                                                         member.type, f'{name}_{member.name}_proto', f'(&{struct_accessor}->{member.name}[i])'), 2))
+                out.append('  }\n')
+            else:
+                print("unknown length member:",
+                      struct_type, member.cDeclaration)
+    elif not member.pointer and member.type in generator.vk.structs:
+        out.append(
+            f'  vvk::server::{member.type}* {name}_{member.name}_proto = {name}->mutable_{member.name.lower()}();\n')
+        out.append(fill_proto_from_struct(generator,
+                                          member.type, f'{name}_{member.name}_proto', f'(&{struct_accessor}->{member.name})'))
+    elif 'const char* const*' in member.cDeclaration:
+        if member.length in [member.name for member in struct.members]:
+            count_variable = [
+                count_var for count_var in struct.members if count_var.name == member.length][0]
+            out.append(
+                f'  for (int i = 0; i < {struct_accessor}->{count_variable.name}; i++) {{\n')
+            out.append(
+                f'    {name}->add_{member.name.lower()}({struct_accessor}->{member.name}[i]);\n')
+            out.append('  }\n')
+        else:
+            print("unknown length member:",
+                  struct_type, member.cDeclaration)
+    elif member.pointer and member.const:
+        out.append(
+            f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
+    else:
+        out.append(f'  // Unsupported member: {member.cDeclaration}\n')
+        print("UNSUPPORTED MEMBER:", struct_type, member.cDeclaration)
+    return "".join(out)
+
+
+def fill_proto_from_struct(generator: BaseGenerator, struct_type: str, name: str, struct_accessor: str) -> str:
+    out = []
+    struct = generator.vk.structs[struct_type]
+    for member in struct.members:
+        if member.optional:
+            out.append(f'  if ({struct_accessor}->{member.name}) {{\n')
+            out.append(
+                indent(__fill_proto_from_member(generator, struct_type, name, struct_accessor, member), 2))
+            out.append('  }\n')
+        else:
+            out.append(__fill_proto_from_member(
+                generator, struct_type, name, struct_accessor, member))
     return "".join(out)
 
 

@@ -13,6 +13,7 @@ grpc::Status VvkServerImpl::CallMethods(grpc::ServerContext* context,
   VvkRequest request;
   while (stream->Read(&request)) {
     VvkResponse response;
+    spdlog::trace("Request: {}", request.DebugString());
     spdlog::info("Calling {}", request.method());
     UnpackAndExecuteFunction(request, &response);
     stream->Write(response);

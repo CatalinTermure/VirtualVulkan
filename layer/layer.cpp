@@ -18,7 +18,7 @@ VVK_NegotiateLoaderLayerInterfaceVersion(VkNegotiateLayerInterface* pVersionStru
     return VK_ERROR_INITIALIZATION_FAILED;
   }
 
-  spdlog::set_level(spdlog::level::trace);
+  spdlog::set_level(spdlog::level::debug);
   spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [VvkLayer] [%^%l%$] %v");
 
   pVersionStruct->sType = LAYER_NEGOTIATE_INTERFACE_STRUCT;

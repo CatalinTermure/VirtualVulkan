@@ -50,9 +50,10 @@ void SetPhysicalDevice(VkPhysicalDevice physical_device) {
                     actual_parameters.append("nullptr")
                     continue
                 elif param.const and param.pointer:
+                    assert (param.type in self.vk.structs)
                     actual_parameters.append(f'&{param.name}')
                     if param.length is None:
-                        out.append(f'  {param.type} {param.name};\n')
+                        out.append(f'  {param.type} {param.name} = {{}};\n')
                         out.append(fill_struct_from_proto(self,
                                                           param.type, param.name, f'{param_accessor}.{param.name.lower()}()'))
                     else:
@@ -102,7 +103,7 @@ void SetPhysicalDevice(VkPhysicalDevice physical_device) {
                 elif param.pointer and not param.const and param.type in self.vk.structs:
                     actual_parameters.append(f'&{param.name}')
 
-                    out.append(f'  {param.type} {param.name};\n')
+                    out.append(f'  {param.type} {param.name} = {{}};\n')
 
                     after_call_code.append(
                         f'  vvk::server::{param.type}* {param.name}_proto = response->mutable_{cmd_name.lower()}()->mutable_{param.name.lower()}();\n')

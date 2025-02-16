@@ -58,11 +58,20 @@ template <typename FooType, typename RetType, typename... Args>
 RetType CallDownInstanceFunc(std::string_view func_name, VkInstance instance, Args... args) {
   FooType nxt_func = reinterpret_cast<FooType>(g_instance_infos.at(instance).nxt_gipa(instance, func_name.data()));
   if (!nxt_func) {
-    spdlog::error("Failed to fetch {} from next layer", func_name);
-    return VK_ERROR_UNKNOWN;
+    spdlog::critical("Failed to fetch {} from next layer", func_name);
   }
 
   return nxt_func(instance, args...);
+}
+
+template <typename FooType, typename RetType, typename... Args>
+RetType CallDownDeviceFunc(std::string_view func_name, VkDevice device, Args... args) {
+  FooType nxt_func = reinterpret_cast<FooType>(g_device_infos.at(device).nxt_gdpa(device, func_name.data()));
+  if (!nxt_func) {
+    spdlog::critical("Failed to fetch {} from next layer", func_name);
+  }
+
+  return nxt_func(device, args...);
 }
 
 template <typename T, VkStructureType sType>
@@ -155,14 +164,7 @@ VKAPI_ATTR void VKAPI_CALL DestroyInstance(VkInstance instance, const VkAllocati
 
   PFN_vkGetInstanceProcAddr nxt_gipa = g_instance_infos.at(instance).nxt_gipa;
 
-  PFN_vkDestroyInstance nxtDestroyInstance =
-      reinterpret_cast<PFN_vkDestroyInstance>(nxt_gipa(instance, "vkDestroyInstance"));
-  if (!nxtDestroyInstance) {
-    spdlog::error("Failed to fetch vkDestroyInstance from next layer");
-    return;
-  }
-
-  nxtDestroyInstance(instance, pAllocator);
+  CallDownInstanceFunc<PFN_vkDestroyInstance, void>("vkDestroyInstance", instance, pAllocator);
 
   auto reader_writer = g_instance_infos.at(instance).command_stream.get();
   PackAndCallVkDestroyInstance(reader_writer, instance, pAllocator);
@@ -246,13 +248,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCallbacks* pAllocator) {
   PFN_vkGetDeviceProcAddr nxt_gdpa = g_device_infos.at(device).nxt_gdpa;
 
-  PFN_vkDestroyDevice nxtDestroyDevice = reinterpret_cast<PFN_vkDestroyDevice>(nxt_gdpa(device, "vkDestroyDevice"));
-  if (!nxtDestroyDevice) {
-    spdlog::error("Failed to fetch vkDestroyDevice from next layer");
-    return;
-  }
-
-  nxtDestroyDevice(device, pAllocator);
+  CallDownDeviceFunc<PFN_vkDestroyDevice, void>("vkDestroyDevice", device, pAllocator);
 
   auto reader_writer = g_instance_infos.at(g_device_infos.at(device).instance).command_stream.get();
   PackAndCallVkDestroyDevice(reader_writer, device, pAllocator);
