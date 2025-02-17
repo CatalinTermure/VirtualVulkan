@@ -2,6 +2,7 @@
 #include <absl/strings/str_format.h>
 #include <grpcpp/grpcpp.h>
 #include <grpcpp/health_check_service_interface.h>
+#include <spdlog/cfg/env.h>
 #include <spdlog/spdlog.h>
 
 #include <string>
@@ -29,7 +30,8 @@ void RunServer(uint16_t port) {
 }
 
 int main(int argc, char** argv) {
-  spdlog::set_level(spdlog::level::debug);
+  spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [VvkServer] [%^%l%$] %v");
+  spdlog::cfg::load_env_levels("VVK_SERVER_LOG_LEVEL");
   RunServer(50051);
   return 0;
 }

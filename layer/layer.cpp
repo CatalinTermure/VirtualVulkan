@@ -1,3 +1,4 @@
+#include <spdlog/cfg/env.h>
 #include <spdlog/spdlog.h>
 #include <vulkan/vk_layer.h>
 
@@ -18,8 +19,8 @@ VVK_NegotiateLoaderLayerInterfaceVersion(VkNegotiateLayerInterface* pVersionStru
     return VK_ERROR_INITIALIZATION_FAILED;
   }
 
-  spdlog::set_level(spdlog::level::debug);
   spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [VvkLayer] [%^%l%$] %v");
+  spdlog::cfg::load_env_levels("VVK_LAYER_LOG_LEVEL");
 
   pVersionStruct->sType = LAYER_NEGOTIATE_INTERFACE_STRUCT;
   pVersionStruct->pNext = nullptr;
