@@ -8,6 +8,7 @@ add_executable(
     function_execution.h function_execution.cpp
     implementations.h implementations.cpp
     manual_implementations.h manual_implementations.cpp
+    execution_context.h
   )
 
 target_link_libraries(VirtualVulkanServer PRIVATE spdlog::spdlog vvkproto ${Vulkan_LIBRARIES})

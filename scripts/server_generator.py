@@ -24,14 +24,7 @@ class ServerSrcGenerator(BaseGenerator):
 #include <unordered_map>
 #include <vector>
 
-namespace {
-std::unordered_map<void*, void*> client_to_server_handles;
-VkPhysicalDevice physical_device_to_use;
-}
-
-void SetPhysicalDevice(VkPhysicalDevice physical_device) {
-  physical_device_to_use = physical_device;
-}
+#include "execution_context.h"
 
 ''')
 
@@ -39,8 +32,7 @@ void SetPhysicalDevice(VkPhysicalDevice physical_device) {
             after_call_code = []
             actual_parameters = []
             out.append(
-                f'''void UnpackAndExecute{first_letter_upper(cmd_name)}(const vvk::server::VvkRequest &request,
-                                      vvk::server::VvkResponse* response) ''')
+                f'void UnpackAndExecute{first_letter_upper(cmd_name)}(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response)')
             out.append("{\n")
             out.append(f'  assert(request.method() == "{cmd_name}");\n\n')
             param_accessor = f'request.{cmd_name.lower()}()'
@@ -66,11 +58,9 @@ void SetPhysicalDevice(VkPhysicalDevice physical_device) {
                             f'  {param.type} client_{param.name} = reinterpret_cast<{param.type}>({param_accessor}.{param.name.lower()}());\n')
                         out.append(f'  {param.type} server_{param.name};\n')
                         after_call_code.append(
-                            f'  assert(client_to_server_handles.count(reinterpret_cast<void*>(client_{param.name})) == 0);\n')
-                        after_call_code.append(
                             f'  response->mutable_{cmd_name.lower()}()->set_{param.name.lower()}(reinterpret_cast<uint64_t>(server_{param.name}));\n')
                         after_call_code.append(
-                            f'  client_to_server_handles[client_{param.name}] = server_{param.name};\n')
+                            f'  context.SetHandleAssociation(client_{param.name}, server_{param.name});\n')
                     else:
                         # only vkEnumerate* commands return multiple handles
                         assert ("vkEnumerate" in cmd_name)
@@ -118,10 +108,10 @@ void SetPhysicalDevice(VkPhysicalDevice physical_device) {
                         f'  response->mutable_{cmd_name.lower()}()->set_{param.name.lower()}({param.name});\n')
                 elif not param.pointer and param.type in self.vk.handles:
                     if param.type == "VkPhysicalDevice":
-                        actual_parameters.append("physical_device_to_use")
+                        actual_parameters.append("context.physical_device()")
                     else:
                         actual_parameters.append(
-                            f'reinterpret_cast<{param.type}>(client_to_server_handles.at(reinterpret_cast<void*>({param_accessor}.{param.name.lower()}())))')
+                            f'context.GetServerHandle(reinterpret_cast<{param.type}_T*>({param_accessor}.{param.name.lower()}()))')
                 else:
                     log("UNHANDLED PARAM:", cmd_name, param.name)
 
@@ -138,7 +128,7 @@ void SetPhysicalDevice(VkPhysicalDevice physical_device) {
 
             if "vkDestroy" in cmd_name:
                 out.append(
-                    f'  client_to_server_handles.erase(reinterpret_cast<void*>({param_accessor}.{command.params[0].name.lower()}()));\n')
+                    f'  context.RemoveAssociatedHandle(reinterpret_cast<void*>({param_accessor}.{command.params[0].name.lower()}()));\n')
 
             # populate the response
             if command.returnType == "VkResult":
@@ -159,17 +149,23 @@ class ServerHeaderGenerator(BaseGenerator):
         out = []
         out.append("// GENERATED FILE - DO NOT EDIT\n")
         out.append("// clang-format off\n")
-        out.append('''#include "vvk_server.pb.h"
+        out.append('''#ifndef VVK_SERVER_IMPLEMENTATIONS_H
+#define VVK_SERVER_IMPLEMENTATIONS_H
 #include <vulkan/vulkan_core.h>
 
-void SetPhysicalDevice(VkPhysicalDevice physical_device);
+#include "execution_context.h"
+#include "vvk_server.pb.h"
+
 ''')
 
         for command in COMMANDS_TO_GENERATE:
             out.append(
-                f'''void UnpackAndExecute{first_letter_upper(command)}(const vvk::server::VvkRequest &request,
-                                      vvk::server::VvkResponse* response);{"\n" if command != COMMANDS_TO_GENERATE[-1] else ""}''')
+                f'''void UnpackAndExecute{first_letter_upper(command)}(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);''')
+            if command != COMMANDS_TO_GENERATE[-1]:
+                out.append("\n")
 
+        out.append("\n#endif\n")
         self.write("".join(out))
 
 

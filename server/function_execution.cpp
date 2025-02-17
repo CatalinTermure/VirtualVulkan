@@ -9,7 +9,8 @@ namespace vvk::server {
 
 namespace {
 
-const std::unordered_map<std::string, std::function<void(const vvk::server::VvkRequest&, vvk::server::VvkResponse*)>>
+const std::unordered_map<
+    std::string, std::function<void(vvk::ExecutionContext&, const vvk::server::VvkRequest&, vvk::server::VvkResponse*)>>
     g_jump_table = {
         {"vkCreateInstance", UnpackAndExecuteVkCreateInstanceManual},
         {"vkDestroyInstance", UnpackAndExecuteVkDestroyInstance},
@@ -21,10 +22,11 @@ const std::unordered_map<std::string, std::function<void(const vvk::server::VvkR
 
 }  // namespace
 
-void UnpackAndExecuteFunction(const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response) {
+void UnpackAndExecuteFunction(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
+                              vvk::server::VvkResponse* response) {
   auto it = g_jump_table.find(request.method());
   if (it != g_jump_table.end()) {
-    it->second(request, response);
+    it->second(context, request, response);
   } else {
     spdlog::error("Unknown method: {}", request.method());
   }

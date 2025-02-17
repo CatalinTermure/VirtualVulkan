@@ -1,18 +1,23 @@
 // GENERATED FILE - DO NOT EDIT
 // clang-format off
-#include "vvk_server.pb.h"
+#ifndef VVK_SERVER_IMPLEMENTATIONS_H
+#define VVK_SERVER_IMPLEMENTATIONS_H
 #include <vulkan/vulkan_core.h>
 
-void SetPhysicalDevice(VkPhysicalDevice physical_device);
-void UnpackAndExecuteVkCreateInstance(const vvk::server::VvkRequest &request,
-                                      vvk::server::VvkResponse* response);
-void UnpackAndExecuteVkDestroyInstance(const vvk::server::VvkRequest &request,
-                                      vvk::server::VvkResponse* response);
-void UnpackAndExecuteVkEnumeratePhysicalDevices(const vvk::server::VvkRequest &request,
-                                      vvk::server::VvkResponse* response);
-void UnpackAndExecuteVkGetPhysicalDeviceProperties(const vvk::server::VvkRequest &request,
-                                      vvk::server::VvkResponse* response);
-void UnpackAndExecuteVkCreateDevice(const vvk::server::VvkRequest &request,
-                                      vvk::server::VvkResponse* response);
-void UnpackAndExecuteVkDestroyDevice(const vvk::server::VvkRequest &request,
-                                      vvk::server::VvkResponse* response);
+#include "execution_context.h"
+#include "vvk_server.pb.h"
+
+void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkDestroyInstance(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkEnumeratePhysicalDevices(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkGetPhysicalDeviceProperties(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkDestroyDevice(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+#endif
+

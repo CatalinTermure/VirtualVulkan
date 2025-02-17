@@ -7,9 +7,9 @@
 
 #include "implementations.h"
 
-void UnpackAndExecuteVkCreateInstanceManual(const vvk::server::VvkRequest& request,
+void UnpackAndExecuteVkCreateInstanceManual(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
                                             vvk::server::VvkResponse* response) {
-  UnpackAndExecuteVkCreateInstance(request, response);
+  UnpackAndExecuteVkCreateInstance(context, request, response);
 
   VkInstance instance = reinterpret_cast<VkInstance>(response->vkcreateinstance().pinstance());
 
@@ -22,7 +22,7 @@ void UnpackAndExecuteVkCreateInstanceManual(const vvk::server::VvkRequest& reque
     VkPhysicalDeviceProperties properties;
     vkGetPhysicalDeviceProperties(phys_device, &properties);
     if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-      SetPhysicalDevice(phys_device);
+      context.set_physical_device(phys_device);
       spdlog::info("Using discrete GPU {}", properties.deviceName);
       break;
     }
