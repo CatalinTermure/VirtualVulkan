@@ -19,5 +19,4 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context,
                                       const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
 void UnpackAndExecuteVkDestroyDevice(vvk::ExecutionContext& context,
                                       const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
-#endif
-
+#endif  // VVK_SERVER_IMPLEMENTATIONS_H

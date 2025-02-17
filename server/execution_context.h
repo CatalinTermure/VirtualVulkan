@@ -32,4 +32,4 @@ class ExecutionContext {
 
 }  // namespace vvk
 
-#endif
+#endif  // VVK_SERVER_EXECUTION_CONTEXT_H

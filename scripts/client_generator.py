@@ -153,7 +153,9 @@ class ClientHeaderGenerator(BaseGenerator):
         out = []
         out.append("// GENERATED FILE - DO NOT EDIT\n")
         out.append("// clang-format off\n")
-        out.append('''#include "vulkan/vulkan_core.h"
+        out.append('''#ifndef VVK_COMMONS_REMOTE_CALL_H
+#define VVK_COMMONS_REMOTE_CALL_H
+#include "vulkan/vulkan_core.h"
 
 #include <grpcpp/grpcpp.h>
 #include "vvk_server.pb.h"
@@ -171,6 +173,8 @@ namespace vvk {
                 f'{command.returnType} PackAndCall{first_letter_upper(cmd_name)}({", ".join(params)});\n')
 
         out.append("}  // namespace vvk\n")
+
+        out.append("\n#endif  // VVK_COMMONS_REMOTE_CALL_H")
 
         self.write("".join(out))
 

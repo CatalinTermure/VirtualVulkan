@@ -1,5 +1,7 @@
 // GENERATED FILE - DO NOT EDIT
 // clang-format off
+#ifndef VVK_COMMONS_REMOTE_CALL_H
+#define VVK_COMMONS_REMOTE_CALL_H
 #include "vulkan/vulkan_core.h"
 
 #include <grpcpp/grpcpp.h>
@@ -14,3 +16,4 @@ VkResult PackAndCallVkCreateDevice(grpc::ClientReaderWriter<vvk::server::VvkRequ
 void PackAndCallVkDestroyDevice(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkAllocationCallbacks* pAllocator);
 }  // namespace vvk
 
+#endif  // VVK_COMMONS_REMOTE_CALL_H

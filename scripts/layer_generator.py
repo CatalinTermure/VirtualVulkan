@@ -12,7 +12,10 @@ class ClientHeaderGenerator(BaseGenerator):
         out = []
         out.append("// GENERATED FILE - DO NOT EDIT\n")
         out.append("// clang-format off\n")
-        out.append('''#include <vulkan/vulkan_core.h>
+        out.append('''#ifndef VVK_LAYER_FUNCTIONS_H
+#define VVK_LAYER_FUNCTIONS_H
+
+#include <vulkan/vulkan_core.h>
 
 #include <unordered_map>
 #include <string>
@@ -38,6 +41,8 @@ PFN_vkVoidFunction DefaultGetDeviceProcAddr(VkDevice device, const char* pName);
         out.append("};\n\n")
 
         out.append("}  // namespace vvk\n")
+
+        out.append("\n#endif  // VVK_LAYER_FUNCTIONS_H")
 
         self.write("".join(out))
 

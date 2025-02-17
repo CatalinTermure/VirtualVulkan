@@ -13,4 +13,4 @@ void UnpackAndExecuteFunction(vvk::ExecutionContext &context, const vvk::server:
                               vvk::server::VvkResponse *response);
 }
 
-#endif
+#endif  // VVK_SERVER_FUNCTION_EXECUTION_H

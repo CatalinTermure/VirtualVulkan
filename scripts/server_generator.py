@@ -165,7 +165,7 @@ class ServerHeaderGenerator(BaseGenerator):
             if command != COMMANDS_TO_GENERATE[-1]:
                 out.append("\n")
 
-        out.append("\n#endif\n")
+        out.append("\n#endif  // VVK_SERVER_IMPLEMENTATIONS_H")
         self.write("".join(out))
 
 

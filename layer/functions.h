@@ -1,5 +1,8 @@
 // GENERATED FILE - DO NOT EDIT
 // clang-format off
+#ifndef VVK_LAYER_FUNCTIONS_H
+#define VVK_LAYER_FUNCTIONS_H
+
 #include <vulkan/vulkan_core.h>
 
 #include <unordered_map>
@@ -43,3 +46,4 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
 
 }  // namespace vvk
 
+#endif  // VVK_LAYER_FUNCTIONS_H

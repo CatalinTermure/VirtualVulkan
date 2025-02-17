@@ -12,4 +12,4 @@ class VvkServerImpl final : public VvkServer::Service {
 };
 }  // namespace vvk::server
 
-#endif
+#endif  // VVK_SERVER_H
