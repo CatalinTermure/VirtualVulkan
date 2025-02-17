@@ -136,12 +136,12 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
     elif 'const char* const*' in member.cDeclaration:
         aux_var_name = f'{name}_{member.name}'
         pre_fill_declarations.append(
-            f'  std::vector<const char*> {aux_var_name};\n')
+            f'  std::vector<const char*> {aux_var_name}({proto_accessor}.{member.name.lower()}_size());\n')
         out.append(
             f'  for (int i = 0; i < {proto_accessor}.{member.name.lower()}_size(); i++)')
         out.append(' {\n')
         out.append(
-            f'    {aux_var_name}.push_back({proto_accessor}.{member.name.lower()}(i).data());\n')
+            f'    {aux_var_name}[i] = {proto_accessor}.{member.name.lower()}(i).data();\n')
         out.append('  }\n')
         out.append(
             f'  {name}.{member.name} = {aux_var_name}.data();\n')
