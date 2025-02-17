@@ -54,6 +54,11 @@ VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(VkPhysicalDevice physical
   return EnumerateInstanceExtensionProperties(pLayerName, pPropertyCount, pProperties);
 }
 
+constexpr std::array non_intercepted_functions = {
+    "vkCreateXcbSurfaceKHR",
+    "vkGetPhysicalDeviceSurfaceSupportKHR",
+};
+
 }  // namespace
 
 #define GET_PROC_ADDR(func_name)                            \
@@ -68,6 +73,13 @@ PFN_vkVoidFunction GetInstanceProcAddr(VkInstance instance, const char* pName) {
   GET_PROC_ADDR(EnumerateInstanceExtensionProperties);
   GET_PROC_ADDR(EnumerateDeviceLayerProperties);
   GET_PROC_ADDR(EnumerateDeviceExtensionProperties);
+
+  for (const auto& func : non_intercepted_functions) {
+    if (strcmp(pName, func) == 0) {
+      return DefaultGetInstanceProcAddr(instance, pName);
+    }
+  }
+
   auto it = g_name_to_func_ptr.find(pName);
   if (it != g_name_to_func_ptr.end()) {
     return it->second;
@@ -78,6 +90,13 @@ PFN_vkVoidFunction GetInstanceProcAddr(VkInstance instance, const char* pName) {
 
 PFN_vkVoidFunction GetDeviceProcAddr(VkDevice device, const char* pName) {
   spdlog::trace("Loading device function: {}", pName);
+
+  for (const auto& func : non_intercepted_functions) {
+    if (strcmp(pName, func) == 0) {
+      return DefaultGetDeviceProcAddr(device, pName);
+    }
+  }
+
   auto it = g_name_to_func_ptr.find(pName);
   if (it != g_name_to_func_ptr.end()) {
     return it->second;

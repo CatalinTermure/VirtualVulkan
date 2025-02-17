@@ -107,6 +107,13 @@ void RemoveStructsFromChain(VkBaseInStructure* base_struct, VkStructureType sTyp
 
 }  // namespace
 
+PFN_vkVoidFunction DefaultGetInstanceProcAddr(VkInstance instance, const char* pName) {
+  return g_instance_infos.at(instance).nxt_gipa(instance, pName);
+}
+PFN_vkVoidFunction DefaultGetDeviceProcAddr(VkDevice device, const char* pName) {
+  return g_device_infos.at(device).nxt_gdpa(device, pName);
+}
+
 VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreateInfo,
                                               const VkAllocationCallbacks* pAllocator, VkInstance* pInstance) {
   spdlog::trace("CreateInstance");

@@ -6,6 +6,8 @@
 #include <string>
 
 namespace vvk {
+PFN_vkVoidFunction DefaultGetInstanceProcAddr(VkInstance instance, const char* pName);
+PFN_vkVoidFunction DefaultGetDeviceProcAddr(VkDevice device, const char* pName);
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(
     const VkInstanceCreateInfo*                 pCreateInfo,

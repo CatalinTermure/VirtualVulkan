@@ -18,6 +18,8 @@ class ClientHeaderGenerator(BaseGenerator):
 #include <string>
 
 namespace vvk {
+PFN_vkVoidFunction DefaultGetInstanceProcAddr(VkInstance instance, const char* pName);
+PFN_vkVoidFunction DefaultGetDeviceProcAddr(VkDevice device, const char* pName);
 
 ''')
         name_to_func_ptr_map = [
