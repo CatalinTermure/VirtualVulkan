@@ -50,7 +50,8 @@ def indent(text: str, spaces: int) -> str:
     return '\n'.join(' ' * spaces + line for line in lines) + '\n'
 
 
-def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, name: str, proto_accessor: str, member: Member) -> str:
+def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, name: str, proto_accessor: str, member: Member) -> tuple[str, str]:
+    pre_fill_declarations = []
     out = []
     struct = generator.vk.structs[struct_type]
     if member.name == "sType":
@@ -88,7 +89,7 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
                 count_variable = [
                     count_var for count_var in struct.members if count_var.name == member.length][0]
                 aux_var = f'{name}_{member.name}'
-                out.append(
+                pre_fill_declarations.append(
                     f'  std::vector<{member.type}> {aux_var}({proto_accessor}.{count_variable.name.lower()}());\n')
                 out.append(
                     f'  for (int i = 0; i < {proto_accessor}.{count_variable.name.lower()}(); i++)')
@@ -104,7 +105,8 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
     elif member.pointer and member.const and member.type in generator.vk.structs:
         if member.length is None:
             aux_var_name = f'{name}_{member.name}'
-            out.append(f'  {member.type} {aux_var_name} = {{}};\n')
+            pre_fill_declarations.append(
+                f'  {member.type} {aux_var_name} = {{}};\n')
             out.append(fill_struct_from_proto(generator,
                                               member.type, aux_var_name, f'{proto_accessor}.{member.name.lower()}()'))
             out.append(
@@ -113,7 +115,7 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
             if member.length in [member.name for member in struct.members]:
                 count_variable = [
                     count_var for count_var in struct.members if count_var.name == member.length][0]
-                out.append(
+                pre_fill_declarations.append(
                     f'  std::vector<{member.type}> {name}_{member.name}({proto_accessor}.{count_variable.name.lower()}());\n')
                 out.append(
                     f'  {name}.{member.name} = {name}_{member.name}.data();\n')
@@ -133,7 +135,7 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
                                           f'{name}.{member.name}', f'{proto_accessor}.{member.name.lower()}()'))
     elif 'const char* const*' in member.cDeclaration:
         aux_var_name = f'{name}_{member.name}'
-        out.append(
+        pre_fill_declarations.append(
             f'  std::vector<const char*> {aux_var_name};\n')
         out.append(
             f'  for (int i = 0; i < {proto_accessor}.{member.name.lower()}_size(); i++)')
@@ -149,26 +151,31 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
     else:
         out.append(f'  // Unsupported member: {member.cDeclaration}\n')
         print("UNSUPPORTED MEMBER:", name, member.cDeclaration)
-    return "".join(out)
+    return "".join(pre_fill_declarations), "".join(out)
 
 
 def fill_struct_from_proto(generator: BaseGenerator, struct_type: str, name: str, proto_accessor: str) -> str:
     out = []
     struct = generator.vk.structs[struct_type]
     for member in struct.members:
-        if member.optional or member.optionalPointer:
+        if member.optional:
             if member.name == "pNext":
                 out.append(
                     f'  {name}.pNext = nullptr; // pNext chains are currently unsupported\n')
             else:
+                declarations_, out_ = __fill_struct_member_from_proto(
+                    generator, struct_type, name, proto_accessor, member)
+                out.append(declarations_)
                 out.append(
                     f'  if ({proto_accessor}.has_{member.name.lower()}()) {{\n')
                 out.append(
-                    indent(__fill_struct_member_from_proto(generator, struct_type, name, proto_accessor, member), 2))
+                    indent(out_, 2))
                 out.append('  }\n')
         else:
-            out.append(__fill_struct_member_from_proto(
-                generator, struct_type, name, proto_accessor, member))
+            out1_, out2_ = __fill_struct_member_from_proto(
+                generator, struct_type, name, proto_accessor, member)
+            out.append(out1_)
+            out.append(out2_)
     return "".join(out)
 
 

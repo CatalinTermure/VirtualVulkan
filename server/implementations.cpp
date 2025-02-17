@@ -27,8 +27,8 @@ void UnpackAndExecuteVkCreateInstance(const vvk::server::VvkRequest &request,
   if (request.vkcreateinstance().pcreateinfo().has_flags()) {
     pCreateInfo.flags = request.vkcreateinstance().pcreateinfo().flags();
   }
+  VkApplicationInfo pCreateInfo_pApplicationInfo = {};
   if (request.vkcreateinstance().pcreateinfo().has_papplicationinfo()) {
-    VkApplicationInfo pCreateInfo_pApplicationInfo = {};
     pCreateInfo_pApplicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     pCreateInfo_pApplicationInfo.pNext = nullptr; // pNext chains are currently unsupported
     if (request.vkcreateinstance().pcreateinfo().papplicationinfo().has_papplicationname()) {
@@ -301,8 +301,8 @@ void UnpackAndExecuteVkCreateDevice(const vvk::server::VvkRequest &request,
     pCreateInfo_ppEnabledExtensionNames.push_back(request.vkcreatedevice().pcreateinfo().ppenabledextensionnames(i).data());
   }
   pCreateInfo.ppEnabledExtensionNames = pCreateInfo_ppEnabledExtensionNames.data();
+  VkPhysicalDeviceFeatures pCreateInfo_pEnabledFeatures = {};
   if (request.vkcreatedevice().pcreateinfo().has_penabledfeatures()) {
-    VkPhysicalDeviceFeatures pCreateInfo_pEnabledFeatures = {};
     pCreateInfo_pEnabledFeatures.robustBufferAccess = request.vkcreatedevice().pcreateinfo().penabledfeatures().robustbufferaccess();
     pCreateInfo_pEnabledFeatures.fullDrawIndexUint32 = request.vkcreatedevice().pcreateinfo().penabledfeatures().fulldrawindexuint32();
     pCreateInfo_pEnabledFeatures.imageCubeArray = request.vkcreatedevice().pcreateinfo().penabledfeatures().imagecubearray();
