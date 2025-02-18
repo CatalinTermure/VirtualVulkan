@@ -431,4 +431,67 @@ void UnpackAndExecuteVkGetPhysicalDeviceMemoryProperties(vvk::ExecutionContext& 
   }
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkGetPhysicalDeviceFeatures(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkGetPhysicalDeviceFeatures");
+
+  VkPhysicalDeviceFeatures pFeatures = {};
+  vkGetPhysicalDeviceFeatures(context.physical_device(), &pFeatures);
+  vvk::server::VkPhysicalDeviceFeatures* pFeatures_proto = response->mutable_vkgetphysicaldevicefeatures()->mutable_pfeatures();
+  pFeatures_proto->set_robustbufferaccess((&pFeatures)->robustBufferAccess);
+  pFeatures_proto->set_fulldrawindexuint32((&pFeatures)->fullDrawIndexUint32);
+  pFeatures_proto->set_imagecubearray((&pFeatures)->imageCubeArray);
+  pFeatures_proto->set_independentblend((&pFeatures)->independentBlend);
+  pFeatures_proto->set_geometryshader((&pFeatures)->geometryShader);
+  pFeatures_proto->set_tessellationshader((&pFeatures)->tessellationShader);
+  pFeatures_proto->set_samplerateshading((&pFeatures)->sampleRateShading);
+  pFeatures_proto->set_dualsrcblend((&pFeatures)->dualSrcBlend);
+  pFeatures_proto->set_logicop((&pFeatures)->logicOp);
+  pFeatures_proto->set_multidrawindirect((&pFeatures)->multiDrawIndirect);
+  pFeatures_proto->set_drawindirectfirstinstance((&pFeatures)->drawIndirectFirstInstance);
+  pFeatures_proto->set_depthclamp((&pFeatures)->depthClamp);
+  pFeatures_proto->set_depthbiasclamp((&pFeatures)->depthBiasClamp);
+  pFeatures_proto->set_fillmodenonsolid((&pFeatures)->fillModeNonSolid);
+  pFeatures_proto->set_depthbounds((&pFeatures)->depthBounds);
+  pFeatures_proto->set_widelines((&pFeatures)->wideLines);
+  pFeatures_proto->set_largepoints((&pFeatures)->largePoints);
+  pFeatures_proto->set_alphatoone((&pFeatures)->alphaToOne);
+  pFeatures_proto->set_multiviewport((&pFeatures)->multiViewport);
+  pFeatures_proto->set_sampleranisotropy((&pFeatures)->samplerAnisotropy);
+  pFeatures_proto->set_texturecompressionetc2((&pFeatures)->textureCompressionETC2);
+  pFeatures_proto->set_texturecompressionastc_ldr((&pFeatures)->textureCompressionASTC_LDR);
+  pFeatures_proto->set_texturecompressionbc((&pFeatures)->textureCompressionBC);
+  pFeatures_proto->set_occlusionqueryprecise((&pFeatures)->occlusionQueryPrecise);
+  pFeatures_proto->set_pipelinestatisticsquery((&pFeatures)->pipelineStatisticsQuery);
+  pFeatures_proto->set_vertexpipelinestoresandatomics((&pFeatures)->vertexPipelineStoresAndAtomics);
+  pFeatures_proto->set_fragmentstoresandatomics((&pFeatures)->fragmentStoresAndAtomics);
+  pFeatures_proto->set_shadertessellationandgeometrypointsize((&pFeatures)->shaderTessellationAndGeometryPointSize);
+  pFeatures_proto->set_shaderimagegatherextended((&pFeatures)->shaderImageGatherExtended);
+  pFeatures_proto->set_shaderstorageimageextendedformats((&pFeatures)->shaderStorageImageExtendedFormats);
+  pFeatures_proto->set_shaderstorageimagemultisample((&pFeatures)->shaderStorageImageMultisample);
+  pFeatures_proto->set_shaderstorageimagereadwithoutformat((&pFeatures)->shaderStorageImageReadWithoutFormat);
+  pFeatures_proto->set_shaderstorageimagewritewithoutformat((&pFeatures)->shaderStorageImageWriteWithoutFormat);
+  pFeatures_proto->set_shaderuniformbufferarraydynamicindexing((&pFeatures)->shaderUniformBufferArrayDynamicIndexing);
+  pFeatures_proto->set_shadersampledimagearraydynamicindexing((&pFeatures)->shaderSampledImageArrayDynamicIndexing);
+  pFeatures_proto->set_shaderstoragebufferarraydynamicindexing((&pFeatures)->shaderStorageBufferArrayDynamicIndexing);
+  pFeatures_proto->set_shaderstorageimagearraydynamicindexing((&pFeatures)->shaderStorageImageArrayDynamicIndexing);
+  pFeatures_proto->set_shaderclipdistance((&pFeatures)->shaderClipDistance);
+  pFeatures_proto->set_shaderculldistance((&pFeatures)->shaderCullDistance);
+  pFeatures_proto->set_shaderfloat64((&pFeatures)->shaderFloat64);
+  pFeatures_proto->set_shaderint64((&pFeatures)->shaderInt64);
+  pFeatures_proto->set_shaderint16((&pFeatures)->shaderInt16);
+  pFeatures_proto->set_shaderresourceresidency((&pFeatures)->shaderResourceResidency);
+  pFeatures_proto->set_shaderresourceminlod((&pFeatures)->shaderResourceMinLod);
+  pFeatures_proto->set_sparsebinding((&pFeatures)->sparseBinding);
+  pFeatures_proto->set_sparseresidencybuffer((&pFeatures)->sparseResidencyBuffer);
+  pFeatures_proto->set_sparseresidencyimage2d((&pFeatures)->sparseResidencyImage2D);
+  pFeatures_proto->set_sparseresidencyimage3d((&pFeatures)->sparseResidencyImage3D);
+  pFeatures_proto->set_sparseresidency2samples((&pFeatures)->sparseResidency2Samples);
+  pFeatures_proto->set_sparseresidency4samples((&pFeatures)->sparseResidency4Samples);
+  pFeatures_proto->set_sparseresidency8samples((&pFeatures)->sparseResidency8Samples);
+  pFeatures_proto->set_sparseresidency16samples((&pFeatures)->sparseResidency16Samples);
+  pFeatures_proto->set_sparseresidencyaliased((&pFeatures)->sparseResidencyAliased);
+  pFeatures_proto->set_variablemultisamplerate((&pFeatures)->variableMultisampleRate);
+  pFeatures_proto->set_inheritedqueries((&pFeatures)->inheritedQueries);
+  response->set_result(VK_SUCCESS);
+}
 

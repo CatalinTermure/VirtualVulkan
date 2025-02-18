@@ -46,6 +46,9 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(
 VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceMemoryProperties(
     VkPhysicalDevice                            physicalDevice,
     VkPhysicalDeviceMemoryProperties*           pMemoryProperties);
+VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceFeatures(
+    VkPhysicalDevice                            physicalDevice,
+    VkPhysicalDeviceFeatures*                   pFeatures);
 
 inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = {
     {"vkCreateInstance", reinterpret_cast<PFN_vkVoidFunction>(CreateInstance)},
@@ -57,6 +60,7 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkEnumerateInstanceExtensionProperties", reinterpret_cast<PFN_vkVoidFunction>(EnumerateInstanceExtensionProperties)},
     {"vkEnumerateDeviceExtensionProperties", reinterpret_cast<PFN_vkVoidFunction>(EnumerateDeviceExtensionProperties)},
     {"vkGetPhysicalDeviceMemoryProperties", reinterpret_cast<PFN_vkVoidFunction>(GetPhysicalDeviceMemoryProperties)},
+    {"vkGetPhysicalDeviceFeatures", reinterpret_cast<PFN_vkVoidFunction>(GetPhysicalDeviceFeatures)},
 };
 
 }  // namespace vvk

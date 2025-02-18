@@ -304,4 +304,10 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceMemoryProperties(VkPhysicalDevice ph
   return PackAndCallVkGetPhysicalDeviceMemoryProperties(command_stream, physicalDevice, pMemoryProperties);
 }
 
+VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceFeatures(VkPhysicalDevice physicalDevice,
+                                                     VkPhysicalDeviceFeatures* pFeatures) {
+  auto command_stream = g_instance_infos.at(g_physical_device_to_instance.at(physicalDevice)).command_stream.get();
+  return PackAndCallVkGetPhysicalDeviceFeatures(command_stream, physicalDevice, pFeatures);
+}
+
 }  // namespace vvk

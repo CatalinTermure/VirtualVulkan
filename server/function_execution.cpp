@@ -21,6 +21,7 @@ const std::unordered_map<
         {"vkEnumerateInstanceExtensionProperties", UnpackAndExecuteVkEnumerateInstanceExtensionProperties},
         {"vkEnumerateDeviceExtensionProperties", UnpackAndExecuteVkEnumerateDeviceExtensionProperties},
         {"vkGetPhysicalDeviceMemoryProperties", UnpackAndExecuteVkGetPhysicalDeviceMemoryProperties},
+        {"vkGetPhysicalDeviceFeatures", UnpackAndExecuteVkGetPhysicalDeviceFeatures},
 };
 
 }  // namespace
