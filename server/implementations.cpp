@@ -54,14 +54,12 @@ void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context, const vvk:
   VkInstance server_pInstance;
   VkResult result = vkCreateInstance(&pCreateInfo, nullptr, &server_pInstance);
   response->mutable_vkcreateinstance()->set_pinstance(reinterpret_cast<uint64_t>(server_pInstance));
-  context.SetHandleAssociation(client_pInstance, server_pInstance);
   response->set_result(result);
 }
 void UnpackAndExecuteVkDestroyInstance(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyInstance");
 
-  vkDestroyInstance(context.GetServerHandle(reinterpret_cast<VkInstance_T*>(request.vkdestroyinstance().instance())), nullptr);
-  context.RemoveAssociatedHandle(reinterpret_cast<void*>(request.vkdestroyinstance().instance()));
+  vkDestroyInstance(reinterpret_cast<VkInstance_T*>(request.vkdestroyinstance().instance()), nullptr);
   response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkEnumeratePhysicalDevices(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
@@ -76,7 +74,7 @@ void UnpackAndExecuteVkEnumeratePhysicalDevices(vvk::ExecutionContext& context, 
     aux_pPhysicalDevices.resize(pPhysicalDeviceCount);
     pPhysicalDevices = aux_pPhysicalDevices.data();
   }
-  VkResult result = vkEnumeratePhysicalDevices(context.GetServerHandle(reinterpret_cast<VkInstance_T*>(request.vkenumeratephysicaldevices().instance())), &pPhysicalDeviceCount, pPhysicalDevices);
+  VkResult result = vkEnumeratePhysicalDevices(reinterpret_cast<VkInstance_T*>(request.vkenumeratephysicaldevices().instance()), &pPhysicalDeviceCount, pPhysicalDevices);
   response->mutable_vkenumeratephysicaldevices()->set_pphysicaldevicecount(pPhysicalDeviceCount);
   if (request.vkenumeratephysicaldevices().pphysicaldevicecount() != 0) {
     for (int i = 0; i < pPhysicalDeviceCount; i++) {
@@ -351,14 +349,12 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
   VkDevice server_pDevice;
   VkResult result = vkCreateDevice(context.physical_device(), &pCreateInfo, nullptr, &server_pDevice);
   response->mutable_vkcreatedevice()->set_pdevice(reinterpret_cast<uint64_t>(server_pDevice));
-  context.SetHandleAssociation(client_pDevice, server_pDevice);
   response->set_result(result);
 }
 void UnpackAndExecuteVkDestroyDevice(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyDevice");
 
-  vkDestroyDevice(context.GetServerHandle(reinterpret_cast<VkDevice_T*>(request.vkdestroydevice().device())), nullptr);
-  context.RemoveAssociatedHandle(reinterpret_cast<void*>(request.vkdestroydevice().device()));
+  vkDestroyDevice(reinterpret_cast<VkDevice_T*>(request.vkdestroydevice().device()), nullptr);
   response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkEnumerateInstanceExtensionProperties(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){

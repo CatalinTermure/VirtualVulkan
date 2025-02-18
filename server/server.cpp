@@ -16,9 +16,10 @@ grpc::Status VvkServerImpl::CallMethods(grpc::ServerContext* context,
   ExecutionContext execution_context;
   while (stream->Read(&request)) {
     VvkResponse response;
-    spdlog::trace("Request: {}", request.DebugString());
+    spdlog::trace("Request:\n{}", request.DebugString());
     spdlog::info("Calling {}", request.method());
     UnpackAndExecuteFunction(execution_context, request, &response);
+    spdlog::trace("Response:\n{}", response.DebugString());
     stream->Write(response);
   }
   spdlog::info("Connection closed {}", context->peer());

@@ -9,9 +9,9 @@
 
 #include <cassert>
 #include <functional>
+#include <map>
 #include <memory>
 #include <string_view>
-#include <unordered_map>
 #include <utility>
 
 #include "commons/remote_call.h"
@@ -26,14 +26,21 @@ using vvk::server::VvkServer;
 class InstanceInfo {
  public:
   PFN_vkGetInstanceProcAddr nxt_gipa;
-  grpc::ClientContext client_context;
-  std::shared_ptr<grpc::Channel> channel;
-  VvkServer::Stub stub;
   std::unique_ptr<grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>> command_stream;
 
   InstanceInfo(PFN_vkGetInstanceProcAddr nxt_gipa, std::shared_ptr<grpc::Channel> channel)
-      : nxt_gipa(nxt_gipa), channel(channel), stub(channel) {
-    command_stream = stub.CallMethods(&client_context);
+      : nxt_gipa(nxt_gipa), channel_(channel), stub_(channel) {
+    command_stream = stub_.CallMethods(&client_context_);
+  }
+
+  template <typename T>
+  T GetRemoteHandle(T local_handle) const {
+    return reinterpret_cast<T>(local_to_remote_handle_.at(reinterpret_cast<void*>(local_handle)));
+  }
+
+  template <typename T>
+  void SetRemoteHandle(T local_handle, T remote_handle) {
+    local_to_remote_handle_.emplace(reinterpret_cast<void*>(local_handle), reinterpret_cast<void*>(remote_handle));
   }
 
   InstanceInfo(const InstanceInfo&) = delete;
@@ -43,6 +50,12 @@ class InstanceInfo {
     command_stream->WritesDone();
     command_stream->Finish();
   }
+
+ private:
+  grpc::ClientContext client_context_;
+  std::shared_ptr<grpc::Channel> channel_;
+  VvkServer::Stub stub_;
+  std::map<void*, void*> local_to_remote_handle_;
 };
 
 struct DeviceInfo {
@@ -51,9 +64,9 @@ struct DeviceInfo {
   VkInstance instance;
 };
 
-std::unordered_map<VkInstance, InstanceInfo> g_instance_infos;
-std::unordered_map<VkDevice, DeviceInfo> g_device_infos;
-std::unordered_map<VkPhysicalDevice, VkInstance> g_physical_device_to_instance;
+std::map<VkInstance, InstanceInfo> g_instance_infos;
+std::map<VkDevice, DeviceInfo> g_device_infos;
+std::map<VkPhysicalDevice, VkInstance> g_physical_device_to_instance;
 
 template <typename FooType, typename RetType, typename... Args>
 RetType CallDownInstanceFunc(std::string_view func_name, VkInstance instance, Args... args) {
@@ -143,10 +156,11 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
 
   VkResult result = nxtCreateInstance(pCreateInfo, pAllocator, pInstance);
 
-  // must be this way due to copy/move constructors of grpc objects
-  g_instance_infos.emplace(
-      std::piecewise_construct, std::forward_as_tuple(*pInstance),
-      std::forward_as_tuple(nxt_gipa, grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials())));
+  const auto [iter, inserted] = g_instance_infos.try_emplace(
+      *pInstance, nxt_gipa, grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials()));
+  assert(inserted);
+
+  InstanceInfo& instance_info = iter->second;
 
   // call remote create instance
   {
@@ -157,11 +171,12 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
     RemoveStructsFromChain(reinterpret_cast<VkBaseInStructure*>(&remote_create_info),
                            VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO);
 
-    auto reader_writer = g_instance_infos.at(*pInstance).command_stream.get();
+    auto reader_writer = instance_info.command_stream.get();
 
     // We don't want to overwrite the local instance handle with the remote one
     VkInstance remote_instance = *pInstance;
     PackAndCallVkCreateInstance(reader_writer, &remote_create_info, pAllocator, &remote_instance);
+    instance_info.SetRemoteHandle(*pInstance, remote_instance);
   }
 
   return result;
@@ -170,12 +185,11 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
 VKAPI_ATTR void VKAPI_CALL DestroyInstance(VkInstance instance, const VkAllocationCallbacks* pAllocator) {
   spdlog::trace("DestroyInstance");
 
-  PFN_vkGetInstanceProcAddr nxt_gipa = g_instance_infos.at(instance).nxt_gipa;
-
+  InstanceInfo& instance_info = g_instance_infos.at(instance);
   CallDownInstanceFunc<PFN_vkDestroyInstance, void>("vkDestroyInstance", instance, pAllocator);
 
-  auto reader_writer = g_instance_infos.at(instance).command_stream.get();
-  PackAndCallVkDestroyInstance(reader_writer, instance, pAllocator);
+  auto reader_writer = instance_info.command_stream.get();
+  PackAndCallVkDestroyInstance(reader_writer, instance_info.GetRemoteHandle(instance), pAllocator);
 
   g_instance_infos.erase(instance);
 }
@@ -192,7 +206,7 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumeratePhysicalDevices(VkInstance instance, uin
 
   if (pPhysicalDevices != nullptr) {
     for (uint32_t i = 0; i < *pPhysicalDeviceCount; i++) {
-      g_physical_device_to_instance[pPhysicalDevices[i]] = instance;
+      g_physical_device_to_instance.insert_or_assign(pPhysicalDevices[i], instance);
     }
   }
 
@@ -222,7 +236,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     layer_device_info_mut->u.pLayerInfo = layer_device_info->u.pLayerInfo->pNext;
   }
 
-  const InstanceInfo& instance_info = g_instance_infos.at(g_physical_device_to_instance.at(physicalDevice));
+  InstanceInfo& instance_info = g_instance_infos.at(g_physical_device_to_instance.at(physicalDevice));
 
   PFN_vkCreateDevice nxtCreateDevice =
       reinterpret_cast<PFN_vkCreateDevice>(instance_info.nxt_gipa(nullptr, "vkCreateDevice"));
@@ -248,6 +262,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 
     PackAndCallVkCreateDevice(instance_info.command_stream.get(), physicalDevice, &remote_create_info, pAllocator,
                               &remote_device);
+    instance_info.SetRemoteHandle(*pDevice, remote_device);
   }
 
   return result;
@@ -256,8 +271,10 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCallbacks* pAllocator) {
   CallDownDeviceFunc<PFN_vkDestroyDevice, void>("vkDestroyDevice", device, pAllocator);
 
-  auto reader_writer = g_instance_infos.at(g_device_infos.at(device).instance).command_stream.get();
-  PackAndCallVkDestroyDevice(reader_writer, device, pAllocator);
+  InstanceInfo& instance_info = g_instance_infos.at(g_device_infos.at(device).instance);
+
+  auto reader_writer = instance_info.command_stream.get();
+  PackAndCallVkDestroyDevice(reader_writer, instance_info.GetRemoteHandle(device), pAllocator);
 
   g_device_infos.erase(device);
 }

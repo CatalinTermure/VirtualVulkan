@@ -1,7 +1,7 @@
 from xml.etree import ElementTree
 from reg import Registry
 from generators.base_generator import BaseGenerator, BaseGeneratorOptions, SetTargetApiName, SetMergedApiNames, Param
-from .commons import first_letter_upper, COMMANDS_TO_GENERATE, fill_proto_from_struct, fill_struct_from_proto, indent
+from .commons import first_letter_upper, COMMANDS_TO_GENERATE, fill_proto_from_struct, fill_struct_from_proto, indent, TRIVIAL_TYPES
 
 
 def log(*args):
@@ -111,6 +111,18 @@ class ClientSrcGenerator(BaseGenerator):
         elif param.type in self.vk.handles:
             out.append(
                 f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}(reinterpret_cast<uint64_t>({param.name}));\n')
+        elif param.type in TRIVIAL_TYPES:
+            type_info = TRIVIAL_TYPES[param.type]
+            if param.length is None:
+                if type_info.cast_to is None:
+                    out.append(
+                        f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}({param.name});\n')
+                else:
+                    out.append(
+                        f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}(static_cast<{type_info.cast_to}>({param.name}));\n')
+            else:
+                log("trivial type with non-zero length:",
+                    cmd_name, param.cDeclaration)
         else:
             out.append(
                 f"  // Unsupported param: {param.cDeclaration}\n")

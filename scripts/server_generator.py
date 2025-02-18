@@ -1,7 +1,7 @@
 from xml.etree import ElementTree
 from reg import Registry
 from generators.base_generator import BaseGenerator, BaseGeneratorOptions, SetTargetApiName, SetMergedApiNames
-from .commons import first_letter_upper, COMMANDS_TO_GENERATE, fill_proto_from_struct, fill_struct_from_proto, indent
+from .commons import first_letter_upper, COMMANDS_TO_GENERATE, fill_proto_from_struct, fill_struct_from_proto, indent, TRIVIAL_TYPES
 
 
 def log(*args):
@@ -66,8 +66,6 @@ class ServerSrcGenerator(BaseGenerator):
                         out.append(f'  {param.type} server_{param.name};\n')
                         after_call_code.append(
                             f'  response->mutable_{cmd_name.lower()}()->set_{param.name.lower()}(reinterpret_cast<uint64_t>(server_{param.name}));\n')
-                        after_call_code.append(
-                            f'  context.SetHandleAssociation(client_{param.name}, server_{param.name});\n')
                     else:
                         # only vkEnumerate* commands return multiple handles
                         assert ("vkEnumerate" in cmd_name or cmd_name in [
@@ -151,7 +149,19 @@ class ServerSrcGenerator(BaseGenerator):
                         actual_parameters.append("context.physical_device()")
                     else:
                         actual_parameters.append(
-                            f'context.GetServerHandle(reinterpret_cast<{param.type}_T*>({param_accessor}.{param.name.lower()}()))')
+                            f'reinterpret_cast<{param.type}_T*>({param_accessor}.{param.name.lower()}())')
+                elif param.type in TRIVIAL_TYPES:
+                    type_info = TRIVIAL_TYPES[param.type]
+                    if param.length is None:
+                        if type_info.cast_to is None:
+                            actual_parameters.append(
+                                f'{param_accessor}.{param.name.lower()}()')
+                        else:
+                            actual_parameters.append(
+                                f'static_cast<{param.type}>({param_accessor}.{param.name.lower()}())')
+                    else:
+                        log("trivial type with non-zero length:",
+                            cmd_name, param.cDeclaration)
                 else:
                     log("UNHANDLED PARAM:", cmd_name, param.name)
 
@@ -165,10 +175,6 @@ class ServerSrcGenerator(BaseGenerator):
             out.append(");\n")
 
             out.extend(after_call_code)
-
-            if "vkDestroy" in cmd_name:
-                out.append(
-                    f'  context.RemoveAssociatedHandle(reinterpret_cast<void*>({param_accessor}.{command.params[0].name.lower()}()));\n')
 
             # populate the response
             if command.returnType == "VkResult":
