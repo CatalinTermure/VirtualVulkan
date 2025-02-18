@@ -33,6 +33,7 @@ COMMANDS_TO_GENERATE = [
     "vkDestroyDevice",
     "vkEnumerateInstanceExtensionProperties",
     "vkEnumerateDeviceExtensionProperties",
+    "vkGetPhysicalDeviceMemoryProperties",
 ]
 
 
@@ -133,8 +134,26 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
                 print("unknown length member:",
                       struct_type, member.cDeclaration)
     elif not member.pointer and member.type in generator.vk.structs:
-        out.append(fill_struct_from_proto(generator, member.type,
-                                          f'{name}.{member.name}', f'{proto_accessor}.{member.name.lower()}()'))
+        if member.length is None:
+            out.append(fill_struct_from_proto(generator, member.type,
+                                              f'{name}.{member.name}', f'{proto_accessor}.{member.name.lower()}()'))
+        else:
+            # if it's not a pointer, it must be a fixed size array
+            assert (member.fixedSizeArray)
+            if member.length in [member.name for member in struct.members]:
+                count_variable = [
+                    count_var for count_var in struct.members if count_var.name == member.length][0]
+                out.append(
+                    f'  for (int i = 0; i < {proto_accessor}.{count_variable.name.lower()}(); i++)')
+                out.append(' {\n')
+                out.append(
+                    f'    {member.type} &{name}_{member.name}_i = {name}.{member.name}[i];\n')
+                out.append(indent(fill_struct_from_proto(
+                    generator, member.type, f'{name}_{member.name}_i', f'{proto_accessor}.{member.name.lower()}(i)'), 2))
+                out.append('  }\n')
+            else:
+                print("fill struct: not pointer, fixed size array of structs, but unknown member length:",
+                      struct_type, member.cDeclaration)
     elif 'const char* const*' in member.cDeclaration:
         aux_var_name = f'{name}_{member.name}'
         pre_fill_declarations.append(
@@ -249,10 +268,27 @@ def __fill_proto_from_member(generator: BaseGenerator, struct_type: str, name: s
                 print("unknown length member:",
                       struct_type, member.cDeclaration)
     elif not member.pointer and member.type in generator.vk.structs:
-        out.append(
-            f'  vvk::server::{member.type}* {name}_{member.name}_proto = {name}->mutable_{member.name.lower()}();\n')
-        out.append(fill_proto_from_struct(generator,
-                                          member.type, f'{name}_{member.name}_proto', f'(&{struct_accessor}->{member.name})'))
+        if member.length is None:
+            out.append(
+                f'  vvk::server::{member.type}* {name}_{member.name}_proto = {name}->mutable_{member.name.lower()}();\n')
+            out.append(fill_proto_from_struct(generator,
+                                              member.type, f'{name}_{member.name}_proto', f'(&{struct_accessor}->{member.name})'))
+        else:
+            # if it's not a pointer, it must be a fixed size array
+            assert (member.fixedSizeArray)
+            if member.length in [member.name for member in struct.members]:
+                count_variable = [
+                    count_var for count_var in struct.members if count_var.name == member.length][0]
+                out.append(
+                    f'  for (int i = 0; i < {struct_accessor}->{count_variable.name}; i++) {{\n')
+                out.append(
+                    f'    vvk::server::{member.type}* {name}_{member.name}_proto = {name}->add_{member.name.lower()}();\n')
+                out.append(indent(fill_proto_from_struct(generator,
+                                                         member.type, f'{name}_{member.name}_proto', f'(&{struct_accessor}->{member.name}[i])'), 2))
+                out.append('  }\n')
+            else:
+                print("fill_proto: not pointer, fixed size array of structs, but unknown member length:",
+                      struct_type, member.cDeclaration)
     elif 'const char* const*' in member.cDeclaration:
         if member.length in [member.name for member in struct.members]:
             count_variable = [

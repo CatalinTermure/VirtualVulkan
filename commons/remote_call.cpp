@@ -456,5 +456,36 @@ VkResult PackAndCallVkEnumerateDeviceExtensionProperties(grpc::ClientReaderWrite
   }
   return static_cast<VkResult>(response.result());
 }
+void PackAndCallVkGetPhysicalDeviceMemoryProperties(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkPhysicalDevice physicalDevice, VkPhysicalDeviceMemoryProperties* pMemoryProperties) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkGetPhysicalDeviceMemoryProperties");
+  request.mutable_vkgetphysicaldevicememoryproperties()->set_physicaldevice(reinterpret_cast<uint64_t>(physicalDevice));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  VkPhysicalDeviceMemoryProperties& pMemoryProperties_ref = *pMemoryProperties;
+  pMemoryProperties_ref.memoryTypeCount = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypecount();
+  for (int i = 0; i < response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypecount(); i++) {
+    VkMemoryType &pMemoryProperties_ref_memoryTypes_i = pMemoryProperties_ref.memoryTypes[i];
+    if (response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(i).has_propertyflags()) {
+      pMemoryProperties_ref_memoryTypes_i.propertyFlags = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(i).propertyflags();
+    }
+    pMemoryProperties_ref_memoryTypes_i.heapIndex = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(i).heapindex();
+  }
+  pMemoryProperties_ref.memoryHeapCount = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheapcount();
+  for (int i = 0; i < response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheapcount(); i++) {
+    VkMemoryHeap &pMemoryProperties_ref_memoryHeaps_i = pMemoryProperties_ref.memoryHeaps[i];
+    pMemoryProperties_ref_memoryHeaps_i.size = static_cast<VkDeviceSize>(response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(i).size());
+    if (response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(i).has_flags()) {
+      pMemoryProperties_ref_memoryHeaps_i.flags = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(i).flags();
+    }
+  }
+}
 }  // namespace vvk
 

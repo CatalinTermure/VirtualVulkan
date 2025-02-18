@@ -293,10 +293,15 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(VkPhysicalDevi
 
   auto command_stream = g_instance_infos.at(g_physical_device_to_instance.at(physicalDevice)).command_stream.get();
 
-  PackAndCallVkEnumerateDeviceExtensionProperties(command_stream, physicalDevice, pLayerName, pPropertyCount,
-                                                  pProperties);
+  return PackAndCallVkEnumerateDeviceExtensionProperties(command_stream, physicalDevice, pLayerName, pPropertyCount,
+                                                         pProperties);
+}
 
-  return VK_SUCCESS;
+VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceMemoryProperties(VkPhysicalDevice physicalDevice,
+                                                             VkPhysicalDeviceMemoryProperties* pMemoryProperties) {
+  // TODO: investigate additional steps needed for this function
+  auto command_stream = g_instance_infos.at(g_physical_device_to_instance.at(physicalDevice)).command_stream.get();
+  return PackAndCallVkGetPhysicalDeviceMemoryProperties(command_stream, physicalDevice, pMemoryProperties);
 }
 
 }  // namespace vvk

@@ -407,4 +407,28 @@ void UnpackAndExecuteVkEnumerateDeviceExtensionProperties(vvk::ExecutionContext&
   }
   response->set_result(result);
 }
+void UnpackAndExecuteVkGetPhysicalDeviceMemoryProperties(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkGetPhysicalDeviceMemoryProperties");
+
+  VkPhysicalDeviceMemoryProperties pMemoryProperties = {};
+  vkGetPhysicalDeviceMemoryProperties(context.physical_device(), &pMemoryProperties);
+  vvk::server::VkPhysicalDeviceMemoryProperties* pMemoryProperties_proto = response->mutable_vkgetphysicaldevicememoryproperties()->mutable_pmemoryproperties();
+  pMemoryProperties_proto->set_memorytypecount((&pMemoryProperties)->memoryTypeCount);
+  for (int i = 0; i < (&pMemoryProperties)->memoryTypeCount; i++) {
+    vvk::server::VkMemoryType* pMemoryProperties_proto_memoryTypes_proto = pMemoryProperties_proto->add_memorytypes();
+    if ((&(&pMemoryProperties)->memoryTypes[i])->propertyFlags) {
+      pMemoryProperties_proto_memoryTypes_proto->set_propertyflags((&(&pMemoryProperties)->memoryTypes[i])->propertyFlags);
+    }
+    pMemoryProperties_proto_memoryTypes_proto->set_heapindex((&(&pMemoryProperties)->memoryTypes[i])->heapIndex);
+  }
+  pMemoryProperties_proto->set_memoryheapcount((&pMemoryProperties)->memoryHeapCount);
+  for (int i = 0; i < (&pMemoryProperties)->memoryHeapCount; i++) {
+    vvk::server::VkMemoryHeap* pMemoryProperties_proto_memoryHeaps_proto = pMemoryProperties_proto->add_memoryheaps();
+    pMemoryProperties_proto_memoryHeaps_proto->set_size(static_cast<uint64_t>((&(&pMemoryProperties)->memoryHeaps[i])->size));
+    if ((&(&pMemoryProperties)->memoryHeaps[i])->flags) {
+      pMemoryProperties_proto_memoryHeaps_proto->set_flags((&(&pMemoryProperties)->memoryHeaps[i])->flags);
+    }
+  }
+  response->set_result(VK_SUCCESS);
+}
 

@@ -2637,6 +2637,16 @@ message VkInstanceCreateInfo {
   repeated string ppEnabledExtensionNames = 6; // const char* const* ppEnabledExtensionNames
 }
 
+message VkMemoryHeap {
+  uint64 size = 1; // VkDeviceSize size
+  optional uint32 flags = 2; // VkMemoryHeapFlags flags
+}
+
+message VkMemoryType {
+  optional uint32 propertyFlags = 1; // VkMemoryPropertyFlags propertyFlags
+  uint32 heapIndex = 2; // uint32_t heapIndex
+}
+
 message VkPhysicalDeviceFeatures {
   bool robustBufferAccess = 1; // VkBool32 robustBufferAccess
   bool fullDrawIndexUint32 = 2; // VkBool32 fullDrawIndexUint32
@@ -2802,6 +2812,13 @@ message VkPhysicalDeviceLimits {
   uint64 optimalBufferCopyOffsetAlignment = 104; // VkDeviceSize optimalBufferCopyOffsetAlignment
   uint64 optimalBufferCopyRowPitchAlignment = 105; // VkDeviceSize optimalBufferCopyRowPitchAlignment
   uint64 nonCoherentAtomSize = 106; // VkDeviceSize nonCoherentAtomSize
+}
+
+message VkPhysicalDeviceMemoryProperties {
+  uint32 memoryTypeCount = 1; // uint32_t memoryTypeCount
+  repeated VkMemoryType memoryTypes = 2; // VkMemoryType memoryTypes[VK_MAX_MEMORY_TYPES]
+  uint32 memoryHeapCount = 3; // uint32_t memoryHeapCount
+  repeated VkMemoryHeap memoryHeaps = 4; // VkMemoryHeap memoryHeaps[VK_MAX_MEMORY_HEAPS]
 }
 
 message VkPhysicalDeviceSparseProperties {

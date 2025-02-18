@@ -19,10 +19,11 @@ message VvkRequest {
     VkDestroyInstanceParams vkDestroyInstance = 3;
     VkEnumeratePhysicalDevicesParams vkEnumeratePhysicalDevices = 4;
     VkGetPhysicalDevicePropertiesParams vkGetPhysicalDeviceProperties = 5;
-    VkCreateDeviceParams vkCreateDevice = 6;
-    VkDestroyDeviceParams vkDestroyDevice = 7;
-    VkEnumerateInstanceExtensionPropertiesParams vkEnumerateInstanceExtensionProperties = 8;
-    VkEnumerateDeviceExtensionPropertiesParams vkEnumerateDeviceExtensionProperties = 9;
+    VkGetPhysicalDeviceMemoryPropertiesParams vkGetPhysicalDeviceMemoryProperties = 6;
+    VkCreateDeviceParams vkCreateDevice = 7;
+    VkDestroyDeviceParams vkDestroyDevice = 8;
+    VkEnumerateInstanceExtensionPropertiesParams vkEnumerateInstanceExtensionProperties = 9;
+    VkEnumerateDeviceExtensionPropertiesParams vkEnumerateDeviceExtensionProperties = 10;
   }
 }
 
@@ -32,9 +33,10 @@ message VvkResponse {
     VkCreateInstanceResponse vkCreateInstance = 2;
     VkEnumeratePhysicalDevicesResponse vkEnumeratePhysicalDevices = 3;
     VkGetPhysicalDevicePropertiesResponse vkGetPhysicalDeviceProperties = 4;
-    VkCreateDeviceResponse vkCreateDevice = 5;
-    VkEnumerateInstanceExtensionPropertiesResponse vkEnumerateInstanceExtensionProperties = 6;
-    VkEnumerateDeviceExtensionPropertiesResponse vkEnumerateDeviceExtensionProperties = 7;
+    VkGetPhysicalDeviceMemoryPropertiesResponse vkGetPhysicalDeviceMemoryProperties = 5;
+    VkCreateDeviceResponse vkCreateDevice = 6;
+    VkEnumerateInstanceExtensionPropertiesResponse vkEnumerateInstanceExtensionProperties = 7;
+    VkEnumerateDeviceExtensionPropertiesResponse vkEnumerateDeviceExtensionProperties = 8;
   }
 }
 
@@ -71,6 +73,15 @@ message VkGetPhysicalDevicePropertiesResponse {
 message VkGetPhysicalDevicePropertiesParams {
   uint64 physicalDevice = 1; // VkPhysicalDevice physicalDevice
   VkPhysicalDeviceProperties pProperties = 2; // VkPhysicalDeviceProperties* pProperties NON-CONST POINTER
+}
+
+message VkGetPhysicalDeviceMemoryPropertiesResponse {
+  VkPhysicalDeviceMemoryProperties pMemoryProperties = 1; // VkPhysicalDeviceMemoryProperties* pMemoryProperties
+}
+
+message VkGetPhysicalDeviceMemoryPropertiesParams {
+  uint64 physicalDevice = 1; // VkPhysicalDevice physicalDevice
+  VkPhysicalDeviceMemoryProperties pMemoryProperties = 2; // VkPhysicalDeviceMemoryProperties* pMemoryProperties NON-CONST POINTER
 }
 
 message VkCreateDeviceResponse {
