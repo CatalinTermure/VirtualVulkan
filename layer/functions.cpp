@@ -310,4 +310,12 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceFeatures(VkPhysicalDevice physicalDe
   return PackAndCallVkGetPhysicalDeviceFeatures(command_stream, physicalDevice, pFeatures);
 }
 
+VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice,
+                                                                  uint32_t* pQueueFamilyPropertyCount,
+                                                                  VkQueueFamilyProperties* pQueueFamilyProperties) {
+  auto command_stream = g_instance_infos.at(g_physical_device_to_instance.at(physicalDevice)).command_stream.get();
+  return PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(command_stream, physicalDevice, pQueueFamilyPropertyCount,
+                                                             pQueueFamilyProperties);
+}
+
 }  // namespace vvk

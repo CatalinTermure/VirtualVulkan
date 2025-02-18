@@ -20,11 +20,12 @@ message VvkRequest {
     VkEnumeratePhysicalDevicesParams vkEnumeratePhysicalDevices = 4;
     VkGetPhysicalDeviceFeaturesParams vkGetPhysicalDeviceFeatures = 5;
     VkGetPhysicalDevicePropertiesParams vkGetPhysicalDeviceProperties = 6;
-    VkGetPhysicalDeviceMemoryPropertiesParams vkGetPhysicalDeviceMemoryProperties = 7;
-    VkCreateDeviceParams vkCreateDevice = 8;
-    VkDestroyDeviceParams vkDestroyDevice = 9;
-    VkEnumerateInstanceExtensionPropertiesParams vkEnumerateInstanceExtensionProperties = 10;
-    VkEnumerateDeviceExtensionPropertiesParams vkEnumerateDeviceExtensionProperties = 11;
+    VkGetPhysicalDeviceQueueFamilyPropertiesParams vkGetPhysicalDeviceQueueFamilyProperties = 7;
+    VkGetPhysicalDeviceMemoryPropertiesParams vkGetPhysicalDeviceMemoryProperties = 8;
+    VkCreateDeviceParams vkCreateDevice = 9;
+    VkDestroyDeviceParams vkDestroyDevice = 10;
+    VkEnumerateInstanceExtensionPropertiesParams vkEnumerateInstanceExtensionProperties = 11;
+    VkEnumerateDeviceExtensionPropertiesParams vkEnumerateDeviceExtensionProperties = 12;
   }
 }
 
@@ -35,10 +36,11 @@ message VvkResponse {
     VkEnumeratePhysicalDevicesResponse vkEnumeratePhysicalDevices = 3;
     VkGetPhysicalDeviceFeaturesResponse vkGetPhysicalDeviceFeatures = 4;
     VkGetPhysicalDevicePropertiesResponse vkGetPhysicalDeviceProperties = 5;
-    VkGetPhysicalDeviceMemoryPropertiesResponse vkGetPhysicalDeviceMemoryProperties = 6;
-    VkCreateDeviceResponse vkCreateDevice = 7;
-    VkEnumerateInstanceExtensionPropertiesResponse vkEnumerateInstanceExtensionProperties = 8;
-    VkEnumerateDeviceExtensionPropertiesResponse vkEnumerateDeviceExtensionProperties = 9;
+    VkGetPhysicalDeviceQueueFamilyPropertiesResponse vkGetPhysicalDeviceQueueFamilyProperties = 6;
+    VkGetPhysicalDeviceMemoryPropertiesResponse vkGetPhysicalDeviceMemoryProperties = 7;
+    VkCreateDeviceResponse vkCreateDevice = 8;
+    VkEnumerateInstanceExtensionPropertiesResponse vkEnumerateInstanceExtensionProperties = 9;
+    VkEnumerateDeviceExtensionPropertiesResponse vkEnumerateDeviceExtensionProperties = 10;
   }
 }
 
@@ -84,6 +86,17 @@ message VkGetPhysicalDevicePropertiesResponse {
 message VkGetPhysicalDevicePropertiesParams {
   uint64 physicalDevice = 1; // VkPhysicalDevice physicalDevice
   VkPhysicalDeviceProperties pProperties = 2; // VkPhysicalDeviceProperties* pProperties NON-CONST POINTER
+}
+
+message VkGetPhysicalDeviceQueueFamilyPropertiesResponse {
+  uint32 pQueueFamilyPropertyCount = 1; // uint32_t* pQueueFamilyPropertyCount
+  repeated VkQueueFamilyProperties pQueueFamilyProperties = 2; // VkQueueFamilyProperties* pQueueFamilyProperties NON-CONST POINTER
+}
+
+message VkGetPhysicalDeviceQueueFamilyPropertiesParams {
+  uint64 physicalDevice = 1; // VkPhysicalDevice physicalDevice
+  uint32 pQueueFamilyPropertyCount = 2; // uint32_t* pQueueFamilyPropertyCount NON-CONST POINTER
+  repeated VkQueueFamilyProperties pQueueFamilyProperties = 3; // VkQueueFamilyProperties* pQueueFamilyProperties NON-CONST POINTER
 }
 
 message VkGetPhysicalDeviceMemoryPropertiesResponse {

@@ -44,7 +44,8 @@ class ClientSrcGenerator(BaseGenerator):
                     f'  *{param.name} = reinterpret_cast<{param.type}>({response_accessor}.{param.name.lower()}());\n')
             else:
                 # only vkEnumerate* commands return multiple handles
-                assert ("vkEnumerate" in cmd_name)
+                assert ("vkEnumerate" in cmd_name or cmd_name in [
+                        "vkGetPhysicalDeviceQueueFamilyProperties"])
 
                 out.append(f'  if ({param.name}) {{\n')
                 out.append(
@@ -73,7 +74,8 @@ class ClientSrcGenerator(BaseGenerator):
                     self, param.type, f'{param.name}_ref', f'{response_accessor}.{param.name.lower()}()'))
             else:
                 # only vkEnumerate* commands return multiple structs
-                assert ("vkEnumerate" in cmd_name)
+                assert ("vkEnumerate" in cmd_name or cmd_name in [
+                        "vkGetPhysicalDeviceQueueFamilyProperties"])
                 assert (param.length in [p.name for p in command.params])
 
                 out.append(f'  if ({param.name}) {{\n')

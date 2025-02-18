@@ -2620,6 +2620,12 @@ enum VkShaderGroupShaderKHR {
   VK_SHADER_GROUP_SHADER_INTERSECTION_KHR = 3;
 }
 
+message VkExtent3D {
+  uint32 width = 1; // uint32_t width
+  uint32 height = 2; // uint32_t height
+  uint32 depth = 3; // uint32_t depth
+}
+
 message VkApplicationInfo {
   optional string pApplicationName = 1; // const char* pApplicationName
   uint32 applicationVersion = 2; // uint32_t applicationVersion
@@ -2839,6 +2845,13 @@ message VkPhysicalDeviceProperties {
   repeated uint32 pipelineCacheUUID = 7; // uint8_t pipelineCacheUUID[VK_UUID_SIZE]
   VkPhysicalDeviceLimits limits = 8; // VkPhysicalDeviceLimits limits
   VkPhysicalDeviceSparseProperties sparseProperties = 9; // VkPhysicalDeviceSparseProperties sparseProperties
+}
+
+message VkQueueFamilyProperties {
+  optional uint32 queueFlags = 1; // VkQueueFlags queueFlags
+  uint32 queueCount = 2; // uint32_t queueCount
+  uint32 timestampValidBits = 3; // uint32_t timestampValidBits
+  VkExtent3D minImageTransferGranularity = 4; // VkExtent3D minImageTransferGranularity
 }
 
 message VkDeviceQueueCreateInfo {

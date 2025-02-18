@@ -494,4 +494,34 @@ void UnpackAndExecuteVkGetPhysicalDeviceFeatures(vvk::ExecutionContext& context,
   pFeatures_proto->set_inheritedqueries((&pFeatures)->inheritedQueries);
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkGetPhysicalDeviceQueueFamilyProperties(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkGetPhysicalDeviceQueueFamilyProperties");
+
+  uint32_t pQueueFamilyPropertyCount = request.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilypropertycount();
+  std::vector<VkQueueFamilyProperties> aux_pQueueFamilyProperties;
+  VkQueueFamilyProperties* pQueueFamilyProperties;
+  if (pQueueFamilyPropertyCount == 0) {
+    pQueueFamilyProperties = nullptr;
+  } else {
+    aux_pQueueFamilyProperties.resize(pQueueFamilyPropertyCount);
+    pQueueFamilyProperties = aux_pQueueFamilyProperties.data();
+  }
+  vkGetPhysicalDeviceQueueFamilyProperties(context.physical_device(), &pQueueFamilyPropertyCount, pQueueFamilyProperties);
+  response->mutable_vkgetphysicaldevicequeuefamilyproperties()->set_pqueuefamilypropertycount(pQueueFamilyPropertyCount);
+  if (request.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilypropertycount() != 0) {
+    for (int i = 0; i < pQueueFamilyPropertyCount; i++) {
+      vvk::server::VkQueueFamilyProperties* pQueueFamilyProperties_proto = response->mutable_vkgetphysicaldevicequeuefamilyproperties()->add_pqueuefamilyproperties();
+      if ((&pQueueFamilyProperties[i])->queueFlags) {
+        pQueueFamilyProperties_proto->set_queueflags((&pQueueFamilyProperties[i])->queueFlags);
+      }
+      pQueueFamilyProperties_proto->set_queuecount((&pQueueFamilyProperties[i])->queueCount);
+      pQueueFamilyProperties_proto->set_timestampvalidbits((&pQueueFamilyProperties[i])->timestampValidBits);
+      vvk::server::VkExtent3D* pQueueFamilyProperties_proto_minImageTransferGranularity_proto = pQueueFamilyProperties_proto->mutable_minimagetransfergranularity();
+      pQueueFamilyProperties_proto_minImageTransferGranularity_proto->set_width((&(&pQueueFamilyProperties[i])->minImageTransferGranularity)->width);
+      pQueueFamilyProperties_proto_minImageTransferGranularity_proto->set_height((&(&pQueueFamilyProperties[i])->minImageTransferGranularity)->height);
+      pQueueFamilyProperties_proto_minImageTransferGranularity_proto->set_depth((&(&pQueueFamilyProperties[i])->minImageTransferGranularity)->depth);
+    }
+  }
+  response->set_result(VK_SUCCESS);
+}
 

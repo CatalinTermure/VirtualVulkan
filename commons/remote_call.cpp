@@ -557,5 +557,43 @@ void PackAndCallVkGetPhysicalDeviceFeatures(grpc::ClientReaderWriter<vvk::server
   pFeatures_ref.variableMultisampleRate = response.vkgetphysicaldevicefeatures().pfeatures().variablemultisamplerate();
   pFeatures_ref.inheritedQueries = response.vkgetphysicaldevicefeatures().pfeatures().inheritedqueries();
 }
+void PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkPhysicalDevice physicalDevice, uint32_t* pQueueFamilyPropertyCount, VkQueueFamilyProperties* pQueueFamilyProperties) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkGetPhysicalDeviceQueueFamilyProperties");
+  request.mutable_vkgetphysicaldevicequeuefamilyproperties()->set_physicaldevice(reinterpret_cast<uint64_t>(physicalDevice));
+  request.mutable_vkgetphysicaldevicequeuefamilyproperties()->set_pqueuefamilypropertycount(*pQueueFamilyPropertyCount);
+  if (pQueueFamilyProperties) {
+    if (pQueueFamilyProperties) {
+      // the value we set is just a sentinel value, only its presence should be checked
+      auto* unused = request.mutable_vkgetphysicaldevicequeuefamilyproperties()->add_pqueuefamilyproperties();
+    } else {
+      request.mutable_vkgetphysicaldevicequeuefamilyproperties()->set_pqueuefamilypropertycount(0);
+    }
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pQueueFamilyPropertyCount = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilypropertycount();
+  if (pQueueFamilyProperties) {
+    assert(*pQueueFamilyPropertyCount == response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilypropertycount());
+    for (int i = 0; i < *pQueueFamilyPropertyCount; i++) {
+      VkQueueFamilyProperties& pQueueFamilyProperties_ref = pQueueFamilyProperties[i];
+      if (response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(i).has_queueflags()) {
+        pQueueFamilyProperties_ref.queueFlags = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(i).queueflags();
+      }
+      pQueueFamilyProperties_ref.queueCount = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(i).queuecount();
+      pQueueFamilyProperties_ref.timestampValidBits = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(i).timestampvalidbits();
+      pQueueFamilyProperties_ref.minImageTransferGranularity.width = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(i).minimagetransfergranularity().width();
+      pQueueFamilyProperties_ref.minImageTransferGranularity.height = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(i).minimagetransfergranularity().height();
+      pQueueFamilyProperties_ref.minImageTransferGranularity.depth = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(i).minimagetransfergranularity().depth();
+    }
+  }
+}
 }  // namespace vvk
 

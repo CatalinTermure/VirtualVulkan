@@ -70,7 +70,8 @@ class ServerSrcGenerator(BaseGenerator):
                             f'  context.SetHandleAssociation(client_{param.name}, server_{param.name});\n')
                     else:
                         # only vkEnumerate* commands return multiple handles
-                        assert ("vkEnumerate" in cmd_name)
+                        assert ("vkEnumerate" in cmd_name or cmd_name in [
+                            "vkGetPhysicalDeviceQueueFamilyProperties"])
                         assert (param.length in [
                                 p.name for p in command.params])
                         actual_parameters.append(f'{param.name}')
@@ -109,7 +110,8 @@ class ServerSrcGenerator(BaseGenerator):
                             self, param.type, f'{param.name}_proto', f'(&{param.name})'))
                     else:
                         # only vkEnumerate* commands return multiple structs
-                        assert ("vkEnumerate" in cmd_name)
+                        assert ("vkEnumerate" in cmd_name or cmd_name in [
+                            "vkGetPhysicalDeviceQueueFamilyProperties"])
                         assert (param.length in [
                                 p.name for p in command.params])
                         actual_parameters.append(f'{param.name}')
