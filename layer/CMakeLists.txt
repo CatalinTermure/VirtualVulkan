@@ -5,6 +5,7 @@ add_library(
     layer.cpp
     function_loading.h function_loading.cpp
     functions.h functions.cpp
+    context.h context.cpp
 )
 target_include_directories(VirtualVulkanLayer PRIVATE ../)
 

@@ -1,4 +1,4 @@
-#include "layer/functions.h"
+#include "functions.h"
 
 #include <grpcpp/grpcpp.h>
 #include <spdlog/spdlog.h>
@@ -11,66 +11,20 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string_view>
 #include <utility>
 
 #include "commons/remote_call.h"
-#include "functions.h"
+#include "layer/context.h"
 
 namespace vvk {
 
 namespace {
 
-using vvk::server::VvkServer;
-
-class InstanceInfo {
- public:
-  PFN_vkGetInstanceProcAddr nxt_gipa;
-  std::unique_ptr<grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>> command_stream;
-
-  InstanceInfo(PFN_vkGetInstanceProcAddr nxt_gipa, std::shared_ptr<grpc::Channel> channel)
-      : nxt_gipa(nxt_gipa), channel_(channel), stub_(channel) {
-    command_stream = stub_.CallMethods(&client_context_);
-  }
-
-  template <typename T>
-  T GetRemoteHandle(T local_handle) const {
-    return reinterpret_cast<T>(local_to_remote_handle_.at(reinterpret_cast<void*>(local_handle)));
-  }
-
-  template <typename T>
-  void SetRemoteHandle(T local_handle, T remote_handle) {
-    local_to_remote_handle_.emplace(reinterpret_cast<void*>(local_handle), reinterpret_cast<void*>(remote_handle));
-  }
-
-  InstanceInfo(const InstanceInfo&) = delete;
-  InstanceInfo& operator=(const InstanceInfo&) = delete;
-
-  ~InstanceInfo() {
-    command_stream->WritesDone();
-    command_stream->Finish();
-  }
-
- private:
-  grpc::ClientContext client_context_;
-  std::shared_ptr<grpc::Channel> channel_;
-  VvkServer::Stub stub_;
-  std::map<void*, void*> local_to_remote_handle_;
-};
-
-struct DeviceInfo {
-  PFN_vkGetDeviceProcAddr nxt_gdpa;
-  VkPhysicalDevice physical_device;
-  VkInstance instance;
-};
-
-std::map<VkInstance, InstanceInfo> g_instance_infos;
-std::map<VkDevice, DeviceInfo> g_device_infos;
-std::map<VkPhysicalDevice, VkInstance> g_physical_device_to_instance;
-
 template <typename FooType, typename RetType, typename... Args>
 RetType CallDownInstanceFunc(std::string_view func_name, VkInstance instance, Args... args) {
-  FooType nxt_func = reinterpret_cast<FooType>(g_instance_infos.at(instance).nxt_gipa(instance, func_name.data()));
+  FooType nxt_func = reinterpret_cast<FooType>(GetInstanceInfo(instance).nxt_gipa(instance, func_name.data()));
   if (!nxt_func) {
     spdlog::critical("Failed to fetch {} from next layer", func_name);
   }
@@ -80,7 +34,7 @@ RetType CallDownInstanceFunc(std::string_view func_name, VkInstance instance, Ar
 
 template <typename FooType, typename RetType, typename... Args>
 RetType CallDownDeviceFunc(std::string_view func_name, VkDevice device, Args... args) {
-  FooType nxt_func = reinterpret_cast<FooType>(g_device_infos.at(device).nxt_gdpa(device, func_name.data()));
+  FooType nxt_func = reinterpret_cast<FooType>(GetDeviceInfo(device).nxt_gdpa(device, func_name.data()));
   if (!nxt_func) {
     spdlog::critical("Failed to fetch {} from next layer", func_name);
   }
@@ -122,10 +76,10 @@ void RemoveStructsFromChain(VkBaseInStructure* base_struct, VkStructureType sTyp
 }  // namespace
 
 PFN_vkVoidFunction DefaultGetInstanceProcAddr(VkInstance instance, const char* pName) {
-  return g_instance_infos.at(instance).nxt_gipa(instance, pName);
+  return GetInstanceInfo(instance).nxt_gipa(instance, pName);
 }
 PFN_vkVoidFunction DefaultGetDeviceProcAddr(VkDevice device, const char* pName) {
-  return g_device_infos.at(device).nxt_gdpa(device, pName);
+  return GetDeviceInfo(device).nxt_gdpa(device, pName);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreateInfo,
@@ -156,11 +110,8 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
 
   VkResult result = nxtCreateInstance(pCreateInfo, pAllocator, pInstance);
 
-  const auto [iter, inserted] = g_instance_infos.try_emplace(
-      *pInstance, nxt_gipa, grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials()));
-  assert(inserted);
-
-  InstanceInfo& instance_info = iter->second;
+  InstanceInfo& instance_info =
+      SetInstanceInfo(*pInstance, nxt_gipa, grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials()));
 
   // call remote create instance
   {
@@ -185,13 +136,13 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
 VKAPI_ATTR void VKAPI_CALL DestroyInstance(VkInstance instance, const VkAllocationCallbacks* pAllocator) {
   spdlog::trace("DestroyInstance");
 
-  InstanceInfo& instance_info = g_instance_infos.at(instance);
+  InstanceInfo& instance_info = GetInstanceInfo(instance);
   CallDownInstanceFunc<PFN_vkDestroyInstance, void>("vkDestroyInstance", instance, pAllocator);
 
   auto reader_writer = instance_info.command_stream.get();
   PackAndCallVkDestroyInstance(reader_writer, instance_info.GetRemoteHandle(instance), pAllocator);
 
-  g_instance_infos.erase(instance);
+  RemoveInstanceInfo(instance);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL EnumeratePhysicalDevices(VkInstance instance, uint32_t* pPhysicalDeviceCount,
@@ -206,7 +157,7 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumeratePhysicalDevices(VkInstance instance, uin
 
   if (pPhysicalDevices != nullptr) {
     for (uint32_t i = 0; i < *pPhysicalDeviceCount; i++) {
-      g_physical_device_to_instance.insert_or_assign(pPhysicalDevices[i], instance);
+      AssociatePhysicalDeviceWithInstance(pPhysicalDevices[i], instance);
     }
   }
 
@@ -215,9 +166,7 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumeratePhysicalDevices(VkInstance instance, uin
 
 VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceProperties(VkPhysicalDevice physicalDevice,
                                                        VkPhysicalDeviceProperties* pProperties) {
-  VkInstance instance = g_physical_device_to_instance.at(physicalDevice);
-
-  PackAndCallVkGetPhysicalDeviceProperties(g_instance_infos.at(instance).command_stream.get(), physicalDevice,
+  PackAndCallVkGetPhysicalDeviceProperties(GetInstanceInfo(physicalDevice).command_stream.get(), physicalDevice,
                                            pProperties);
 }
 
@@ -236,7 +185,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     layer_device_info_mut->u.pLayerInfo = layer_device_info->u.pLayerInfo->pNext;
   }
 
-  InstanceInfo& instance_info = g_instance_infos.at(g_physical_device_to_instance.at(physicalDevice));
+  InstanceInfo& instance_info = GetInstanceInfo(physicalDevice);
 
   PFN_vkCreateDevice nxtCreateDevice =
       reinterpret_cast<PFN_vkCreateDevice>(instance_info.nxt_gipa(nullptr, "vkCreateDevice"));
@@ -247,12 +196,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 
   VkResult result = nxtCreateDevice(physicalDevice, pCreateInfo, pAllocator, pDevice);
 
-  DeviceInfo device_info;
-  device_info.nxt_gdpa = nxt_gdpa;
-  device_info.physical_device = physicalDevice;
-  device_info.instance = g_physical_device_to_instance.at(physicalDevice);
-
-  g_device_infos[*pDevice] = device_info;
+  SetDeviceInfo(*pDevice, nxt_gdpa, physicalDevice);
 
   {
     VkDeviceCreateInfo remote_create_info = *pCreateInfo;
@@ -271,12 +215,12 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCallbacks* pAllocator) {
   CallDownDeviceFunc<PFN_vkDestroyDevice, void>("vkDestroyDevice", device, pAllocator);
 
-  InstanceInfo& instance_info = g_instance_infos.at(g_device_infos.at(device).instance);
+  InstanceInfo& instance_info = GetInstanceInfo(device);
 
   auto reader_writer = instance_info.command_stream.get();
   PackAndCallVkDestroyDevice(reader_writer, instance_info.GetRemoteHandle(device), pAllocator);
 
-  g_device_infos.erase(device);
+  RemoveDeviceInfo(device);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL EnumerateInstanceExtensionProperties(const char* pLayerName, uint32_t* pPropertyCount,
@@ -295,8 +239,8 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(VkPhysicalDevi
                                                                   const char* pLayerName, uint32_t* pPropertyCount,
                                                                   VkExtensionProperties* pProperties) {
   if (!pLayerName || strcmp(pLayerName, "VK_LAYER_VVK_virtual_vulkan") != 0) {
-    VkInstance instance = g_physical_device_to_instance.at(physicalDevice);
-    PFN_vkGetInstanceProcAddr nxt_gipa = g_instance_infos.at(instance).nxt_gipa;
+    VkInstance instance = GetInstanceForPhysicalDevice(physicalDevice);
+    PFN_vkGetInstanceProcAddr nxt_gipa = GetInstanceInfo(instance).nxt_gipa;
     PFN_vkEnumerateDeviceExtensionProperties nxtEnumerateDeviceExtensionProperties =
         reinterpret_cast<PFN_vkEnumerateDeviceExtensionProperties>(
             nxt_gipa(instance, "vkEnumerateDeviceExtensionProperties"));
@@ -308,7 +252,7 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(VkPhysicalDevi
     return nxtEnumerateDeviceExtensionProperties(physicalDevice, pLayerName, pPropertyCount, pProperties);
   }
 
-  auto command_stream = g_instance_infos.at(g_physical_device_to_instance.at(physicalDevice)).command_stream.get();
+  auto command_stream = GetInstanceInfo(physicalDevice).command_stream.get();
 
   return PackAndCallVkEnumerateDeviceExtensionProperties(command_stream, physicalDevice, pLayerName, pPropertyCount,
                                                          pProperties);
@@ -317,20 +261,20 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(VkPhysicalDevi
 VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceMemoryProperties(VkPhysicalDevice physicalDevice,
                                                              VkPhysicalDeviceMemoryProperties* pMemoryProperties) {
   // TODO: investigate additional steps needed for this function
-  auto command_stream = g_instance_infos.at(g_physical_device_to_instance.at(physicalDevice)).command_stream.get();
+  auto command_stream = GetInstanceInfo(physicalDevice).command_stream.get();
   return PackAndCallVkGetPhysicalDeviceMemoryProperties(command_stream, physicalDevice, pMemoryProperties);
 }
 
 VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceFeatures(VkPhysicalDevice physicalDevice,
                                                      VkPhysicalDeviceFeatures* pFeatures) {
-  auto command_stream = g_instance_infos.at(g_physical_device_to_instance.at(physicalDevice)).command_stream.get();
+  auto command_stream = GetInstanceInfo(physicalDevice).command_stream.get();
   return PackAndCallVkGetPhysicalDeviceFeatures(command_stream, physicalDevice, pFeatures);
 }
 
 VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice,
                                                                   uint32_t* pQueueFamilyPropertyCount,
                                                                   VkQueueFamilyProperties* pQueueFamilyProperties) {
-  auto command_stream = g_instance_infos.at(g_physical_device_to_instance.at(physicalDevice)).command_stream.get();
+  auto command_stream = GetInstanceInfo(physicalDevice).command_stream.get();
   return PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(command_stream, physicalDevice, pQueueFamilyPropertyCount,
                                                              pQueueFamilyProperties);
 }
