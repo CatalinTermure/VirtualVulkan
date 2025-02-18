@@ -21,6 +21,8 @@ message VvkRequest {
     VkGetPhysicalDevicePropertiesParams vkGetPhysicalDeviceProperties = 5;
     VkCreateDeviceParams vkCreateDevice = 6;
     VkDestroyDeviceParams vkDestroyDevice = 7;
+    VkEnumerateInstanceExtensionPropertiesParams vkEnumerateInstanceExtensionProperties = 8;
+    VkEnumerateDeviceExtensionPropertiesParams vkEnumerateDeviceExtensionProperties = 9;
   }
 }
 
@@ -31,6 +33,8 @@ message VvkResponse {
     VkEnumeratePhysicalDevicesResponse vkEnumeratePhysicalDevices = 3;
     VkGetPhysicalDevicePropertiesResponse vkGetPhysicalDeviceProperties = 4;
     VkCreateDeviceResponse vkCreateDevice = 5;
+    VkEnumerateInstanceExtensionPropertiesResponse vkEnumerateInstanceExtensionProperties = 6;
+    VkEnumerateDeviceExtensionPropertiesResponse vkEnumerateDeviceExtensionProperties = 7;
   }
 }
 
@@ -83,6 +87,29 @@ message VkCreateDeviceParams {
 message VkDestroyDeviceParams {
   optional uint64 device = 1; // VkDevice device
   optional VkAllocationCallbacks pAllocator = 2; // const VkAllocationCallbacks* pAllocator
+}
+
+message VkEnumerateInstanceExtensionPropertiesResponse {
+  uint32 pPropertyCount = 1; // uint32_t* pPropertyCount
+  repeated VkExtensionProperties pProperties = 2; // VkExtensionProperties* pProperties NON-CONST POINTER
+}
+
+message VkEnumerateInstanceExtensionPropertiesParams {
+  optional string pLayerName = 1; // const char* pLayerName
+  uint32 pPropertyCount = 2; // uint32_t* pPropertyCount NON-CONST POINTER
+  repeated VkExtensionProperties pProperties = 3; // VkExtensionProperties* pProperties NON-CONST POINTER
+}
+
+message VkEnumerateDeviceExtensionPropertiesResponse {
+  uint32 pPropertyCount = 1; // uint32_t* pPropertyCount
+  repeated VkExtensionProperties pProperties = 2; // VkExtensionProperties* pProperties NON-CONST POINTER
+}
+
+message VkEnumerateDeviceExtensionPropertiesParams {
+  uint64 physicalDevice = 1; // VkPhysicalDevice physicalDevice
+  optional string pLayerName = 2; // const char* pLayerName
+  uint32 pPropertyCount = 3; // uint32_t* pPropertyCount NON-CONST POINTER
+  repeated VkExtensionProperties pProperties = 4; // VkExtensionProperties* pProperties NON-CONST POINTER
 }
 
 

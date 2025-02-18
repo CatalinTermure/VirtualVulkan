@@ -361,4 +361,50 @@ void UnpackAndExecuteVkDestroyDevice(vvk::ExecutionContext& context, const vvk::
   context.RemoveAssociatedHandle(reinterpret_cast<void*>(request.vkdestroydevice().device()));
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkEnumerateInstanceExtensionProperties(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkEnumerateInstanceExtensionProperties");
+
+  uint32_t pPropertyCount = request.vkenumerateinstanceextensionproperties().ppropertycount();
+  std::vector<VkExtensionProperties> aux_pProperties;
+  VkExtensionProperties* pProperties;
+  if (pPropertyCount == 0) {
+    pProperties = nullptr;
+  } else {
+    aux_pProperties.resize(pPropertyCount);
+    pProperties = aux_pProperties.data();
+  }
+  VkResult result = vkEnumerateInstanceExtensionProperties(request.vkenumerateinstanceextensionproperties().playername().data(), &pPropertyCount, pProperties);
+  response->mutable_vkenumerateinstanceextensionproperties()->set_ppropertycount(pPropertyCount);
+  if (request.vkenumerateinstanceextensionproperties().ppropertycount() != 0) {
+    for (int i = 0; i < pPropertyCount; i++) {
+      vvk::server::VkExtensionProperties* pProperties_proto = response->mutable_vkenumerateinstanceextensionproperties()->add_pproperties();
+      pProperties_proto->set_extensionname((&pProperties[i])->extensionName);
+      pProperties_proto->set_specversion((&pProperties[i])->specVersion);
+    }
+  }
+  response->set_result(result);
+}
+void UnpackAndExecuteVkEnumerateDeviceExtensionProperties(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkEnumerateDeviceExtensionProperties");
+
+  uint32_t pPropertyCount = request.vkenumeratedeviceextensionproperties().ppropertycount();
+  std::vector<VkExtensionProperties> aux_pProperties;
+  VkExtensionProperties* pProperties;
+  if (pPropertyCount == 0) {
+    pProperties = nullptr;
+  } else {
+    aux_pProperties.resize(pPropertyCount);
+    pProperties = aux_pProperties.data();
+  }
+  VkResult result = vkEnumerateDeviceExtensionProperties(context.physical_device(), request.vkenumeratedeviceextensionproperties().playername().data(), &pPropertyCount, pProperties);
+  response->mutable_vkenumeratedeviceextensionproperties()->set_ppropertycount(pPropertyCount);
+  if (request.vkenumeratedeviceextensionproperties().ppropertycount() != 0) {
+    for (int i = 0; i < pPropertyCount; i++) {
+      vvk::server::VkExtensionProperties* pProperties_proto = response->mutable_vkenumeratedeviceextensionproperties()->add_pproperties();
+      pProperties_proto->set_extensionname((&pProperties[i])->extensionName);
+      pProperties_proto->set_specversion((&pProperties[i])->specVersion);
+    }
+  }
+  response->set_result(result);
+}
 

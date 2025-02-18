@@ -16,6 +16,7 @@ class ClientSrcGenerator(BaseGenerator):
         out = []
         after_call_code = []
         response_accessor = f'response.{cmd_name.lower()}()'
+        command = self.vk.commands[cmd_name]
         if param.type in ['VkAllocationCallbacks']:
             return "", ""
         elif param.pointer and param.const and param.type in self.vk.structs:
@@ -24,6 +25,14 @@ class ClientSrcGenerator(BaseGenerator):
                     f'  vvk::server::{param.type}* {param.name}_proto = request.mutable_{cmd_name.lower()}()->mutable_{param.name.lower()}();\n')
                 out.append(fill_proto_from_struct(self,
                                                   param.type, f'{param.name}_proto', f'{param.name}'))
+            else:
+                log("non zero length param:",
+                    cmd_name, param.cDeclaration)
+        elif param.pointer and param.const:
+            if param.length is None:
+                assert (param.type == 'char')
+                out.append(
+                    f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}({param.name});\n')
             else:
                 log("non zero length param:",
                     cmd_name, param.cDeclaration)
@@ -57,10 +66,37 @@ class ClientSrcGenerator(BaseGenerator):
                 after_call_code.append("    }\n")
                 after_call_code.append("  }\n")
         elif param.pointer and not param.const and param.type in self.vk.structs:
-            after_call_code.append(
-                f'  {param.type}& {param.name}_ref = *{param.name};\n')
-            after_call_code.append(fill_struct_from_proto(
-                self, param.type, f'{param.name}_ref', f'{response_accessor}.{param.name.lower()}()'))
+            if param.length is None:
+                after_call_code.append(
+                    f'  {param.type}& {param.name}_ref = *{param.name};\n')
+                after_call_code.append(fill_struct_from_proto(
+                    self, param.type, f'{param.name}_ref', f'{response_accessor}.{param.name.lower()}()'))
+            else:
+                # only vkEnumerate* commands return multiple structs
+                assert ("vkEnumerate" in cmd_name)
+                assert (param.length in [p.name for p in command.params])
+
+                out.append(f'  if ({param.name}) {{\n')
+                out.append(
+                    "    // the value we set is just a sentinel value, only its presence should be checked\n")
+                out.append(
+                    f'    auto* unused = request.mutable_{cmd_name.lower()}()->add_{param.name.lower()}();\n')
+                out.append("  } else {\n")
+                out.append(
+                    f'    request.mutable_{cmd_name.lower()}()->set_{param.length.lower()}(0);\n')
+                out.append("  }\n")
+
+                after_call_code.append(f'  if ({param.name}) {{\n')
+                after_call_code.append(
+                    f'    assert(*{param.length} == {response_accessor}.{param.length.lower()}());\n')
+                after_call_code.append(
+                    f'    for (int i = 0; i < *{param.length}; i++) {{\n')
+                after_call_code.append(
+                    f'      {param.type}& {param.name}_ref = {param.name}[i];\n')
+                after_call_code.append(indent(fill_struct_from_proto(
+                    self, param.type, f'{param.name}_ref', f'{response_accessor}.{param.name.lower()}(i)'), 4))
+                after_call_code.append("    }\n")
+                after_call_code.append("  }\n")
         elif param.pointer and not param.const:
             if param.length is None:
                 out.append(

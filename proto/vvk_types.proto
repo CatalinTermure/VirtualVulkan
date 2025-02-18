@@ -2842,4 +2842,9 @@ message VkDeviceCreateInfo {
   optional VkPhysicalDeviceFeatures pEnabledFeatures = 8; // const VkPhysicalDeviceFeatures* pEnabledFeatures
 }
 
+message VkExtensionProperties {
+  string extensionName = 1; // char extensionName[VK_MAX_EXTENSION_NAME_SIZE]
+  uint32 specVersion = 2; // uint32_t specVersion
+}
+
 

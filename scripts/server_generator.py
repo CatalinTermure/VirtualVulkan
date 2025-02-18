@@ -1,7 +1,7 @@
 from xml.etree import ElementTree
 from reg import Registry
 from generators.base_generator import BaseGenerator, BaseGeneratorOptions, SetTargetApiName, SetMergedApiNames
-from .commons import first_letter_upper, COMMANDS_TO_GENERATE, fill_proto_from_struct, fill_struct_from_proto
+from .commons import first_letter_upper, COMMANDS_TO_GENERATE, fill_proto_from_struct, fill_struct_from_proto, indent
 
 
 def log(*args):
@@ -41,13 +41,20 @@ class ServerSrcGenerator(BaseGenerator):
                 if param.type in ["VkAllocationCallbacks"]:
                     actual_parameters.append("nullptr")
                     continue
-                elif param.const and param.pointer:
-                    assert (param.type in self.vk.structs)
+                elif param.const and param.pointer and param.type in self.vk.structs:
                     actual_parameters.append(f'&{param.name}')
                     if param.length is None:
                         out.append(f'  {param.type} {param.name} = {{}};\n')
                         out.append(fill_struct_from_proto(self,
                                                           param.type, param.name, f'{param_accessor}.{param.name.lower()}()'))
+                    else:
+                        log("non zero length param:",
+                            cmd_name, param.cDeclaration)
+                elif param.const and param.pointer:
+                    if param.length is None:
+                        assert (param.type == 'char')
+                        actual_parameters.append(
+                            f'{param_accessor}.{param.name.lower()}().data()')
                     else:
                         log("non zero length param:",
                             cmd_name, param.cDeclaration)
@@ -91,15 +98,46 @@ class ServerSrcGenerator(BaseGenerator):
                         after_call_code.append("    }\n")
                         after_call_code.append("  }\n")
                 elif param.pointer and not param.const and param.type in self.vk.structs:
-                    actual_parameters.append(f'&{param.name}')
+                    if param.length is None:
+                        actual_parameters.append(f'&{param.name}')
 
-                    out.append(f'  {param.type} {param.name} = {{}};\n')
+                        out.append(f'  {param.type} {param.name} = {{}};\n')
 
-                    after_call_code.append(
-                        f'  vvk::server::{param.type}* {param.name}_proto = response->mutable_{cmd_name.lower()}()->mutable_{param.name.lower()}();\n')
-                    after_call_code.append(fill_proto_from_struct(
-                        self, param.type, f'{param.name}_proto', f'(&{param.name})'))
+                        after_call_code.append(
+                            f'  vvk::server::{param.type}* {param.name}_proto = response->mutable_{cmd_name.lower()}()->mutable_{param.name.lower()}();\n')
+                        after_call_code.append(fill_proto_from_struct(
+                            self, param.type, f'{param.name}_proto', f'(&{param.name})'))
+                    else:
+                        # only vkEnumerate* commands return multiple structs
+                        assert ("vkEnumerate" in cmd_name)
+                        assert (param.length in [
+                                p.name for p in command.params])
+                        actual_parameters.append(f'{param.name}')
+                        length_param = [
+                            p for p in command.params if p.name == param.length][0]
+                        out.append(
+                            f'  std::vector<{param.type}> aux_{param.name};\n')
+                        out.append(f'  {param.type}* {param.name};\n')
+                        out.append(
+                            f'  if ({length_param.name} == 0) {{\n')
+                        out.append(f'    {param.name} = nullptr;\n')
+                        out.append("  } else {\n")
+                        out.append(
+                            f'    aux_{param.name}.resize({length_param.name});\n')
+                        out.append(
+                            f'    {param.name} = aux_{param.name}.data();\n')
+                        out.append("  }\n")
 
+                        after_call_code.append(
+                            f'  if ({param_accessor}.{length_param.name.lower()}() != 0) {{\n')
+                        after_call_code.append(
+                            f'    for (int i = 0; i < {length_param.name}; i++) {{\n')
+                        after_call_code.append(
+                            f'      vvk::server::{param.type}* {param.name}_proto = response->mutable_{cmd_name.lower()}()->add_{param.name.lower()}();\n')
+                        after_call_code.append(indent(
+                            fill_proto_from_struct(self, param.type, f'{param.name}_proto', f'(&{param.name}[i])'), 4))
+                        after_call_code.append("    }\n")
+                        after_call_code.append("  }\n")
                 elif param.pointer and not param.const:
                     actual_parameters.append(f'&{param.name}')
                     out.append(

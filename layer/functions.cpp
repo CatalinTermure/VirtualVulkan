@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "commons/remote_call.h"
+#include "functions.h"
 
 namespace vvk {
 
@@ -253,8 +254,6 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 }
 
 VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCallbacks* pAllocator) {
-  PFN_vkGetDeviceProcAddr nxt_gdpa = g_device_infos.at(device).nxt_gdpa;
-
   CallDownDeviceFunc<PFN_vkDestroyDevice, void>("vkDestroyDevice", device, pAllocator);
 
   auto reader_writer = g_instance_infos.at(g_device_infos.at(device).instance).command_stream.get();
@@ -262,4 +261,42 @@ VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCall
 
   g_device_infos.erase(device);
 }
+
+VKAPI_ATTR VkResult VKAPI_CALL EnumerateInstanceExtensionProperties(const char* pLayerName, uint32_t* pPropertyCount,
+                                                                    VkExtensionProperties* pProperties) {
+  if (!pLayerName || strcmp(pLayerName, "VK_LAYER_VVK_virtual_vulkan") != 0) {
+    return VK_ERROR_LAYER_NOT_PRESENT;
+  }
+
+  // TODO: implement this
+  assert(false);
+
+  return VK_SUCCESS;
+}
+
+VKAPI_ATTR VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(VkPhysicalDevice physicalDevice,
+                                                                  const char* pLayerName, uint32_t* pPropertyCount,
+                                                                  VkExtensionProperties* pProperties) {
+  if (!pLayerName || strcmp(pLayerName, "VK_LAYER_VVK_virtual_vulkan") != 0) {
+    VkInstance instance = g_physical_device_to_instance.at(physicalDevice);
+    PFN_vkGetInstanceProcAddr nxt_gipa = g_instance_infos.at(instance).nxt_gipa;
+    PFN_vkEnumerateDeviceExtensionProperties nxtEnumerateDeviceExtensionProperties =
+        reinterpret_cast<PFN_vkEnumerateDeviceExtensionProperties>(
+            nxt_gipa(instance, "vkEnumerateDeviceExtensionProperties"));
+    if (!nxtEnumerateDeviceExtensionProperties) {
+      spdlog::error("Failed to fetch vkEnumerateDeviceExtensionProperties from next layer");
+      return VK_ERROR_INITIALIZATION_FAILED;
+    }
+
+    return nxtEnumerateDeviceExtensionProperties(physicalDevice, pLayerName, pPropertyCount, pProperties);
+  }
+
+  auto command_stream = g_instance_infos.at(g_physical_device_to_instance.at(physicalDevice)).command_stream.get();
+
+  PackAndCallVkEnumerateDeviceExtensionProperties(command_stream, physicalDevice, pLayerName, pPropertyCount,
+                                                  pProperties);
+
+  return VK_SUCCESS;
+}
+
 }  // namespace vvk

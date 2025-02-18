@@ -32,28 +32,6 @@ VkResult VKAPI_CALL EnumerateInstanceLayerProperties(uint32_t* pPropertyCount, V
   return VK_SUCCESS;
 }
 
-VkResult VKAPI_CALL EnumerateInstanceExtensionProperties(const char* pLayerName, uint32_t* pPropertyCount,
-                                                         VkExtensionProperties* pProperties) {
-  if (pProperties == nullptr) {
-    *pPropertyCount = 0;
-    return VK_SUCCESS;
-  }
-
-  assert(*pPropertyCount == 0);
-
-  return VK_SUCCESS;
-}
-
-VkResult VKAPI_CALL EnumerateDeviceLayerProperties(VkPhysicalDevice physicalDevice, uint32_t* pPropertyCount,
-                                                   VkLayerProperties* pProperties) {
-  return EnumerateInstanceLayerProperties(pPropertyCount, pProperties);
-}
-
-VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(VkPhysicalDevice physicalDevice, const char* pLayerName,
-                                                       uint32_t* pPropertyCount, VkExtensionProperties* pProperties) {
-  return EnumerateInstanceExtensionProperties(pLayerName, pPropertyCount, pProperties);
-}
-
 constexpr std::array non_intercepted_functions = {
     "vkCreateXcbSurfaceKHR",
     "vkGetPhysicalDeviceSurfaceSupportKHR",
@@ -70,9 +48,6 @@ PFN_vkVoidFunction GetInstanceProcAddr(VkInstance instance, const char* pName) {
   spdlog::trace("Loading instance function: {}", pName);
   GET_PROC_ADDR(GetDeviceProcAddr);
   GET_PROC_ADDR(EnumerateInstanceLayerProperties);
-  GET_PROC_ADDR(EnumerateInstanceExtensionProperties);
-  GET_PROC_ADDR(EnumerateDeviceLayerProperties);
-  GET_PROC_ADDR(EnumerateDeviceExtensionProperties);
 
   for (const auto& func : non_intercepted_functions) {
     if (strcmp(pName, func) == 0) {

@@ -393,5 +393,68 @@ void PackAndCallVkDestroyDevice(grpc::ClientReaderWriter<vvk::server::VvkRequest
     spdlog::error("Failed to read response from server");
   }
 }
+VkResult PackAndCallVkEnumerateInstanceExtensionProperties(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, const char* pLayerName, uint32_t* pPropertyCount, VkExtensionProperties* pProperties) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkEnumerateInstanceExtensionProperties");
+  request.mutable_vkenumerateinstanceextensionproperties()->set_playername(pLayerName);
+  request.mutable_vkenumerateinstanceextensionproperties()->set_ppropertycount(*pPropertyCount);
+  if (pProperties) {
+    // the value we set is just a sentinel value, only its presence should be checked
+    auto* unused = request.mutable_vkenumerateinstanceextensionproperties()->add_pproperties();
+  } else {
+    request.mutable_vkenumerateinstanceextensionproperties()->set_ppropertycount(0);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pPropertyCount = response.vkenumerateinstanceextensionproperties().ppropertycount();
+  if (pProperties) {
+    assert(*pPropertyCount == response.vkenumerateinstanceextensionproperties().ppropertycount());
+    for (int i = 0; i < *pPropertyCount; i++) {
+      VkExtensionProperties& pProperties_ref = pProperties[i];
+      strncpy(pProperties_ref.extensionName, response.vkenumerateinstanceextensionproperties().pproperties(i).extensionname().c_str(), VK_MAX_EXTENSION_NAME_SIZE);
+      pProperties_ref.specVersion = response.vkenumerateinstanceextensionproperties().pproperties(i).specversion();
+    }
+  }
+  return static_cast<VkResult>(response.result());
+}
+VkResult PackAndCallVkEnumerateDeviceExtensionProperties(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkPhysicalDevice physicalDevice, const char* pLayerName, uint32_t* pPropertyCount, VkExtensionProperties* pProperties) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkEnumerateDeviceExtensionProperties");
+  request.mutable_vkenumeratedeviceextensionproperties()->set_physicaldevice(reinterpret_cast<uint64_t>(physicalDevice));
+  request.mutable_vkenumeratedeviceextensionproperties()->set_playername(pLayerName);
+  request.mutable_vkenumeratedeviceextensionproperties()->set_ppropertycount(*pPropertyCount);
+  if (pProperties) {
+    // the value we set is just a sentinel value, only its presence should be checked
+    auto* unused = request.mutable_vkenumeratedeviceextensionproperties()->add_pproperties();
+  } else {
+    request.mutable_vkenumeratedeviceextensionproperties()->set_ppropertycount(0);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pPropertyCount = response.vkenumeratedeviceextensionproperties().ppropertycount();
+  if (pProperties) {
+    assert(*pPropertyCount == response.vkenumeratedeviceextensionproperties().ppropertycount());
+    for (int i = 0; i < *pPropertyCount; i++) {
+      VkExtensionProperties& pProperties_ref = pProperties[i];
+      strncpy(pProperties_ref.extensionName, response.vkenumeratedeviceextensionproperties().pproperties(i).extensionname().c_str(), VK_MAX_EXTENSION_NAME_SIZE);
+      pProperties_ref.specVersion = response.vkenumeratedeviceextensionproperties().pproperties(i).specversion();
+    }
+  }
+  return static_cast<VkResult>(response.result());
+}
 }  // namespace vvk
 
