@@ -34,7 +34,12 @@ VkResult VKAPI_CALL EnumerateInstanceLayerProperties(uint32_t* pPropertyCount, V
 
 constexpr std::array non_intercepted_functions = {
     "vkCreateXcbSurfaceKHR",
+    "vkCreateXlibSurfaceKHR",
+    "vkCreateWaylandSurfaceKHR",
     "vkGetPhysicalDeviceSurfaceSupportKHR",
+    // TODO: implement debug report callbacks
+    "vkCreateDebugReportCallbackEXT",
+    "vkDestroyDebugReportCallbackEXT",
 };
 
 }  // namespace
