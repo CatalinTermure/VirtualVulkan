@@ -595,5 +595,23 @@ void PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(grpc::ClientReaderWrite
     }
   }
 }
+void PackAndCallVkGetDeviceQueue(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, uint32_t queueFamilyIndex, uint32_t queueIndex, VkQueue* pQueue) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkGetDeviceQueue");
+  request.mutable_vkgetdevicequeue()->set_device(reinterpret_cast<uint64_t>(device));
+  request.mutable_vkgetdevicequeue()->set_queuefamilyindex(queueFamilyIndex);
+  request.mutable_vkgetdevicequeue()->set_queueindex(queueIndex);
+  request.mutable_vkgetdevicequeue()->set_pqueue(reinterpret_cast<uint64_t>(*pQueue));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pQueue = reinterpret_cast<VkQueue>(response.vkgetdevicequeue().pqueue());
+}
 }  // namespace vvk
 

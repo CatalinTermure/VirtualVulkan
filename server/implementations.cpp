@@ -59,7 +59,7 @@ void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context, const vvk:
 void UnpackAndExecuteVkDestroyInstance(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyInstance");
 
-  vkDestroyInstance(reinterpret_cast<VkInstance_T*>(request.vkdestroyinstance().instance()), nullptr);
+  vkDestroyInstance(reinterpret_cast<VkInstance>(request.vkdestroyinstance().instance()), nullptr);
   response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkEnumeratePhysicalDevices(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
@@ -74,7 +74,7 @@ void UnpackAndExecuteVkEnumeratePhysicalDevices(vvk::ExecutionContext& context, 
     aux_pPhysicalDevices.resize(pPhysicalDeviceCount);
     pPhysicalDevices = aux_pPhysicalDevices.data();
   }
-  VkResult result = vkEnumeratePhysicalDevices(reinterpret_cast<VkInstance_T*>(request.vkenumeratephysicaldevices().instance()), &pPhysicalDeviceCount, pPhysicalDevices);
+  VkResult result = vkEnumeratePhysicalDevices(reinterpret_cast<VkInstance>(request.vkenumeratephysicaldevices().instance()), &pPhysicalDeviceCount, pPhysicalDevices);
   response->mutable_vkenumeratephysicaldevices()->set_pphysicaldevicecount(pPhysicalDeviceCount);
   if (request.vkenumeratephysicaldevices().pphysicaldevicecount() != 0) {
     for (int i = 0; i < pPhysicalDeviceCount; i++) {
@@ -354,7 +354,7 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
 void UnpackAndExecuteVkDestroyDevice(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyDevice");
 
-  vkDestroyDevice(reinterpret_cast<VkDevice_T*>(request.vkdestroydevice().device()), nullptr);
+  vkDestroyDevice(reinterpret_cast<VkDevice>(request.vkdestroydevice().device()), nullptr);
   response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkEnumerateInstanceExtensionProperties(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
@@ -518,6 +518,15 @@ void UnpackAndExecuteVkGetPhysicalDeviceQueueFamilyProperties(vvk::ExecutionCont
       pQueueFamilyProperties_proto_minImageTransferGranularity_proto->set_depth((&(&pQueueFamilyProperties[i])->minImageTransferGranularity)->depth);
     }
   }
+  response->set_result(VK_SUCCESS);
+}
+void UnpackAndExecuteVkGetDeviceQueue(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkGetDeviceQueue");
+
+  VkQueue client_pQueue = reinterpret_cast<VkQueue>(request.vkgetdevicequeue().pqueue());
+  VkQueue server_pQueue;
+  vkGetDeviceQueue(reinterpret_cast<VkDevice>(request.vkgetdevicequeue().device()), request.vkgetdevicequeue().queuefamilyindex(), request.vkgetdevicequeue().queueindex(), &server_pQueue);
+  response->mutable_vkgetdevicequeue()->set_pqueue(reinterpret_cast<uint64_t>(server_pQueue));
   response->set_result(VK_SUCCESS);
 }
 

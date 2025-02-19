@@ -26,6 +26,7 @@ message VvkRequest {
     VkDestroyDeviceParams vkDestroyDevice = 10;
     VkEnumerateInstanceExtensionPropertiesParams vkEnumerateInstanceExtensionProperties = 11;
     VkEnumerateDeviceExtensionPropertiesParams vkEnumerateDeviceExtensionProperties = 12;
+    VkGetDeviceQueueParams vkGetDeviceQueue = 13;
   }
 }
 
@@ -41,6 +42,7 @@ message VvkResponse {
     VkCreateDeviceResponse vkCreateDevice = 8;
     VkEnumerateInstanceExtensionPropertiesResponse vkEnumerateInstanceExtensionProperties = 9;
     VkEnumerateDeviceExtensionPropertiesResponse vkEnumerateDeviceExtensionProperties = 10;
+    VkGetDeviceQueueResponse vkGetDeviceQueue = 11;
   }
 }
 
@@ -145,6 +147,17 @@ message VkEnumerateDeviceExtensionPropertiesParams {
   optional string pLayerName = 2; // const char* pLayerName
   uint32 pPropertyCount = 3; // uint32_t* pPropertyCount NON-CONST POINTER
   repeated VkExtensionProperties pProperties = 4; // VkExtensionProperties* pProperties NON-CONST POINTER
+}
+
+message VkGetDeviceQueueResponse {
+  uint64 pQueue = 1; // VkQueue* pQueue
+}
+
+message VkGetDeviceQueueParams {
+  uint64 device = 1; // VkDevice device
+  uint32 queueFamilyIndex = 2; // uint32_t queueFamilyIndex
+  uint32 queueIndex = 3; // uint32_t queueIndex
+  uint64 pQueue = 4; // VkQueue* pQueue NON-CONST POINTER
 }
 
 

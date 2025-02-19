@@ -279,4 +279,11 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevi
                                                              pQueueFamilyProperties);
 }
 
+VKAPI_ATTR void VKAPI_CALL GetDeviceQueue(VkDevice device, uint32_t queueFamilyIndex, uint32_t queueIndex,
+                                          VkQueue* pQueue) {
+  InstanceInfo& instance_info = GetInstanceInfo(device);
+  PackAndCallVkGetDeviceQueue(instance_info.command_stream.get(), instance_info.GetRemoteHandle(device),
+                              queueFamilyIndex, queueIndex, pQueue);
+}
+
 }  // namespace vvk

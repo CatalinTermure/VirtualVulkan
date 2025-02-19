@@ -23,6 +23,7 @@ const std::unordered_map<
         {"vkGetPhysicalDeviceMemoryProperties", UnpackAndExecuteVkGetPhysicalDeviceMemoryProperties},
         {"vkGetPhysicalDeviceFeatures", UnpackAndExecuteVkGetPhysicalDeviceFeatures},
         {"vkGetPhysicalDeviceQueueFamilyProperties", UnpackAndExecuteVkGetPhysicalDeviceQueueFamilyProperties},
+        {"vkGetDeviceQueue", UnpackAndExecuteVkGetDeviceQueue},
 };
 
 }  // namespace

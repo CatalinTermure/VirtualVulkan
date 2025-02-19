@@ -149,7 +149,7 @@ class ServerSrcGenerator(BaseGenerator):
                         actual_parameters.append("context.physical_device()")
                     else:
                         actual_parameters.append(
-                            f'reinterpret_cast<{param.type}_T*>({param_accessor}.{param.name.lower()}())')
+                            f'reinterpret_cast<{param.type}>({param_accessor}.{param.name.lower()}())')
                 elif param.type in TRIVIAL_TYPES:
                     type_info = TRIVIAL_TYPES[param.type]
                     if param.length is None:

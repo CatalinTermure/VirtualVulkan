@@ -36,6 +36,7 @@ COMMANDS_TO_GENERATE = [
     "vkGetPhysicalDeviceMemoryProperties",
     "vkGetPhysicalDeviceFeatures",
     "vkGetPhysicalDeviceQueueFamilyProperties",
+    "vkGetDeviceQueue",
 ]
 
 
