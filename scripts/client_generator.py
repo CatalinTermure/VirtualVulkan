@@ -71,8 +71,10 @@ class ClientSrcGenerator(BaseGenerator):
             if param.length is None:
                 after_call_code.append(
                     f'  {param.type}& {param.name}_ref = *{param.name};\n')
-                after_call_code.append(fill_struct_from_proto(
-                    self, param.type, f'{param.name}_ref', f'{response_accessor}.{param.name.lower()}()'))
+                struct_fill_, unused = fill_struct_from_proto(
+                    self, param.type, f'{param.name}_ref', f'{response_accessor}.{param.name.lower()}()')
+                assert (unused == "")
+                after_call_code.append(struct_fill_)
             else:
                 # only vkEnumerate* commands return multiple structs
                 assert ("vkEnumerate" in cmd_name or cmd_name in [
@@ -97,8 +99,10 @@ class ClientSrcGenerator(BaseGenerator):
                     f'    for (int {index_name} = 0; {index_name} < *{param.length}; {index_name}++) {{\n')
                 after_call_code.append(
                     f'      {param.type}& {param.name}_ref = {param.name}[{index_name}];\n')
-                after_call_code.append(indent(fill_struct_from_proto(
-                    self, param.type, f'{param.name}_ref', f'{response_accessor}.{param.name.lower()}({index_name})'), 4))
+                struct_fill_, unused = fill_struct_from_proto(
+                    self, param.type, f'{param.name}_ref', f'{response_accessor}.{param.name.lower()}({index_name})')
+                assert (unused == "")
+                after_call_code.append(indent(struct_fill_, 4))
                 after_call_code.append("    }\n")
                 after_call_code.append("  }\n")
         elif param.pointer and not param.const:

@@ -7,6 +7,7 @@
 #include <cassert>
 #include <unordered_map>
 #include <vector>
+#include <cstdlib>
 
 #include "execution_context.h"
 
@@ -37,24 +38,26 @@ void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context, const vvk:
   if (request.vkcreateinstance().pcreateinfo().has_enabledlayercount()) {
     pCreateInfo.enabledLayerCount = request.vkcreateinstance().pcreateinfo().enabledlayercount();
   }
-  std::vector<const char*> pCreateInfo_ppEnabledLayerNames(request.vkcreateinstance().pcreateinfo().ppenabledlayernames_size());
+  const char** pCreateInfo_ppEnabledLayerNames = new const char*[request.vkcreateinstance().pcreateinfo().ppenabledlayernames_size()]();
+  pCreateInfo.ppEnabledLayerNames = pCreateInfo_ppEnabledLayerNames;
   for (int ppEnabledLayerNames_indx = 0; ppEnabledLayerNames_indx < request.vkcreateinstance().pcreateinfo().ppenabledlayernames_size(); ppEnabledLayerNames_indx++) {
     pCreateInfo_ppEnabledLayerNames[ppEnabledLayerNames_indx] = request.vkcreateinstance().pcreateinfo().ppenabledlayernames(ppEnabledLayerNames_indx).data();
   }
-  pCreateInfo.ppEnabledLayerNames = pCreateInfo_ppEnabledLayerNames.data();
   if (request.vkcreateinstance().pcreateinfo().has_enabledextensioncount()) {
     pCreateInfo.enabledExtensionCount = request.vkcreateinstance().pcreateinfo().enabledextensioncount();
   }
-  std::vector<const char*> pCreateInfo_ppEnabledExtensionNames(request.vkcreateinstance().pcreateinfo().ppenabledextensionnames_size());
+  const char** pCreateInfo_ppEnabledExtensionNames = new const char*[request.vkcreateinstance().pcreateinfo().ppenabledextensionnames_size()]();
+  pCreateInfo.ppEnabledExtensionNames = pCreateInfo_ppEnabledExtensionNames;
   for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < request.vkcreateinstance().pcreateinfo().ppenabledextensionnames_size(); ppEnabledExtensionNames_indx++) {
     pCreateInfo_ppEnabledExtensionNames[ppEnabledExtensionNames_indx] = request.vkcreateinstance().pcreateinfo().ppenabledextensionnames(ppEnabledExtensionNames_indx).data();
   }
-  pCreateInfo.ppEnabledExtensionNames = pCreateInfo_ppEnabledExtensionNames.data();
   VkInstance client_pInstance = reinterpret_cast<VkInstance>(request.vkcreateinstance().pinstance());
   VkInstance server_pInstance;
   VkResult result = vkCreateInstance(&pCreateInfo, nullptr, &server_pInstance);
   response->mutable_vkcreateinstance()->set_pinstance(reinterpret_cast<uint64_t>(server_pInstance));
   response->set_result(result);
+  delete[] pCreateInfo.ppEnabledLayerNames;
+  delete[] pCreateInfo.ppEnabledExtensionNames;
 }
 void UnpackAndExecuteVkDestroyInstance(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyInstance");
@@ -253,8 +256,8 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
     pCreateInfo.flags = request.vkcreatedevice().pcreateinfo().flags();
   }
   pCreateInfo.queueCreateInfoCount = request.vkcreatedevice().pcreateinfo().queuecreateinfocount();
-  std::vector<VkDeviceQueueCreateInfo> pCreateInfo_pQueueCreateInfos(request.vkcreatedevice().pcreateinfo().queuecreateinfocount());
-  pCreateInfo.pQueueCreateInfos = pCreateInfo_pQueueCreateInfos.data();
+  VkDeviceQueueCreateInfo* pCreateInfo_pQueueCreateInfos = new VkDeviceQueueCreateInfo[request.vkcreatedevice().pcreateinfo().queuecreateinfocount()]();
+  pCreateInfo.pQueueCreateInfos = pCreateInfo_pQueueCreateInfos;
   for (int pQueueCreateInfos_indx = 0; pQueueCreateInfos_indx < request.vkcreatedevice().pcreateinfo().queuecreateinfocount(); pQueueCreateInfos_indx++) {
     VkDeviceQueueCreateInfo &pCreateInfo_pQueueCreateInfos_i = pCreateInfo_pQueueCreateInfos[pQueueCreateInfos_indx];
     pCreateInfo_pQueueCreateInfos_i.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -264,28 +267,28 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
     }
     pCreateInfo_pQueueCreateInfos_i.queueFamilyIndex = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuefamilyindex();
     pCreateInfo_pQueueCreateInfos_i.queueCount = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuecount();
-    std::vector<float> pCreateInfo_pQueueCreateInfos_i_pQueuePriorities(request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuecount());
+    float* pCreateInfo_pQueueCreateInfos_i_pQueuePriorities = new float[request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuecount()]();
+    pCreateInfo_pQueueCreateInfos_i.pQueuePriorities = pCreateInfo_pQueueCreateInfos_i_pQueuePriorities;
     for (int pQueuePriorities_indx = 0; pQueuePriorities_indx < request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuecount(); pQueuePriorities_indx++) {
       pCreateInfo_pQueueCreateInfos_i_pQueuePriorities[pQueuePriorities_indx] = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).pqueuepriorities(pQueuePriorities_indx);
     }
-    pCreateInfo_pQueueCreateInfos_i.pQueuePriorities = pCreateInfo_pQueueCreateInfos_i_pQueuePriorities.data();
   }
   if (request.vkcreatedevice().pcreateinfo().has_enabledlayercount()) {
     pCreateInfo.enabledLayerCount = request.vkcreatedevice().pcreateinfo().enabledlayercount();
   }
-  std::vector<const char*> pCreateInfo_ppEnabledLayerNames(request.vkcreatedevice().pcreateinfo().ppenabledlayernames_size());
+  const char** pCreateInfo_ppEnabledLayerNames = new const char*[request.vkcreatedevice().pcreateinfo().ppenabledlayernames_size()]();
+  pCreateInfo.ppEnabledLayerNames = pCreateInfo_ppEnabledLayerNames;
   for (int ppEnabledLayerNames_indx = 0; ppEnabledLayerNames_indx < request.vkcreatedevice().pcreateinfo().ppenabledlayernames_size(); ppEnabledLayerNames_indx++) {
     pCreateInfo_ppEnabledLayerNames[ppEnabledLayerNames_indx] = request.vkcreatedevice().pcreateinfo().ppenabledlayernames(ppEnabledLayerNames_indx).data();
   }
-  pCreateInfo.ppEnabledLayerNames = pCreateInfo_ppEnabledLayerNames.data();
   if (request.vkcreatedevice().pcreateinfo().has_enabledextensioncount()) {
     pCreateInfo.enabledExtensionCount = request.vkcreatedevice().pcreateinfo().enabledextensioncount();
   }
-  std::vector<const char*> pCreateInfo_ppEnabledExtensionNames(request.vkcreatedevice().pcreateinfo().ppenabledextensionnames_size());
+  const char** pCreateInfo_ppEnabledExtensionNames = new const char*[request.vkcreatedevice().pcreateinfo().ppenabledextensionnames_size()]();
+  pCreateInfo.ppEnabledExtensionNames = pCreateInfo_ppEnabledExtensionNames;
   for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < request.vkcreatedevice().pcreateinfo().ppenabledextensionnames_size(); ppEnabledExtensionNames_indx++) {
     pCreateInfo_ppEnabledExtensionNames[ppEnabledExtensionNames_indx] = request.vkcreatedevice().pcreateinfo().ppenabledextensionnames(ppEnabledExtensionNames_indx).data();
   }
-  pCreateInfo.ppEnabledExtensionNames = pCreateInfo_ppEnabledExtensionNames.data();
   VkPhysicalDeviceFeatures pCreateInfo_pEnabledFeatures = {};
   if (request.vkcreatedevice().pcreateinfo().has_penabledfeatures()) {
     pCreateInfo_pEnabledFeatures.robustBufferAccess = request.vkcreatedevice().pcreateinfo().penabledfeatures().robustbufferaccess();
@@ -350,6 +353,13 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
   VkResult result = vkCreateDevice(context.physical_device(), &pCreateInfo, nullptr, &server_pDevice);
   response->mutable_vkcreatedevice()->set_pdevice(reinterpret_cast<uint64_t>(server_pDevice));
   response->set_result(result);
+  for (int pQueueCreateInfos_indx = 0; pQueueCreateInfos_indx < request.vkcreatedevice().pcreateinfo().queuecreateinfocount(); pQueueCreateInfos_indx++)  {
+    VkDeviceQueueCreateInfo &pCreateInfo_pQueueCreateInfos_i = pCreateInfo_pQueueCreateInfos[pQueueCreateInfos_indx];
+    delete[] pCreateInfo_pQueueCreateInfos_i.pQueuePriorities;
+  }
+  delete[] pCreateInfo.pQueueCreateInfos;
+  delete[] pCreateInfo.ppEnabledLayerNames;
+  delete[] pCreateInfo.ppEnabledExtensionNames;
 }
 void UnpackAndExecuteVkDestroyDevice(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyDevice");

@@ -23,6 +23,7 @@ class ServerSrcGenerator(BaseGenerator):
 #include <cassert>
 #include <unordered_map>
 #include <vector>
+#include <cstdlib>
 
 #include "execution_context.h"
 
@@ -30,6 +31,7 @@ class ServerSrcGenerator(BaseGenerator):
 
         for cmd_name in COMMANDS_TO_GENERATE:
             after_call_code = []
+            deletions = []
             actual_parameters = []
             out.append(
                 f'void UnpackAndExecute{first_letter_upper(cmd_name)}(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response)')
@@ -45,8 +47,10 @@ class ServerSrcGenerator(BaseGenerator):
                     actual_parameters.append(f'&{param.name}')
                     if param.length is None:
                         out.append(f'  {param.type} {param.name} = {{}};\n')
-                        out.append(fill_struct_from_proto(self,
-                                                          param.type, param.name, f'{param_accessor}.{param.name.lower()}()'))
+                        out_, after_ = fill_struct_from_proto(self,
+                                                              param.type, param.name, f'{param_accessor}.{param.name.lower()}()')
+                        out.append(out_)
+                        deletions.append(after_)
                     else:
                         log("non zero length param:",
                             cmd_name, param.cDeclaration)
@@ -75,6 +79,7 @@ class ServerSrcGenerator(BaseGenerator):
                         actual_parameters.append(f'{param.name}')
                         length_param = [
                             p for p in command.params if p.name == param.length][0]
+                        # this vector will live long enough
                         out.append(
                             f'  std::vector<{param.type}> aux_{param.name};\n')
                         out.append(f'  {param.type}* {param.name};\n')
@@ -116,6 +121,7 @@ class ServerSrcGenerator(BaseGenerator):
                         actual_parameters.append(f'{param.name}')
                         length_param = [
                             p for p in command.params if p.name == param.length][0]
+                        # this vector will live long enough
                         out.append(
                             f'  std::vector<{param.type}> aux_{param.name};\n')
                         out.append(f'  {param.type}* {param.name};\n')
@@ -184,6 +190,7 @@ class ServerSrcGenerator(BaseGenerator):
             elif command.returnType == "void":
                 out.append("  response->set_result(VK_SUCCESS);\n")
 
+            out.extend(deletions)
             out.append("}\n")
 
         self.write("".join(out))
