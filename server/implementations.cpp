@@ -38,16 +38,16 @@ void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context, const vvk:
     pCreateInfo.enabledLayerCount = request.vkcreateinstance().pcreateinfo().enabledlayercount();
   }
   std::vector<const char*> pCreateInfo_ppEnabledLayerNames(request.vkcreateinstance().pcreateinfo().ppenabledlayernames_size());
-  for (int i = 0; i < request.vkcreateinstance().pcreateinfo().ppenabledlayernames_size(); i++) {
-    pCreateInfo_ppEnabledLayerNames[i] = request.vkcreateinstance().pcreateinfo().ppenabledlayernames(i).data();
+  for (int ppEnabledLayerNames_indx = 0; ppEnabledLayerNames_indx < request.vkcreateinstance().pcreateinfo().ppenabledlayernames_size(); ppEnabledLayerNames_indx++) {
+    pCreateInfo_ppEnabledLayerNames[ppEnabledLayerNames_indx] = request.vkcreateinstance().pcreateinfo().ppenabledlayernames(ppEnabledLayerNames_indx).data();
   }
   pCreateInfo.ppEnabledLayerNames = pCreateInfo_ppEnabledLayerNames.data();
   if (request.vkcreateinstance().pcreateinfo().has_enabledextensioncount()) {
     pCreateInfo.enabledExtensionCount = request.vkcreateinstance().pcreateinfo().enabledextensioncount();
   }
   std::vector<const char*> pCreateInfo_ppEnabledExtensionNames(request.vkcreateinstance().pcreateinfo().ppenabledextensionnames_size());
-  for (int i = 0; i < request.vkcreateinstance().pcreateinfo().ppenabledextensionnames_size(); i++) {
-    pCreateInfo_ppEnabledExtensionNames[i] = request.vkcreateinstance().pcreateinfo().ppenabledextensionnames(i).data();
+  for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < request.vkcreateinstance().pcreateinfo().ppenabledextensionnames_size(); ppEnabledExtensionNames_indx++) {
+    pCreateInfo_ppEnabledExtensionNames[ppEnabledExtensionNames_indx] = request.vkcreateinstance().pcreateinfo().ppenabledextensionnames(ppEnabledExtensionNames_indx).data();
   }
   pCreateInfo.ppEnabledExtensionNames = pCreateInfo_ppEnabledExtensionNames.data();
   VkInstance client_pInstance = reinterpret_cast<VkInstance>(request.vkcreateinstance().pinstance());
@@ -77,8 +77,8 @@ void UnpackAndExecuteVkEnumeratePhysicalDevices(vvk::ExecutionContext& context, 
   VkResult result = vkEnumeratePhysicalDevices(reinterpret_cast<VkInstance>(request.vkenumeratephysicaldevices().instance()), &pPhysicalDeviceCount, pPhysicalDevices);
   response->mutable_vkenumeratephysicaldevices()->set_pphysicaldevicecount(pPhysicalDeviceCount);
   if (request.vkenumeratephysicaldevices().pphysicaldevicecount() != 0) {
-    for (int i = 0; i < pPhysicalDeviceCount; i++) {
-      response->mutable_vkenumeratephysicaldevices()->add_pphysicaldevices(reinterpret_cast<uint64_t>(pPhysicalDevices[i]));
+    for (int pPhysicalDevices_index = 0; pPhysicalDevices_index < pPhysicalDeviceCount; pPhysicalDevices_index++) {
+      response->mutable_vkenumeratephysicaldevices()->add_pphysicaldevices(reinterpret_cast<uint64_t>(pPhysicalDevices[pPhysicalDevices_index]));
     }
   }
   response->set_result(result);
@@ -95,8 +95,8 @@ void UnpackAndExecuteVkGetPhysicalDeviceProperties(vvk::ExecutionContext& contex
   pProperties_proto->set_deviceid((&pProperties)->deviceID);
   pProperties_proto->set_devicetype(static_cast<vvk::server::VkPhysicalDeviceType>((&pProperties)->deviceType));
   pProperties_proto->set_devicename((&pProperties)->deviceName);
-  for (int i = 0; i < VK_UUID_SIZE; i++) {
-    pProperties_proto->add_pipelinecacheuuid(static_cast<uint32_t>((&pProperties)->pipelineCacheUUID[i]));
+  for (int pipelineCacheUUID_indx = 0; pipelineCacheUUID_indx < VK_UUID_SIZE; pipelineCacheUUID_indx++) {
+    pProperties_proto->add_pipelinecacheuuid(static_cast<uint32_t>((&pProperties)->pipelineCacheUUID[pipelineCacheUUID_indx]));
   }
   vvk::server::VkPhysicalDeviceLimits* pProperties_proto_limits_proto = pProperties_proto->mutable_limits();
   pProperties_proto_limits_proto->set_maximagedimension1d((&(&pProperties)->limits)->maxImageDimension1D);
@@ -151,12 +151,12 @@ void UnpackAndExecuteVkGetPhysicalDeviceProperties(vvk::ExecutionContext& contex
   pProperties_proto_limits_proto->set_maxfragmentdualsrcattachments((&(&pProperties)->limits)->maxFragmentDualSrcAttachments);
   pProperties_proto_limits_proto->set_maxfragmentcombinedoutputresources((&(&pProperties)->limits)->maxFragmentCombinedOutputResources);
   pProperties_proto_limits_proto->set_maxcomputesharedmemorysize((&(&pProperties)->limits)->maxComputeSharedMemorySize);
-  for (int i = 0; i < 3; i++) {
-    pProperties_proto_limits_proto->add_maxcomputeworkgroupcount((&(&pProperties)->limits)->maxComputeWorkGroupCount[i]);
+  for (int maxComputeWorkGroupCount_indx = 0; maxComputeWorkGroupCount_indx < 3; maxComputeWorkGroupCount_indx++) {
+    pProperties_proto_limits_proto->add_maxcomputeworkgroupcount((&(&pProperties)->limits)->maxComputeWorkGroupCount[maxComputeWorkGroupCount_indx]);
   }
   pProperties_proto_limits_proto->set_maxcomputeworkgroupinvocations((&(&pProperties)->limits)->maxComputeWorkGroupInvocations);
-  for (int i = 0; i < 3; i++) {
-    pProperties_proto_limits_proto->add_maxcomputeworkgroupsize((&(&pProperties)->limits)->maxComputeWorkGroupSize[i]);
+  for (int maxComputeWorkGroupSize_indx = 0; maxComputeWorkGroupSize_indx < 3; maxComputeWorkGroupSize_indx++) {
+    pProperties_proto_limits_proto->add_maxcomputeworkgroupsize((&(&pProperties)->limits)->maxComputeWorkGroupSize[maxComputeWorkGroupSize_indx]);
   }
   pProperties_proto_limits_proto->set_subpixelprecisionbits((&(&pProperties)->limits)->subPixelPrecisionBits);
   pProperties_proto_limits_proto->set_subtexelprecisionbits((&(&pProperties)->limits)->subTexelPrecisionBits);
@@ -166,11 +166,11 @@ void UnpackAndExecuteVkGetPhysicalDeviceProperties(vvk::ExecutionContext& contex
   pProperties_proto_limits_proto->set_maxsamplerlodbias((&(&pProperties)->limits)->maxSamplerLodBias);
   pProperties_proto_limits_proto->set_maxsampleranisotropy((&(&pProperties)->limits)->maxSamplerAnisotropy);
   pProperties_proto_limits_proto->set_maxviewports((&(&pProperties)->limits)->maxViewports);
-  for (int i = 0; i < 2; i++) {
-    pProperties_proto_limits_proto->add_maxviewportdimensions((&(&pProperties)->limits)->maxViewportDimensions[i]);
+  for (int maxViewportDimensions_indx = 0; maxViewportDimensions_indx < 2; maxViewportDimensions_indx++) {
+    pProperties_proto_limits_proto->add_maxviewportdimensions((&(&pProperties)->limits)->maxViewportDimensions[maxViewportDimensions_indx]);
   }
-  for (int i = 0; i < 2; i++) {
-    pProperties_proto_limits_proto->add_viewportboundsrange((&(&pProperties)->limits)->viewportBoundsRange[i]);
+  for (int viewportBoundsRange_indx = 0; viewportBoundsRange_indx < 2; viewportBoundsRange_indx++) {
+    pProperties_proto_limits_proto->add_viewportboundsrange((&(&pProperties)->limits)->viewportBoundsRange[viewportBoundsRange_indx]);
   }
   pProperties_proto_limits_proto->set_viewportsubpixelbits((&(&pProperties)->limits)->viewportSubPixelBits);
   pProperties_proto_limits_proto->set_minmemorymapalignment((&(&pProperties)->limits)->minMemoryMapAlignment);
@@ -222,11 +222,11 @@ void UnpackAndExecuteVkGetPhysicalDeviceProperties(vvk::ExecutionContext& contex
   pProperties_proto_limits_proto->set_maxculldistances((&(&pProperties)->limits)->maxCullDistances);
   pProperties_proto_limits_proto->set_maxcombinedclipandculldistances((&(&pProperties)->limits)->maxCombinedClipAndCullDistances);
   pProperties_proto_limits_proto->set_discretequeuepriorities((&(&pProperties)->limits)->discreteQueuePriorities);
-  for (int i = 0; i < 2; i++) {
-    pProperties_proto_limits_proto->add_pointsizerange((&(&pProperties)->limits)->pointSizeRange[i]);
+  for (int pointSizeRange_indx = 0; pointSizeRange_indx < 2; pointSizeRange_indx++) {
+    pProperties_proto_limits_proto->add_pointsizerange((&(&pProperties)->limits)->pointSizeRange[pointSizeRange_indx]);
   }
-  for (int i = 0; i < 2; i++) {
-    pProperties_proto_limits_proto->add_linewidthrange((&(&pProperties)->limits)->lineWidthRange[i]);
+  for (int lineWidthRange_indx = 0; lineWidthRange_indx < 2; lineWidthRange_indx++) {
+    pProperties_proto_limits_proto->add_linewidthrange((&(&pProperties)->limits)->lineWidthRange[lineWidthRange_indx]);
   }
   pProperties_proto_limits_proto->set_pointsizegranularity((&(&pProperties)->limits)->pointSizeGranularity);
   pProperties_proto_limits_proto->set_linewidthgranularity((&(&pProperties)->limits)->lineWidthGranularity);
@@ -255,18 +255,18 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
   pCreateInfo.queueCreateInfoCount = request.vkcreatedevice().pcreateinfo().queuecreateinfocount();
   std::vector<VkDeviceQueueCreateInfo> pCreateInfo_pQueueCreateInfos(request.vkcreatedevice().pcreateinfo().queuecreateinfocount());
   pCreateInfo.pQueueCreateInfos = pCreateInfo_pQueueCreateInfos.data();
-  for (int i = 0; i < request.vkcreatedevice().pcreateinfo().queuecreateinfocount(); i++) {
-    VkDeviceQueueCreateInfo &pCreateInfo_pQueueCreateInfos_i = pCreateInfo_pQueueCreateInfos[i];
+  for (int pQueueCreateInfos_indx = 0; pQueueCreateInfos_indx < request.vkcreatedevice().pcreateinfo().queuecreateinfocount(); pQueueCreateInfos_indx++) {
+    VkDeviceQueueCreateInfo &pCreateInfo_pQueueCreateInfos_i = pCreateInfo_pQueueCreateInfos[pQueueCreateInfos_indx];
     pCreateInfo_pQueueCreateInfos_i.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     pCreateInfo_pQueueCreateInfos_i.pNext = nullptr; // pNext chains are currently unsupported
-    if (request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(i).has_flags()) {
-      pCreateInfo_pQueueCreateInfos_i.flags = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(i).flags();
+    if (request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).has_flags()) {
+      pCreateInfo_pQueueCreateInfos_i.flags = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).flags();
     }
-    pCreateInfo_pQueueCreateInfos_i.queueFamilyIndex = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(i).queuefamilyindex();
-    pCreateInfo_pQueueCreateInfos_i.queueCount = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(i).queuecount();
-    std::vector<float> pCreateInfo_pQueueCreateInfos_i_pQueuePriorities(request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(i).queuecount());
-    for (int i = 0; i < request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(i).queuecount(); i++) {
-      pCreateInfo_pQueueCreateInfos_i_pQueuePriorities[i] = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(i).pqueuepriorities(i);
+    pCreateInfo_pQueueCreateInfos_i.queueFamilyIndex = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuefamilyindex();
+    pCreateInfo_pQueueCreateInfos_i.queueCount = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuecount();
+    std::vector<float> pCreateInfo_pQueueCreateInfos_i_pQueuePriorities(request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuecount());
+    for (int pQueuePriorities_indx = 0; pQueuePriorities_indx < request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuecount(); pQueuePriorities_indx++) {
+      pCreateInfo_pQueueCreateInfos_i_pQueuePriorities[pQueuePriorities_indx] = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).pqueuepriorities(pQueuePriorities_indx);
     }
     pCreateInfo_pQueueCreateInfos_i.pQueuePriorities = pCreateInfo_pQueueCreateInfos_i_pQueuePriorities.data();
   }
@@ -274,16 +274,16 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
     pCreateInfo.enabledLayerCount = request.vkcreatedevice().pcreateinfo().enabledlayercount();
   }
   std::vector<const char*> pCreateInfo_ppEnabledLayerNames(request.vkcreatedevice().pcreateinfo().ppenabledlayernames_size());
-  for (int i = 0; i < request.vkcreatedevice().pcreateinfo().ppenabledlayernames_size(); i++) {
-    pCreateInfo_ppEnabledLayerNames[i] = request.vkcreatedevice().pcreateinfo().ppenabledlayernames(i).data();
+  for (int ppEnabledLayerNames_indx = 0; ppEnabledLayerNames_indx < request.vkcreatedevice().pcreateinfo().ppenabledlayernames_size(); ppEnabledLayerNames_indx++) {
+    pCreateInfo_ppEnabledLayerNames[ppEnabledLayerNames_indx] = request.vkcreatedevice().pcreateinfo().ppenabledlayernames(ppEnabledLayerNames_indx).data();
   }
   pCreateInfo.ppEnabledLayerNames = pCreateInfo_ppEnabledLayerNames.data();
   if (request.vkcreatedevice().pcreateinfo().has_enabledextensioncount()) {
     pCreateInfo.enabledExtensionCount = request.vkcreatedevice().pcreateinfo().enabledextensioncount();
   }
   std::vector<const char*> pCreateInfo_ppEnabledExtensionNames(request.vkcreatedevice().pcreateinfo().ppenabledextensionnames_size());
-  for (int i = 0; i < request.vkcreatedevice().pcreateinfo().ppenabledextensionnames_size(); i++) {
-    pCreateInfo_ppEnabledExtensionNames[i] = request.vkcreatedevice().pcreateinfo().ppenabledextensionnames(i).data();
+  for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < request.vkcreatedevice().pcreateinfo().ppenabledextensionnames_size(); ppEnabledExtensionNames_indx++) {
+    pCreateInfo_ppEnabledExtensionNames[ppEnabledExtensionNames_indx] = request.vkcreatedevice().pcreateinfo().ppenabledextensionnames(ppEnabledExtensionNames_indx).data();
   }
   pCreateInfo.ppEnabledExtensionNames = pCreateInfo_ppEnabledExtensionNames.data();
   VkPhysicalDeviceFeatures pCreateInfo_pEnabledFeatures = {};
@@ -372,10 +372,10 @@ void UnpackAndExecuteVkEnumerateInstanceExtensionProperties(vvk::ExecutionContex
   VkResult result = vkEnumerateInstanceExtensionProperties(request.vkenumerateinstanceextensionproperties().playername().data(), &pPropertyCount, pProperties);
   response->mutable_vkenumerateinstanceextensionproperties()->set_ppropertycount(pPropertyCount);
   if (request.vkenumerateinstanceextensionproperties().ppropertycount() != 0) {
-    for (int i = 0; i < pPropertyCount; i++) {
+    for (int pProperties_index = 0; pProperties_index < pPropertyCount; pProperties_index++) {
       vvk::server::VkExtensionProperties* pProperties_proto = response->mutable_vkenumerateinstanceextensionproperties()->add_pproperties();
-      pProperties_proto->set_extensionname((&pProperties[i])->extensionName);
-      pProperties_proto->set_specversion((&pProperties[i])->specVersion);
+      pProperties_proto->set_extensionname((&pProperties[pProperties_index])->extensionName);
+      pProperties_proto->set_specversion((&pProperties[pProperties_index])->specVersion);
     }
   }
   response->set_result(result);
@@ -395,10 +395,10 @@ void UnpackAndExecuteVkEnumerateDeviceExtensionProperties(vvk::ExecutionContext&
   VkResult result = vkEnumerateDeviceExtensionProperties(context.physical_device(), request.vkenumeratedeviceextensionproperties().playername().data(), &pPropertyCount, pProperties);
   response->mutable_vkenumeratedeviceextensionproperties()->set_ppropertycount(pPropertyCount);
   if (request.vkenumeratedeviceextensionproperties().ppropertycount() != 0) {
-    for (int i = 0; i < pPropertyCount; i++) {
+    for (int pProperties_index = 0; pProperties_index < pPropertyCount; pProperties_index++) {
       vvk::server::VkExtensionProperties* pProperties_proto = response->mutable_vkenumeratedeviceextensionproperties()->add_pproperties();
-      pProperties_proto->set_extensionname((&pProperties[i])->extensionName);
-      pProperties_proto->set_specversion((&pProperties[i])->specVersion);
+      pProperties_proto->set_extensionname((&pProperties[pProperties_index])->extensionName);
+      pProperties_proto->set_specversion((&pProperties[pProperties_index])->specVersion);
     }
   }
   response->set_result(result);
@@ -410,19 +410,19 @@ void UnpackAndExecuteVkGetPhysicalDeviceMemoryProperties(vvk::ExecutionContext& 
   vkGetPhysicalDeviceMemoryProperties(context.physical_device(), &pMemoryProperties);
   vvk::server::VkPhysicalDeviceMemoryProperties* pMemoryProperties_proto = response->mutable_vkgetphysicaldevicememoryproperties()->mutable_pmemoryproperties();
   pMemoryProperties_proto->set_memorytypecount((&pMemoryProperties)->memoryTypeCount);
-  for (int i = 0; i < (&pMemoryProperties)->memoryTypeCount; i++) {
+  for (int memoryTypes_indx = 0; memoryTypes_indx < (&pMemoryProperties)->memoryTypeCount; memoryTypes_indx++) {
     vvk::server::VkMemoryType* pMemoryProperties_proto_memoryTypes_proto = pMemoryProperties_proto->add_memorytypes();
-    if ((&(&pMemoryProperties)->memoryTypes[i])->propertyFlags) {
-      pMemoryProperties_proto_memoryTypes_proto->set_propertyflags((&(&pMemoryProperties)->memoryTypes[i])->propertyFlags);
+    if ((&(&pMemoryProperties)->memoryTypes[memoryTypes_indx])->propertyFlags) {
+      pMemoryProperties_proto_memoryTypes_proto->set_propertyflags((&(&pMemoryProperties)->memoryTypes[memoryTypes_indx])->propertyFlags);
     }
-    pMemoryProperties_proto_memoryTypes_proto->set_heapindex((&(&pMemoryProperties)->memoryTypes[i])->heapIndex);
+    pMemoryProperties_proto_memoryTypes_proto->set_heapindex((&(&pMemoryProperties)->memoryTypes[memoryTypes_indx])->heapIndex);
   }
   pMemoryProperties_proto->set_memoryheapcount((&pMemoryProperties)->memoryHeapCount);
-  for (int i = 0; i < (&pMemoryProperties)->memoryHeapCount; i++) {
+  for (int memoryHeaps_indx = 0; memoryHeaps_indx < (&pMemoryProperties)->memoryHeapCount; memoryHeaps_indx++) {
     vvk::server::VkMemoryHeap* pMemoryProperties_proto_memoryHeaps_proto = pMemoryProperties_proto->add_memoryheaps();
-    pMemoryProperties_proto_memoryHeaps_proto->set_size(static_cast<uint64_t>((&(&pMemoryProperties)->memoryHeaps[i])->size));
-    if ((&(&pMemoryProperties)->memoryHeaps[i])->flags) {
-      pMemoryProperties_proto_memoryHeaps_proto->set_flags((&(&pMemoryProperties)->memoryHeaps[i])->flags);
+    pMemoryProperties_proto_memoryHeaps_proto->set_size(static_cast<uint64_t>((&(&pMemoryProperties)->memoryHeaps[memoryHeaps_indx])->size));
+    if ((&(&pMemoryProperties)->memoryHeaps[memoryHeaps_indx])->flags) {
+      pMemoryProperties_proto_memoryHeaps_proto->set_flags((&(&pMemoryProperties)->memoryHeaps[memoryHeaps_indx])->flags);
     }
   }
   response->set_result(VK_SUCCESS);
@@ -505,17 +505,17 @@ void UnpackAndExecuteVkGetPhysicalDeviceQueueFamilyProperties(vvk::ExecutionCont
   vkGetPhysicalDeviceQueueFamilyProperties(context.physical_device(), &pQueueFamilyPropertyCount, pQueueFamilyProperties);
   response->mutable_vkgetphysicaldevicequeuefamilyproperties()->set_pqueuefamilypropertycount(pQueueFamilyPropertyCount);
   if (request.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilypropertycount() != 0) {
-    for (int i = 0; i < pQueueFamilyPropertyCount; i++) {
+    for (int pQueueFamilyProperties_index = 0; pQueueFamilyProperties_index < pQueueFamilyPropertyCount; pQueueFamilyProperties_index++) {
       vvk::server::VkQueueFamilyProperties* pQueueFamilyProperties_proto = response->mutable_vkgetphysicaldevicequeuefamilyproperties()->add_pqueuefamilyproperties();
-      if ((&pQueueFamilyProperties[i])->queueFlags) {
-        pQueueFamilyProperties_proto->set_queueflags((&pQueueFamilyProperties[i])->queueFlags);
+      if ((&pQueueFamilyProperties[pQueueFamilyProperties_index])->queueFlags) {
+        pQueueFamilyProperties_proto->set_queueflags((&pQueueFamilyProperties[pQueueFamilyProperties_index])->queueFlags);
       }
-      pQueueFamilyProperties_proto->set_queuecount((&pQueueFamilyProperties[i])->queueCount);
-      pQueueFamilyProperties_proto->set_timestampvalidbits((&pQueueFamilyProperties[i])->timestampValidBits);
+      pQueueFamilyProperties_proto->set_queuecount((&pQueueFamilyProperties[pQueueFamilyProperties_index])->queueCount);
+      pQueueFamilyProperties_proto->set_timestampvalidbits((&pQueueFamilyProperties[pQueueFamilyProperties_index])->timestampValidBits);
       vvk::server::VkExtent3D* pQueueFamilyProperties_proto_minImageTransferGranularity_proto = pQueueFamilyProperties_proto->mutable_minimagetransfergranularity();
-      pQueueFamilyProperties_proto_minImageTransferGranularity_proto->set_width((&(&pQueueFamilyProperties[i])->minImageTransferGranularity)->width);
-      pQueueFamilyProperties_proto_minImageTransferGranularity_proto->set_height((&(&pQueueFamilyProperties[i])->minImageTransferGranularity)->height);
-      pQueueFamilyProperties_proto_minImageTransferGranularity_proto->set_depth((&(&pQueueFamilyProperties[i])->minImageTransferGranularity)->depth);
+      pQueueFamilyProperties_proto_minImageTransferGranularity_proto->set_width((&(&pQueueFamilyProperties[pQueueFamilyProperties_index])->minImageTransferGranularity)->width);
+      pQueueFamilyProperties_proto_minImageTransferGranularity_proto->set_height((&(&pQueueFamilyProperties[pQueueFamilyProperties_index])->minImageTransferGranularity)->height);
+      pQueueFamilyProperties_proto_minImageTransferGranularity_proto->set_depth((&(&pQueueFamilyProperties[pQueueFamilyProperties_index])->minImageTransferGranularity)->depth);
     }
   }
   response->set_result(VK_SUCCESS);

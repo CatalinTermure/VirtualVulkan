@@ -88,12 +88,13 @@ class ServerSrcGenerator(BaseGenerator):
                             f'    {param.name} = aux_{param.name}.data();\n')
                         out.append("  }\n")
 
+                        index_name = f'{param.name}_index'
                         after_call_code.append(
                             f'  if ({param_accessor}.{length_param.name.lower()}() != 0) {{\n')
                         after_call_code.append(
-                            f'    for (int i = 0; i < {length_param.name}; i++) {{\n')
+                            f'    for (int {index_name} = 0; {index_name} < {length_param.name}; {index_name}++) {{\n')
                         after_call_code.append(
-                            f'      response->mutable_{cmd_name.lower()}()->add_{param.name.lower()}(reinterpret_cast<uint64_t>({param.name}[i]));\n')
+                            f'      response->mutable_{cmd_name.lower()}()->add_{param.name.lower()}(reinterpret_cast<uint64_t>({param.name}[{index_name}]));\n')
                         after_call_code.append("    }\n")
                         after_call_code.append("  }\n")
                 elif param.pointer and not param.const and param.type in self.vk.structs:
@@ -128,14 +129,15 @@ class ServerSrcGenerator(BaseGenerator):
                             f'    {param.name} = aux_{param.name}.data();\n')
                         out.append("  }\n")
 
+                        index_name = f'{param.name}_index'
                         after_call_code.append(
                             f'  if ({param_accessor}.{length_param.name.lower()}() != 0) {{\n')
                         after_call_code.append(
-                            f'    for (int i = 0; i < {length_param.name}; i++) {{\n')
+                            f'    for (int {index_name} = 0; {index_name} < {length_param.name}; {index_name}++) {{\n')
                         after_call_code.append(
                             f'      vvk::server::{param.type}* {param.name}_proto = response->mutable_{cmd_name.lower()}()->add_{param.name.lower()}();\n')
                         after_call_code.append(indent(
-                            fill_proto_from_struct(self, param.type, f'{param.name}_proto', f'(&{param.name}[i])'), 4))
+                            fill_proto_from_struct(self, param.type, f'{param.name}_proto', f'(&{param.name}[{index_name}])'), 4))
                         after_call_code.append("    }\n")
                         after_call_code.append("  }\n")
                 elif param.pointer and not param.const:

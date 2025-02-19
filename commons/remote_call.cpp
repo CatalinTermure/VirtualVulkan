@@ -36,14 +36,14 @@ VkResult PackAndCallVkCreateInstance(grpc::ClientReaderWriter<vvk::server::VvkRe
   if (pCreateInfo->enabledLayerCount) {
     pCreateInfo_proto->set_enabledlayercount(pCreateInfo->enabledLayerCount);
   }
-  for (int i = 0; i < pCreateInfo->enabledLayerCount; i++) {
-    pCreateInfo_proto->add_ppenabledlayernames(pCreateInfo->ppEnabledLayerNames[i]);
+  for (int ppEnabledLayerNames_indx = 0; ppEnabledLayerNames_indx < pCreateInfo->enabledLayerCount; ppEnabledLayerNames_indx++) {
+    pCreateInfo_proto->add_ppenabledlayernames(pCreateInfo->ppEnabledLayerNames[ppEnabledLayerNames_indx]);
   }
   if (pCreateInfo->enabledExtensionCount) {
     pCreateInfo_proto->set_enabledextensioncount(pCreateInfo->enabledExtensionCount);
   }
-  for (int i = 0; i < pCreateInfo->enabledExtensionCount; i++) {
-    pCreateInfo_proto->add_ppenabledextensionnames(pCreateInfo->ppEnabledExtensionNames[i]);
+  for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < pCreateInfo->enabledExtensionCount; ppEnabledExtensionNames_indx++) {
+    pCreateInfo_proto->add_ppenabledextensionnames(pCreateInfo->ppEnabledExtensionNames[ppEnabledExtensionNames_indx]);
   }
   request.mutable_vkcreateinstance()->set_pinstance(reinterpret_cast<uint64_t>(*pInstance));
   vvk::server::VvkResponse response;
@@ -97,8 +97,8 @@ VkResult PackAndCallVkEnumeratePhysicalDevices(grpc::ClientReaderWriter<vvk::ser
   *pPhysicalDeviceCount = response.vkenumeratephysicaldevices().pphysicaldevicecount();
   if (pPhysicalDevices) {
     assert(*pPhysicalDeviceCount == response.vkenumeratephysicaldevices().pphysicaldevicecount());
-    for (int i = 0; i < *pPhysicalDeviceCount; i++) {
-      pPhysicalDevices[i] = reinterpret_cast<VkPhysicalDevice>(response.vkenumeratephysicaldevices().pphysicaldevices(i));
+    for (int pPhysicalDevices_indx = 0; pPhysicalDevices_indx < *pPhysicalDeviceCount; pPhysicalDevices_indx++) {
+      pPhysicalDevices[pPhysicalDevices_indx] = reinterpret_cast<VkPhysicalDevice>(response.vkenumeratephysicaldevices().pphysicaldevices(pPhysicalDevices_indx));
     }
   }
   return static_cast<VkResult>(response.result());
@@ -123,8 +123,8 @@ void PackAndCallVkGetPhysicalDeviceProperties(grpc::ClientReaderWriter<vvk::serv
   pProperties_ref.deviceID = response.vkgetphysicaldeviceproperties().pproperties().deviceid();
   pProperties_ref.deviceType = static_cast<VkPhysicalDeviceType>(response.vkgetphysicaldeviceproperties().pproperties().devicetype());
   strncpy(pProperties_ref.deviceName, response.vkgetphysicaldeviceproperties().pproperties().devicename().c_str(), VK_MAX_PHYSICAL_DEVICE_NAME_SIZE);
-  for (int i = 0; i < VK_UUID_SIZE; i++) {
-    pProperties_ref.pipelineCacheUUID[i] = static_cast<uint8_t>(response.vkgetphysicaldeviceproperties().pproperties().pipelinecacheuuid(i));
+  for (int pipelineCacheUUID_indx = 0; pipelineCacheUUID_indx < VK_UUID_SIZE; pipelineCacheUUID_indx++) {
+    pProperties_ref.pipelineCacheUUID[pipelineCacheUUID_indx] = static_cast<uint8_t>(response.vkgetphysicaldeviceproperties().pproperties().pipelinecacheuuid(pipelineCacheUUID_indx));
   }
   pProperties_ref.limits.maxImageDimension1D = response.vkgetphysicaldeviceproperties().pproperties().limits().maximagedimension1d();
   pProperties_ref.limits.maxImageDimension2D = response.vkgetphysicaldeviceproperties().pproperties().limits().maximagedimension2d();
@@ -178,12 +178,12 @@ void PackAndCallVkGetPhysicalDeviceProperties(grpc::ClientReaderWriter<vvk::serv
   pProperties_ref.limits.maxFragmentDualSrcAttachments = response.vkgetphysicaldeviceproperties().pproperties().limits().maxfragmentdualsrcattachments();
   pProperties_ref.limits.maxFragmentCombinedOutputResources = response.vkgetphysicaldeviceproperties().pproperties().limits().maxfragmentcombinedoutputresources();
   pProperties_ref.limits.maxComputeSharedMemorySize = response.vkgetphysicaldeviceproperties().pproperties().limits().maxcomputesharedmemorysize();
-  for (int i = 0; i < 3; i++) {
-    pProperties_ref.limits.maxComputeWorkGroupCount[i] = response.vkgetphysicaldeviceproperties().pproperties().limits().maxcomputeworkgroupcount(i);
+  for (int maxComputeWorkGroupCount_indx = 0; maxComputeWorkGroupCount_indx < 3; maxComputeWorkGroupCount_indx++) {
+    pProperties_ref.limits.maxComputeWorkGroupCount[maxComputeWorkGroupCount_indx] = response.vkgetphysicaldeviceproperties().pproperties().limits().maxcomputeworkgroupcount(maxComputeWorkGroupCount_indx);
   }
   pProperties_ref.limits.maxComputeWorkGroupInvocations = response.vkgetphysicaldeviceproperties().pproperties().limits().maxcomputeworkgroupinvocations();
-  for (int i = 0; i < 3; i++) {
-    pProperties_ref.limits.maxComputeWorkGroupSize[i] = response.vkgetphysicaldeviceproperties().pproperties().limits().maxcomputeworkgroupsize(i);
+  for (int maxComputeWorkGroupSize_indx = 0; maxComputeWorkGroupSize_indx < 3; maxComputeWorkGroupSize_indx++) {
+    pProperties_ref.limits.maxComputeWorkGroupSize[maxComputeWorkGroupSize_indx] = response.vkgetphysicaldeviceproperties().pproperties().limits().maxcomputeworkgroupsize(maxComputeWorkGroupSize_indx);
   }
   pProperties_ref.limits.subPixelPrecisionBits = response.vkgetphysicaldeviceproperties().pproperties().limits().subpixelprecisionbits();
   pProperties_ref.limits.subTexelPrecisionBits = response.vkgetphysicaldeviceproperties().pproperties().limits().subtexelprecisionbits();
@@ -193,11 +193,11 @@ void PackAndCallVkGetPhysicalDeviceProperties(grpc::ClientReaderWriter<vvk::serv
   pProperties_ref.limits.maxSamplerLodBias = response.vkgetphysicaldeviceproperties().pproperties().limits().maxsamplerlodbias();
   pProperties_ref.limits.maxSamplerAnisotropy = response.vkgetphysicaldeviceproperties().pproperties().limits().maxsampleranisotropy();
   pProperties_ref.limits.maxViewports = response.vkgetphysicaldeviceproperties().pproperties().limits().maxviewports();
-  for (int i = 0; i < 2; i++) {
-    pProperties_ref.limits.maxViewportDimensions[i] = response.vkgetphysicaldeviceproperties().pproperties().limits().maxviewportdimensions(i);
+  for (int maxViewportDimensions_indx = 0; maxViewportDimensions_indx < 2; maxViewportDimensions_indx++) {
+    pProperties_ref.limits.maxViewportDimensions[maxViewportDimensions_indx] = response.vkgetphysicaldeviceproperties().pproperties().limits().maxviewportdimensions(maxViewportDimensions_indx);
   }
-  for (int i = 0; i < 2; i++) {
-    pProperties_ref.limits.viewportBoundsRange[i] = response.vkgetphysicaldeviceproperties().pproperties().limits().viewportboundsrange(i);
+  for (int viewportBoundsRange_indx = 0; viewportBoundsRange_indx < 2; viewportBoundsRange_indx++) {
+    pProperties_ref.limits.viewportBoundsRange[viewportBoundsRange_indx] = response.vkgetphysicaldeviceproperties().pproperties().limits().viewportboundsrange(viewportBoundsRange_indx);
   }
   pProperties_ref.limits.viewportSubPixelBits = response.vkgetphysicaldeviceproperties().pproperties().limits().viewportsubpixelbits();
   pProperties_ref.limits.minMemoryMapAlignment = response.vkgetphysicaldeviceproperties().pproperties().limits().minmemorymapalignment();
@@ -249,11 +249,11 @@ void PackAndCallVkGetPhysicalDeviceProperties(grpc::ClientReaderWriter<vvk::serv
   pProperties_ref.limits.maxCullDistances = response.vkgetphysicaldeviceproperties().pproperties().limits().maxculldistances();
   pProperties_ref.limits.maxCombinedClipAndCullDistances = response.vkgetphysicaldeviceproperties().pproperties().limits().maxcombinedclipandculldistances();
   pProperties_ref.limits.discreteQueuePriorities = response.vkgetphysicaldeviceproperties().pproperties().limits().discretequeuepriorities();
-  for (int i = 0; i < 2; i++) {
-    pProperties_ref.limits.pointSizeRange[i] = response.vkgetphysicaldeviceproperties().pproperties().limits().pointsizerange(i);
+  for (int pointSizeRange_indx = 0; pointSizeRange_indx < 2; pointSizeRange_indx++) {
+    pProperties_ref.limits.pointSizeRange[pointSizeRange_indx] = response.vkgetphysicaldeviceproperties().pproperties().limits().pointsizerange(pointSizeRange_indx);
   }
-  for (int i = 0; i < 2; i++) {
-    pProperties_ref.limits.lineWidthRange[i] = response.vkgetphysicaldeviceproperties().pproperties().limits().linewidthrange(i);
+  for (int lineWidthRange_indx = 0; lineWidthRange_indx < 2; lineWidthRange_indx++) {
+    pProperties_ref.limits.lineWidthRange[lineWidthRange_indx] = response.vkgetphysicaldeviceproperties().pproperties().limits().linewidthrange(lineWidthRange_indx);
   }
   pProperties_ref.limits.pointSizeGranularity = response.vkgetphysicaldeviceproperties().pproperties().limits().pointsizegranularity();
   pProperties_ref.limits.lineWidthGranularity = response.vkgetphysicaldeviceproperties().pproperties().limits().linewidthgranularity();
@@ -280,31 +280,31 @@ VkResult PackAndCallVkCreateDevice(grpc::ClientReaderWriter<vvk::server::VvkRequ
     pCreateInfo_proto->set_flags(pCreateInfo->flags);
   }
   pCreateInfo_proto->set_queuecreateinfocount(pCreateInfo->queueCreateInfoCount);
-  for (int i = 0; i < pCreateInfo->queueCreateInfoCount; i++) {
+  for (int pQueueCreateInfos_indx = 0; pQueueCreateInfos_indx < pCreateInfo->queueCreateInfoCount; pQueueCreateInfos_indx++) {
     vvk::server::VkDeviceQueueCreateInfo* pCreateInfo_proto_pQueueCreateInfos_proto = pCreateInfo_proto->add_pqueuecreateinfos();
-    if ((&pCreateInfo->pQueueCreateInfos[i])->pNext) {
+    if ((&pCreateInfo->pQueueCreateInfos[pQueueCreateInfos_indx])->pNext) {
       // pNext chains are currently not supported
     }
-    if ((&pCreateInfo->pQueueCreateInfos[i])->flags) {
-      pCreateInfo_proto_pQueueCreateInfos_proto->set_flags((&pCreateInfo->pQueueCreateInfos[i])->flags);
+    if ((&pCreateInfo->pQueueCreateInfos[pQueueCreateInfos_indx])->flags) {
+      pCreateInfo_proto_pQueueCreateInfos_proto->set_flags((&pCreateInfo->pQueueCreateInfos[pQueueCreateInfos_indx])->flags);
     }
-    pCreateInfo_proto_pQueueCreateInfos_proto->set_queuefamilyindex((&pCreateInfo->pQueueCreateInfos[i])->queueFamilyIndex);
-    pCreateInfo_proto_pQueueCreateInfos_proto->set_queuecount((&pCreateInfo->pQueueCreateInfos[i])->queueCount);
-    for (int i = 0; i < (&pCreateInfo->pQueueCreateInfos[i])->queueCount; i++) {
-      pCreateInfo_proto_pQueueCreateInfos_proto->add_pqueuepriorities((&pCreateInfo->pQueueCreateInfos[i])->pQueuePriorities[i]);
+    pCreateInfo_proto_pQueueCreateInfos_proto->set_queuefamilyindex((&pCreateInfo->pQueueCreateInfos[pQueueCreateInfos_indx])->queueFamilyIndex);
+    pCreateInfo_proto_pQueueCreateInfos_proto->set_queuecount((&pCreateInfo->pQueueCreateInfos[pQueueCreateInfos_indx])->queueCount);
+    for (int pQueuePriorities_indx = 0; pQueuePriorities_indx < (&pCreateInfo->pQueueCreateInfos[pQueueCreateInfos_indx])->queueCount; pQueuePriorities_indx++) {
+      pCreateInfo_proto_pQueueCreateInfos_proto->add_pqueuepriorities((&pCreateInfo->pQueueCreateInfos[pQueueCreateInfos_indx])->pQueuePriorities[pQueuePriorities_indx]);
     }
   }
   if (pCreateInfo->enabledLayerCount) {
     pCreateInfo_proto->set_enabledlayercount(pCreateInfo->enabledLayerCount);
   }
-  for (int i = 0; i < pCreateInfo->enabledLayerCount; i++) {
-    pCreateInfo_proto->add_ppenabledlayernames(pCreateInfo->ppEnabledLayerNames[i]);
+  for (int ppEnabledLayerNames_indx = 0; ppEnabledLayerNames_indx < pCreateInfo->enabledLayerCount; ppEnabledLayerNames_indx++) {
+    pCreateInfo_proto->add_ppenabledlayernames(pCreateInfo->ppEnabledLayerNames[ppEnabledLayerNames_indx]);
   }
   if (pCreateInfo->enabledExtensionCount) {
     pCreateInfo_proto->set_enabledextensioncount(pCreateInfo->enabledExtensionCount);
   }
-  for (int i = 0; i < pCreateInfo->enabledExtensionCount; i++) {
-    pCreateInfo_proto->add_ppenabledextensionnames(pCreateInfo->ppEnabledExtensionNames[i]);
+  for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < pCreateInfo->enabledExtensionCount; ppEnabledExtensionNames_indx++) {
+    pCreateInfo_proto->add_ppenabledextensionnames(pCreateInfo->ppEnabledExtensionNames[ppEnabledExtensionNames_indx]);
   }
   if (pCreateInfo->pEnabledFeatures) {
     vvk::server::VkPhysicalDeviceFeatures* pCreateInfo_proto_pEnabledFeatures_proto = pCreateInfo_proto->mutable_penabledfeatures();
@@ -416,10 +416,10 @@ VkResult PackAndCallVkEnumerateInstanceExtensionProperties(grpc::ClientReaderWri
   *pPropertyCount = response.vkenumerateinstanceextensionproperties().ppropertycount();
   if (pProperties) {
     assert(*pPropertyCount == response.vkenumerateinstanceextensionproperties().ppropertycount());
-    for (int i = 0; i < *pPropertyCount; i++) {
-      VkExtensionProperties& pProperties_ref = pProperties[i];
-      strncpy(pProperties_ref.extensionName, response.vkenumerateinstanceextensionproperties().pproperties(i).extensionname().c_str(), VK_MAX_EXTENSION_NAME_SIZE);
-      pProperties_ref.specVersion = response.vkenumerateinstanceextensionproperties().pproperties(i).specversion();
+    for (int pProperties_indx = 0; pProperties_indx < *pPropertyCount; pProperties_indx++) {
+      VkExtensionProperties& pProperties_ref = pProperties[pProperties_indx];
+      strncpy(pProperties_ref.extensionName, response.vkenumerateinstanceextensionproperties().pproperties(pProperties_indx).extensionname().c_str(), VK_MAX_EXTENSION_NAME_SIZE);
+      pProperties_ref.specVersion = response.vkenumerateinstanceextensionproperties().pproperties(pProperties_indx).specversion();
     }
   }
   return static_cast<VkResult>(response.result());
@@ -448,10 +448,10 @@ VkResult PackAndCallVkEnumerateDeviceExtensionProperties(grpc::ClientReaderWrite
   *pPropertyCount = response.vkenumeratedeviceextensionproperties().ppropertycount();
   if (pProperties) {
     assert(*pPropertyCount == response.vkenumeratedeviceextensionproperties().ppropertycount());
-    for (int i = 0; i < *pPropertyCount; i++) {
-      VkExtensionProperties& pProperties_ref = pProperties[i];
-      strncpy(pProperties_ref.extensionName, response.vkenumeratedeviceextensionproperties().pproperties(i).extensionname().c_str(), VK_MAX_EXTENSION_NAME_SIZE);
-      pProperties_ref.specVersion = response.vkenumeratedeviceextensionproperties().pproperties(i).specversion();
+    for (int pProperties_indx = 0; pProperties_indx < *pPropertyCount; pProperties_indx++) {
+      VkExtensionProperties& pProperties_ref = pProperties[pProperties_indx];
+      strncpy(pProperties_ref.extensionName, response.vkenumeratedeviceextensionproperties().pproperties(pProperties_indx).extensionname().c_str(), VK_MAX_EXTENSION_NAME_SIZE);
+      pProperties_ref.specVersion = response.vkenumeratedeviceextensionproperties().pproperties(pProperties_indx).specversion();
     }
   }
   return static_cast<VkResult>(response.result());
@@ -471,19 +471,19 @@ void PackAndCallVkGetPhysicalDeviceMemoryProperties(grpc::ClientReaderWriter<vvk
   }
   VkPhysicalDeviceMemoryProperties& pMemoryProperties_ref = *pMemoryProperties;
   pMemoryProperties_ref.memoryTypeCount = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypecount();
-  for (int i = 0; i < response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypecount(); i++) {
-    VkMemoryType &pMemoryProperties_ref_memoryTypes_i = pMemoryProperties_ref.memoryTypes[i];
-    if (response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(i).has_propertyflags()) {
-      pMemoryProperties_ref_memoryTypes_i.propertyFlags = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(i).propertyflags();
+  for (int memoryTypes_indx = 0; memoryTypes_indx < response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypecount(); memoryTypes_indx++) {
+    VkMemoryType &pMemoryProperties_ref_memoryTypes_i = pMemoryProperties_ref.memoryTypes[memoryTypes_indx];
+    if (response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).has_propertyflags()) {
+      pMemoryProperties_ref_memoryTypes_i.propertyFlags = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).propertyflags();
     }
-    pMemoryProperties_ref_memoryTypes_i.heapIndex = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(i).heapindex();
+    pMemoryProperties_ref_memoryTypes_i.heapIndex = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).heapindex();
   }
   pMemoryProperties_ref.memoryHeapCount = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheapcount();
-  for (int i = 0; i < response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheapcount(); i++) {
-    VkMemoryHeap &pMemoryProperties_ref_memoryHeaps_i = pMemoryProperties_ref.memoryHeaps[i];
-    pMemoryProperties_ref_memoryHeaps_i.size = static_cast<VkDeviceSize>(response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(i).size());
-    if (response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(i).has_flags()) {
-      pMemoryProperties_ref_memoryHeaps_i.flags = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(i).flags();
+  for (int memoryHeaps_indx = 0; memoryHeaps_indx < response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheapcount(); memoryHeaps_indx++) {
+    VkMemoryHeap &pMemoryProperties_ref_memoryHeaps_i = pMemoryProperties_ref.memoryHeaps[memoryHeaps_indx];
+    pMemoryProperties_ref_memoryHeaps_i.size = static_cast<VkDeviceSize>(response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx).size());
+    if (response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx).has_flags()) {
+      pMemoryProperties_ref_memoryHeaps_i.flags = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx).flags();
     }
   }
 }
@@ -582,16 +582,16 @@ void PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(grpc::ClientReaderWrite
   *pQueueFamilyPropertyCount = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilypropertycount();
   if (pQueueFamilyProperties) {
     assert(*pQueueFamilyPropertyCount == response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilypropertycount());
-    for (int i = 0; i < *pQueueFamilyPropertyCount; i++) {
-      VkQueueFamilyProperties& pQueueFamilyProperties_ref = pQueueFamilyProperties[i];
-      if (response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(i).has_queueflags()) {
-        pQueueFamilyProperties_ref.queueFlags = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(i).queueflags();
+    for (int pQueueFamilyProperties_indx = 0; pQueueFamilyProperties_indx < *pQueueFamilyPropertyCount; pQueueFamilyProperties_indx++) {
+      VkQueueFamilyProperties& pQueueFamilyProperties_ref = pQueueFamilyProperties[pQueueFamilyProperties_indx];
+      if (response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).has_queueflags()) {
+        pQueueFamilyProperties_ref.queueFlags = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).queueflags();
       }
-      pQueueFamilyProperties_ref.queueCount = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(i).queuecount();
-      pQueueFamilyProperties_ref.timestampValidBits = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(i).timestampvalidbits();
-      pQueueFamilyProperties_ref.minImageTransferGranularity.width = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(i).minimagetransfergranularity().width();
-      pQueueFamilyProperties_ref.minImageTransferGranularity.height = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(i).minimagetransfergranularity().height();
-      pQueueFamilyProperties_ref.minImageTransferGranularity.depth = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(i).minimagetransfergranularity().depth();
+      pQueueFamilyProperties_ref.queueCount = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).queuecount();
+      pQueueFamilyProperties_ref.timestampValidBits = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).timestampvalidbits();
+      pQueueFamilyProperties_ref.minImageTransferGranularity.width = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).minimagetransfergranularity().width();
+      pQueueFamilyProperties_ref.minImageTransferGranularity.height = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).minimagetransfergranularity().height();
+      pQueueFamilyProperties_ref.minImageTransferGranularity.depth = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).minimagetransfergranularity().depth();
     }
   }
 }

@@ -57,13 +57,14 @@ class ClientSrcGenerator(BaseGenerator):
                     f'    request.mutable_{cmd_name.lower()}()->set_{param.length.lower()}(0);\n')
                 out.append("  }\n")
 
+                index_name = f'{param.name}_indx'
                 after_call_code.append(f'  if ({param.name}) {{\n')
                 after_call_code.append(
                     f'    assert(*{param.length} == {response_accessor}.{param.length.lower()}());\n')
                 after_call_code.append(
-                    f'    for (int i = 0; i < *{param.length}; i++) {{\n')
+                    f'    for (int {index_name} = 0; {index_name} < *{param.length}; {index_name}++) {{\n')
                 after_call_code.append(
-                    f'      {param.name}[i] = reinterpret_cast<{param.type}>({response_accessor}.{param.name.lower()}(i));\n')
+                    f'      {param.name}[{index_name}] = reinterpret_cast<{param.type}>({response_accessor}.{param.name.lower()}({index_name}));\n')
                 after_call_code.append("    }\n")
                 after_call_code.append("  }\n")
         elif param.pointer and not param.const and param.type in self.vk.structs:
@@ -88,15 +89,16 @@ class ClientSrcGenerator(BaseGenerator):
                     f'    request.mutable_{cmd_name.lower()}()->set_{param.length.lower()}(0);\n')
                 out.append("  }\n")
 
+                index_name = f'{param.name}_indx'
                 after_call_code.append(f'  if ({param.name}) {{\n')
                 after_call_code.append(
                     f'    assert(*{param.length} == {response_accessor}.{param.length.lower()}());\n')
                 after_call_code.append(
-                    f'    for (int i = 0; i < *{param.length}; i++) {{\n')
+                    f'    for (int {index_name} = 0; {index_name} < *{param.length}; {index_name}++) {{\n')
                 after_call_code.append(
-                    f'      {param.type}& {param.name}_ref = {param.name}[i];\n')
+                    f'      {param.type}& {param.name}_ref = {param.name}[{index_name}];\n')
                 after_call_code.append(indent(fill_struct_from_proto(
-                    self, param.type, f'{param.name}_ref', f'{response_accessor}.{param.name.lower()}(i)'), 4))
+                    self, param.type, f'{param.name}_ref', f'{response_accessor}.{param.name.lower()}({index_name})'), 4))
                 after_call_code.append("    }\n")
                 after_call_code.append("  }\n")
         elif param.pointer and not param.const:
