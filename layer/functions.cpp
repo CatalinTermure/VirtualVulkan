@@ -13,6 +13,7 @@
 #include <memory>
 #include <mutex>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 
 #include "commons/remote_call.h"
@@ -22,8 +23,9 @@ namespace vvk {
 
 namespace {
 
-template <typename FooType, typename RetType, typename... Args>
-RetType CallDownInstanceFunc(std::string_view func_name, VkInstance instance, Args... args) {
+template <typename FooType, typename... Args>
+std::result_of_t<FooType(VkInstance, Args...)> CallDownInstanceFunc(std::string_view func_name, VkInstance instance,
+                                                                    Args... args) {
   FooType nxt_func = reinterpret_cast<FooType>(GetInstanceInfo(instance).nxt_gipa(instance, func_name.data()));
   if (!nxt_func) {
     spdlog::critical("Failed to fetch {} from next layer", func_name);
@@ -32,8 +34,9 @@ RetType CallDownInstanceFunc(std::string_view func_name, VkInstance instance, Ar
   return nxt_func(instance, args...);
 }
 
-template <typename FooType, typename RetType, typename... Args>
-RetType CallDownDeviceFunc(std::string_view func_name, VkDevice device, Args... args) {
+template <typename FooType, typename... Args>
+std::result_of_t<FooType(VkDevice, Args...)> CallDownDeviceFunc(std::string_view func_name, VkDevice device,
+                                                                Args... args) {
   FooType nxt_func = reinterpret_cast<FooType>(GetDeviceInfo(device).nxt_gdpa(device, func_name.data()));
   if (!nxt_func) {
     spdlog::critical("Failed to fetch {} from next layer", func_name);
@@ -137,7 +140,7 @@ VKAPI_ATTR void VKAPI_CALL DestroyInstance(VkInstance instance, const VkAllocati
   spdlog::trace("DestroyInstance");
 
   InstanceInfo& instance_info = GetInstanceInfo(instance);
-  CallDownInstanceFunc<PFN_vkDestroyInstance, void>("vkDestroyInstance", instance, pAllocator);
+  CallDownInstanceFunc<PFN_vkDestroyInstance>("vkDestroyInstance", instance, pAllocator);
 
   auto reader_writer = instance_info.command_stream.get();
   PackAndCallVkDestroyInstance(reader_writer, instance_info.GetRemoteHandle(instance), pAllocator);
@@ -149,8 +152,8 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumeratePhysicalDevices(VkInstance instance, uin
                                                         VkPhysicalDevice* pPhysicalDevices) {
   spdlog::trace("EnumeratePhysicalDevices");
 
-  VkResult result = CallDownInstanceFunc<PFN_vkEnumeratePhysicalDevices, VkResult>(
-      "vkEnumeratePhysicalDevices", instance, pPhysicalDeviceCount, pPhysicalDevices);
+  VkResult result = CallDownInstanceFunc<PFN_vkEnumeratePhysicalDevices>("vkEnumeratePhysicalDevices", instance,
+                                                                         pPhysicalDeviceCount, pPhysicalDevices);
   if (result != VK_SUCCESS) {
     return result;
   }
@@ -213,7 +216,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 }
 
 VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCallbacks* pAllocator) {
-  CallDownDeviceFunc<PFN_vkDestroyDevice, void>("vkDestroyDevice", device, pAllocator);
+  CallDownDeviceFunc<PFN_vkDestroyDevice>("vkDestroyDevice", device, pAllocator);
 
   InstanceInfo& instance_info = GetInstanceInfo(device);
 
@@ -283,7 +286,7 @@ VKAPI_ATTR void VKAPI_CALL GetDeviceQueue(VkDevice device, uint32_t queueFamilyI
                                           VkQueue* pQueue) {
   InstanceInfo& instance_info = GetInstanceInfo(device);
 
-  CallDownDeviceFunc<PFN_vkGetDeviceQueue, void>("vkGetDeviceQueue", device, queueFamilyIndex, queueIndex, pQueue);
+  CallDownDeviceFunc<PFN_vkGetDeviceQueue>("vkGetDeviceQueue", device, queueFamilyIndex, queueIndex, pQueue);
   VkQueue remote_queue = VK_NULL_HANDLE;
   PackAndCallVkGetDeviceQueue(instance_info.command_stream.get(), instance_info.GetRemoteHandle(device),
                               queueFamilyIndex, queueIndex, &remote_queue);
@@ -293,8 +296,7 @@ VKAPI_ATTR void VKAPI_CALL GetDeviceQueue(VkDevice device, uint32_t queueFamilyI
 VKAPI_ATTR VkResult VKAPI_CALL CreateFence(VkDevice device, const VkFenceCreateInfo* pCreateInfo,
                                            const VkAllocationCallbacks* pAllocator, VkFence* pFence) {
   InstanceInfo& instance_info = GetInstanceInfo(device);
-  VkResult result =
-      CallDownDeviceFunc<PFN_vkCreateFence, VkResult>("vkCreateFence", device, pCreateInfo, pAllocator, pFence);
+  VkResult result = CallDownDeviceFunc<PFN_vkCreateFence>("vkCreateFence", device, pCreateInfo, pAllocator, pFence);
   if (result != VK_SUCCESS) {
     return result;
   }
@@ -302,7 +304,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateFence(VkDevice device, const VkFenceCreateI
   result = PackAndCallVkCreateFence(instance_info.command_stream.get(), instance_info.GetRemoteHandle(device),
                                     pCreateInfo, pAllocator, &remote_fence);
   if (result != VK_SUCCESS) {
-    CallDownDeviceFunc<PFN_vkDestroyFence, void>("vkDestroyFence", device, *pFence, pAllocator);
+    CallDownDeviceFunc<PFN_vkDestroyFence>("vkDestroyFence", device, *pFence, pAllocator);
     return result;
   }
   instance_info.SetRemoteHandle(*pFence, remote_fence);
@@ -311,7 +313,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateFence(VkDevice device, const VkFenceCreateI
 
 VKAPI_ATTR void VKAPI_CALL DestroyFence(VkDevice device, VkFence fence, const VkAllocationCallbacks* pAllocator) {
   InstanceInfo& instance_info = GetInstanceInfo(device);
-  CallDownDeviceFunc<PFN_vkDestroyFence, void>("vkDestroyFence", device, fence, pAllocator);
+  CallDownDeviceFunc<PFN_vkDestroyFence>("vkDestroyFence", device, fence, pAllocator);
   PackAndCallVkDestroyFence(instance_info.command_stream.get(), instance_info.GetRemoteHandle(device),
                             instance_info.GetRemoteHandle(fence), pAllocator);
 }
@@ -319,8 +321,8 @@ VKAPI_ATTR void VKAPI_CALL DestroyFence(VkDevice device, VkFence fence, const Vk
 VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphoreCreateInfo* pCreateInfo,
                                                const VkAllocationCallbacks* pAllocator, VkSemaphore* pSemaphore) {
   InstanceInfo& instance_info = GetInstanceInfo(device);
-  VkResult result = CallDownDeviceFunc<PFN_vkCreateSemaphore, VkResult>("vkCreateSemaphore", device, pCreateInfo,
-                                                                        pAllocator, pSemaphore);
+  VkResult result =
+      CallDownDeviceFunc<PFN_vkCreateSemaphore>("vkCreateSemaphore", device, pCreateInfo, pAllocator, pSemaphore);
   if (result != VK_SUCCESS) {
     return result;
   }
@@ -328,7 +330,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphor
   result = PackAndCallVkCreateSemaphore(instance_info.command_stream.get(), instance_info.GetRemoteHandle(device),
                                         pCreateInfo, pAllocator, &remote_semaphore);
   if (result != VK_SUCCESS) {
-    CallDownDeviceFunc<PFN_vkDestroySemaphore, void>("vkDestroySemaphore", device, *pSemaphore, pAllocator);
+    CallDownDeviceFunc<PFN_vkDestroySemaphore>("vkDestroySemaphore", device, *pSemaphore, pAllocator);
     return result;
   }
   instance_info.SetRemoteHandle(*pSemaphore, remote_semaphore);
@@ -338,7 +340,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphor
 VKAPI_ATTR void VKAPI_CALL DestroySemaphore(VkDevice device, VkSemaphore semaphore,
                                             const VkAllocationCallbacks* pAllocator) {
   InstanceInfo& instance_info = GetInstanceInfo(device);
-  CallDownDeviceFunc<PFN_vkDestroySemaphore, void>("vkDestroySemaphore", device, semaphore, pAllocator);
+  CallDownDeviceFunc<PFN_vkDestroySemaphore>("vkDestroySemaphore", device, semaphore, pAllocator);
   PackAndCallVkDestroySemaphore(instance_info.command_stream.get(), instance_info.GetRemoteHandle(device),
                                 instance_info.GetRemoteHandle(semaphore), pAllocator);
 }
