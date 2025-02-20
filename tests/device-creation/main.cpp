@@ -47,12 +47,20 @@ int main() {
   }
 
   VkDevice device = VK_NULL_HANDLE;
+  VkDeviceQueueCreateInfo queue_create_info = {
+      .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+      .pNext = nullptr,
+      .flags = 0,
+      .queueFamilyIndex = 0,
+      .queueCount = 1,
+      .pQueuePriorities = new float[1]{1.0f},
+  };
   const VkDeviceCreateInfo device_create_info = {
       .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
       .pNext = nullptr,
       .flags = 0,
-      .queueCreateInfoCount = 0,
-      .pQueueCreateInfos = nullptr,
+      .queueCreateInfoCount = 1,
+      .pQueueCreateInfos = &queue_create_info,
       .enabledLayerCount = 0,
       .ppEnabledLayerNames = nullptr,
       .enabledExtensionCount = 0,
