@@ -539,4 +539,46 @@ void UnpackAndExecuteVkGetDeviceQueue(vvk::ExecutionContext& context, const vvk:
   response->mutable_vkgetdevicequeue()->set_pqueue(reinterpret_cast<uint64_t>(server_pQueue));
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkCreateFence(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreateFence");
+
+  VkFenceCreateInfo pCreateInfo = {};
+  pCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
+  if (request.vkcreatefence().pcreateinfo().has_flags()) {
+    pCreateInfo.flags = request.vkcreatefence().pcreateinfo().flags();
+  }
+  VkFence client_pFence = reinterpret_cast<VkFence>(request.vkcreatefence().pfence());
+  VkFence server_pFence;
+  VkResult result = vkCreateFence(reinterpret_cast<VkDevice>(request.vkcreatefence().device()), &pCreateInfo, nullptr, &server_pFence);
+  response->mutable_vkcreatefence()->set_pfence(reinterpret_cast<uint64_t>(server_pFence));
+  response->set_result(result);
+}
+void UnpackAndExecuteVkDestroyFence(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDestroyFence");
+
+  vkDestroyFence(reinterpret_cast<VkDevice>(request.vkdestroyfence().device()), reinterpret_cast<VkFence>(request.vkdestroyfence().fence()), nullptr);
+  response->set_result(VK_SUCCESS);
+}
+void UnpackAndExecuteVkCreateSemaphore(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreateSemaphore");
+
+  VkSemaphoreCreateInfo pCreateInfo = {};
+  pCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
+  if (request.vkcreatesemaphore().pcreateinfo().has_flags()) {
+    pCreateInfo.flags = request.vkcreatesemaphore().pcreateinfo().flags();
+  }
+  VkSemaphore client_pSemaphore = reinterpret_cast<VkSemaphore>(request.vkcreatesemaphore().psemaphore());
+  VkSemaphore server_pSemaphore;
+  VkResult result = vkCreateSemaphore(reinterpret_cast<VkDevice>(request.vkcreatesemaphore().device()), &pCreateInfo, nullptr, &server_pSemaphore);
+  response->mutable_vkcreatesemaphore()->set_psemaphore(reinterpret_cast<uint64_t>(server_pSemaphore));
+  response->set_result(result);
+}
+void UnpackAndExecuteVkDestroySemaphore(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDestroySemaphore");
+
+  vkDestroySemaphore(reinterpret_cast<VkDevice>(request.vkdestroysemaphore().device()), reinterpret_cast<VkSemaphore>(request.vkdestroysemaphore().semaphore()), nullptr);
+  response->set_result(VK_SUCCESS);
+}
 

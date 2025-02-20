@@ -2877,4 +2877,12 @@ message VkExtensionProperties {
   uint32 specVersion = 2; // uint32_t specVersion
 }
 
+message VkFenceCreateInfo {
+  optional uint32 flags = 1; // VkFenceCreateFlags flags
+}
+
+message VkSemaphoreCreateInfo {
+  optional uint32 flags = 1; // VkSemaphoreCreateFlags flags
+}
+
 

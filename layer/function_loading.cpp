@@ -41,6 +41,8 @@ constexpr std::array non_intercepted_functions = {
     "vkCreateDebugReportCallbackEXT",
     "vkDestroyDebugReportCallbackEXT",
     "vkGetPhysicalDeviceSurfaceFormatsKHR",
+    "vkGetPhysicalDeviceSurfaceCapabilitiesKHR",
+    "vkGetPhysicalDeviceSurfacePresentModesKHR",
 };
 
 }  // namespace

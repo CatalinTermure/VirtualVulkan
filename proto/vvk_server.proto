@@ -27,6 +27,10 @@ message VvkRequest {
     VkEnumerateInstanceExtensionPropertiesParams vkEnumerateInstanceExtensionProperties = 11;
     VkEnumerateDeviceExtensionPropertiesParams vkEnumerateDeviceExtensionProperties = 12;
     VkGetDeviceQueueParams vkGetDeviceQueue = 13;
+    VkCreateFenceParams vkCreateFence = 14;
+    VkDestroyFenceParams vkDestroyFence = 15;
+    VkCreateSemaphoreParams vkCreateSemaphore = 16;
+    VkDestroySemaphoreParams vkDestroySemaphore = 17;
   }
 }
 
@@ -43,6 +47,8 @@ message VvkResponse {
     VkEnumerateInstanceExtensionPropertiesResponse vkEnumerateInstanceExtensionProperties = 9;
     VkEnumerateDeviceExtensionPropertiesResponse vkEnumerateDeviceExtensionProperties = 10;
     VkGetDeviceQueueResponse vkGetDeviceQueue = 11;
+    VkCreateFenceResponse vkCreateFence = 12;
+    VkCreateSemaphoreResponse vkCreateSemaphore = 13;
   }
 }
 
@@ -158,6 +164,40 @@ message VkGetDeviceQueueParams {
   uint32 queueFamilyIndex = 2; // uint32_t queueFamilyIndex
   uint32 queueIndex = 3; // uint32_t queueIndex
   uint64 pQueue = 4; // VkQueue* pQueue NON-CONST POINTER
+}
+
+message VkCreateFenceResponse {
+  uint64 pFence = 1; // VkFence* pFence
+}
+
+message VkCreateFenceParams {
+  uint64 device = 1; // VkDevice device
+  VkFenceCreateInfo pCreateInfo = 2; // const VkFenceCreateInfo* pCreateInfo
+  optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
+  uint64 pFence = 4; // VkFence* pFence NON-CONST POINTER
+}
+
+message VkDestroyFenceParams {
+  uint64 device = 1; // VkDevice device
+  optional uint64 fence = 2; // VkFence fence
+  optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
+}
+
+message VkCreateSemaphoreResponse {
+  uint64 pSemaphore = 1; // VkSemaphore* pSemaphore
+}
+
+message VkCreateSemaphoreParams {
+  uint64 device = 1; // VkDevice device
+  VkSemaphoreCreateInfo pCreateInfo = 2; // const VkSemaphoreCreateInfo* pCreateInfo
+  optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
+  uint64 pSemaphore = 4; // VkSemaphore* pSemaphore NON-CONST POINTER
+}
+
+message VkDestroySemaphoreParams {
+  uint64 device = 1; // VkDevice device
+  optional uint64 semaphore = 2; // VkSemaphore semaphore
+  optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
 }
 
 

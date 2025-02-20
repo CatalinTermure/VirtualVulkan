@@ -58,6 +58,24 @@ VKAPI_ATTR void VKAPI_CALL GetDeviceQueue(
     uint32_t                                    queueFamilyIndex,
     uint32_t                                    queueIndex,
     VkQueue*                                    pQueue);
+VKAPI_ATTR VkResult VKAPI_CALL CreateFence(
+    VkDevice                                    device,
+    const VkFenceCreateInfo*                    pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkFence*                                    pFence);
+VKAPI_ATTR void VKAPI_CALL DestroyFence(
+    VkDevice                                    device,
+    VkFence                                     fence,
+    const VkAllocationCallbacks*                pAllocator);
+VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(
+    VkDevice                                    device,
+    const VkSemaphoreCreateInfo*                pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkSemaphore*                                pSemaphore);
+VKAPI_ATTR void VKAPI_CALL DestroySemaphore(
+    VkDevice                                    device,
+    VkSemaphore                                 semaphore,
+    const VkAllocationCallbacks*                pAllocator);
 
 inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = {
     {"vkCreateInstance", reinterpret_cast<PFN_vkVoidFunction>(CreateInstance)},
@@ -72,6 +90,10 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkGetPhysicalDeviceFeatures", reinterpret_cast<PFN_vkVoidFunction>(GetPhysicalDeviceFeatures)},
     {"vkGetPhysicalDeviceQueueFamilyProperties", reinterpret_cast<PFN_vkVoidFunction>(GetPhysicalDeviceQueueFamilyProperties)},
     {"vkGetDeviceQueue", reinterpret_cast<PFN_vkVoidFunction>(GetDeviceQueue)},
+    {"vkCreateFence", reinterpret_cast<PFN_vkVoidFunction>(CreateFence)},
+    {"vkDestroyFence", reinterpret_cast<PFN_vkVoidFunction>(DestroyFence)},
+    {"vkCreateSemaphore", reinterpret_cast<PFN_vkVoidFunction>(CreateSemaphore)},
+    {"vkDestroySemaphore", reinterpret_cast<PFN_vkVoidFunction>(DestroySemaphore)},
 };
 
 }  // namespace vvk

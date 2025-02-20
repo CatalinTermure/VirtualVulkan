@@ -613,5 +613,87 @@ void PackAndCallVkGetDeviceQueue(grpc::ClientReaderWriter<vvk::server::VvkReques
   }
   *pQueue = reinterpret_cast<VkQueue>(response.vkgetdevicequeue().pqueue());
 }
+VkResult PackAndCallVkCreateFence(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkFenceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkFence* pFence) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCreateFence");
+  request.mutable_vkcreatefence()->set_device(reinterpret_cast<uint64_t>(device));
+  vvk::server::VkFenceCreateInfo* pCreateInfo_proto = request.mutable_vkcreatefence()->mutable_pcreateinfo();
+  if (pCreateInfo->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (pCreateInfo->flags) {
+    pCreateInfo_proto->set_flags(pCreateInfo->flags);
+  }
+  request.mutable_vkcreatefence()->set_pfence(reinterpret_cast<uint64_t>(*pFence));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pFence = reinterpret_cast<VkFence>(response.vkcreatefence().pfence());
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkDestroyFence(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkFence fence, const VkAllocationCallbacks* pAllocator) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkDestroyFence");
+  request.mutable_vkdestroyfence()->set_device(reinterpret_cast<uint64_t>(device));
+  if (fence) {
+    request.mutable_vkdestroyfence()->set_fence(reinterpret_cast<uint64_t>(fence));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
+VkResult PackAndCallVkCreateSemaphore(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkSemaphoreCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSemaphore* pSemaphore) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCreateSemaphore");
+  request.mutable_vkcreatesemaphore()->set_device(reinterpret_cast<uint64_t>(device));
+  vvk::server::VkSemaphoreCreateInfo* pCreateInfo_proto = request.mutable_vkcreatesemaphore()->mutable_pcreateinfo();
+  if (pCreateInfo->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (pCreateInfo->flags) {
+    pCreateInfo_proto->set_flags(pCreateInfo->flags);
+  }
+  request.mutable_vkcreatesemaphore()->set_psemaphore(reinterpret_cast<uint64_t>(*pSemaphore));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pSemaphore = reinterpret_cast<VkSemaphore>(response.vkcreatesemaphore().psemaphore());
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkDestroySemaphore(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkSemaphore semaphore, const VkAllocationCallbacks* pAllocator) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkDestroySemaphore");
+  request.mutable_vkdestroysemaphore()->set_device(reinterpret_cast<uint64_t>(device));
+  if (semaphore) {
+    request.mutable_vkdestroysemaphore()->set_semaphore(reinterpret_cast<uint64_t>(semaphore));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 

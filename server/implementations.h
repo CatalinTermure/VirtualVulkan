@@ -31,4 +31,12 @@ void UnpackAndExecuteVkGetPhysicalDeviceQueueFamilyProperties(vvk::ExecutionCont
                                       const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
 void UnpackAndExecuteVkGetDeviceQueue(vvk::ExecutionContext& context,
                                       const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkCreateFence(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkDestroyFence(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkCreateSemaphore(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkDestroySemaphore(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
 #endif  // VVK_SERVER_IMPLEMENTATIONS_H

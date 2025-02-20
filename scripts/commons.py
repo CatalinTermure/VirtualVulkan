@@ -37,6 +37,10 @@ COMMANDS_TO_GENERATE = [
     "vkGetPhysicalDeviceFeatures",
     "vkGetPhysicalDeviceQueueFamilyProperties",
     "vkGetDeviceQueue",
+    "vkCreateFence",
+    "vkDestroyFence",
+    "vkCreateSemaphore",
+    "vkDestroySemaphore",
 ]
 
 
