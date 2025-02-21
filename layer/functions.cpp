@@ -350,4 +350,18 @@ VKAPI_ATTR void VKAPI_CALL DestroySemaphore(VkDevice device, VkSemaphore semapho
                                 device_info.GetRemoteHandle(semaphore), pAllocator);
 }
 
+VKAPI_ATTR VkResult VKAPI_CALL AllocateMemory(VkDevice device, const VkMemoryAllocateInfo* pAllocateInfo,
+                                              const VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMemory) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  return PackAndCallVkAllocateMemory(device_info.instance_info.command_stream.get(),
+                                     device_info.instance_info.GetRemoteHandle(device), pAllocateInfo, pAllocator,
+                                     pMemory);
+}
+
+VKAPI_ATTR void VKAPI_CALL FreeMemory(VkDevice device, VkDeviceMemory memory, const VkAllocationCallbacks* pAllocator) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  PackAndCallVkFreeMemory(device_info.instance_info.command_stream.get(),
+                          device_info.instance_info.GetRemoteHandle(device), memory, pAllocator);
+}
+
 }  // namespace vvk

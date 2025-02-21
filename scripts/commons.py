@@ -41,6 +41,8 @@ COMMANDS_TO_GENERATE = [
     "vkDestroyFence",
     "vkCreateSemaphore",
     "vkDestroySemaphore",
+    "vkAllocateMemory",
+    "vkFreeMemory",
 ]
 
 
@@ -70,9 +72,9 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
     elif member.type == 'char' and member.fixedSizeArray:
         out.append(
             f'  strncpy({name}.{member.name}, {proto_accessor}.{member.name.lower()}().c_str(), {member.length});\n')
-    elif "Flags" in member.type:
+    elif "Flags" in member.type or "FlagBits" in member.type:
         out.append(
-            f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}();\n')
+            f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
     elif member.type in generator.vk.enums:
         out.append(
             f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
@@ -183,6 +185,10 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
             else:
                 print("fill struct: not pointer, fixed size array of structs, but unknown member length:",
                       struct_type, member.cDeclaration)
+    elif member.type in generator.vk.handles:
+        assert (not member.pointer)
+        out.append(
+            f'  {name}.{member.name} = reinterpret_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
     elif 'const char* const*' in member.cDeclaration:
         aux_var = f'{name}_{member.name}'
         pre_fill_declarations.append(
@@ -277,7 +283,7 @@ def __fill_proto_from_member(generator: BaseGenerator, struct_type: str, name: s
             else:
                 print("unknown length member:",
                       struct_type, member.cDeclaration)
-    elif "Flags" in member.type:
+    elif "Flags" in member.type or "FlagBits" in member.type:
         out.append(
             f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
     elif member.type in generator.vk.enums:
@@ -327,6 +333,10 @@ def __fill_proto_from_member(generator: BaseGenerator, struct_type: str, name: s
             else:
                 print("fill_proto: not pointer, fixed size array of structs, but unknown member length:",
                       struct_type, member.cDeclaration)
+    elif member.type in generator.vk.handles:
+        assert (not member.pointer)
+        out.append(
+            f'  {name}->set_{member.name.lower()}(reinterpret_cast<uint64_t>({struct_accessor}->{member.name}));\n')
     elif 'const char* const*' in member.cDeclaration:
         if member.length in [member.name for member in struct.members]:
             count_variable = [

@@ -18,7 +18,7 @@ void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context, const vvk:
   pCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
   pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
   if (request.vkcreateinstance().pcreateinfo().has_flags()) {
-    pCreateInfo.flags = request.vkcreateinstance().pcreateinfo().flags();
+    pCreateInfo.flags = static_cast<VkInstanceCreateFlags>(request.vkcreateinstance().pcreateinfo().flags());
   }
   VkApplicationInfo pCreateInfo_pApplicationInfo = {};
   if (request.vkcreateinstance().pcreateinfo().has_papplicationinfo()) {
@@ -253,7 +253,7 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
   pCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
   pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
   if (request.vkcreatedevice().pcreateinfo().has_flags()) {
-    pCreateInfo.flags = request.vkcreatedevice().pcreateinfo().flags();
+    pCreateInfo.flags = static_cast<VkDeviceCreateFlags>(request.vkcreatedevice().pcreateinfo().flags());
   }
   pCreateInfo.queueCreateInfoCount = request.vkcreatedevice().pcreateinfo().queuecreateinfocount();
   VkDeviceQueueCreateInfo* pCreateInfo_pQueueCreateInfos = new VkDeviceQueueCreateInfo[request.vkcreatedevice().pcreateinfo().queuecreateinfocount()]();
@@ -263,7 +263,7 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
     pCreateInfo_pQueueCreateInfos_i.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     pCreateInfo_pQueueCreateInfos_i.pNext = nullptr; // pNext chains are currently unsupported
     if (request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).has_flags()) {
-      pCreateInfo_pQueueCreateInfos_i.flags = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).flags();
+      pCreateInfo_pQueueCreateInfos_i.flags = static_cast<VkDeviceQueueCreateFlags>(request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).flags());
     }
     pCreateInfo_pQueueCreateInfos_i.queueFamilyIndex = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuefamilyindex();
     pCreateInfo_pQueueCreateInfos_i.queueCount = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuecount();
@@ -546,7 +546,7 @@ void UnpackAndExecuteVkCreateFence(vvk::ExecutionContext& context, const vvk::se
   pCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
   pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
   if (request.vkcreatefence().pcreateinfo().has_flags()) {
-    pCreateInfo.flags = request.vkcreatefence().pcreateinfo().flags();
+    pCreateInfo.flags = static_cast<VkFenceCreateFlags>(request.vkcreatefence().pcreateinfo().flags());
   }
   VkFence client_pFence = reinterpret_cast<VkFence>(request.vkcreatefence().pfence());
   VkFence server_pFence;
@@ -567,7 +567,7 @@ void UnpackAndExecuteVkCreateSemaphore(vvk::ExecutionContext& context, const vvk
   pCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
   pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
   if (request.vkcreatesemaphore().pcreateinfo().has_flags()) {
-    pCreateInfo.flags = request.vkcreatesemaphore().pcreateinfo().flags();
+    pCreateInfo.flags = static_cast<VkSemaphoreCreateFlags>(request.vkcreatesemaphore().pcreateinfo().flags());
   }
   VkSemaphore client_pSemaphore = reinterpret_cast<VkSemaphore>(request.vkcreatesemaphore().psemaphore());
   VkSemaphore server_pSemaphore;
@@ -579,6 +579,26 @@ void UnpackAndExecuteVkDestroySemaphore(vvk::ExecutionContext& context, const vv
   assert(request.method() == "vkDestroySemaphore");
 
   vkDestroySemaphore(reinterpret_cast<VkDevice>(request.vkdestroysemaphore().device()), reinterpret_cast<VkSemaphore>(request.vkdestroysemaphore().semaphore()), nullptr);
+  response->set_result(VK_SUCCESS);
+}
+void UnpackAndExecuteVkAllocateMemory(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkAllocateMemory");
+
+  VkMemoryAllocateInfo pAllocateInfo = {};
+  pAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+  pAllocateInfo.pNext = nullptr; // pNext chains are currently unsupported
+  pAllocateInfo.allocationSize = static_cast<VkDeviceSize>(request.vkallocatememory().pallocateinfo().allocationsize());
+  pAllocateInfo.memoryTypeIndex = request.vkallocatememory().pallocateinfo().memorytypeindex();
+  VkDeviceMemory client_pMemory = reinterpret_cast<VkDeviceMemory>(request.vkallocatememory().pmemory());
+  VkDeviceMemory server_pMemory;
+  VkResult result = vkAllocateMemory(reinterpret_cast<VkDevice>(request.vkallocatememory().device()), &pAllocateInfo, nullptr, &server_pMemory);
+  response->mutable_vkallocatememory()->set_pmemory(reinterpret_cast<uint64_t>(server_pMemory));
+  response->set_result(result);
+}
+void UnpackAndExecuteVkFreeMemory(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkFreeMemory");
+
+  vkFreeMemory(reinterpret_cast<VkDevice>(request.vkfreememory().device()), reinterpret_cast<VkDeviceMemory>(request.vkfreememory().memory()), nullptr);
   response->set_result(VK_SUCCESS);
 }
 

@@ -26,8 +26,18 @@ class ClientSrcGenerator(BaseGenerator):
                 out.append(fill_proto_from_struct(self,
                                                   param.type, f'{param.name}_proto', f'{param.name}'))
             else:
-                log("non zero length param:",
-                    cmd_name, param.cDeclaration)
+                assert (param.length in [p.name for p in command.params])
+
+                index_name = f'{param.name}_indx'
+                out.append(
+                    f'  for (int {index_name} = 0; {index_name} < {param.length}; {index_name}++) {{\n')
+                out.append(
+                    f'    vvk::server::{param.type}* {param.name}_proto = request.mutable_{cmd_name.lower()}()->add_{param.name.lower()}();\n')
+                out.append(
+                    f'    const {param.type}* {param.name}_i = &{param.name}[{index_name}];\n')
+                out.append(indent(fill_proto_from_struct(self,
+                                                         param.type, f'{param.name}_proto', f'{param.name}_i'), 2))
+                out.append("  }\n")
         elif param.pointer and param.const:
             if param.length is None:
                 assert (param.type == 'char')

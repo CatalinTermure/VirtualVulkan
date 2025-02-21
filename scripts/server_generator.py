@@ -44,16 +44,28 @@ class ServerSrcGenerator(BaseGenerator):
                     actual_parameters.append("nullptr")
                     continue
                 elif param.const and param.pointer and param.type in self.vk.structs:
-                    actual_parameters.append(f'&{param.name}')
                     if param.length is None:
+                        actual_parameters.append(f'&{param.name}')
                         out.append(f'  {param.type} {param.name} = {{}};\n')
                         out_, after_ = fill_struct_from_proto(self,
                                                               param.type, param.name, f'{param_accessor}.{param.name.lower()}()')
                         out.append(out_)
                         deletions.append(after_)
                     else:
-                        log("non zero length param:",
-                            cmd_name, param.cDeclaration)
+                        assert (param.length in [
+                                p.name for p in command.params])
+                        actual_parameters.append(f'{param.name}.data()')
+                        out.append(
+                            f'  std::vector<{param.type}> {param.name}({param_accessor}.{param.length.lower()}());\n')
+                        out.append(
+                            f'  for (int i = 0; i < {param.name}.size(); i++) {{\n')
+                        out.append(
+                            f'    {param.type}& {param.name}_ref = {param.name}[i];\n')
+                        out_, after_ = fill_struct_from_proto(self,
+                                                              param.type, f'{param.name}_ref', f'{param_accessor}.{param.name.lower()}(i)')
+                        out.append(indent(out_, 2))
+                        out.append("  }\n")
+                        deletions.append(after_)
                 elif param.const and param.pointer:
                     if param.length is None:
                         assert (param.type == 'char')

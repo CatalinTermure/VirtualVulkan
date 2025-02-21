@@ -1,4 +1,5 @@
 find_package(spdlog CONFIG REQUIRED)
+find_package(VulkanMemoryAllocator CONFIG REQUIRED)
 add_subdirectory(../Vulkan-Loader ${CMAKE_BINARY_DIR}/Vulkan-Loader)
 
 file(GLOB layer_tests LIST_DIRECTORIES true ./*)
@@ -7,7 +8,7 @@ foreach(test ${layer_tests})
     get_filename_component(short_test_name ${test} NAME)
     set(test_name "test-${short_test_name}")
     add_executable(${test_name} ${test}/main.cpp)
-    target_link_libraries(${test_name} PRIVATE vulkan spdlog::spdlog)
+    target_link_libraries(${test_name} PRIVATE vulkan spdlog::spdlog GPUOpen::VulkanMemoryAllocator)
 
     add_test(NAME build-${short_test_name}
       COMMAND ${CMAKE_COMMAND}

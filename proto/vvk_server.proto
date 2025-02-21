@@ -27,10 +27,12 @@ message VvkRequest {
     VkEnumerateInstanceExtensionPropertiesParams vkEnumerateInstanceExtensionProperties = 11;
     VkEnumerateDeviceExtensionPropertiesParams vkEnumerateDeviceExtensionProperties = 12;
     VkGetDeviceQueueParams vkGetDeviceQueue = 13;
-    VkCreateFenceParams vkCreateFence = 14;
-    VkDestroyFenceParams vkDestroyFence = 15;
-    VkCreateSemaphoreParams vkCreateSemaphore = 16;
-    VkDestroySemaphoreParams vkDestroySemaphore = 17;
+    VkAllocateMemoryParams vkAllocateMemory = 14;
+    VkFreeMemoryParams vkFreeMemory = 15;
+    VkCreateFenceParams vkCreateFence = 16;
+    VkDestroyFenceParams vkDestroyFence = 17;
+    VkCreateSemaphoreParams vkCreateSemaphore = 18;
+    VkDestroySemaphoreParams vkDestroySemaphore = 19;
   }
 }
 
@@ -47,8 +49,9 @@ message VvkResponse {
     VkEnumerateInstanceExtensionPropertiesResponse vkEnumerateInstanceExtensionProperties = 9;
     VkEnumerateDeviceExtensionPropertiesResponse vkEnumerateDeviceExtensionProperties = 10;
     VkGetDeviceQueueResponse vkGetDeviceQueue = 11;
-    VkCreateFenceResponse vkCreateFence = 12;
-    VkCreateSemaphoreResponse vkCreateSemaphore = 13;
+    VkAllocateMemoryResponse vkAllocateMemory = 12;
+    VkCreateFenceResponse vkCreateFence = 13;
+    VkCreateSemaphoreResponse vkCreateSemaphore = 14;
   }
 }
 
@@ -164,6 +167,23 @@ message VkGetDeviceQueueParams {
   uint32 queueFamilyIndex = 2; // uint32_t queueFamilyIndex
   uint32 queueIndex = 3; // uint32_t queueIndex
   uint64 pQueue = 4; // VkQueue* pQueue NON-CONST POINTER
+}
+
+message VkAllocateMemoryResponse {
+  uint64 pMemory = 1; // VkDeviceMemory* pMemory
+}
+
+message VkAllocateMemoryParams {
+  uint64 device = 1; // VkDevice device
+  VkMemoryAllocateInfo pAllocateInfo = 2; // const VkMemoryAllocateInfo* pAllocateInfo
+  optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
+  uint64 pMemory = 4; // VkDeviceMemory* pMemory NON-CONST POINTER
+}
+
+message VkFreeMemoryParams {
+  uint64 device = 1; // VkDevice device
+  optional uint64 memory = 2; // VkDeviceMemory memory
+  optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
 }
 
 message VkCreateFenceResponse {

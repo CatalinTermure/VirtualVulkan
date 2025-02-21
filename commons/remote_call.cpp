@@ -215,32 +215,32 @@ void PackAndCallVkGetPhysicalDeviceProperties(grpc::ClientReaderWriter<vvk::serv
   pProperties_ref.limits.maxFramebufferHeight = response.vkgetphysicaldeviceproperties().pproperties().limits().maxframebufferheight();
   pProperties_ref.limits.maxFramebufferLayers = response.vkgetphysicaldeviceproperties().pproperties().limits().maxframebufferlayers();
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_framebuffercolorsamplecounts()) {
-    pProperties_ref.limits.framebufferColorSampleCounts = response.vkgetphysicaldeviceproperties().pproperties().limits().framebuffercolorsamplecounts();
+    pProperties_ref.limits.framebufferColorSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().framebuffercolorsamplecounts());
   }
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_framebufferdepthsamplecounts()) {
-    pProperties_ref.limits.framebufferDepthSampleCounts = response.vkgetphysicaldeviceproperties().pproperties().limits().framebufferdepthsamplecounts();
+    pProperties_ref.limits.framebufferDepthSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().framebufferdepthsamplecounts());
   }
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_framebufferstencilsamplecounts()) {
-    pProperties_ref.limits.framebufferStencilSampleCounts = response.vkgetphysicaldeviceproperties().pproperties().limits().framebufferstencilsamplecounts();
+    pProperties_ref.limits.framebufferStencilSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().framebufferstencilsamplecounts());
   }
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_framebuffernoattachmentssamplecounts()) {
-    pProperties_ref.limits.framebufferNoAttachmentsSampleCounts = response.vkgetphysicaldeviceproperties().pproperties().limits().framebuffernoattachmentssamplecounts();
+    pProperties_ref.limits.framebufferNoAttachmentsSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().framebuffernoattachmentssamplecounts());
   }
   pProperties_ref.limits.maxColorAttachments = response.vkgetphysicaldeviceproperties().pproperties().limits().maxcolorattachments();
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_sampledimagecolorsamplecounts()) {
-    pProperties_ref.limits.sampledImageColorSampleCounts = response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimagecolorsamplecounts();
+    pProperties_ref.limits.sampledImageColorSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimagecolorsamplecounts());
   }
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_sampledimageintegersamplecounts()) {
-    pProperties_ref.limits.sampledImageIntegerSampleCounts = response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimageintegersamplecounts();
+    pProperties_ref.limits.sampledImageIntegerSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimageintegersamplecounts());
   }
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_sampledimagedepthsamplecounts()) {
-    pProperties_ref.limits.sampledImageDepthSampleCounts = response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimagedepthsamplecounts();
+    pProperties_ref.limits.sampledImageDepthSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimagedepthsamplecounts());
   }
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_sampledimagestencilsamplecounts()) {
-    pProperties_ref.limits.sampledImageStencilSampleCounts = response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimagestencilsamplecounts();
+    pProperties_ref.limits.sampledImageStencilSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimagestencilsamplecounts());
   }
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_storageimagesamplecounts()) {
-    pProperties_ref.limits.storageImageSampleCounts = response.vkgetphysicaldeviceproperties().pproperties().limits().storageimagesamplecounts();
+    pProperties_ref.limits.storageImageSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().storageimagesamplecounts());
   }
   pProperties_ref.limits.maxSampleMaskWords = response.vkgetphysicaldeviceproperties().pproperties().limits().maxsamplemaskwords();
   pProperties_ref.limits.timestampComputeAndGraphics = response.vkgetphysicaldeviceproperties().pproperties().limits().timestampcomputeandgraphics();
@@ -474,7 +474,7 @@ void PackAndCallVkGetPhysicalDeviceMemoryProperties(grpc::ClientReaderWriter<vvk
   for (int memoryTypes_indx = 0; memoryTypes_indx < response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypecount(); memoryTypes_indx++) {
     VkMemoryType &pMemoryProperties_ref_memoryTypes_i = pMemoryProperties_ref.memoryTypes[memoryTypes_indx];
     if (response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).has_propertyflags()) {
-      pMemoryProperties_ref_memoryTypes_i.propertyFlags = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).propertyflags();
+      pMemoryProperties_ref_memoryTypes_i.propertyFlags = static_cast<VkMemoryPropertyFlags>(response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).propertyflags());
     }
     pMemoryProperties_ref_memoryTypes_i.heapIndex = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).heapindex();
   }
@@ -483,7 +483,7 @@ void PackAndCallVkGetPhysicalDeviceMemoryProperties(grpc::ClientReaderWriter<vvk
     VkMemoryHeap &pMemoryProperties_ref_memoryHeaps_i = pMemoryProperties_ref.memoryHeaps[memoryHeaps_indx];
     pMemoryProperties_ref_memoryHeaps_i.size = static_cast<VkDeviceSize>(response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx).size());
     if (response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx).has_flags()) {
-      pMemoryProperties_ref_memoryHeaps_i.flags = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx).flags();
+      pMemoryProperties_ref_memoryHeaps_i.flags = static_cast<VkMemoryHeapFlags>(response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx).flags());
     }
   }
 }
@@ -585,7 +585,7 @@ void PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(grpc::ClientReaderWrite
     for (int pQueueFamilyProperties_indx = 0; pQueueFamilyProperties_indx < *pQueueFamilyPropertyCount; pQueueFamilyProperties_indx++) {
       VkQueueFamilyProperties& pQueueFamilyProperties_ref = pQueueFamilyProperties[pQueueFamilyProperties_indx];
       if (response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).has_queueflags()) {
-        pQueueFamilyProperties_ref.queueFlags = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).queueflags();
+        pQueueFamilyProperties_ref.queueFlags = static_cast<VkQueueFlags>(response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).queueflags());
       }
       pQueueFamilyProperties_ref.queueCount = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).queuecount();
       pQueueFamilyProperties_ref.timestampValidBits = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).timestampvalidbits();
@@ -684,6 +684,46 @@ void PackAndCallVkDestroySemaphore(grpc::ClientReaderWriter<vvk::server::VvkRequ
   request.mutable_vkdestroysemaphore()->set_device(reinterpret_cast<uint64_t>(device));
   if (semaphore) {
     request.mutable_vkdestroysemaphore()->set_semaphore(reinterpret_cast<uint64_t>(semaphore));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
+VkResult PackAndCallVkAllocateMemory(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkMemoryAllocateInfo* pAllocateInfo, const VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMemory) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkAllocateMemory");
+  request.mutable_vkallocatememory()->set_device(reinterpret_cast<uint64_t>(device));
+  vvk::server::VkMemoryAllocateInfo* pAllocateInfo_proto = request.mutable_vkallocatememory()->mutable_pallocateinfo();
+  if (pAllocateInfo->pNext) {
+    // pNext chains are currently not supported
+  }
+  pAllocateInfo_proto->set_allocationsize(static_cast<uint64_t>(pAllocateInfo->allocationSize));
+  pAllocateInfo_proto->set_memorytypeindex(pAllocateInfo->memoryTypeIndex);
+  request.mutable_vkallocatememory()->set_pmemory(reinterpret_cast<uint64_t>(*pMemory));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pMemory = reinterpret_cast<VkDeviceMemory>(response.vkallocatememory().pmemory());
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkFreeMemory(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkDeviceMemory memory, const VkAllocationCallbacks* pAllocator) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkFreeMemory");
+  request.mutable_vkfreememory()->set_device(reinterpret_cast<uint64_t>(device));
+  if (memory) {
+    request.mutable_vkfreememory()->set_memory(reinterpret_cast<uint64_t>(memory));
   }
   vvk::server::VvkResponse response;
 

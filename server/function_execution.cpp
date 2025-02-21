@@ -28,6 +28,8 @@ const std::unordered_map<
         {"vkDestroyFence", UnpackAndExecuteVkDestroyFence},
         {"vkCreateSemaphore", UnpackAndExecuteVkCreateSemaphore},
         {"vkDestroySemaphore", UnpackAndExecuteVkDestroySemaphore},
+        {"vkAllocateMemory", UnpackAndExecuteVkAllocateMemory},
+        {"vkFreeMemory", UnpackAndExecuteVkFreeMemory},
 };
 
 }  // namespace
