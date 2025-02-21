@@ -41,12 +41,6 @@ class InstanceInfo {
   std::map<void*, void*> local_to_remote_handle_;
 };
 
-struct DeviceInfo {
-  PFN_vkGetDeviceProcAddr nxt_gdpa;
-  VkPhysicalDevice physical_device;
-  VkInstance instance;
-};
-
 InstanceInfo& GetInstanceInfo(VkInstance instance);
 InstanceInfo& GetInstanceInfo(VkPhysicalDevice physical_device);
 InstanceInfo& GetInstanceInfo(VkDevice device);
@@ -56,6 +50,28 @@ void RemoveInstanceInfo(VkInstance instance);
 
 void AssociatePhysicalDeviceWithInstance(VkPhysicalDevice physical_device, VkInstance instance);
 VkInstance GetInstanceForPhysicalDevice(VkPhysicalDevice physical_device);
+
+struct DeviceInfo {
+  PFN_vkGetDeviceProcAddr nxt_gdpa;
+  VkPhysicalDevice physical_device;
+  VkInstance instance;
+  InstanceInfo& instance_info;
+
+  DeviceInfo(PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device);
+
+  template <typename T>
+  T GetRemoteHandle(T local_handle) const {
+    return reinterpret_cast<T>(local_to_remote_handle_.at(reinterpret_cast<void*>(local_handle)));
+  }
+
+  template <typename T>
+  void SetRemoteHandle(T local_handle, T remote_handle) {
+    local_to_remote_handle_.emplace(reinterpret_cast<void*>(local_handle), reinterpret_cast<void*>(remote_handle));
+  }
+
+ private:
+  std::map<void*, void*> local_to_remote_handle_;
+};
 
 DeviceInfo& GetDeviceInfo(VkDevice device);
 void SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device);

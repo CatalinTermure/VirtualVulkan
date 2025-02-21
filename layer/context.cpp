@@ -63,7 +63,7 @@ VkInstance GetInstanceForPhysicalDevice(VkPhysicalDevice physical_device) {
 
 InstanceInfo& GetInstanceInfo(VkDevice device) {
   std::lock_guard lock(device_info_lock);
-  return GetInstanceInfo(g_device_infos.at(device).instance);
+  return g_device_infos.at(device).instance_info;
 }
 
 DeviceInfo& GetDeviceInfo(VkDevice device) {
@@ -74,7 +74,8 @@ DeviceInfo& GetDeviceInfo(VkDevice device) {
 void SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device) {
   std::lock_guard lock(device_info_lock);
   VkInstance instance = g_physical_device_to_instance.at(physical_device);
-  g_device_infos[device] = {nxt_gdpa, physical_device, instance};
+  auto [_, inserted] = g_device_infos.try_emplace(device, nxt_gdpa, physical_device);
+  assert(inserted);
 }
 
 void RemoveDeviceInfo(VkDevice device) {
@@ -91,5 +92,11 @@ InstanceInfo::~InstanceInfo() {
   command_stream->WritesDone();
   command_stream->Finish();
 }
+
+DeviceInfo::DeviceInfo(PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device)
+    : nxt_gdpa(nxt_gdpa),
+      physical_device(physical_device),
+      instance(GetInstanceForPhysicalDevice(physical_device)),
+      instance_info(GetInstanceInfo(physical_device)) {}
 
 }  // namespace vvk

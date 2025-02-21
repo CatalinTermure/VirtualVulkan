@@ -284,65 +284,70 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevi
 
 VKAPI_ATTR void VKAPI_CALL GetDeviceQueue(VkDevice device, uint32_t queueFamilyIndex, uint32_t queueIndex,
                                           VkQueue* pQueue) {
-  InstanceInfo& instance_info = GetInstanceInfo(device);
+  DeviceInfo& device_info = GetDeviceInfo(device);
 
   CallDownDeviceFunc<PFN_vkGetDeviceQueue>("vkGetDeviceQueue", device, queueFamilyIndex, queueIndex, pQueue);
   VkQueue remote_queue = VK_NULL_HANDLE;
-  PackAndCallVkGetDeviceQueue(instance_info.command_stream.get(), instance_info.GetRemoteHandle(device),
-                              queueFamilyIndex, queueIndex, &remote_queue);
-  instance_info.SetRemoteHandle(*pQueue, remote_queue);
+  PackAndCallVkGetDeviceQueue(device_info.instance_info.command_stream.get(),
+                              device_info.instance_info.GetRemoteHandle(device), queueFamilyIndex, queueIndex,
+                              &remote_queue);
+  device_info.SetRemoteHandle(*pQueue, remote_queue);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateFence(VkDevice device, const VkFenceCreateInfo* pCreateInfo,
                                            const VkAllocationCallbacks* pAllocator, VkFence* pFence) {
-  InstanceInfo& instance_info = GetInstanceInfo(device);
+  DeviceInfo& device_info = GetDeviceInfo(device);
   VkResult result = CallDownDeviceFunc<PFN_vkCreateFence>("vkCreateFence", device, pCreateInfo, pAllocator, pFence);
   if (result != VK_SUCCESS) {
     return result;
   }
   VkFence remote_fence = VK_NULL_HANDLE;
-  result = PackAndCallVkCreateFence(instance_info.command_stream.get(), instance_info.GetRemoteHandle(device),
-                                    pCreateInfo, pAllocator, &remote_fence);
+  result = PackAndCallVkCreateFence(device_info.instance_info.command_stream.get(),
+                                    device_info.instance_info.GetRemoteHandle(device), pCreateInfo, pAllocator,
+                                    &remote_fence);
   if (result != VK_SUCCESS) {
     CallDownDeviceFunc<PFN_vkDestroyFence>("vkDestroyFence", device, *pFence, pAllocator);
     return result;
   }
-  instance_info.SetRemoteHandle(*pFence, remote_fence);
+  device_info.SetRemoteHandle(*pFence, remote_fence);
   return result;
 }
 
 VKAPI_ATTR void VKAPI_CALL DestroyFence(VkDevice device, VkFence fence, const VkAllocationCallbacks* pAllocator) {
-  InstanceInfo& instance_info = GetInstanceInfo(device);
+  DeviceInfo& device_info = GetDeviceInfo(device);
   CallDownDeviceFunc<PFN_vkDestroyFence>("vkDestroyFence", device, fence, pAllocator);
-  PackAndCallVkDestroyFence(instance_info.command_stream.get(), instance_info.GetRemoteHandle(device),
-                            instance_info.GetRemoteHandle(fence), pAllocator);
+  PackAndCallVkDestroyFence(device_info.instance_info.command_stream.get(),
+                            device_info.instance_info.GetRemoteHandle(device), device_info.GetRemoteHandle(fence),
+                            pAllocator);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphoreCreateInfo* pCreateInfo,
                                                const VkAllocationCallbacks* pAllocator, VkSemaphore* pSemaphore) {
-  InstanceInfo& instance_info = GetInstanceInfo(device);
+  DeviceInfo& device_info = GetDeviceInfo(device);
   VkResult result =
       CallDownDeviceFunc<PFN_vkCreateSemaphore>("vkCreateSemaphore", device, pCreateInfo, pAllocator, pSemaphore);
   if (result != VK_SUCCESS) {
     return result;
   }
   VkSemaphore remote_semaphore = VK_NULL_HANDLE;
-  result = PackAndCallVkCreateSemaphore(instance_info.command_stream.get(), instance_info.GetRemoteHandle(device),
-                                        pCreateInfo, pAllocator, &remote_semaphore);
+  result = PackAndCallVkCreateSemaphore(device_info.instance_info.command_stream.get(),
+                                        device_info.instance_info.GetRemoteHandle(device), pCreateInfo, pAllocator,
+                                        &remote_semaphore);
   if (result != VK_SUCCESS) {
     CallDownDeviceFunc<PFN_vkDestroySemaphore>("vkDestroySemaphore", device, *pSemaphore, pAllocator);
     return result;
   }
-  instance_info.SetRemoteHandle(*pSemaphore, remote_semaphore);
+  device_info.SetRemoteHandle(*pSemaphore, remote_semaphore);
   return result;
 }
 
 VKAPI_ATTR void VKAPI_CALL DestroySemaphore(VkDevice device, VkSemaphore semaphore,
                                             const VkAllocationCallbacks* pAllocator) {
-  InstanceInfo& instance_info = GetInstanceInfo(device);
+  DeviceInfo& device_info = GetDeviceInfo(device);
   CallDownDeviceFunc<PFN_vkDestroySemaphore>("vkDestroySemaphore", device, semaphore, pAllocator);
-  PackAndCallVkDestroySemaphore(instance_info.command_stream.get(), instance_info.GetRemoteHandle(device),
-                                instance_info.GetRemoteHandle(semaphore), pAllocator);
+  PackAndCallVkDestroySemaphore(device_info.instance_info.command_stream.get(),
+                                device_info.instance_info.GetRemoteHandle(device),
+                                device_info.GetRemoteHandle(semaphore), pAllocator);
 }
 
 }  // namespace vvk
