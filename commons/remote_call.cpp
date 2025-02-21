@@ -735,5 +735,108 @@ void PackAndCallVkFreeMemory(grpc::ClientReaderWriter<vvk::server::VvkRequest, v
     spdlog::error("Failed to read response from server");
   }
 }
+VkResult PackAndCallVkCreateImage(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkImageCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkImage* pImage) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCreateImage");
+  request.mutable_vkcreateimage()->set_device(reinterpret_cast<uint64_t>(device));
+  vvk::server::VkImageCreateInfo* pCreateInfo_proto = request.mutable_vkcreateimage()->mutable_pcreateinfo();
+  if (pCreateInfo->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (pCreateInfo->flags) {
+    pCreateInfo_proto->set_flags(pCreateInfo->flags);
+  }
+  pCreateInfo_proto->set_imagetype(static_cast<vvk::server::VkImageType>(pCreateInfo->imageType));
+  pCreateInfo_proto->set_format(static_cast<vvk::server::VkFormat>(pCreateInfo->format));
+  vvk::server::VkExtent3D* pCreateInfo_proto_extent_proto = pCreateInfo_proto->mutable_extent();
+  pCreateInfo_proto_extent_proto->set_width((&pCreateInfo->extent)->width);
+  pCreateInfo_proto_extent_proto->set_height((&pCreateInfo->extent)->height);
+  pCreateInfo_proto_extent_proto->set_depth((&pCreateInfo->extent)->depth);
+  pCreateInfo_proto->set_miplevels(pCreateInfo->mipLevels);
+  pCreateInfo_proto->set_arraylayers(pCreateInfo->arrayLayers);
+  pCreateInfo_proto->set_samples(pCreateInfo->samples);
+  pCreateInfo_proto->set_tiling(static_cast<vvk::server::VkImageTiling>(pCreateInfo->tiling));
+  pCreateInfo_proto->set_usage(pCreateInfo->usage);
+  pCreateInfo_proto->set_sharingmode(static_cast<vvk::server::VkSharingMode>(pCreateInfo->sharingMode));
+  if (pCreateInfo->queueFamilyIndexCount) {
+    pCreateInfo_proto->set_queuefamilyindexcount(pCreateInfo->queueFamilyIndexCount);
+  }
+  for (int pQueueFamilyIndices_indx = 0; pQueueFamilyIndices_indx < pCreateInfo->queueFamilyIndexCount; pQueueFamilyIndices_indx++) {
+    pCreateInfo_proto->add_pqueuefamilyindices(pCreateInfo->pQueueFamilyIndices[pQueueFamilyIndices_indx]);
+  }
+  pCreateInfo_proto->set_initiallayout(static_cast<vvk::server::VkImageLayout>(pCreateInfo->initialLayout));
+  request.mutable_vkcreateimage()->set_pimage(reinterpret_cast<uint64_t>(*pImage));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pImage = reinterpret_cast<VkImage>(response.vkcreateimage().pimage());
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkDestroyImage(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkImage image, const VkAllocationCallbacks* pAllocator) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkDestroyImage");
+  request.mutable_vkdestroyimage()->set_device(reinterpret_cast<uint64_t>(device));
+  if (image) {
+    request.mutable_vkdestroyimage()->set_image(reinterpret_cast<uint64_t>(image));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
+VkResult PackAndCallVkBindImageMemory(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkImage image, VkDeviceMemory memory, VkDeviceSize memoryOffset) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkBindImageMemory");
+  request.mutable_vkbindimagememory()->set_device(reinterpret_cast<uint64_t>(device));
+  request.mutable_vkbindimagememory()->set_image(reinterpret_cast<uint64_t>(image));
+  request.mutable_vkbindimagememory()->set_memory(reinterpret_cast<uint64_t>(memory));
+  request.mutable_vkbindimagememory()->set_memoryoffset(static_cast<uint64_t>(memoryOffset));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkGetImageMemoryRequirements2(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkImageMemoryRequirementsInfo2* pInfo, VkMemoryRequirements2* pMemoryRequirements) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkGetImageMemoryRequirements2");
+  request.mutable_vkgetimagememoryrequirements2()->set_device(reinterpret_cast<uint64_t>(device));
+  vvk::server::VkImageMemoryRequirementsInfo2* pInfo_proto = request.mutable_vkgetimagememoryrequirements2()->mutable_pinfo();
+  if (pInfo->pNext) {
+    // pNext chains are currently not supported
+  }
+  pInfo_proto->set_image(reinterpret_cast<uint64_t>(pInfo->image));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  VkMemoryRequirements2& pMemoryRequirements_ref = *pMemoryRequirements;
+  pMemoryRequirements_ref.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
+  pMemoryRequirements_ref.pNext = nullptr; // pNext chains are currently unsupported
+  pMemoryRequirements_ref.memoryRequirements.size = static_cast<VkDeviceSize>(response.vkgetimagememoryrequirements2().pmemoryrequirements().memoryrequirements().size());
+  pMemoryRequirements_ref.memoryRequirements.alignment = static_cast<VkDeviceSize>(response.vkgetimagememoryrequirements2().pmemoryrequirements().memoryrequirements().alignment());
+  pMemoryRequirements_ref.memoryRequirements.memoryTypeBits = response.vkgetimagememoryrequirements2().pmemoryrequirements().memoryrequirements().memorytypebits();
+}
 }  // namespace vvk
 

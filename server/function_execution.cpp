@@ -30,6 +30,10 @@ const std::unordered_map<
         {"vkDestroySemaphore", UnpackAndExecuteVkDestroySemaphore},
         {"vkAllocateMemory", UnpackAndExecuteVkAllocateMemory},
         {"vkFreeMemory", UnpackAndExecuteVkFreeMemory},
+        {"vkCreateImage", UnpackAndExecuteVkCreateImage},
+        {"vkDestroyImage", UnpackAndExecuteVkDestroyImage},
+        {"vkBindImageMemory", UnpackAndExecuteVkBindImageMemory},
+        {"vkGetImageMemoryRequirements2", UnpackAndExecuteVkGetImageMemoryRequirements2},
 };
 
 }  // namespace

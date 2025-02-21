@@ -2882,12 +2882,42 @@ message VkMemoryAllocateInfo {
   uint32 memoryTypeIndex = 2; // uint32_t memoryTypeIndex
 }
 
+message VkMemoryRequirements {
+  uint64 size = 1; // VkDeviceSize size
+  uint64 alignment = 2; // VkDeviceSize alignment
+  uint32 memoryTypeBits = 3; // uint32_t memoryTypeBits
+}
+
 message VkFenceCreateInfo {
   optional uint32 flags = 1; // VkFenceCreateFlags flags
 }
 
 message VkSemaphoreCreateInfo {
   optional uint32 flags = 1; // VkSemaphoreCreateFlags flags
+}
+
+message VkImageCreateInfo {
+  optional uint32 flags = 1; // VkImageCreateFlags flags
+  VkImageType imageType = 2; // VkImageType imageType
+  VkFormat format = 3; // VkFormat format
+  VkExtent3D extent = 4; // VkExtent3D extent
+  uint32 mipLevels = 5; // uint32_t mipLevels
+  uint32 arrayLayers = 6; // uint32_t arrayLayers
+  uint32 samples = 7; // VkSampleCountFlagBits samples
+  VkImageTiling tiling = 8; // VkImageTiling tiling
+  uint32 usage = 9; // VkImageUsageFlags usage
+  VkSharingMode sharingMode = 10; // VkSharingMode sharingMode
+  optional uint32 queueFamilyIndexCount = 11; // uint32_t queueFamilyIndexCount
+  repeated uint32 pQueueFamilyIndices = 12; // const uint32_t* pQueueFamilyIndices
+  VkImageLayout initialLayout = 13; // VkImageLayout initialLayout
+}
+
+message VkImageMemoryRequirementsInfo2 {
+  uint64 image = 1; // VkImage image
+}
+
+message VkMemoryRequirements2 {
+  VkMemoryRequirements memoryRequirements = 1; // VkMemoryRequirements memoryRequirements
 }
 
 

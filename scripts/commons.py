@@ -43,6 +43,10 @@ COMMANDS_TO_GENERATE = [
     "vkDestroySemaphore",
     "vkAllocateMemory",
     "vkFreeMemory",
+    "vkCreateImage",
+    "vkDestroyImage",
+    "vkBindImageMemory",
+    "vkGetImageMemoryRequirements2",
 ]
 
 

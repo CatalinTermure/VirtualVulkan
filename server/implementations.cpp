@@ -601,4 +601,72 @@ void UnpackAndExecuteVkFreeMemory(vvk::ExecutionContext& context, const vvk::ser
   vkFreeMemory(reinterpret_cast<VkDevice>(request.vkfreememory().device()), reinterpret_cast<VkDeviceMemory>(request.vkfreememory().memory()), nullptr);
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkCreateImage(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreateImage");
+
+  VkImageCreateInfo pCreateInfo = {};
+  pCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
+  if (request.vkcreateimage().pcreateinfo().has_flags()) {
+    pCreateInfo.flags = static_cast<VkImageCreateFlags>(request.vkcreateimage().pcreateinfo().flags());
+  }
+  pCreateInfo.imageType = static_cast<VkImageType>(request.vkcreateimage().pcreateinfo().imagetype());
+  pCreateInfo.format = static_cast<VkFormat>(request.vkcreateimage().pcreateinfo().format());
+  pCreateInfo.extent.width = request.vkcreateimage().pcreateinfo().extent().width();
+  pCreateInfo.extent.height = request.vkcreateimage().pcreateinfo().extent().height();
+  pCreateInfo.extent.depth = request.vkcreateimage().pcreateinfo().extent().depth();
+  pCreateInfo.mipLevels = request.vkcreateimage().pcreateinfo().miplevels();
+  pCreateInfo.arrayLayers = request.vkcreateimage().pcreateinfo().arraylayers();
+  pCreateInfo.samples = static_cast<VkSampleCountFlagBits>(request.vkcreateimage().pcreateinfo().samples());
+  pCreateInfo.tiling = static_cast<VkImageTiling>(request.vkcreateimage().pcreateinfo().tiling());
+  pCreateInfo.usage = static_cast<VkImageUsageFlags>(request.vkcreateimage().pcreateinfo().usage());
+  pCreateInfo.sharingMode = static_cast<VkSharingMode>(request.vkcreateimage().pcreateinfo().sharingmode());
+  if (request.vkcreateimage().pcreateinfo().has_queuefamilyindexcount()) {
+    pCreateInfo.queueFamilyIndexCount = request.vkcreateimage().pcreateinfo().queuefamilyindexcount();
+  }
+  uint32_t* pCreateInfo_pQueueFamilyIndices = new uint32_t[request.vkcreateimage().pcreateinfo().queuefamilyindexcount()]();
+  pCreateInfo.pQueueFamilyIndices = pCreateInfo_pQueueFamilyIndices;
+  for (int pQueueFamilyIndices_indx = 0; pQueueFamilyIndices_indx < request.vkcreateimage().pcreateinfo().queuefamilyindexcount(); pQueueFamilyIndices_indx++) {
+    pCreateInfo_pQueueFamilyIndices[pQueueFamilyIndices_indx] = request.vkcreateimage().pcreateinfo().pqueuefamilyindices(pQueueFamilyIndices_indx);
+  }
+  pCreateInfo.initialLayout = static_cast<VkImageLayout>(request.vkcreateimage().pcreateinfo().initiallayout());
+  VkImage client_pImage = reinterpret_cast<VkImage>(request.vkcreateimage().pimage());
+  VkImage server_pImage;
+  VkResult result = vkCreateImage(reinterpret_cast<VkDevice>(request.vkcreateimage().device()), &pCreateInfo, nullptr, &server_pImage);
+  response->mutable_vkcreateimage()->set_pimage(reinterpret_cast<uint64_t>(server_pImage));
+  response->set_result(result);
+  delete[] pCreateInfo.pQueueFamilyIndices;
+}
+void UnpackAndExecuteVkDestroyImage(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDestroyImage");
+
+  vkDestroyImage(reinterpret_cast<VkDevice>(request.vkdestroyimage().device()), reinterpret_cast<VkImage>(request.vkdestroyimage().image()), nullptr);
+  response->set_result(VK_SUCCESS);
+}
+void UnpackAndExecuteVkBindImageMemory(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkBindImageMemory");
+
+  VkResult result = vkBindImageMemory(reinterpret_cast<VkDevice>(request.vkbindimagememory().device()), reinterpret_cast<VkImage>(request.vkbindimagememory().image()), reinterpret_cast<VkDeviceMemory>(request.vkbindimagememory().memory()), static_cast<VkDeviceSize>(request.vkbindimagememory().memoryoffset()));
+  response->set_result(result);
+}
+void UnpackAndExecuteVkGetImageMemoryRequirements2(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkGetImageMemoryRequirements2");
+
+  VkImageMemoryRequirementsInfo2 pInfo = {};
+  pInfo.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2;
+  pInfo.pNext = nullptr; // pNext chains are currently unsupported
+  pInfo.image = reinterpret_cast<VkImage>(request.vkgetimagememoryrequirements2().pinfo().image());
+  VkMemoryRequirements2 pMemoryRequirements = {};
+  pMemoryRequirements.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
+  vkGetImageMemoryRequirements2(reinterpret_cast<VkDevice>(request.vkgetimagememoryrequirements2().device()), &pInfo, &pMemoryRequirements);
+  vvk::server::VkMemoryRequirements2* pMemoryRequirements_proto = response->mutable_vkgetimagememoryrequirements2()->mutable_pmemoryrequirements();
+  if ((&pMemoryRequirements)->pNext) {
+    // pNext chains are currently not supported
+  }
+  vvk::server::VkMemoryRequirements* pMemoryRequirements_proto_memoryRequirements_proto = pMemoryRequirements_proto->mutable_memoryrequirements();
+  pMemoryRequirements_proto_memoryRequirements_proto->set_size(static_cast<uint64_t>((&(&pMemoryRequirements)->memoryRequirements)->size));
+  pMemoryRequirements_proto_memoryRequirements_proto->set_alignment(static_cast<uint64_t>((&(&pMemoryRequirements)->memoryRequirements)->alignment));
+  pMemoryRequirements_proto_memoryRequirements_proto->set_memorytypebits((&(&pMemoryRequirements)->memoryRequirements)->memoryTypeBits);
+  response->set_result(VK_SUCCESS);
+}
 

@@ -119,6 +119,10 @@ class ServerSrcGenerator(BaseGenerator):
                         actual_parameters.append(f'&{param.name}')
 
                         out.append(f'  {param.type} {param.name} = {{}};\n')
+                        struct_type = self.vk.structs[param.type]
+                        if struct_type.sType is not None:
+                            out.append(
+                                f'  {param.name}.sType = {self.vk.structs[param.type].sType};\n')
 
                         after_call_code.append(
                             f'  vvk::server::{param.type}* {param.name}_proto = response->mutable_{cmd_name.lower()}()->mutable_{param.name.lower()}();\n')

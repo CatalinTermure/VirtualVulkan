@@ -364,4 +364,32 @@ VKAPI_ATTR void VKAPI_CALL FreeMemory(VkDevice device, VkDeviceMemory memory, co
                           device_info.instance_info.GetRemoteHandle(device), memory, pAllocator);
 }
 
+VKAPI_ATTR VkResult VKAPI_CALL CreateImage(VkDevice device, const VkImageCreateInfo* pCreateInfo,
+                                           const VkAllocationCallbacks* pAllocator, VkImage* pImage) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  return PackAndCallVkCreateImage(device_info.instance_info.command_stream.get(),
+                                  device_info.instance_info.GetRemoteHandle(device), pCreateInfo, pAllocator, pImage);
+}
+
+VKAPI_ATTR void VKAPI_CALL DestroyImage(VkDevice device, VkImage image, const VkAllocationCallbacks* pAllocator) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  PackAndCallVkDestroyImage(device_info.instance_info.command_stream.get(),
+                            device_info.instance_info.GetRemoteHandle(device), image, pAllocator);
+}
+
+VKAPI_ATTR VkResult VKAPI_CALL BindImageMemory(VkDevice device, VkImage image, VkDeviceMemory memory,
+                                               VkDeviceSize memoryOffset) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  return PackAndCallVkBindImageMemory(device_info.instance_info.command_stream.get(),
+                                      device_info.instance_info.GetRemoteHandle(device), image, memory, memoryOffset);
+}
+
+VKAPI_ATTR void VKAPI_CALL GetImageMemoryRequirements2(VkDevice device, const VkImageMemoryRequirementsInfo2* pInfo,
+                                                       VkMemoryRequirements2* pMemoryRequirements) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  PackAndCallVkGetImageMemoryRequirements2(device_info.instance_info.command_stream.get(),
+                                           device_info.instance_info.GetRemoteHandle(device), pInfo,
+                                           pMemoryRequirements);
+}
+
 }  // namespace vvk
