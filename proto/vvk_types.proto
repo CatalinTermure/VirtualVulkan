@@ -2626,6 +2626,14 @@ message VkExtent3D {
   uint32 depth = 3; // uint32_t depth
 }
 
+message VkImageSubresourceRange {
+  uint32 aspectMask = 1; // VkImageAspectFlags aspectMask
+  uint32 baseMipLevel = 2; // uint32_t baseMipLevel
+  uint32 levelCount = 3; // uint32_t levelCount
+  uint32 baseArrayLayer = 4; // uint32_t baseArrayLayer
+  uint32 layerCount = 5; // uint32_t layerCount
+}
+
 message VkApplicationInfo {
   optional string pApplicationName = 1; // const char* pApplicationName
   uint32 applicationVersion = 2; // uint32_t applicationVersion
@@ -2910,6 +2918,22 @@ message VkImageCreateInfo {
   optional uint32 queueFamilyIndexCount = 11; // uint32_t queueFamilyIndexCount
   repeated uint32 pQueueFamilyIndices = 12; // const uint32_t* pQueueFamilyIndices
   VkImageLayout initialLayout = 13; // VkImageLayout initialLayout
+}
+
+message VkComponentMapping {
+  VkComponentSwizzle r = 1; // VkComponentSwizzle r
+  VkComponentSwizzle g = 2; // VkComponentSwizzle g
+  VkComponentSwizzle b = 3; // VkComponentSwizzle b
+  VkComponentSwizzle a = 4; // VkComponentSwizzle a
+}
+
+message VkImageViewCreateInfo {
+  optional uint32 flags = 1; // VkImageViewCreateFlags flags
+  uint64 image = 2; // VkImage image
+  VkImageViewType viewType = 3; // VkImageViewType viewType
+  VkFormat format = 4; // VkFormat format
+  VkComponentMapping components = 5; // VkComponentMapping components
+  VkImageSubresourceRange subresourceRange = 6; // VkImageSubresourceRange subresourceRange
 }
 
 message VkBindImageMemoryInfo {

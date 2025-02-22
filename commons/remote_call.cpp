@@ -864,5 +864,60 @@ void PackAndCallVkGetImageMemoryRequirements2(grpc::ClientReaderWriter<vvk::serv
   pMemoryRequirements_ref.memoryRequirements.alignment = static_cast<VkDeviceSize>(response.vkgetimagememoryrequirements2().pmemoryrequirements().memoryrequirements().alignment());
   pMemoryRequirements_ref.memoryRequirements.memoryTypeBits = response.vkgetimagememoryrequirements2().pmemoryrequirements().memoryrequirements().memorytypebits();
 }
+VkResult PackAndCallVkCreateImageView(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkImageViewCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkImageView* pView) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCreateImageView");
+  request.mutable_vkcreateimageview()->set_device(reinterpret_cast<uint64_t>(device));
+  vvk::server::VkImageViewCreateInfo* pCreateInfo_proto = request.mutable_vkcreateimageview()->mutable_pcreateinfo();
+  if (pCreateInfo->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (pCreateInfo->flags) {
+    pCreateInfo_proto->set_flags(pCreateInfo->flags);
+  }
+  pCreateInfo_proto->set_image(reinterpret_cast<uint64_t>(pCreateInfo->image));
+  pCreateInfo_proto->set_viewtype(static_cast<vvk::server::VkImageViewType>(pCreateInfo->viewType));
+  pCreateInfo_proto->set_format(static_cast<vvk::server::VkFormat>(pCreateInfo->format));
+  vvk::server::VkComponentMapping* pCreateInfo_proto_components_proto = pCreateInfo_proto->mutable_components();
+  pCreateInfo_proto_components_proto->set_r(static_cast<vvk::server::VkComponentSwizzle>((&pCreateInfo->components)->r));
+  pCreateInfo_proto_components_proto->set_g(static_cast<vvk::server::VkComponentSwizzle>((&pCreateInfo->components)->g));
+  pCreateInfo_proto_components_proto->set_b(static_cast<vvk::server::VkComponentSwizzle>((&pCreateInfo->components)->b));
+  pCreateInfo_proto_components_proto->set_a(static_cast<vvk::server::VkComponentSwizzle>((&pCreateInfo->components)->a));
+  vvk::server::VkImageSubresourceRange* pCreateInfo_proto_subresourceRange_proto = pCreateInfo_proto->mutable_subresourcerange();
+  pCreateInfo_proto_subresourceRange_proto->set_aspectmask((&pCreateInfo->subresourceRange)->aspectMask);
+  pCreateInfo_proto_subresourceRange_proto->set_basemiplevel((&pCreateInfo->subresourceRange)->baseMipLevel);
+  pCreateInfo_proto_subresourceRange_proto->set_levelcount((&pCreateInfo->subresourceRange)->levelCount);
+  pCreateInfo_proto_subresourceRange_proto->set_basearraylayer((&pCreateInfo->subresourceRange)->baseArrayLayer);
+  pCreateInfo_proto_subresourceRange_proto->set_layercount((&pCreateInfo->subresourceRange)->layerCount);
+  request.mutable_vkcreateimageview()->set_pview(reinterpret_cast<uint64_t>(*pView));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pView = reinterpret_cast<VkImageView>(response.vkcreateimageview().pview());
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkDestroyImageView(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkImageView imageView, const VkAllocationCallbacks* pAllocator) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkDestroyImageView");
+  request.mutable_vkdestroyimageview()->set_device(reinterpret_cast<uint64_t>(device));
+  if (imageView) {
+    request.mutable_vkdestroyimageview()->set_imageview(reinterpret_cast<uint64_t>(imageView));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 

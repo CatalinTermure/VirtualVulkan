@@ -124,6 +124,15 @@ VKAPI_ATTR void VKAPI_CALL GetImageMemoryRequirements2(
     VkDevice                                    device,
     const VkImageMemoryRequirementsInfo2*       pInfo,
     VkMemoryRequirements2*                      pMemoryRequirements);
+VKAPI_ATTR VkResult VKAPI_CALL CreateImageView(
+    VkDevice                                    device,
+    const VkImageViewCreateInfo*                pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkImageView*                                pView);
+VKAPI_ATTR void VKAPI_CALL DestroyImageView(
+    VkDevice                                    device,
+    VkImageView                                 imageView,
+    const VkAllocationCallbacks*                pAllocator);
 
 inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = {
     {"vkCreateInstance", reinterpret_cast<PFN_vkVoidFunction>(CreateInstance)},
@@ -149,6 +158,8 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkBindImageMemory", reinterpret_cast<PFN_vkVoidFunction>(BindImageMemory)},
     {"vkBindImageMemory2", reinterpret_cast<PFN_vkVoidFunction>(BindImageMemory2)},
     {"vkGetImageMemoryRequirements2", reinterpret_cast<PFN_vkVoidFunction>(GetImageMemoryRequirements2)},
+    {"vkCreateImageView", reinterpret_cast<PFN_vkVoidFunction>(CreateImageView)},
+    {"vkDestroyImageView", reinterpret_cast<PFN_vkVoidFunction>(DestroyImageView)},
 };
 
 }  // namespace vvk

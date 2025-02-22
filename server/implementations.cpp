@@ -684,4 +684,37 @@ void UnpackAndExecuteVkGetImageMemoryRequirements2(vvk::ExecutionContext& contex
   pMemoryRequirements_proto_memoryRequirements_proto->set_memorytypebits((&(&pMemoryRequirements)->memoryRequirements)->memoryTypeBits);
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkCreateImageView(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreateImageView");
+
+  VkImageViewCreateInfo pCreateInfo = {};
+  pCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
+  if (request.vkcreateimageview().pcreateinfo().has_flags()) {
+    pCreateInfo.flags = static_cast<VkImageViewCreateFlags>(request.vkcreateimageview().pcreateinfo().flags());
+  }
+  pCreateInfo.image = reinterpret_cast<VkImage>(request.vkcreateimageview().pcreateinfo().image());
+  pCreateInfo.viewType = static_cast<VkImageViewType>(request.vkcreateimageview().pcreateinfo().viewtype());
+  pCreateInfo.format = static_cast<VkFormat>(request.vkcreateimageview().pcreateinfo().format());
+  pCreateInfo.components.r = static_cast<VkComponentSwizzle>(request.vkcreateimageview().pcreateinfo().components().r());
+  pCreateInfo.components.g = static_cast<VkComponentSwizzle>(request.vkcreateimageview().pcreateinfo().components().g());
+  pCreateInfo.components.b = static_cast<VkComponentSwizzle>(request.vkcreateimageview().pcreateinfo().components().b());
+  pCreateInfo.components.a = static_cast<VkComponentSwizzle>(request.vkcreateimageview().pcreateinfo().components().a());
+  pCreateInfo.subresourceRange.aspectMask = static_cast<VkImageAspectFlags>(request.vkcreateimageview().pcreateinfo().subresourcerange().aspectmask());
+  pCreateInfo.subresourceRange.baseMipLevel = request.vkcreateimageview().pcreateinfo().subresourcerange().basemiplevel();
+  pCreateInfo.subresourceRange.levelCount = request.vkcreateimageview().pcreateinfo().subresourcerange().levelcount();
+  pCreateInfo.subresourceRange.baseArrayLayer = request.vkcreateimageview().pcreateinfo().subresourcerange().basearraylayer();
+  pCreateInfo.subresourceRange.layerCount = request.vkcreateimageview().pcreateinfo().subresourcerange().layercount();
+  VkImageView client_pView = reinterpret_cast<VkImageView>(request.vkcreateimageview().pview());
+  VkImageView server_pView;
+  VkResult result = vkCreateImageView(reinterpret_cast<VkDevice>(request.vkcreateimageview().device()), &pCreateInfo, nullptr, &server_pView);
+  response->mutable_vkcreateimageview()->set_pview(reinterpret_cast<uint64_t>(server_pView));
+  response->set_result(result);
+}
+void UnpackAndExecuteVkDestroyImageView(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDestroyImageView");
+
+  vkDestroyImageView(reinterpret_cast<VkDevice>(request.vkdestroyimageview().device()), reinterpret_cast<VkImageView>(request.vkdestroyimageview().imageview()), nullptr);
+  response->set_result(VK_SUCCESS);
+}
 

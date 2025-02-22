@@ -545,4 +545,18 @@ VKAPI_ATTR void VKAPI_CALL GetImageMemoryRequirements2(VkDevice device, const Vk
                                            pMemoryRequirements);
 }
 
+VKAPI_ATTR VkResult VKAPI_CALL CreateImageView(VkDevice device, const VkImageViewCreateInfo* pCreateInfo,
+                                               const VkAllocationCallbacks* pAllocator, VkImageView* pView) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  return PackAndCallVkCreateImageView(device_info.instance_info.command_stream.get(),
+                                      device_info.instance_info.GetRemoteHandle(device), pCreateInfo, pAllocator,
+                                      pView);
+}
+VKAPI_ATTR void VKAPI_CALL DestroyImageView(VkDevice device, VkImageView imageView,
+                                            const VkAllocationCallbacks* pAllocator) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  PackAndCallVkDestroyImageView(device_info.instance_info.command_stream.get(),
+                                device_info.instance_info.GetRemoteHandle(device), imageView, pAllocator);
+}
+
 }  // namespace vvk

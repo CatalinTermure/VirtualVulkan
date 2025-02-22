@@ -36,8 +36,10 @@ message VvkRequest {
     VkDestroySemaphoreParams vkDestroySemaphore = 20;
     VkCreateImageParams vkCreateImage = 21;
     VkDestroyImageParams vkDestroyImage = 22;
-    VkBindImageMemory2Params vkBindImageMemory2 = 23;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 24;
+    VkCreateImageViewParams vkCreateImageView = 23;
+    VkDestroyImageViewParams vkDestroyImageView = 24;
+    VkBindImageMemory2Params vkBindImageMemory2 = 25;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 26;
   }
 }
 
@@ -58,7 +60,8 @@ message VvkResponse {
     VkCreateFenceResponse vkCreateFence = 13;
     VkCreateSemaphoreResponse vkCreateSemaphore = 14;
     VkCreateImageResponse vkCreateImage = 15;
-    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 16;
+    VkCreateImageViewResponse vkCreateImageView = 16;
+    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 17;
   }
 }
 
@@ -248,6 +251,23 @@ message VkCreateImageParams {
 message VkDestroyImageParams {
   uint64 device = 1; // VkDevice device
   optional uint64 image = 2; // VkImage image
+  optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
+}
+
+message VkCreateImageViewResponse {
+  uint64 pView = 1; // VkImageView* pView
+}
+
+message VkCreateImageViewParams {
+  uint64 device = 1; // VkDevice device
+  VkImageViewCreateInfo pCreateInfo = 2; // const VkImageViewCreateInfo* pCreateInfo
+  optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
+  uint64 pView = 4; // VkImageView* pView NON-CONST POINTER
+}
+
+message VkDestroyImageViewParams {
+  uint64 device = 1; // VkDevice device
+  optional uint64 imageView = 2; // VkImageView imageView
   optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
 }
 
