@@ -839,6 +839,25 @@ VkResult PackAndCallVkBindImageMemory2(grpc::ClientReaderWriter<vvk::server::Vvk
   }
   return static_cast<VkResult>(response.result());
 }
+void PackAndCallVkGetImageMemoryRequirements(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkImage image, VkMemoryRequirements* pMemoryRequirements) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkGetImageMemoryRequirements");
+  request.mutable_vkgetimagememoryrequirements()->set_device(reinterpret_cast<uint64_t>(device));
+  request.mutable_vkgetimagememoryrequirements()->set_image(reinterpret_cast<uint64_t>(image));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  VkMemoryRequirements& pMemoryRequirements_ref = *pMemoryRequirements;
+  pMemoryRequirements_ref.size = static_cast<VkDeviceSize>(response.vkgetimagememoryrequirements().pmemoryrequirements().size());
+  pMemoryRequirements_ref.alignment = static_cast<VkDeviceSize>(response.vkgetimagememoryrequirements().pmemoryrequirements().alignment());
+  pMemoryRequirements_ref.memoryTypeBits = response.vkgetimagememoryrequirements().pmemoryrequirements().memorytypebits();
+}
 void PackAndCallVkGetImageMemoryRequirements2(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkImageMemoryRequirementsInfo2* pInfo, VkMemoryRequirements2* pMemoryRequirements) {
   vvk::server::VvkRequest request;
   request.set_method("vkGetImageMemoryRequirements2");

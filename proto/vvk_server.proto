@@ -30,22 +30,23 @@ message VvkRequest {
     VkAllocateMemoryParams vkAllocateMemory = 14;
     VkFreeMemoryParams vkFreeMemory = 15;
     VkBindImageMemoryParams vkBindImageMemory = 16;
-    VkCreateFenceParams vkCreateFence = 17;
-    VkDestroyFenceParams vkDestroyFence = 18;
-    VkCreateSemaphoreParams vkCreateSemaphore = 19;
-    VkDestroySemaphoreParams vkDestroySemaphore = 20;
-    VkCreateImageParams vkCreateImage = 21;
-    VkDestroyImageParams vkDestroyImage = 22;
-    VkCreateImageViewParams vkCreateImageView = 23;
-    VkDestroyImageViewParams vkDestroyImageView = 24;
-    VkCreateCommandPoolParams vkCreateCommandPool = 25;
-    VkDestroyCommandPoolParams vkDestroyCommandPool = 26;
-    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 27;
-    VkFreeCommandBuffersParams vkFreeCommandBuffers = 28;
-    VkBeginCommandBufferParams vkBeginCommandBuffer = 29;
-    VkEndCommandBufferParams vkEndCommandBuffer = 30;
-    VkBindImageMemory2Params vkBindImageMemory2 = 31;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 32;
+    VkGetImageMemoryRequirementsParams vkGetImageMemoryRequirements = 17;
+    VkCreateFenceParams vkCreateFence = 18;
+    VkDestroyFenceParams vkDestroyFence = 19;
+    VkCreateSemaphoreParams vkCreateSemaphore = 20;
+    VkDestroySemaphoreParams vkDestroySemaphore = 21;
+    VkCreateImageParams vkCreateImage = 22;
+    VkDestroyImageParams vkDestroyImage = 23;
+    VkCreateImageViewParams vkCreateImageView = 24;
+    VkDestroyImageViewParams vkDestroyImageView = 25;
+    VkCreateCommandPoolParams vkCreateCommandPool = 26;
+    VkDestroyCommandPoolParams vkDestroyCommandPool = 27;
+    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 28;
+    VkFreeCommandBuffersParams vkFreeCommandBuffers = 29;
+    VkBeginCommandBufferParams vkBeginCommandBuffer = 30;
+    VkEndCommandBufferParams vkEndCommandBuffer = 31;
+    VkBindImageMemory2Params vkBindImageMemory2 = 32;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 33;
   }
 }
 
@@ -63,13 +64,14 @@ message VvkResponse {
     VkEnumerateDeviceExtensionPropertiesResponse vkEnumerateDeviceExtensionProperties = 10;
     VkGetDeviceQueueResponse vkGetDeviceQueue = 11;
     VkAllocateMemoryResponse vkAllocateMemory = 12;
-    VkCreateFenceResponse vkCreateFence = 13;
-    VkCreateSemaphoreResponse vkCreateSemaphore = 14;
-    VkCreateImageResponse vkCreateImage = 15;
-    VkCreateImageViewResponse vkCreateImageView = 16;
-    VkCreateCommandPoolResponse vkCreateCommandPool = 17;
-    VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 18;
-    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 19;
+    VkGetImageMemoryRequirementsResponse vkGetImageMemoryRequirements = 13;
+    VkCreateFenceResponse vkCreateFence = 14;
+    VkCreateSemaphoreResponse vkCreateSemaphore = 15;
+    VkCreateImageResponse vkCreateImage = 16;
+    VkCreateImageViewResponse vkCreateImageView = 17;
+    VkCreateCommandPoolResponse vkCreateCommandPool = 18;
+    VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 19;
+    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 20;
   }
 }
 
@@ -209,6 +211,16 @@ message VkBindImageMemoryParams {
   uint64 image = 2; // VkImage image
   uint64 memory = 3; // VkDeviceMemory memory
   uint64 memoryOffset = 4; // VkDeviceSize memoryOffset
+}
+
+message VkGetImageMemoryRequirementsResponse {
+  VkMemoryRequirements pMemoryRequirements = 1; // VkMemoryRequirements* pMemoryRequirements
+}
+
+message VkGetImageMemoryRequirementsParams {
+  uint64 device = 1; // VkDevice device
+  uint64 image = 2; // VkImage image
+  VkMemoryRequirements pMemoryRequirements = 3; // VkMemoryRequirements* pMemoryRequirements NON-CONST POINTER
 }
 
 message VkCreateFenceResponse {

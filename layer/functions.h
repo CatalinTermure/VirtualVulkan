@@ -120,6 +120,10 @@ VKAPI_ATTR VkResult VKAPI_CALL BindImageMemory2(
     VkDevice                                    device,
     uint32_t                                    bindInfoCount,
     const VkBindImageMemoryInfo*                pBindInfos);
+VKAPI_ATTR void VKAPI_CALL GetImageMemoryRequirements(
+    VkDevice                                    device,
+    VkImage                                     image,
+    VkMemoryRequirements*                       pMemoryRequirements);
 VKAPI_ATTR void VKAPI_CALL GetImageMemoryRequirements2(
     VkDevice                                    device,
     const VkImageMemoryRequirementsInfo2*       pInfo,
@@ -180,6 +184,7 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkDestroyImage", reinterpret_cast<PFN_vkVoidFunction>(DestroyImage)},
     {"vkBindImageMemory", reinterpret_cast<PFN_vkVoidFunction>(BindImageMemory)},
     {"vkBindImageMemory2", reinterpret_cast<PFN_vkVoidFunction>(BindImageMemory2)},
+    {"vkGetImageMemoryRequirements", reinterpret_cast<PFN_vkVoidFunction>(GetImageMemoryRequirements)},
     {"vkGetImageMemoryRequirements2", reinterpret_cast<PFN_vkVoidFunction>(GetImageMemoryRequirements2)},
     {"vkCreateImageView", reinterpret_cast<PFN_vkVoidFunction>(CreateImageView)},
     {"vkDestroyImageView", reinterpret_cast<PFN_vkVoidFunction>(DestroyImageView)},

@@ -544,6 +544,14 @@ VKAPI_ATTR VkResult VKAPI_CALL BindImageMemory2(VkDevice device, uint32_t bindIn
                                        device_info.instance_info.GetRemoteHandle(device), bindInfoCount, pBindInfos);
 }
 
+VKAPI_ATTR void VKAPI_CALL GetImageMemoryRequirements(VkDevice device, VkImage image,
+                                                      VkMemoryRequirements* pMemoryRequirements) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  PackAndCallVkGetImageMemoryRequirements(device_info.instance_info.command_stream.get(),
+                                          device_info.instance_info.GetRemoteHandle(device), image,
+                                          pMemoryRequirements);
+}
+
 VKAPI_ATTR void VKAPI_CALL GetImageMemoryRequirements2(VkDevice device, const VkImageMemoryRequirementsInfo2* pInfo,
                                                        VkMemoryRequirements2* pMemoryRequirements) {
   DeviceInfo& device_info = GetDeviceInfo(device);

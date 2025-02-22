@@ -664,6 +664,17 @@ void UnpackAndExecuteVkBindImageMemory2(vvk::ExecutionContext& context, const vv
   VkResult result = vkBindImageMemory2(reinterpret_cast<VkDevice>(request.vkbindimagememory2().device()), request.vkbindimagememory2().bindinfocount(), pBindInfos.data());
   response->set_result(result);
 }
+void UnpackAndExecuteVkGetImageMemoryRequirements(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkGetImageMemoryRequirements");
+
+  VkMemoryRequirements pMemoryRequirements = {};
+  vkGetImageMemoryRequirements(reinterpret_cast<VkDevice>(request.vkgetimagememoryrequirements().device()), reinterpret_cast<VkImage>(request.vkgetimagememoryrequirements().image()), &pMemoryRequirements);
+  vvk::server::VkMemoryRequirements* pMemoryRequirements_proto = response->mutable_vkgetimagememoryrequirements()->mutable_pmemoryrequirements();
+  pMemoryRequirements_proto->set_size(static_cast<uint64_t>((&pMemoryRequirements)->size));
+  pMemoryRequirements_proto->set_alignment(static_cast<uint64_t>((&pMemoryRequirements)->alignment));
+  pMemoryRequirements_proto->set_memorytypebits((&pMemoryRequirements)->memoryTypeBits);
+  response->set_result(VK_SUCCESS);
+}
 void UnpackAndExecuteVkGetImageMemoryRequirements2(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkGetImageMemoryRequirements2");
 
