@@ -64,6 +64,10 @@ struct DeviceInfo {
     return reinterpret_cast<T>(local_to_remote_handle_.at(reinterpret_cast<void*>(local_handle)));
   }
 
+  bool HasRemoteHandle(void* local_handle) const {
+    return local_to_remote_handle_.find(local_handle) != local_to_remote_handle_.end();
+  }
+
   template <typename T>
   void SetRemoteHandle(T local_handle, T remote_handle) {
     local_to_remote_handle_.emplace(reinterpret_cast<void*>(local_handle), reinterpret_cast<void*>(remote_handle));

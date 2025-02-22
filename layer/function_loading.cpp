@@ -74,6 +74,10 @@ PFN_vkVoidFunction GetInstanceProcAddr(VkInstance instance, const char* pName) {
 PFN_vkVoidFunction GetDeviceProcAddr(VkDevice device, const char* pName) {
   spdlog::trace("Loading device function: {}", pName);
 
+  GET_PROC_ADDR(CreateSwapchainKHR);
+  GET_PROC_ADDR(DestroySwapchainKHR);
+  GET_PROC_ADDR(GetSwapchainImagesKHR);
+
   for (const auto& func : non_intercepted_functions) {
     if (strcmp(pName, func) == 0) {
       return DefaultGetDeviceProcAddr(device, pName);

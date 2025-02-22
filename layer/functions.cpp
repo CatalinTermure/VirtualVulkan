@@ -78,6 +78,152 @@ void RemoveStructsFromChain(VkBaseInStructure* base_struct, VkStructureType sTyp
 
 }  // namespace
 
+VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapchainCreateInfoKHR* pCreateInfo,
+                                                  const VkAllocationCallbacks* pAllocator, VkSwapchainKHR* pSwapchain) {
+  spdlog::trace("CreateSwapchainKHR");
+
+  VkResult result =
+      CallDownDeviceFunc<PFN_vkCreateSwapchainKHR>("vkCreateSwapchainKHR", device, pCreateInfo, pAllocator, pSwapchain);
+  if (result != VK_SUCCESS) {
+    return result;
+  }
+
+  uint32_t swapchain_image_count = 0;
+  std::vector<VkImage> client_swapchain_images;
+  result = CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, *pSwapchain,
+                                                           &swapchain_image_count, nullptr);
+  if (result != VK_SUCCESS) {
+    CallDownDeviceFunc<PFN_vkDestroySwapchainKHR>("vkDestroySwapchainKHR", device, *pSwapchain, pAllocator);
+    return VK_ERROR_INITIALIZATION_FAILED;
+  }
+
+  client_swapchain_images.resize(swapchain_image_count);
+  result = CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, *pSwapchain,
+                                                           &swapchain_image_count, client_swapchain_images.data());
+  if (result != VK_SUCCESS) {
+    CallDownDeviceFunc<PFN_vkDestroySwapchainKHR>("vkDestroySwapchainKHR", device, *pSwapchain, pAllocator);
+    return VK_ERROR_INITIALIZATION_FAILED;
+  }
+
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  InstanceInfo& instance_info = device_info.instance_info;
+  auto reader_writer = instance_info.command_stream.get();
+
+  if (pCreateInfo->oldSwapchain) {
+    VkSwapchainKHR old_swapchain = pCreateInfo->oldSwapchain;
+    uint32_t old_swapchain_image_count = 0;
+    std::vector<VkImage> old_client_swapchain_images;
+    result = CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, old_swapchain,
+                                                             &old_swapchain_image_count, nullptr);
+    if (result != VK_SUCCESS) {
+      spdlog::critical("Failed to get old swapchain images to destroy");
+      return VK_ERROR_INITIALIZATION_FAILED;
+    }
+
+    old_client_swapchain_images.resize(old_swapchain_image_count);
+    result =
+        CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, old_swapchain,
+                                                        &old_swapchain_image_count, old_client_swapchain_images.data());
+    if (result != VK_SUCCESS) {
+      spdlog::critical("Failed to get old swapchain images to destroy");
+      return VK_ERROR_INITIALIZATION_FAILED;
+    }
+
+    for (VkImage client_image : old_client_swapchain_images) {
+      VkImage server_image = device_info.GetRemoteHandle(client_image);
+      PackAndCallVkDestroyImage(reader_writer, instance_info.GetRemoteHandle(device), server_image, nullptr);
+    }
+  }
+
+  VkImageCreateInfo image_create_info = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+      .pNext = nullptr,
+      .flags = 0,
+      .imageType = VK_IMAGE_TYPE_2D,
+      .format = pCreateInfo->imageFormat,
+      .extent = {pCreateInfo->imageExtent.width, pCreateInfo->imageExtent.height, 1},
+      .mipLevels = 1,
+      .arrayLayers = pCreateInfo->imageArrayLayers,
+      .samples = VK_SAMPLE_COUNT_1_BIT,
+      .tiling = VK_IMAGE_TILING_OPTIMAL,
+      .usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | pCreateInfo->imageUsage,
+      .sharingMode = pCreateInfo->imageSharingMode,
+      .queueFamilyIndexCount = pCreateInfo->queueFamilyIndexCount,
+      .pQueueFamilyIndices = pCreateInfo->pQueueFamilyIndices,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+  };
+
+  for (VkImage client_image : client_swapchain_images) {
+    VkImage server_image;
+    result = PackAndCallVkCreateImage(reader_writer, instance_info.GetRemoteHandle(device), &image_create_info, nullptr,
+                                      &server_image);
+    if (result != VK_SUCCESS) {
+      for (VkImage client_image : client_swapchain_images) {
+        if (device_info.HasRemoteHandle(reinterpret_cast<void*>(client_image))) {
+          VkImage server_image = device_info.GetRemoteHandle(client_image);
+          PackAndCallVkDestroyImage(reader_writer, instance_info.GetRemoteHandle(device), server_image, nullptr);
+        }
+      }
+      CallDownDeviceFunc<PFN_vkDestroySwapchainKHR>("vkDestroySwapchainKHR", device, *pSwapchain, pAllocator);
+      return VK_ERROR_INITIALIZATION_FAILED;
+    }
+    device_info.SetRemoteHandle(client_image, server_image);
+  }
+
+  return result;
+}
+
+VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(VkDevice device, VkSwapchainKHR swapchain,
+                                               const VkAllocationCallbacks* pAllocator) {
+  uint32_t swapchain_image_count = 0;
+  std::vector<VkImage> client_swapchain_images;
+  VkResult result = CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, swapchain,
+                                                                    &swapchain_image_count, nullptr);
+  if (result != VK_SUCCESS) {
+    spdlog::critical("Failed to get swapchain images to destroy");
+    return;
+  }
+
+  client_swapchain_images.resize(swapchain_image_count);
+  result = CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, swapchain,
+                                                           &swapchain_image_count, client_swapchain_images.data());
+  if (result != VK_SUCCESS) {
+    spdlog::critical("Failed to get swapchain images to destroy");
+    return;
+  }
+
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  InstanceInfo& instance_info = device_info.instance_info;
+  auto reader_writer = instance_info.command_stream.get();
+
+  for (VkImage client_image : client_swapchain_images) {
+    VkImage server_image = device_info.GetRemoteHandle(client_image);
+    PackAndCallVkDestroyImage(reader_writer, instance_info.GetRemoteHandle(device), server_image, nullptr);
+  }
+
+  CallDownDeviceFunc<PFN_vkDestroySwapchainKHR>("vkDestroySwapchainKHR", device, swapchain, pAllocator);
+}
+
+VKAPI_ATTR VkResult VKAPI_CALL GetSwapchainImagesKHR(VkDevice device, VkSwapchainKHR swapchain,
+                                                     uint32_t* pSwapchainImageCount, VkImage* pSwapchainImages) {
+  if (pSwapchainImages == nullptr) {
+    return CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, swapchain,
+                                                           pSwapchainImageCount, nullptr);
+  }
+  VkResult result = CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, swapchain,
+                                                                    pSwapchainImageCount, pSwapchainImages);
+  if (result != VK_SUCCESS) {
+    return result;
+  }
+
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  for (uint32_t i = 0; i < *pSwapchainImageCount; i++) {
+    pSwapchainImages[i] = device_info.GetRemoteHandle(pSwapchainImages[i]);
+  }
+
+  return VK_SUCCESS;
+}
+
 PFN_vkVoidFunction DefaultGetInstanceProcAddr(VkInstance instance, const char* pName) {
   return GetInstanceInfo(instance).nxt_gipa(instance, pName);
 }

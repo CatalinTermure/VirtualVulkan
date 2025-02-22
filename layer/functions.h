@@ -12,6 +12,23 @@ namespace vvk {
 PFN_vkVoidFunction DefaultGetInstanceProcAddr(VkInstance instance, const char* pName);
 PFN_vkVoidFunction DefaultGetDeviceProcAddr(VkDevice device, const char* pName);
 
+VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(
+    VkDevice                                    device,
+    const VkSwapchainCreateInfoKHR*             pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkSwapchainKHR*                             pSwapchain);
+
+VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(
+    VkDevice                                    device,
+    VkSwapchainKHR                              swapchain,
+    const VkAllocationCallbacks*                pAllocator);
+
+VKAPI_ATTR VkResult VKAPI_CALL GetSwapchainImagesKHR(
+    VkDevice                                    device,
+    VkSwapchainKHR                              swapchain,
+    uint32_t*                                   pSwapchainImageCount,
+    VkImage*                                    pSwapchainImages);
+
 VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(
     const VkInstanceCreateInfo*                 pCreateInfo,
     const VkAllocationCallbacks*                pAllocator,

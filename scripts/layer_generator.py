@@ -24,6 +24,23 @@ namespace vvk {
 PFN_vkVoidFunction DefaultGetInstanceProcAddr(VkInstance instance, const char* pName);
 PFN_vkVoidFunction DefaultGetDeviceProcAddr(VkDevice device, const char* pName);
 
+VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(
+    VkDevice                                    device,
+    const VkSwapchainCreateInfoKHR*             pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkSwapchainKHR*                             pSwapchain);
+
+VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(
+    VkDevice                                    device,
+    VkSwapchainKHR                              swapchain,
+    const VkAllocationCallbacks*                pAllocator);
+
+VKAPI_ATTR VkResult VKAPI_CALL GetSwapchainImagesKHR(
+    VkDevice                                    device,
+    VkSwapchainKHR                              swapchain,
+    uint32_t*                                   pSwapchainImageCount,
+    VkImage*                                    pSwapchainImages);
+
 ''')
         name_to_func_ptr_map = [
             'inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = {\n'
