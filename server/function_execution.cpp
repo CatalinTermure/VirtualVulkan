@@ -41,6 +41,8 @@ const std::unordered_map<
         {"vkDestroyCommandPool", UnpackAndExecuteVkDestroyCommandPool},
         {"vkAllocateCommandBuffers", UnpackAndExecuteVkAllocateCommandBuffers},
         {"vkFreeCommandBuffers", UnpackAndExecuteVkFreeCommandBuffers},
+        {"vkBeginCommandBuffer", UnpackAndExecuteVkBeginCommandBuffer},
+        {"vkEndCommandBuffer", UnpackAndExecuteVkEndCommandBuffer},
 };
 
 }  // namespace

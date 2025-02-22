@@ -37,6 +37,8 @@ VkResult PackAndCallVkCreateCommandPool(grpc::ClientReaderWriter<vvk::server::Vv
 void PackAndCallVkDestroyCommandPool(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkCommandPool commandPool, const VkAllocationCallbacks* pAllocator);
 VkResult PackAndCallVkAllocateCommandBuffers(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkCommandBufferAllocateInfo* pAllocateInfo, VkCommandBuffer* pCommandBuffers);
 void PackAndCallVkFreeCommandBuffers(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkCommandPool commandPool, uint32_t commandBufferCount, const VkCommandBuffer* pCommandBuffers);
+VkResult PackAndCallVkBeginCommandBuffer(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, const VkCommandBufferBeginInfo* pBeginInfo);
+VkResult PackAndCallVkEndCommandBuffer(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

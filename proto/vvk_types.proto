@@ -2947,6 +2947,20 @@ message VkCommandBufferAllocateInfo {
   uint32 commandBufferCount = 3; // uint32_t commandBufferCount
 }
 
+message VkCommandBufferInheritanceInfo {
+  optional uint64 renderPass = 1; // VkRenderPass renderPass
+  uint32 subpass = 2; // uint32_t subpass
+  optional uint64 framebuffer = 3; // VkFramebuffer framebuffer
+  bool occlusionQueryEnable = 4; // VkBool32 occlusionQueryEnable
+  optional uint32 queryFlags = 5; // VkQueryControlFlags queryFlags
+  optional uint32 pipelineStatistics = 6; // VkQueryPipelineStatisticFlags pipelineStatistics
+}
+
+message VkCommandBufferBeginInfo {
+  optional uint32 flags = 1; // VkCommandBufferUsageFlags flags
+  optional VkCommandBufferInheritanceInfo pInheritanceInfo = 2; // const VkCommandBufferInheritanceInfo* pInheritanceInfo
+}
+
 message VkBindImageMemoryInfo {
   uint64 image = 1; // VkImage image
   uint64 memory = 2; // VkDeviceMemory memory

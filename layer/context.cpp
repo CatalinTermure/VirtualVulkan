@@ -12,6 +12,8 @@ std::mutex device_info_lock;
 std::map<VkDevice, DeviceInfo> g_device_infos;
 std::mutex physical_device_to_instance_lock;
 std::map<VkPhysicalDevice, VkInstance> g_physical_device_to_instance;
+std::mutex command_buffer_to_device_lock;
+std::map<VkCommandBuffer, VkDevice> g_command_buffer_to_device;
 }  // namespace
 
 InstanceInfo& GetInstanceInfo(VkInstance instance) {
@@ -47,8 +49,7 @@ void RemoveInstanceInfo(VkInstance instance) {
 }
 
 InstanceInfo& GetInstanceInfo(VkPhysicalDevice physical_device) {
-  std::lock_guard lock(physical_device_to_instance_lock);
-  return GetInstanceInfo(g_physical_device_to_instance.at(physical_device));
+  return GetInstanceInfo(GetInstanceForPhysicalDevice(physical_device));
 }
 
 void AssociatePhysicalDeviceWithInstance(VkPhysicalDevice physical_device, VkInstance instance) {
@@ -71,6 +72,10 @@ DeviceInfo& GetDeviceInfo(VkDevice device) {
   return g_device_infos.at(device);
 }
 
+DeviceInfo& GetDeviceInfo(VkCommandBuffer command_buffer) {
+  return GetDeviceInfo(GetDeviceForCommandBuffer(command_buffer));
+}
+
 void SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device) {
   std::lock_guard lock(device_info_lock);
   VkInstance instance = g_physical_device_to_instance.at(physical_device);
@@ -81,6 +86,21 @@ void SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysical
 void RemoveDeviceInfo(VkDevice device) {
   std::lock_guard lock(device_info_lock);
   g_device_infos.erase(device);
+}
+
+void AssociateCommandBufferWithDevice(VkCommandBuffer command_buffer, VkDevice device) {
+  std::lock_guard lock(command_buffer_to_device_lock);
+  g_command_buffer_to_device[command_buffer] = device;
+}
+
+VkDevice GetDeviceForCommandBuffer(VkCommandBuffer command_buffer) {
+  std::lock_guard lock(command_buffer_to_device_lock);
+  return g_command_buffer_to_device.at(command_buffer);
+}
+
+void RemoveCommandBuffer(VkCommandBuffer command_buffer) {
+  std::lock_guard lock(command_buffer_to_device_lock);
+  g_command_buffer_to_device.erase(command_buffer);
 }
 
 InstanceInfo::InstanceInfo(PFN_vkGetInstanceProcAddr nxt_gipa, std::shared_ptr<grpc::Channel> channel)

@@ -54,6 +54,8 @@ COMMANDS_TO_GENERATE = [
     "vkDestroyCommandPool",
     "vkAllocateCommandBuffers",
     "vkFreeCommandBuffers",
+    "vkBeginCommandBuffer",
+    "vkEndCommandBuffer",
 ]
 
 

@@ -761,4 +761,42 @@ void UnpackAndExecuteVkFreeCommandBuffers(vvk::ExecutionContext& context, const 
   vkFreeCommandBuffers(reinterpret_cast<VkDevice>(request.vkfreecommandbuffers().device()), reinterpret_cast<VkCommandPool>(request.vkfreecommandbuffers().commandpool()), request.vkfreecommandbuffers().commandbuffercount(), reinterpret_cast<const VkCommandBuffer*>(request.vkfreecommandbuffers().pcommandbuffers().data()));
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkBeginCommandBuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkBeginCommandBuffer");
+
+  VkCommandBufferBeginInfo pBeginInfo = {};
+  pBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  pBeginInfo.pNext = nullptr; // pNext chains are currently unsupported
+  if (request.vkbegincommandbuffer().pbegininfo().has_flags()) {
+    pBeginInfo.flags = static_cast<VkCommandBufferUsageFlags>(request.vkbegincommandbuffer().pbegininfo().flags());
+  }
+  VkCommandBufferInheritanceInfo pBeginInfo_pInheritanceInfo = {};
+  if (request.vkbegincommandbuffer().pbegininfo().has_pinheritanceinfo()) {
+    pBeginInfo_pInheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+    pBeginInfo_pInheritanceInfo.pNext = nullptr; // pNext chains are currently unsupported
+    if (request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().has_renderpass()) {
+      pBeginInfo_pInheritanceInfo.renderPass = reinterpret_cast<VkRenderPass>(request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().renderpass());
+    }
+    pBeginInfo_pInheritanceInfo.subpass = request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().subpass();
+    if (request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().has_framebuffer()) {
+      pBeginInfo_pInheritanceInfo.framebuffer = reinterpret_cast<VkFramebuffer>(request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().framebuffer());
+    }
+    pBeginInfo_pInheritanceInfo.occlusionQueryEnable = request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().occlusionqueryenable();
+    if (request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().has_queryflags()) {
+      pBeginInfo_pInheritanceInfo.queryFlags = static_cast<VkQueryControlFlags>(request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().queryflags());
+    }
+    if (request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().has_pipelinestatistics()) {
+      pBeginInfo_pInheritanceInfo.pipelineStatistics = static_cast<VkQueryPipelineStatisticFlags>(request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().pipelinestatistics());
+    }
+    pBeginInfo.pInheritanceInfo = &pBeginInfo_pInheritanceInfo;
+  }
+  VkResult result = vkBeginCommandBuffer(reinterpret_cast<VkCommandBuffer>(request.vkbegincommandbuffer().commandbuffer()), &pBeginInfo);
+  response->set_result(result);
+}
+void UnpackAndExecuteVkEndCommandBuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkEndCommandBuffer");
+
+  VkResult result = vkEndCommandBuffer(reinterpret_cast<VkCommandBuffer>(request.vkendcommandbuffer().commandbuffer()));
+  response->set_result(result);
+}
 

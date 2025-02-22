@@ -597,6 +597,7 @@ VKAPI_ATTR VkResult VKAPI_CALL AllocateCommandBuffers(VkDevice device, const VkC
     VkCommandBuffer remote_command_buffer = pCommandBuffers[i];
     pCommandBuffers[i] = reinterpret_cast<VkCommandBuffer>(AllocateHandle());
     device_info.SetRemoteHandle(pCommandBuffers[i], remote_command_buffer);
+    AssociateCommandBufferWithDevice(pCommandBuffers[i], device);
   }
 
   return result;
@@ -610,10 +611,23 @@ VKAPI_ATTR void VKAPI_CALL FreeCommandBuffers(VkDevice device, VkCommandPool com
   std::vector<VkCommandBuffer> remote_command_buffers;
   remote_command_buffers.reserve(commandBufferCount);
   for (uint32_t i = 0; i < commandBufferCount; i++) {
+    RemoveCommandBuffer(pCommandBuffers[i]);
     remote_command_buffers.push_back(device_info.GetRemoteHandle(pCommandBuffers[i]));
   }
   PackAndCallVkFreeCommandBuffers(device_info.instance_info.command_stream.get(),
                                   device_info.instance_info.GetRemoteHandle(device), commandPool, commandBufferCount,
                                   remote_command_buffers.data());
+}
+
+VKAPI_ATTR VkResult VKAPI_CALL BeginCommandBuffer(VkCommandBuffer commandBuffer,
+                                                  const VkCommandBufferBeginInfo* pBeginInfo) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  return PackAndCallVkBeginCommandBuffer(device_info.instance_info.command_stream.get(),
+                                         device_info.GetRemoteHandle(commandBuffer), pBeginInfo);
+}
+VKAPI_ATTR VkResult VKAPI_CALL EndCommandBuffer(VkCommandBuffer commandBuffer) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  return PackAndCallVkEndCommandBuffer(device_info.instance_info.command_stream.get(),
+                                       device_info.GetRemoteHandle(commandBuffer));
 }
 }  // namespace vvk

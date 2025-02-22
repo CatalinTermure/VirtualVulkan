@@ -78,8 +78,13 @@ struct DeviceInfo {
 };
 
 DeviceInfo& GetDeviceInfo(VkDevice device);
+DeviceInfo& GetDeviceInfo(VkCommandBuffer command_buffer);
 void SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device);
 void RemoveDeviceInfo(VkDevice device);
+
+void AssociateCommandBufferWithDevice(VkCommandBuffer command_buffer, VkDevice device);
+VkDevice GetDeviceForCommandBuffer(VkCommandBuffer command_buffer);
+void RemoveCommandBuffer(VkCommandBuffer command_buffer);
 
 }  // namespace vvk
 

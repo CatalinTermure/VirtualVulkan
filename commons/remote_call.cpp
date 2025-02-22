@@ -1005,5 +1005,62 @@ void PackAndCallVkFreeCommandBuffers(grpc::ClientReaderWriter<vvk::server::VvkRe
     spdlog::error("Failed to read response from server");
   }
 }
+VkResult PackAndCallVkBeginCommandBuffer(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, const VkCommandBufferBeginInfo* pBeginInfo) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkBeginCommandBuffer");
+  request.mutable_vkbegincommandbuffer()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  vvk::server::VkCommandBufferBeginInfo* pBeginInfo_proto = request.mutable_vkbegincommandbuffer()->mutable_pbegininfo();
+  if (pBeginInfo->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (pBeginInfo->flags) {
+    pBeginInfo_proto->set_flags(pBeginInfo->flags);
+  }
+  if (pBeginInfo->pInheritanceInfo) {
+    vvk::server::VkCommandBufferInheritanceInfo* pBeginInfo_proto_pInheritanceInfo_proto = pBeginInfo_proto->mutable_pinheritanceinfo();
+    if (pBeginInfo->pInheritanceInfo->pNext) {
+      // pNext chains are currently not supported
+    }
+    if (pBeginInfo->pInheritanceInfo->renderPass) {
+      pBeginInfo_proto_pInheritanceInfo_proto->set_renderpass(reinterpret_cast<uint64_t>(pBeginInfo->pInheritanceInfo->renderPass));
+    }
+    pBeginInfo_proto_pInheritanceInfo_proto->set_subpass(pBeginInfo->pInheritanceInfo->subpass);
+    if (pBeginInfo->pInheritanceInfo->framebuffer) {
+      pBeginInfo_proto_pInheritanceInfo_proto->set_framebuffer(reinterpret_cast<uint64_t>(pBeginInfo->pInheritanceInfo->framebuffer));
+    }
+    pBeginInfo_proto_pInheritanceInfo_proto->set_occlusionqueryenable(pBeginInfo->pInheritanceInfo->occlusionQueryEnable);
+    if (pBeginInfo->pInheritanceInfo->queryFlags) {
+      pBeginInfo_proto_pInheritanceInfo_proto->set_queryflags(pBeginInfo->pInheritanceInfo->queryFlags);
+    }
+    if (pBeginInfo->pInheritanceInfo->pipelineStatistics) {
+      pBeginInfo_proto_pInheritanceInfo_proto->set_pipelinestatistics(pBeginInfo->pInheritanceInfo->pipelineStatistics);
+    }
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  return static_cast<VkResult>(response.result());
+}
+VkResult PackAndCallVkEndCommandBuffer(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkEndCommandBuffer");
+  request.mutable_vkendcommandbuffer()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  return static_cast<VkResult>(response.result());
+}
 }  // namespace vvk
 
