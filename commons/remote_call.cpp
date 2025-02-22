@@ -813,6 +813,32 @@ VkResult PackAndCallVkBindImageMemory(grpc::ClientReaderWriter<vvk::server::VvkR
   }
   return static_cast<VkResult>(response.result());
 }
+VkResult PackAndCallVkBindImageMemory2(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, uint32_t bindInfoCount, const VkBindImageMemoryInfo* pBindInfos) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkBindImageMemory2");
+  request.mutable_vkbindimagememory2()->set_device(reinterpret_cast<uint64_t>(device));
+  request.mutable_vkbindimagememory2()->set_bindinfocount(bindInfoCount);
+  for (int pBindInfos_indx = 0; pBindInfos_indx < bindInfoCount; pBindInfos_indx++) {
+    vvk::server::VkBindImageMemoryInfo* pBindInfos_proto = request.mutable_vkbindimagememory2()->add_pbindinfos();
+    const VkBindImageMemoryInfo* pBindInfos_i = &pBindInfos[pBindInfos_indx];
+    if (pBindInfos_i->pNext) {
+      // pNext chains are currently not supported
+    }
+    pBindInfos_proto->set_image(reinterpret_cast<uint64_t>(pBindInfos_i->image));
+    pBindInfos_proto->set_memory(reinterpret_cast<uint64_t>(pBindInfos_i->memory));
+    pBindInfos_proto->set_memoryoffset(static_cast<uint64_t>(pBindInfos_i->memoryOffset));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  return static_cast<VkResult>(response.result());
+}
 void PackAndCallVkGetImageMemoryRequirements2(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkImageMemoryRequirementsInfo2* pInfo, VkMemoryRequirements2* pMemoryRequirements) {
   vvk::server::VvkRequest request;
   request.set_method("vkGetImageMemoryRequirements2");

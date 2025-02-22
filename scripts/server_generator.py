@@ -194,6 +194,8 @@ class ServerSrcGenerator(BaseGenerator):
                 out.append(f'  VkResult result = {cmd_name}(')
             elif command.returnType == "void":
                 out.append(f'  {cmd_name}(')
+            else:
+                log("UNHANDLED RETURN TYPE:", command.returnType)
 
             out.append(", ".join(actual_parameters))
             out.append(");\n")

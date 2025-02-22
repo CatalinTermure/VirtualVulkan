@@ -203,6 +203,10 @@ namespace vvk {
             if command.returnType == "VkResult":
                 out.append(
                     "  return static_cast<VkResult>(response.result());\n")
+            elif command.returnType == 'void':
+                pass
+            else:
+                log("UNHANDLED RETURN TYPE:", command.returnType)
 
             out.append("}\n")
 

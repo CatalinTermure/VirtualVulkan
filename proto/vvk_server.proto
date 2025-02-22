@@ -36,7 +36,8 @@ message VvkRequest {
     VkDestroySemaphoreParams vkDestroySemaphore = 20;
     VkCreateImageParams vkCreateImage = 21;
     VkDestroyImageParams vkDestroyImage = 22;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 23;
+    VkBindImageMemory2Params vkBindImageMemory2 = 23;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 24;
   }
 }
 
@@ -248,6 +249,12 @@ message VkDestroyImageParams {
   uint64 device = 1; // VkDevice device
   optional uint64 image = 2; // VkImage image
   optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
+}
+
+message VkBindImageMemory2Params {
+  uint64 device = 1; // VkDevice device
+  uint32 bindInfoCount = 2; // uint32_t bindInfoCount
+  repeated VkBindImageMemoryInfo pBindInfos = 3; // const VkBindImageMemoryInfo* pBindInfos
 }
 
 message VkGetImageMemoryRequirements2Response {

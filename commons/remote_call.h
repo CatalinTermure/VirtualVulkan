@@ -29,6 +29,7 @@ void PackAndCallVkFreeMemory(grpc::ClientReaderWriter<vvk::server::VvkRequest, v
 VkResult PackAndCallVkCreateImage(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkImageCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkImage* pImage);
 void PackAndCallVkDestroyImage(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkImage image, const VkAllocationCallbacks* pAllocator);
 VkResult PackAndCallVkBindImageMemory(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkImage image, VkDeviceMemory memory, VkDeviceSize memoryOffset);
+VkResult PackAndCallVkBindImageMemory2(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, uint32_t bindInfoCount, const VkBindImageMemoryInfo* pBindInfos);
 void PackAndCallVkGetImageMemoryRequirements2(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkImageMemoryRequirementsInfo2* pInfo, VkMemoryRequirements2* pMemoryRequirements);
 }  // namespace vvk
 

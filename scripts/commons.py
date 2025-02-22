@@ -46,6 +46,7 @@ COMMANDS_TO_GENERATE = [
     "vkCreateImage",
     "vkDestroyImage",
     "vkBindImageMemory",
+    "vkBindImageMemory2",
     "vkGetImageMemoryRequirements2",
 ]
 

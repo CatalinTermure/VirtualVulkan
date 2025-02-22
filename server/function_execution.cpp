@@ -33,6 +33,7 @@ const std::unordered_map<
         {"vkCreateImage", UnpackAndExecuteVkCreateImage},
         {"vkDestroyImage", UnpackAndExecuteVkDestroyImage},
         {"vkBindImageMemory", UnpackAndExecuteVkBindImageMemory},
+        {"vkBindImageMemory2", UnpackAndExecuteVkBindImageMemory2},
         {"vkGetImageMemoryRequirements2", UnpackAndExecuteVkGetImageMemoryRequirements2},
 };
 

@@ -649,6 +649,21 @@ void UnpackAndExecuteVkBindImageMemory(vvk::ExecutionContext& context, const vvk
   VkResult result = vkBindImageMemory(reinterpret_cast<VkDevice>(request.vkbindimagememory().device()), reinterpret_cast<VkImage>(request.vkbindimagememory().image()), reinterpret_cast<VkDeviceMemory>(request.vkbindimagememory().memory()), static_cast<VkDeviceSize>(request.vkbindimagememory().memoryoffset()));
   response->set_result(result);
 }
+void UnpackAndExecuteVkBindImageMemory2(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkBindImageMemory2");
+
+  std::vector<VkBindImageMemoryInfo> pBindInfos(request.vkbindimagememory2().bindinfocount());
+  for (int i = 0; i < pBindInfos.size(); i++) {
+    VkBindImageMemoryInfo& pBindInfos_ref = pBindInfos[i];
+    pBindInfos_ref.sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO;
+    pBindInfos_ref.pNext = nullptr; // pNext chains are currently unsupported
+    pBindInfos_ref.image = reinterpret_cast<VkImage>(request.vkbindimagememory2().pbindinfos(i).image());
+    pBindInfos_ref.memory = reinterpret_cast<VkDeviceMemory>(request.vkbindimagememory2().pbindinfos(i).memory());
+    pBindInfos_ref.memoryOffset = static_cast<VkDeviceSize>(request.vkbindimagememory2().pbindinfos(i).memoryoffset());
+  }
+  VkResult result = vkBindImageMemory2(reinterpret_cast<VkDevice>(request.vkbindimagememory2().device()), request.vkbindimagememory2().bindinfocount(), pBindInfos.data());
+  response->set_result(result);
+}
 void UnpackAndExecuteVkGetImageMemoryRequirements2(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkGetImageMemoryRequirements2");
 

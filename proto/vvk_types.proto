@@ -2912,6 +2912,12 @@ message VkImageCreateInfo {
   VkImageLayout initialLayout = 13; // VkImageLayout initialLayout
 }
 
+message VkBindImageMemoryInfo {
+  uint64 image = 1; // VkImage image
+  uint64 memory = 2; // VkDeviceMemory memory
+  uint64 memoryOffset = 3; // VkDeviceSize memoryOffset
+}
+
 message VkImageMemoryRequirementsInfo2 {
   uint64 image = 1; // VkImage image
 }
