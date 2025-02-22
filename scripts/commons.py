@@ -52,6 +52,8 @@ COMMANDS_TO_GENERATE = [
     "vkDestroyImageView",
     "vkCreateCommandPool",
     "vkDestroyCommandPool",
+    "vkAllocateCommandBuffers",
+    "vkFreeCommandBuffers",
 ]
 
 

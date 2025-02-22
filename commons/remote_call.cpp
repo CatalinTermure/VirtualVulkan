@@ -961,5 +961,49 @@ void PackAndCallVkDestroyCommandPool(grpc::ClientReaderWriter<vvk::server::VvkRe
     spdlog::error("Failed to read response from server");
   }
 }
+VkResult PackAndCallVkAllocateCommandBuffers(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkCommandBufferAllocateInfo* pAllocateInfo, VkCommandBuffer* pCommandBuffers) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkAllocateCommandBuffers");
+  request.mutable_vkallocatecommandbuffers()->set_device(reinterpret_cast<uint64_t>(device));
+  vvk::server::VkCommandBufferAllocateInfo* pAllocateInfo_proto = request.mutable_vkallocatecommandbuffers()->mutable_pallocateinfo();
+  if (pAllocateInfo->pNext) {
+    // pNext chains are currently not supported
+  }
+  pAllocateInfo_proto->set_commandpool(reinterpret_cast<uint64_t>(pAllocateInfo->commandPool));
+  pAllocateInfo_proto->set_level(static_cast<vvk::server::VkCommandBufferLevel>(pAllocateInfo->level));
+  pAllocateInfo_proto->set_commandbuffercount(pAllocateInfo->commandBufferCount);
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  for (int i = 0; i < pAllocateInfo->commandBufferCount; i++) {
+    pCommandBuffers[i] = reinterpret_cast<VkCommandBuffer>(response.vkallocatecommandbuffers().pcommandbuffers(i));
+  }
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkFreeCommandBuffers(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkCommandPool commandPool, uint32_t commandBufferCount, const VkCommandBuffer* pCommandBuffers) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkFreeCommandBuffers");
+  request.mutable_vkfreecommandbuffers()->set_device(reinterpret_cast<uint64_t>(device));
+  request.mutable_vkfreecommandbuffers()->set_commandpool(reinterpret_cast<uint64_t>(commandPool));
+  request.mutable_vkfreecommandbuffers()->set_commandbuffercount(commandBufferCount);
+  for (int i = 0; i < commandBufferCount; i++) {
+    request.mutable_vkfreecommandbuffers()->add_pcommandbuffers(reinterpret_cast<uint64_t>(pCommandBuffers[i]));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 

@@ -40,8 +40,10 @@ message VvkRequest {
     VkDestroyImageViewParams vkDestroyImageView = 24;
     VkCreateCommandPoolParams vkCreateCommandPool = 25;
     VkDestroyCommandPoolParams vkDestroyCommandPool = 26;
-    VkBindImageMemory2Params vkBindImageMemory2 = 27;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 28;
+    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 27;
+    VkFreeCommandBuffersParams vkFreeCommandBuffers = 28;
+    VkBindImageMemory2Params vkBindImageMemory2 = 29;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 30;
   }
 }
 
@@ -64,7 +66,8 @@ message VvkResponse {
     VkCreateImageResponse vkCreateImage = 15;
     VkCreateImageViewResponse vkCreateImageView = 16;
     VkCreateCommandPoolResponse vkCreateCommandPool = 17;
-    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 18;
+    VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 18;
+    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 19;
   }
 }
 
@@ -289,6 +292,23 @@ message VkDestroyCommandPoolParams {
   uint64 device = 1; // VkDevice device
   optional uint64 commandPool = 2; // VkCommandPool commandPool
   optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
+}
+
+message VkAllocateCommandBuffersResponse {
+  repeated uint64 pCommandBuffers = 1; // VkCommandBuffer* pCommandBuffers NON-CONST POINTER
+}
+
+message VkAllocateCommandBuffersParams {
+  uint64 device = 1; // VkDevice device
+  VkCommandBufferAllocateInfo pAllocateInfo = 2; // const VkCommandBufferAllocateInfo* pAllocateInfo
+  repeated uint64 pCommandBuffers = 3; // VkCommandBuffer* pCommandBuffers NON-CONST POINTER
+}
+
+message VkFreeCommandBuffersParams {
+  uint64 device = 1; // VkDevice device
+  uint64 commandPool = 2; // VkCommandPool commandPool
+  uint32 commandBufferCount = 3; // uint32_t commandBufferCount
+  repeated uint64 pCommandBuffers = 4; // const VkCommandBuffer* pCommandBuffers
 }
 
 message VkBindImageMemory2Params {

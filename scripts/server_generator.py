@@ -12,6 +12,10 @@ class ServerSrcGenerator(BaseGenerator):
     def __init__(self):
         BaseGenerator.__init__(self)
 
+    def c_to_proto_accessor(self, c_accessor: str) -> str:
+        # a->b->c -> a().b().c()
+        return c_accessor.lower().replace("->", "().") + "()"
+
     def generate(self):
         out = []
         out.append("// GENERATED FILE - DO NOT EDIT\n")
@@ -72,8 +76,9 @@ class ServerSrcGenerator(BaseGenerator):
                         actual_parameters.append(
                             f'{param_accessor}.{param.name.lower()}().data()')
                     else:
-                        log("non zero length param:",
-                            cmd_name, param.cDeclaration)
+                        assert (param.type in self.vk.handles)
+                        actual_parameters.append(
+                            f'reinterpret_cast<const {param.type}*>({param_accessor}.{param.name.lower()}().data())')
                 elif param.pointer and not param.const and param.type in self.vk.handles:
                     if param.length is None:
                         actual_parameters.append(f'&server_{param.name}')
@@ -82,6 +87,18 @@ class ServerSrcGenerator(BaseGenerator):
                         out.append(f'  {param.type} server_{param.name};\n')
                         after_call_code.append(
                             f'  response->mutable_{cmd_name.lower()}()->set_{param.name.lower()}(reinterpret_cast<uint64_t>(server_{param.name}));\n')
+                    elif not param.optional:
+                        param_length_accessor = self.c_to_proto_accessor(
+                            param.length)
+                        out.append(
+                            f'  std::vector<{param.type}> {param.name}({param_accessor}.{param_length_accessor});\n')
+                        actual_parameters.append(f'{param.name}.data()')
+
+                        after_call_code.append(
+                            f'  for ({param.type} {param.name}_elem : {param.name}) {{\n')
+                        after_call_code.append(
+                            f'    response->mutable_{cmd_name.lower()}()->add_{param.name.lower()}(reinterpret_cast<uint64_t>({param.name}_elem));\n')
+                        after_call_code.append("  }\n")
                     else:
                         # only vkEnumerate* commands return multiple handles
                         assert ("vkEnumerate" in cmd_name or cmd_name in [

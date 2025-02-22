@@ -2,6 +2,7 @@
 
 #include <grpcpp/grpcpp.h>
 #include <spdlog/spdlog.h>
+#include <vulkan/vk_icd.h>
 #include <vulkan/vk_layer.h>
 #include <vvk_server.grpc.pb.h>
 #include <vvk_server.pb.h>
@@ -74,6 +75,12 @@ void RemoveStructsFromChain(VkBaseInStructure* base_struct, VkStructureType sTyp
       next_struct = const_cast<VkBaseInStructure*>(next_struct->pNext);
     }
   }
+}
+
+void* AllocateHandle() {
+  void* handle = malloc(sizeof(VK_LOADER_DATA));
+  set_loader_magic_value(handle);
+  return handle;
 }
 
 }  // namespace
@@ -571,5 +578,42 @@ VKAPI_ATTR void VKAPI_CALL DestroyCommandPool(VkDevice device, VkCommandPool com
   DeviceInfo& device_info = GetDeviceInfo(device);
   PackAndCallVkDestroyCommandPool(device_info.instance_info.command_stream.get(),
                                   device_info.instance_info.GetRemoteHandle(device), commandPool, pAllocator);
+}
+VKAPI_ATTR VkResult VKAPI_CALL AllocateCommandBuffers(VkDevice device, const VkCommandBufferAllocateInfo* pAllocateInfo,
+                                                      VkCommandBuffer* pCommandBuffers) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  VkResult result = PackAndCallVkAllocateCommandBuffers(device_info.instance_info.command_stream.get(),
+                                                        device_info.instance_info.GetRemoteHandle(device),
+                                                        pAllocateInfo, pCommandBuffers);
+  if (result != VK_SUCCESS) {
+    return result;
+  }
+
+  // Command buffers are dispatchable handles so we must allow the loader to insert the dispatch table
+  // For more details, see:
+  // https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderDriverInterface.md#driver-dispatchable-object-creation
+
+  for (uint32_t i = 0; i < pAllocateInfo->commandBufferCount; i++) {
+    VkCommandBuffer remote_command_buffer = pCommandBuffers[i];
+    pCommandBuffers[i] = reinterpret_cast<VkCommandBuffer>(AllocateHandle());
+    device_info.SetRemoteHandle(pCommandBuffers[i], remote_command_buffer);
+  }
+
+  return result;
+}
+VKAPI_ATTR void VKAPI_CALL FreeCommandBuffers(VkDevice device, VkCommandPool commandPool, uint32_t commandBufferCount,
+                                              const VkCommandBuffer* pCommandBuffers) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  for (uint32_t i = 0; i < commandBufferCount; i++) {
+    free(const_cast<VkCommandBuffer>(pCommandBuffers[i]));
+  }
+  std::vector<VkCommandBuffer> remote_command_buffers;
+  remote_command_buffers.reserve(commandBufferCount);
+  for (uint32_t i = 0; i < commandBufferCount; i++) {
+    remote_command_buffers.push_back(device_info.GetRemoteHandle(pCommandBuffers[i]));
+  }
+  PackAndCallVkFreeCommandBuffers(device_info.instance_info.command_stream.get(),
+                                  device_info.instance_info.GetRemoteHandle(device), commandPool, commandBufferCount,
+                                  remote_command_buffers.data());
 }
 }  // namespace vvk

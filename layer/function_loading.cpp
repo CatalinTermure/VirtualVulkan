@@ -67,7 +67,6 @@ PFN_vkVoidFunction GetInstanceProcAddr(VkInstance instance, const char* pName) {
   if (it != g_name_to_func_ptr.end()) {
     return it->second;
   }
-  spdlog::warn("Instance function not found: {}", pName);
   return nullptr;
 }
 
@@ -89,7 +88,6 @@ PFN_vkVoidFunction GetDeviceProcAddr(VkDevice device, const char* pName) {
     return it->second;
   }
 
-  spdlog::warn("Device function not found: {}", pName);
   return nullptr;
 }
 
@@ -100,7 +98,6 @@ PFN_vkVoidFunction GetPhysicalDeviceProcAddr(VkInstance instance, const char* pN
     return it->second;
   }
 
-  spdlog::warn("Physical device function not found: {}", pName);
   return nullptr;
 }
 

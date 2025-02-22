@@ -39,6 +39,8 @@ const std::unordered_map<
         {"vkDestroyImageView", UnpackAndExecuteVkDestroyImageView},
         {"vkCreateCommandPool", UnpackAndExecuteVkCreateCommandPool},
         {"vkDestroyCommandPool", UnpackAndExecuteVkDestroyCommandPool},
+        {"vkAllocateCommandBuffers", UnpackAndExecuteVkAllocateCommandBuffers},
+        {"vkFreeCommandBuffers", UnpackAndExecuteVkFreeCommandBuffers},
 };
 
 }  // namespace

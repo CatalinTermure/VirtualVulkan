@@ -38,6 +38,17 @@ class ClientSrcGenerator(BaseGenerator):
                 out.append(indent(fill_proto_from_struct(self,
                                                          param.type, f'{param.name}_proto', f'{param.name}_i'), 2))
                 out.append("  }\n")
+        elif param.pointer and param.const and param.type in self.vk.handles:
+            if param.length is None:
+                log("none length const pointer to handle:",
+                    cmd_name, param.cDeclaration)
+            else:
+                assert (param.length in [
+                    p.name for p in command.params])
+                out.append(f'  for (int i = 0; i < {param.length}; i++) {{\n')
+                out.append(
+                    f'    request.mutable_{cmd_name.lower()}()->add_{param.name.lower()}(reinterpret_cast<uint64_t>({param.name}[i]));\n')
+                out.append("  }\n")
         elif param.pointer and param.const:
             if param.length is None:
                 assert (param.type == 'char')
@@ -52,6 +63,12 @@ class ClientSrcGenerator(BaseGenerator):
                     f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}(reinterpret_cast<uint64_t>(*{param.name}));\n')
                 after_call_code.append(
                     f'  *{param.name} = reinterpret_cast<{param.type}>({response_accessor}.{param.name.lower()}());\n')
+            elif not param.optional:
+                after_call_code.append(
+                    f'  for (int i = 0; i < {param.length}; i++) {{\n')
+                after_call_code.append(
+                    f'    {param.name}[i] = reinterpret_cast<{param.type}>({response_accessor}.{param.name.lower()}(i));\n')
+                after_call_code.append("  }\n")
             else:
                 # only vkEnumerate* commands return multiple handles
                 assert ("vkEnumerate" in cmd_name or cmd_name in [

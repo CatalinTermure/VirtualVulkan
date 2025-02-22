@@ -2941,6 +2941,12 @@ message VkCommandPoolCreateInfo {
   uint32 queueFamilyIndex = 2; // uint32_t queueFamilyIndex
 }
 
+message VkCommandBufferAllocateInfo {
+  uint64 commandPool = 1; // VkCommandPool commandPool
+  VkCommandBufferLevel level = 2; // VkCommandBufferLevel level
+  uint32 commandBufferCount = 3; // uint32_t commandBufferCount
+}
+
 message VkBindImageMemoryInfo {
   uint64 image = 1; // VkImage image
   uint64 memory = 2; // VkDeviceMemory memory
