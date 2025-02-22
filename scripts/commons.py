@@ -50,6 +50,8 @@ COMMANDS_TO_GENERATE = [
     "vkGetImageMemoryRequirements2",
     "vkCreateImageView",
     "vkDestroyImageView",
+    "vkCreateCommandPool",
+    "vkDestroyCommandPool",
 ]
 
 

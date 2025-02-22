@@ -2936,6 +2936,11 @@ message VkImageViewCreateInfo {
   VkImageSubresourceRange subresourceRange = 6; // VkImageSubresourceRange subresourceRange
 }
 
+message VkCommandPoolCreateInfo {
+  optional uint32 flags = 1; // VkCommandPoolCreateFlags flags
+  uint32 queueFamilyIndex = 2; // uint32_t queueFamilyIndex
+}
+
 message VkBindImageMemoryInfo {
   uint64 image = 1; // VkImage image
   uint64 memory = 2; // VkDeviceMemory memory

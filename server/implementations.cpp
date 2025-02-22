@@ -717,4 +717,26 @@ void UnpackAndExecuteVkDestroyImageView(vvk::ExecutionContext& context, const vv
   vkDestroyImageView(reinterpret_cast<VkDevice>(request.vkdestroyimageview().device()), reinterpret_cast<VkImageView>(request.vkdestroyimageview().imageview()), nullptr);
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkCreateCommandPool(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreateCommandPool");
+
+  VkCommandPoolCreateInfo pCreateInfo = {};
+  pCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
+  if (request.vkcreatecommandpool().pcreateinfo().has_flags()) {
+    pCreateInfo.flags = static_cast<VkCommandPoolCreateFlags>(request.vkcreatecommandpool().pcreateinfo().flags());
+  }
+  pCreateInfo.queueFamilyIndex = request.vkcreatecommandpool().pcreateinfo().queuefamilyindex();
+  VkCommandPool client_pCommandPool = reinterpret_cast<VkCommandPool>(request.vkcreatecommandpool().pcommandpool());
+  VkCommandPool server_pCommandPool;
+  VkResult result = vkCreateCommandPool(reinterpret_cast<VkDevice>(request.vkcreatecommandpool().device()), &pCreateInfo, nullptr, &server_pCommandPool);
+  response->mutable_vkcreatecommandpool()->set_pcommandpool(reinterpret_cast<uint64_t>(server_pCommandPool));
+  response->set_result(result);
+}
+void UnpackAndExecuteVkDestroyCommandPool(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDestroyCommandPool");
+
+  vkDestroyCommandPool(reinterpret_cast<VkDevice>(request.vkdestroycommandpool().device()), reinterpret_cast<VkCommandPool>(request.vkdestroycommandpool().commandpool()), nullptr);
+  response->set_result(VK_SUCCESS);
+}
 

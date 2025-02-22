@@ -33,6 +33,8 @@ VkResult PackAndCallVkBindImageMemory2(grpc::ClientReaderWriter<vvk::server::Vvk
 void PackAndCallVkGetImageMemoryRequirements2(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkImageMemoryRequirementsInfo2* pInfo, VkMemoryRequirements2* pMemoryRequirements);
 VkResult PackAndCallVkCreateImageView(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkImageViewCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkImageView* pView);
 void PackAndCallVkDestroyImageView(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkImageView imageView, const VkAllocationCallbacks* pAllocator);
+VkResult PackAndCallVkCreateCommandPool(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkCommandPoolCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkCommandPool* pCommandPool);
+void PackAndCallVkDestroyCommandPool(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkCommandPool commandPool, const VkAllocationCallbacks* pAllocator);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

@@ -37,6 +37,8 @@ const std::unordered_map<
         {"vkGetImageMemoryRequirements2", UnpackAndExecuteVkGetImageMemoryRequirements2},
         {"vkCreateImageView", UnpackAndExecuteVkCreateImageView},
         {"vkDestroyImageView", UnpackAndExecuteVkDestroyImageView},
+        {"vkCreateCommandPool", UnpackAndExecuteVkCreateCommandPool},
+        {"vkDestroyCommandPool", UnpackAndExecuteVkDestroyCommandPool},
 };
 
 }  // namespace

@@ -919,5 +919,47 @@ void PackAndCallVkDestroyImageView(grpc::ClientReaderWriter<vvk::server::VvkRequ
     spdlog::error("Failed to read response from server");
   }
 }
+VkResult PackAndCallVkCreateCommandPool(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkCommandPoolCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkCommandPool* pCommandPool) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCreateCommandPool");
+  request.mutable_vkcreatecommandpool()->set_device(reinterpret_cast<uint64_t>(device));
+  vvk::server::VkCommandPoolCreateInfo* pCreateInfo_proto = request.mutable_vkcreatecommandpool()->mutable_pcreateinfo();
+  if (pCreateInfo->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (pCreateInfo->flags) {
+    pCreateInfo_proto->set_flags(pCreateInfo->flags);
+  }
+  pCreateInfo_proto->set_queuefamilyindex(pCreateInfo->queueFamilyIndex);
+  request.mutable_vkcreatecommandpool()->set_pcommandpool(reinterpret_cast<uint64_t>(*pCommandPool));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pCommandPool = reinterpret_cast<VkCommandPool>(response.vkcreatecommandpool().pcommandpool());
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkDestroyCommandPool(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkCommandPool commandPool, const VkAllocationCallbacks* pAllocator) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkDestroyCommandPool");
+  request.mutable_vkdestroycommandpool()->set_device(reinterpret_cast<uint64_t>(device));
+  if (commandPool) {
+    request.mutable_vkdestroycommandpool()->set_commandpool(reinterpret_cast<uint64_t>(commandPool));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 

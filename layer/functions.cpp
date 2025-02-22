@@ -559,4 +559,17 @@ VKAPI_ATTR void VKAPI_CALL DestroyImageView(VkDevice device, VkImageView imageVi
                                 device_info.instance_info.GetRemoteHandle(device), imageView, pAllocator);
 }
 
+VKAPI_ATTR VkResult VKAPI_CALL CreateCommandPool(VkDevice device, const VkCommandPoolCreateInfo* pCreateInfo,
+                                                 const VkAllocationCallbacks* pAllocator, VkCommandPool* pCommandPool) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  return PackAndCallVkCreateCommandPool(device_info.instance_info.command_stream.get(),
+                                        device_info.instance_info.GetRemoteHandle(device), pCreateInfo, pAllocator,
+                                        pCommandPool);
+}
+VKAPI_ATTR void VKAPI_CALL DestroyCommandPool(VkDevice device, VkCommandPool commandPool,
+                                              const VkAllocationCallbacks* pAllocator) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  PackAndCallVkDestroyCommandPool(device_info.instance_info.command_stream.get(),
+                                  device_info.instance_info.GetRemoteHandle(device), commandPool, pAllocator);
+}
 }  // namespace vvk
