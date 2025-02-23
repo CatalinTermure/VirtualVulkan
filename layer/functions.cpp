@@ -326,6 +326,12 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceProperties(VkPhysicalDevice physical
                                            pProperties);
 }
 
+VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceFormatProperties(VkPhysicalDevice physicalDevice, VkFormat format,
+                                                             VkFormatProperties* pFormatProperties) {
+  PackAndCallVkGetPhysicalDeviceFormatProperties(GetInstanceInfo(physicalDevice).command_stream.get(), physicalDevice,
+                                                 format, pFormatProperties);
+}
+
 VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo* pCreateInfo,
                                             const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) {
   // find the next layer's GetDeviceProcAddr(GDPA) function

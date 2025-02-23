@@ -47,6 +47,10 @@ class ServerSrcGenerator(BaseGenerator):
                 if param.type in ["VkAllocationCallbacks"]:
                     actual_parameters.append("nullptr")
                     continue
+                elif param.type in self.vk.enums:
+                    assert (not param.pointer and param.length is None)
+                    actual_parameters.append(
+                        f'static_cast<{param.type}>({param_accessor}.{param.name.lower()}())')
                 elif param.const and param.pointer and param.type in self.vk.structs:
                     if param.length is None:
                         actual_parameters.append(f'&{param.name}')

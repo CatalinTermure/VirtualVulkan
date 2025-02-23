@@ -246,6 +246,23 @@ void UnpackAndExecuteVkGetPhysicalDeviceProperties(vvk::ExecutionContext& contex
   pProperties_proto_sparseProperties_proto->set_residencynonresidentstrict((&(&pProperties)->sparseProperties)->residencyNonResidentStrict);
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkGetPhysicalDeviceFormatProperties(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkGetPhysicalDeviceFormatProperties");
+
+  VkFormatProperties pFormatProperties = {};
+  vkGetPhysicalDeviceFormatProperties(context.physical_device(), static_cast<VkFormat>(request.vkgetphysicaldeviceformatproperties().format()), &pFormatProperties);
+  vvk::server::VkFormatProperties* pFormatProperties_proto = response->mutable_vkgetphysicaldeviceformatproperties()->mutable_pformatproperties();
+  if ((&pFormatProperties)->linearTilingFeatures) {
+    pFormatProperties_proto->set_lineartilingfeatures((&pFormatProperties)->linearTilingFeatures);
+  }
+  if ((&pFormatProperties)->optimalTilingFeatures) {
+    pFormatProperties_proto->set_optimaltilingfeatures((&pFormatProperties)->optimalTilingFeatures);
+  }
+  if ((&pFormatProperties)->bufferFeatures) {
+    pFormatProperties_proto->set_bufferfeatures((&pFormatProperties)->bufferFeatures);
+  }
+  response->set_result(VK_SUCCESS);
+}
 void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateDevice");
 

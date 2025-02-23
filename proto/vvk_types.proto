@@ -2642,6 +2642,12 @@ message VkApplicationInfo {
   uint32 apiVersion = 5; // uint32_t apiVersion
 }
 
+message VkFormatProperties {
+  optional uint32 linearTilingFeatures = 1; // VkFormatFeatureFlags linearTilingFeatures
+  optional uint32 optimalTilingFeatures = 2; // VkFormatFeatureFlags optimalTilingFeatures
+  optional uint32 bufferFeatures = 3; // VkFormatFeatureFlags bufferFeatures
+}
+
 message VkInstanceCreateInfo {
   optional uint32 flags = 1; // VkInstanceCreateFlags flags
   optional VkApplicationInfo pApplicationInfo = 2; // const VkApplicationInfo* pApplicationInfo

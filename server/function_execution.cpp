@@ -16,6 +16,7 @@ const std::unordered_map<
         {"vkDestroyInstance", UnpackAndExecuteVkDestroyInstance},
         {"vkEnumeratePhysicalDevices", UnpackAndExecuteVkEnumeratePhysicalDevices},
         {"vkGetPhysicalDeviceProperties", UnpackAndExecuteVkGetPhysicalDeviceProperties},
+        {"vkGetPhysicalDeviceFormatProperties", UnpackAndExecuteVkGetPhysicalDeviceFormatProperties},
         {"vkCreateDevice", UnpackAndExecuteVkCreateDevice},
         {"vkDestroyDevice", UnpackAndExecuteVkDestroyDevice},
         {"vkEnumerateInstanceExtensionProperties", UnpackAndExecuteVkEnumerateInstanceExtensionProperties},

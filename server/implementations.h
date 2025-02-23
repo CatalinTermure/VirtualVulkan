@@ -15,6 +15,8 @@ void UnpackAndExecuteVkEnumeratePhysicalDevices(vvk::ExecutionContext& context,
                                       const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
 void UnpackAndExecuteVkGetPhysicalDeviceProperties(vvk::ExecutionContext& context,
                                       const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkGetPhysicalDeviceFormatProperties(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
 void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context,
                                       const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
 void UnpackAndExecuteVkDestroyDevice(vvk::ExecutionContext& context,

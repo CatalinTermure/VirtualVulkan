@@ -268,6 +268,31 @@ void PackAndCallVkGetPhysicalDeviceProperties(grpc::ClientReaderWriter<vvk::serv
   pProperties_ref.sparseProperties.residencyAlignedMipSize = response.vkgetphysicaldeviceproperties().pproperties().sparseproperties().residencyalignedmipsize();
   pProperties_ref.sparseProperties.residencyNonResidentStrict = response.vkgetphysicaldeviceproperties().pproperties().sparseproperties().residencynonresidentstrict();
 }
+void PackAndCallVkGetPhysicalDeviceFormatProperties(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkPhysicalDevice physicalDevice, VkFormat format, VkFormatProperties* pFormatProperties) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkGetPhysicalDeviceFormatProperties");
+  request.mutable_vkgetphysicaldeviceformatproperties()->set_physicaldevice(reinterpret_cast<uint64_t>(physicalDevice));
+  request.mutable_vkgetphysicaldeviceformatproperties()->set_format(static_cast<vvk::server::VkFormat>(format));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  VkFormatProperties& pFormatProperties_ref = *pFormatProperties;
+  if (response.vkgetphysicaldeviceformatproperties().pformatproperties().has_lineartilingfeatures()) {
+    pFormatProperties_ref.linearTilingFeatures = static_cast<VkFormatFeatureFlags>(response.vkgetphysicaldeviceformatproperties().pformatproperties().lineartilingfeatures());
+  }
+  if (response.vkgetphysicaldeviceformatproperties().pformatproperties().has_optimaltilingfeatures()) {
+    pFormatProperties_ref.optimalTilingFeatures = static_cast<VkFormatFeatureFlags>(response.vkgetphysicaldeviceformatproperties().pformatproperties().optimaltilingfeatures());
+  }
+  if (response.vkgetphysicaldeviceformatproperties().pformatproperties().has_bufferfeatures()) {
+    pFormatProperties_ref.bufferFeatures = static_cast<VkFormatFeatureFlags>(response.vkgetphysicaldeviceformatproperties().pformatproperties().bufferfeatures());
+  }
+}
 VkResult PackAndCallVkCreateDevice(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreateDevice");

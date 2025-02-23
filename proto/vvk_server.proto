@@ -19,34 +19,35 @@ message VvkRequest {
     VkDestroyInstanceParams vkDestroyInstance = 3;
     VkEnumeratePhysicalDevicesParams vkEnumeratePhysicalDevices = 4;
     VkGetPhysicalDeviceFeaturesParams vkGetPhysicalDeviceFeatures = 5;
-    VkGetPhysicalDevicePropertiesParams vkGetPhysicalDeviceProperties = 6;
-    VkGetPhysicalDeviceQueueFamilyPropertiesParams vkGetPhysicalDeviceQueueFamilyProperties = 7;
-    VkGetPhysicalDeviceMemoryPropertiesParams vkGetPhysicalDeviceMemoryProperties = 8;
-    VkCreateDeviceParams vkCreateDevice = 9;
-    VkDestroyDeviceParams vkDestroyDevice = 10;
-    VkEnumerateInstanceExtensionPropertiesParams vkEnumerateInstanceExtensionProperties = 11;
-    VkEnumerateDeviceExtensionPropertiesParams vkEnumerateDeviceExtensionProperties = 12;
-    VkGetDeviceQueueParams vkGetDeviceQueue = 13;
-    VkAllocateMemoryParams vkAllocateMemory = 14;
-    VkFreeMemoryParams vkFreeMemory = 15;
-    VkBindImageMemoryParams vkBindImageMemory = 16;
-    VkGetImageMemoryRequirementsParams vkGetImageMemoryRequirements = 17;
-    VkCreateFenceParams vkCreateFence = 18;
-    VkDestroyFenceParams vkDestroyFence = 19;
-    VkCreateSemaphoreParams vkCreateSemaphore = 20;
-    VkDestroySemaphoreParams vkDestroySemaphore = 21;
-    VkCreateImageParams vkCreateImage = 22;
-    VkDestroyImageParams vkDestroyImage = 23;
-    VkCreateImageViewParams vkCreateImageView = 24;
-    VkDestroyImageViewParams vkDestroyImageView = 25;
-    VkCreateCommandPoolParams vkCreateCommandPool = 26;
-    VkDestroyCommandPoolParams vkDestroyCommandPool = 27;
-    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 28;
-    VkFreeCommandBuffersParams vkFreeCommandBuffers = 29;
-    VkBeginCommandBufferParams vkBeginCommandBuffer = 30;
-    VkEndCommandBufferParams vkEndCommandBuffer = 31;
-    VkBindImageMemory2Params vkBindImageMemory2 = 32;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 33;
+    VkGetPhysicalDeviceFormatPropertiesParams vkGetPhysicalDeviceFormatProperties = 6;
+    VkGetPhysicalDevicePropertiesParams vkGetPhysicalDeviceProperties = 7;
+    VkGetPhysicalDeviceQueueFamilyPropertiesParams vkGetPhysicalDeviceQueueFamilyProperties = 8;
+    VkGetPhysicalDeviceMemoryPropertiesParams vkGetPhysicalDeviceMemoryProperties = 9;
+    VkCreateDeviceParams vkCreateDevice = 10;
+    VkDestroyDeviceParams vkDestroyDevice = 11;
+    VkEnumerateInstanceExtensionPropertiesParams vkEnumerateInstanceExtensionProperties = 12;
+    VkEnumerateDeviceExtensionPropertiesParams vkEnumerateDeviceExtensionProperties = 13;
+    VkGetDeviceQueueParams vkGetDeviceQueue = 14;
+    VkAllocateMemoryParams vkAllocateMemory = 15;
+    VkFreeMemoryParams vkFreeMemory = 16;
+    VkBindImageMemoryParams vkBindImageMemory = 17;
+    VkGetImageMemoryRequirementsParams vkGetImageMemoryRequirements = 18;
+    VkCreateFenceParams vkCreateFence = 19;
+    VkDestroyFenceParams vkDestroyFence = 20;
+    VkCreateSemaphoreParams vkCreateSemaphore = 21;
+    VkDestroySemaphoreParams vkDestroySemaphore = 22;
+    VkCreateImageParams vkCreateImage = 23;
+    VkDestroyImageParams vkDestroyImage = 24;
+    VkCreateImageViewParams vkCreateImageView = 25;
+    VkDestroyImageViewParams vkDestroyImageView = 26;
+    VkCreateCommandPoolParams vkCreateCommandPool = 27;
+    VkDestroyCommandPoolParams vkDestroyCommandPool = 28;
+    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 29;
+    VkFreeCommandBuffersParams vkFreeCommandBuffers = 30;
+    VkBeginCommandBufferParams vkBeginCommandBuffer = 31;
+    VkEndCommandBufferParams vkEndCommandBuffer = 32;
+    VkBindImageMemory2Params vkBindImageMemory2 = 33;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 34;
   }
 }
 
@@ -56,22 +57,23 @@ message VvkResponse {
     VkCreateInstanceResponse vkCreateInstance = 2;
     VkEnumeratePhysicalDevicesResponse vkEnumeratePhysicalDevices = 3;
     VkGetPhysicalDeviceFeaturesResponse vkGetPhysicalDeviceFeatures = 4;
-    VkGetPhysicalDevicePropertiesResponse vkGetPhysicalDeviceProperties = 5;
-    VkGetPhysicalDeviceQueueFamilyPropertiesResponse vkGetPhysicalDeviceQueueFamilyProperties = 6;
-    VkGetPhysicalDeviceMemoryPropertiesResponse vkGetPhysicalDeviceMemoryProperties = 7;
-    VkCreateDeviceResponse vkCreateDevice = 8;
-    VkEnumerateInstanceExtensionPropertiesResponse vkEnumerateInstanceExtensionProperties = 9;
-    VkEnumerateDeviceExtensionPropertiesResponse vkEnumerateDeviceExtensionProperties = 10;
-    VkGetDeviceQueueResponse vkGetDeviceQueue = 11;
-    VkAllocateMemoryResponse vkAllocateMemory = 12;
-    VkGetImageMemoryRequirementsResponse vkGetImageMemoryRequirements = 13;
-    VkCreateFenceResponse vkCreateFence = 14;
-    VkCreateSemaphoreResponse vkCreateSemaphore = 15;
-    VkCreateImageResponse vkCreateImage = 16;
-    VkCreateImageViewResponse vkCreateImageView = 17;
-    VkCreateCommandPoolResponse vkCreateCommandPool = 18;
-    VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 19;
-    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 20;
+    VkGetPhysicalDeviceFormatPropertiesResponse vkGetPhysicalDeviceFormatProperties = 5;
+    VkGetPhysicalDevicePropertiesResponse vkGetPhysicalDeviceProperties = 6;
+    VkGetPhysicalDeviceQueueFamilyPropertiesResponse vkGetPhysicalDeviceQueueFamilyProperties = 7;
+    VkGetPhysicalDeviceMemoryPropertiesResponse vkGetPhysicalDeviceMemoryProperties = 8;
+    VkCreateDeviceResponse vkCreateDevice = 9;
+    VkEnumerateInstanceExtensionPropertiesResponse vkEnumerateInstanceExtensionProperties = 10;
+    VkEnumerateDeviceExtensionPropertiesResponse vkEnumerateDeviceExtensionProperties = 11;
+    VkGetDeviceQueueResponse vkGetDeviceQueue = 12;
+    VkAllocateMemoryResponse vkAllocateMemory = 13;
+    VkGetImageMemoryRequirementsResponse vkGetImageMemoryRequirements = 14;
+    VkCreateFenceResponse vkCreateFence = 15;
+    VkCreateSemaphoreResponse vkCreateSemaphore = 16;
+    VkCreateImageResponse vkCreateImage = 17;
+    VkCreateImageViewResponse vkCreateImageView = 18;
+    VkCreateCommandPoolResponse vkCreateCommandPool = 19;
+    VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 20;
+    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 21;
   }
 }
 
@@ -108,6 +110,16 @@ message VkGetPhysicalDeviceFeaturesResponse {
 message VkGetPhysicalDeviceFeaturesParams {
   uint64 physicalDevice = 1; // VkPhysicalDevice physicalDevice
   VkPhysicalDeviceFeatures pFeatures = 2; // VkPhysicalDeviceFeatures* pFeatures NON-CONST POINTER
+}
+
+message VkGetPhysicalDeviceFormatPropertiesResponse {
+  VkFormatProperties pFormatProperties = 1; // VkFormatProperties* pFormatProperties
+}
+
+message VkGetPhysicalDeviceFormatPropertiesParams {
+  uint64 physicalDevice = 1; // VkPhysicalDevice physicalDevice
+  VkFormat format = 2; // VkFormat format
+  VkFormatProperties pFormatProperties = 3; // VkFormatProperties* pFormatProperties NON-CONST POINTER
 }
 
 message VkGetPhysicalDevicePropertiesResponse {

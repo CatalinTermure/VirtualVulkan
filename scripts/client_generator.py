@@ -19,6 +19,10 @@ class ClientSrcGenerator(BaseGenerator):
         command = self.vk.commands[cmd_name]
         if param.type in ['VkAllocationCallbacks']:
             return "", ""
+        elif param.type in self.vk.enums:
+            assert (not param.pointer and param.length is None)
+            out.append(
+                f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}(static_cast<vvk::server::{param.type}>({param.name}));\n')
         elif param.pointer and param.const and param.type in self.vk.structs:
             if param.length is None:
                 out.append(

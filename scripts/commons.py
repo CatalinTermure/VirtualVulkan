@@ -29,6 +29,7 @@ COMMANDS_TO_GENERATE = [
     "vkDestroyInstance",
     "vkEnumeratePhysicalDevices",
     "vkGetPhysicalDeviceProperties",
+    "vkGetPhysicalDeviceFormatProperties",
     "vkCreateDevice",
     "vkDestroyDevice",
     "vkEnumerateInstanceExtensionProperties",

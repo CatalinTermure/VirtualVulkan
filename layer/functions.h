@@ -43,6 +43,10 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumeratePhysicalDevices(
 VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceProperties(
     VkPhysicalDevice                            physicalDevice,
     VkPhysicalDeviceProperties*                 pProperties);
+VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceFormatProperties(
+    VkPhysicalDevice                            physicalDevice,
+    VkFormat                                    format,
+    VkFormatProperties*                         pFormatProperties);
 VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(
     VkPhysicalDevice                            physicalDevice,
     const VkDeviceCreateInfo*                   pCreateInfo,
@@ -166,6 +170,7 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkDestroyInstance", reinterpret_cast<PFN_vkVoidFunction>(DestroyInstance)},
     {"vkEnumeratePhysicalDevices", reinterpret_cast<PFN_vkVoidFunction>(EnumeratePhysicalDevices)},
     {"vkGetPhysicalDeviceProperties", reinterpret_cast<PFN_vkVoidFunction>(GetPhysicalDeviceProperties)},
+    {"vkGetPhysicalDeviceFormatProperties", reinterpret_cast<PFN_vkVoidFunction>(GetPhysicalDeviceFormatProperties)},
     {"vkCreateDevice", reinterpret_cast<PFN_vkVoidFunction>(CreateDevice)},
     {"vkDestroyDevice", reinterpret_cast<PFN_vkVoidFunction>(DestroyDevice)},
     {"vkEnumerateInstanceExtensionProperties", reinterpret_cast<PFN_vkVoidFunction>(EnumerateInstanceExtensionProperties)},
