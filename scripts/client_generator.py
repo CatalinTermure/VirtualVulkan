@@ -194,7 +194,7 @@ namespace vvk {
             out.append(f'  request.set_method("{cmd_name}");\n')
 
             for param in command.params:
-                if param.optional and "vkEnumerate" not in cmd_name and param.type not in ['VkAllocationCallbacks']:
+                if param.optional and "vkEnumerate" not in cmd_name and cmd_name not in ["vkGetPhysicalDeviceQueueFamilyProperties"] and param.type not in ['VkAllocationCallbacks']:
                     out.append(f'  if ({param.name}) {{\n')
                     out_, after_call_code_ = self.generate_param(
                         cmd_name, param)

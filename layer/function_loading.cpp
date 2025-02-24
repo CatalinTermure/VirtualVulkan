@@ -40,6 +40,8 @@ constexpr std::array non_intercepted_functions = {
     // TODO: implement debug report callbacks
     "vkCreateDebugReportCallbackEXT",
     "vkDestroyDebugReportCallbackEXT",
+    "vkCreateDebugUtilsMessengerEXT",
+    "vkDestroyDebugUtilsMessengerEXT",
     "vkGetPhysicalDeviceSurfaceFormatsKHR",
     "vkGetPhysicalDeviceSurfaceCapabilitiesKHR",
     "vkGetPhysicalDeviceSurfacePresentModesKHR",
