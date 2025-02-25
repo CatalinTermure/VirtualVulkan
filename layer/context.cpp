@@ -3,6 +3,8 @@
 #include <map>
 #include <mutex>
 
+#include "commons/remote_call.h"
+
 namespace vvk {
 
 namespace {
@@ -14,6 +16,8 @@ std::mutex physical_device_to_instance_lock;
 std::map<VkPhysicalDevice, VkInstance> g_physical_device_to_instance;
 std::mutex command_buffer_to_device_lock;
 std::map<VkCommandBuffer, VkDevice> g_command_buffer_to_device;
+std::mutex swapchain_info_lock;
+std::map<VkSwapchainKHR, SwapchainInfo> g_swapchain_infos;
 }  // namespace
 
 InstanceInfo& GetInstanceInfo(VkInstance instance) {
@@ -76,11 +80,13 @@ DeviceInfo& GetDeviceInfo(VkCommandBuffer command_buffer) {
   return GetDeviceInfo(GetDeviceForCommandBuffer(command_buffer));
 }
 
-void SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device) {
+void SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
+                   const VmaAllocatorCreateInfo& allocator_create_info) {
   std::lock_guard lock(device_info_lock);
   VkInstance instance = g_physical_device_to_instance.at(physical_device);
-  auto [_, inserted] = g_device_infos.try_emplace(device, nxt_gdpa, physical_device);
+  auto [iter, inserted] = g_device_infos.try_emplace(device, nxt_gdpa, physical_device);
   assert(inserted);
+  vmaCreateAllocator(&allocator_create_info, &iter->second.allocator_);
 }
 
 void RemoveDeviceInfo(VkDevice device) {
@@ -118,5 +124,42 @@ DeviceInfo::DeviceInfo(PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physic
       physical_device(physical_device),
       instance(GetInstanceForPhysicalDevice(physical_device)),
       instance_info(GetInstanceInfo(physical_device)) {}
+
+SwapchainInfo::SwapchainInfo(VkDevice device, VmaAllocator allocator)
+    : device_(device), allocator_(allocator), instance_info_(GetInstanceInfo(device)) {}
+
+SwapchainInfo::~SwapchainInfo() {
+  for (auto [remote_image, remote_allocation] : remote_images_) {
+    vmaDestroyImage(allocator_, remote_image, remote_allocation);
+  }
+}
+
+VkImage SwapchainInfo::CreateImage(const VkImageCreateInfo& create_info, const VmaAllocationCreateInfo& alloc_info) {
+  VkImage remote_image;
+  VmaAllocation remote_allocation;
+  VkResult result = vmaCreateImage(allocator_, &create_info, &alloc_info, &remote_image, &remote_allocation, nullptr);
+  if (result != VK_SUCCESS) {
+    return VK_NULL_HANDLE;
+  }
+  remote_images_.emplace_back(remote_image, remote_allocation);
+  return remote_image;
+}
+
+SwapchainInfo& GetSwapchainInfo(VkSwapchainKHR swapchain) {
+  std::lock_guard lock(swapchain_info_lock);
+  return g_swapchain_infos.at(swapchain);
+}
+
+SwapchainInfo& SetSwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAllocator allocator) {
+  std::lock_guard lock(swapchain_info_lock);
+  auto [iter, inserted] = g_swapchain_infos.try_emplace(swapchain, device, allocator);
+  assert(inserted);
+  return iter->second;
+}
+
+void RemoveSwapchainInfo(VkSwapchainKHR swapchain) {
+  std::lock_guard lock(swapchain_info_lock);
+  g_swapchain_infos.erase(swapchain);
+}
 
 }  // namespace vvk

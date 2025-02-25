@@ -1,7 +1,9 @@
 find_package(spdlog CONFIG REQUIRED)
+find_package(VulkanMemoryAllocator CONFIG REQUIRED)
 
 add_library(
   VirtualVulkanLayer SHARED
+    vma_initializer.cpp
     layer.cpp
     function_loading.h function_loading.cpp
     functions.h functions.cpp
@@ -9,7 +11,7 @@ add_library(
 )
 target_include_directories(VirtualVulkanLayer PRIVATE ../)
 
-target_link_libraries(VirtualVulkanLayer PRIVATE spdlog::spdlog vvkproto VirtualVulkanCommons)
+target_link_libraries(VirtualVulkanLayer PRIVATE spdlog::spdlog vvkproto VirtualVulkanCommons GPUOpen::VulkanMemoryAllocator)
 set_target_properties(VirtualVulkanLayer PROPERTIES PREFIX "lib")
 set_target_properties(VirtualVulkanLayer PROPERTIES OUTPUT_NAME "virtualvulkanlayer")
 set_target_properties(VirtualVulkanLayer PROPERTIES SUFFIX ".so")

@@ -2,10 +2,12 @@
 #define VVK_LAYER_CONTEXT_H
 
 #include <grpcpp/grpcpp.h>
+#include <vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "vvk_server.grpc.pb.h"
 #include "vvk_server.pb.h"
@@ -56,6 +58,7 @@ struct DeviceInfo {
   VkPhysicalDevice physical_device;
   VkInstance instance;
   InstanceInfo& instance_info;
+  VmaAllocator allocator_;
 
   DeviceInfo(PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device);
 
@@ -79,12 +82,34 @@ struct DeviceInfo {
 
 DeviceInfo& GetDeviceInfo(VkDevice device);
 DeviceInfo& GetDeviceInfo(VkCommandBuffer command_buffer);
-void SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device);
+void SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
+                   const VmaAllocatorCreateInfo& allocator_create_info);
 void RemoveDeviceInfo(VkDevice device);
 
 void AssociateCommandBufferWithDevice(VkCommandBuffer command_buffer, VkDevice device);
 VkDevice GetDeviceForCommandBuffer(VkCommandBuffer command_buffer);
 void RemoveCommandBuffer(VkCommandBuffer command_buffer);
+
+class SwapchainInfo {
+ public:
+  SwapchainInfo(VkDevice device, VmaAllocator allocator);
+  SwapchainInfo(const SwapchainInfo&) = delete;
+  SwapchainInfo& operator=(const SwapchainInfo&) = delete;
+
+  VkImage CreateImage(const VkImageCreateInfo& create_info, const VmaAllocationCreateInfo& alloc_info);
+
+  ~SwapchainInfo();
+
+ private:
+  VkDevice device_;
+  VmaAllocator allocator_;
+  InstanceInfo& instance_info_;
+  std::vector<std::pair<VkImage, VmaAllocation>> remote_images_;
+};
+
+SwapchainInfo& GetSwapchainInfo(VkSwapchainKHR swapchain);
+SwapchainInfo& SetSwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAllocator allocator);
+void RemoveSwapchainInfo(VkSwapchainKHR swapchain);
 
 }  // namespace vvk
 

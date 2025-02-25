@@ -11,5 +11,5 @@ add_executable(
     execution_context.h
   )
 
-target_link_libraries(VirtualVulkanServer PRIVATE spdlog::spdlog vvkproto ${Vulkan_LIBRARIES})
+target_link_libraries(VirtualVulkanServer PRIVATE spdlog::spdlog vvkproto vulkan)
 target_include_directories(VirtualVulkanServer PRIVATE ${Vulkan_INCLUDE_DIRS})

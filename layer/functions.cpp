@@ -2,6 +2,7 @@
 
 #include <grpcpp/grpcpp.h>
 #include <spdlog/spdlog.h>
+#include <vk_mem_alloc.h>
 #include <vulkan/vk_icd.h>
 #include <vulkan/vk_layer.h>
 #include <vvk_server.grpc.pb.h>
@@ -117,30 +118,10 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
   auto reader_writer = instance_info.command_stream.get();
 
   if (pCreateInfo->oldSwapchain) {
-    VkSwapchainKHR old_swapchain = pCreateInfo->oldSwapchain;
-    uint32_t old_swapchain_image_count = 0;
-    std::vector<VkImage> old_client_swapchain_images;
-    result = CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, old_swapchain,
-                                                             &old_swapchain_image_count, nullptr);
-    if (result != VK_SUCCESS) {
-      spdlog::critical("Failed to get old swapchain images to destroy");
-      return VK_ERROR_INITIALIZATION_FAILED;
-    }
-
-    old_client_swapchain_images.resize(old_swapchain_image_count);
-    result =
-        CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, old_swapchain,
-                                                        &old_swapchain_image_count, old_client_swapchain_images.data());
-    if (result != VK_SUCCESS) {
-      spdlog::critical("Failed to get old swapchain images to destroy");
-      return VK_ERROR_INITIALIZATION_FAILED;
-    }
-
-    for (VkImage client_image : old_client_swapchain_images) {
-      VkImage server_image = device_info.GetRemoteHandle(client_image);
-      PackAndCallVkDestroyImage(reader_writer, instance_info.GetRemoteHandle(device), server_image, nullptr);
-    }
+    RemoveSwapchainInfo(pCreateInfo->oldSwapchain);
   }
+
+  SwapchainInfo& swapchain_info = SetSwapchainInfo(*pSwapchain, device, device_info.allocator_);
 
   VkImageCreateInfo image_create_info = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
@@ -160,18 +141,24 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
   };
 
+  VmaAllocationCreateInfo alloc_create_info = {
+      .flags = 0,
+      .usage = VMA_MEMORY_USAGE_GPU_ONLY,
+      .requiredFlags = 0,
+      .preferredFlags = 0,
+      .memoryTypeBits = 0,
+      .pool = VK_NULL_HANDLE,
+      .pUserData = nullptr,
+      .priority = 0.0f,
+  };
+
+  VkDevice remote_device = instance_info.GetRemoteHandle(device);
   for (VkImage client_image : client_swapchain_images) {
     VkImage server_image;
-    result = PackAndCallVkCreateImage(reader_writer, instance_info.GetRemoteHandle(device), &image_create_info, nullptr,
-                                      &server_image);
+    server_image = swapchain_info.CreateImage(image_create_info, alloc_create_info);
     if (result != VK_SUCCESS) {
-      for (VkImage client_image : client_swapchain_images) {
-        if (device_info.HasRemoteHandle(reinterpret_cast<void*>(client_image))) {
-          VkImage server_image = device_info.GetRemoteHandle(client_image);
-          PackAndCallVkDestroyImage(reader_writer, instance_info.GetRemoteHandle(device), server_image, nullptr);
-        }
-      }
       CallDownDeviceFunc<PFN_vkDestroySwapchainKHR>("vkDestroySwapchainKHR", device, *pSwapchain, pAllocator);
+      RemoveSwapchainInfo(*pSwapchain);
       return VK_ERROR_INITIALIZATION_FAILED;
     }
     device_info.SetRemoteHandle(client_image, server_image);
@@ -358,7 +345,52 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 
   VkResult result = nxtCreateDevice(physicalDevice, pCreateInfo, pAllocator, pDevice);
 
-  SetDeviceInfo(*pDevice, nxt_gdpa, physicalDevice);
+  VmaVulkanFunctions vma_vulkan_funcs = {
+      .vkGetInstanceProcAddr = nullptr,
+      .vkGetDeviceProcAddr = nullptr,
+      .vkGetPhysicalDeviceProperties = GetPhysicalDeviceProperties,
+      .vkGetPhysicalDeviceMemoryProperties = GetPhysicalDeviceMemoryProperties,
+      .vkAllocateMemory = AllocateMemory,
+      .vkFreeMemory = FreeMemory,
+      .vkMapMemory = reinterpret_cast<PFN_vkMapMemory>(0xDEADBEEF),
+      .vkUnmapMemory = reinterpret_cast<PFN_vkUnmapMemory>(0xDEADBEEF),
+      .vkFlushMappedMemoryRanges = reinterpret_cast<PFN_vkFlushMappedMemoryRanges>(0xDEADBEEF),
+      .vkInvalidateMappedMemoryRanges = reinterpret_cast<PFN_vkInvalidateMappedMemoryRanges>(0xDEADBEEF),
+      .vkBindBufferMemory = reinterpret_cast<PFN_vkBindBufferMemory>(0xDEADBEEF),
+      .vkBindImageMemory = BindImageMemory,
+      .vkGetBufferMemoryRequirements = reinterpret_cast<PFN_vkGetBufferMemoryRequirements>(0xDEADBEEF),
+      .vkGetImageMemoryRequirements = GetImageMemoryRequirements,
+      .vkCreateBuffer = reinterpret_cast<PFN_vkCreateBuffer>(0xDEADBEEF),
+      .vkDestroyBuffer = reinterpret_cast<PFN_vkDestroyBuffer>(0xDEADBEEF),
+      .vkCreateImage = CreateImage,
+      .vkDestroyImage = DestroyImage,
+      .vkCmdCopyBuffer = reinterpret_cast<PFN_vkCmdCopyBuffer>(0xDEADBEEF),
+      .vkGetBufferMemoryRequirements2KHR = reinterpret_cast<PFN_vkGetBufferMemoryRequirements2KHR>(0xDEADBEEF),
+      .vkGetImageMemoryRequirements2KHR = GetImageMemoryRequirements2,
+      .vkBindBufferMemory2KHR = reinterpret_cast<PFN_vkBindBufferMemory2KHR>(0xDEADBEEF),
+      .vkBindImageMemory2KHR = BindImageMemory2,
+      .vkGetPhysicalDeviceMemoryProperties2KHR =
+          reinterpret_cast<PFN_vkGetPhysicalDeviceMemoryProperties2KHR>(0xDEADBEEF),
+      .vkGetDeviceBufferMemoryRequirements = reinterpret_cast<PFN_vkGetDeviceBufferMemoryRequirements>(0xDEADBEEF),
+      .vkGetDeviceImageMemoryRequirements = reinterpret_cast<PFN_vkGetDeviceImageMemoryRequirements>(0xDEADBEEF),
+  };
+
+  VmaAllocatorCreateInfo allocator_create_info = {
+      .flags = 0,
+      .physicalDevice = physicalDevice,
+      .device = *pDevice,
+      .preferredLargeHeapBlockSize = 0,
+      .pAllocationCallbacks = nullptr,
+      .pDeviceMemoryCallbacks = nullptr,
+      .pHeapSizeLimit = nullptr,
+      .pVulkanFunctions = &vma_vulkan_funcs,
+      .instance = GetInstanceForPhysicalDevice(physicalDevice),
+      // We are using Vulkan 1.0 for VMA, because the application may only use Vulkan 1.0
+      .vulkanApiVersion = VK_API_VERSION_1_0,
+      .pTypeExternalMemoryHandleTypes = nullptr,
+  };
+
+  SetDeviceInfo(*pDevice, nxt_gdpa, physicalDevice, allocator_create_info);
 
   {
     VkDeviceCreateInfo remote_create_info = *pCreateInfo;
