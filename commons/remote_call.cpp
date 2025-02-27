@@ -496,7 +496,7 @@ void PackAndCallVkGetPhysicalDeviceMemoryProperties(grpc::ClientReaderWriter<vvk
   }
   VkPhysicalDeviceMemoryProperties& pMemoryProperties_ref = *pMemoryProperties;
   pMemoryProperties_ref.memoryTypeCount = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypecount();
-  for (int memoryTypes_indx = 0; memoryTypes_indx < response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypecount(); memoryTypes_indx++) {
+  for (int memoryTypes_indx = 0; memoryTypes_indx < response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes_size(); memoryTypes_indx++) {
     VkMemoryType &pMemoryProperties_ref_memoryTypes_i = pMemoryProperties_ref.memoryTypes[memoryTypes_indx];
     if (response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).has_propertyflags()) {
       pMemoryProperties_ref_memoryTypes_i.propertyFlags = static_cast<VkMemoryPropertyFlags>(response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).propertyflags());
@@ -504,7 +504,7 @@ void PackAndCallVkGetPhysicalDeviceMemoryProperties(grpc::ClientReaderWriter<vvk
     pMemoryProperties_ref_memoryTypes_i.heapIndex = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).heapindex();
   }
   pMemoryProperties_ref.memoryHeapCount = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheapcount();
-  for (int memoryHeaps_indx = 0; memoryHeaps_indx < response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheapcount(); memoryHeaps_indx++) {
+  for (int memoryHeaps_indx = 0; memoryHeaps_indx < response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps_size(); memoryHeaps_indx++) {
     VkMemoryHeap &pMemoryProperties_ref_memoryHeaps_i = pMemoryProperties_ref.memoryHeaps[memoryHeaps_indx];
     pMemoryProperties_ref_memoryHeaps_i.size = static_cast<VkDeviceSize>(response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx).size());
     if (response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx).has_flags()) {

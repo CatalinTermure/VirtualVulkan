@@ -114,26 +114,20 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
                 out.append(
                     f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
         else:
-            if member.length in [member.name for member in struct.members]:
-                count_variable = [
-                    count_var for count_var in struct.members if count_var.name == member.length][0]
-                aux_var = f'{name}_{member.name}'
-                index_name = f'{member.name}_indx'
-                # we use the aux_var because the members have const qualifiers
-                pre_fill_declarations.append(
-                    f'  {member.type}* {aux_var} = new {member.type}[{proto_accessor}.{count_variable.name.lower()}()]();\n')
-                pre_fill_declarations.append(
-                    f'  {name}.{member.name} = {aux_var};\n')
-                out.append(
-                    f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{count_variable.name.lower()}(); {index_name}++)')
-                out.append(' {\n')
-                out.append(
-                    f'    {aux_var}[{index_name}] = {proto_accessor}.{member.name.lower()}({index_name});\n')
-                out.append('  }\n')
-                after.append(f'  delete[] {name}.{member.name};\n')
-            else:
-                print("unknown length member:",
-                      struct_type, member.cDeclaration)
+            aux_var = f'{name}_{member.name}'
+            index_name = f'{member.name}_indx'
+            # we use the aux_var because the members have const qualifiers
+            pre_fill_declarations.append(
+                f'  {member.type}* {aux_var} = new {member.type}[{proto_accessor}.{member.name.lower()}_size()]();\n')
+            pre_fill_declarations.append(
+                f'  {name}.{member.name} = {aux_var};\n')
+            out.append(
+                f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
+            out.append(' {\n')
+            out.append(
+                f'    {aux_var}[{index_name}] = {proto_accessor}.{member.name.lower()}({index_name});\n')
+            out.append('  }\n')
+            after.append(f'  delete[] {name}.{member.name};\n')
     elif member.pointer and member.const and member.type in generator.vk.structs:
         if member.length is None:
             aux_var = f'{name}_{member.name}'
@@ -146,34 +140,28 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
                 f'  {name}.{member.name} = &{aux_var};\n')
             after.append(after_)
         else:
-            if member.length in [member.name for member in struct.members]:
-                count_variable = [
-                    count_var for count_var in struct.members if count_var.name == member.length][0]
-                index_name = f'{member.name}_indx'
-                pre_fill_declarations.append(
-                    f'  {member.type}* {name}_{member.name} = new {member.type}[{proto_accessor}.{count_variable.name.lower()}()]();\n')
-                pre_fill_declarations.append(
-                    f'  {name}.{member.name} = {name}_{member.name};\n')
-                out.append(
-                    f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{count_variable.name.lower()}(); {index_name}++)')
-                out.append(' {\n')
-                out.append(
-                    f'    {member.type} &{name}_{member.name}_i = {name}_{member.name}[{index_name}];\n')
-                out_, after_ = fill_struct_from_proto(
-                    generator, member.type, f'{name}_{member.name}_i', f'{proto_accessor}.{member.name.lower()}({index_name})')
-                out.append(indent(out_, 2))
-                out.append('  }\n')
-                after.append(
-                    f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{count_variable.name.lower()}(); {index_name}++)')
-                after.append('  {\n')
-                after.append(
-                    f'    {member.type} &{name}_{member.name}_i = {name}_{member.name}[{index_name}];\n')
-                after.append(indent(after_, 2))
-                after.append('  }\n')
-                after.append(f'  delete[] {name}.{member.name};\n')
-            else:
-                print("unknown length member:",
-                      struct_type, member.cDeclaration)
+            index_name = f'{member.name}_indx'
+            pre_fill_declarations.append(
+                f'  {member.type}* {name}_{member.name} = new {member.type}[{proto_accessor}.{member.name.lower()}_size()]();\n')
+            pre_fill_declarations.append(
+                f'  {name}.{member.name} = {name}_{member.name};\n')
+            out.append(
+                f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
+            out.append(' {\n')
+            out.append(
+                f'    {member.type} &{name}_{member.name}_i = {name}_{member.name}[{index_name}];\n')
+            out_, after_ = fill_struct_from_proto(
+                generator, member.type, f'{name}_{member.name}_i', f'{proto_accessor}.{member.name.lower()}({index_name})')
+            out.append(indent(out_, 2))
+            out.append('  }\n')
+            after.append(
+                f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
+            after.append('  {\n')
+            after.append(
+                f'    {member.type} &{name}_{member.name}_i = {name}_{member.name}[{index_name}];\n')
+            after.append(indent(after_, 2))
+            after.append('  }\n')
+            after.append(f'  delete[] {name}.{member.name};\n')
     elif not member.pointer and member.type in generator.vk.structs:
         if member.length is None:
             out_, after_ = fill_struct_from_proto(generator, member.type,
@@ -183,23 +171,17 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
         else:
             # if it's not a pointer, it must be a fixed size array
             assert (member.fixedSizeArray)
-            if member.length in [member.name for member in struct.members]:
-                count_variable = [
-                    count_var for count_var in struct.members if count_var.name == member.length][0]
-                index_name = f'{member.name}_indx'
-                out.append(
-                    f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{count_variable.name.lower()}(); {index_name}++)')
-                out.append(' {\n')
-                out.append(
-                    f'    {member.type} &{name}_{member.name}_i = {name}.{member.name}[{index_name}];\n')
-                out_, after_ = fill_struct_from_proto(
-                    generator, member.type, f'{name}_{member.name}_i', f'{proto_accessor}.{member.name.lower()}({index_name})')
-                out.append(indent(out_, 2))
-                out.append('  }\n')
-                after.append(after_)
-            else:
-                print("fill struct: not pointer, fixed size array of structs, but unknown member length:",
-                      struct_type, member.cDeclaration)
+            index_name = f'{member.name}_indx'
+            out.append(
+                f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
+            out.append(' {\n')
+            out.append(
+                f'    {member.type} &{name}_{member.name}_i = {name}.{member.name}[{index_name}];\n')
+            out_, after_ = fill_struct_from_proto(
+                generator, member.type, f'{name}_{member.name}_i', f'{proto_accessor}.{member.name.lower()}({index_name})')
+            out.append(indent(out_, 2))
+            out.append('  }\n')
+            after.append(after_)
     elif member.type in generator.vk.handles:
         assert (not member.pointer)
         out.append(
@@ -297,7 +279,7 @@ def __fill_proto_from_member(generator: BaseGenerator, struct_type: str, name: s
                 out.append('  }\n')
             else:
                 print("unknown length member:",
-                      struct_type, member.cDeclaration)
+                      struct_type, member.length, member.cDeclaration)
     elif "Flags" in member.type or "FlagBits" in member.type:
         out.append(
             f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
@@ -324,7 +306,7 @@ def __fill_proto_from_member(generator: BaseGenerator, struct_type: str, name: s
                 out.append('  }\n')
             else:
                 print("unknown length member:",
-                      struct_type, member.cDeclaration)
+                      struct_type, member.length, member.cDeclaration)
     elif not member.pointer and member.type in generator.vk.structs:
         if member.length is None:
             out.append(
@@ -364,7 +346,7 @@ def __fill_proto_from_member(generator: BaseGenerator, struct_type: str, name: s
             out.append('  }\n')
         else:
             print("unknown length member:",
-                  struct_type, member.cDeclaration)
+                  struct_type, member.length, member.cDeclaration)
     elif member.pointer and member.const:
         out.append(
             f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')

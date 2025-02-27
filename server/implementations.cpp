@@ -273,9 +273,9 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
     pCreateInfo.flags = static_cast<VkDeviceCreateFlags>(request.vkcreatedevice().pcreateinfo().flags());
   }
   pCreateInfo.queueCreateInfoCount = request.vkcreatedevice().pcreateinfo().queuecreateinfocount();
-  VkDeviceQueueCreateInfo* pCreateInfo_pQueueCreateInfos = new VkDeviceQueueCreateInfo[request.vkcreatedevice().pcreateinfo().queuecreateinfocount()]();
+  VkDeviceQueueCreateInfo* pCreateInfo_pQueueCreateInfos = new VkDeviceQueueCreateInfo[request.vkcreatedevice().pcreateinfo().pqueuecreateinfos_size()]();
   pCreateInfo.pQueueCreateInfos = pCreateInfo_pQueueCreateInfos;
-  for (int pQueueCreateInfos_indx = 0; pQueueCreateInfos_indx < request.vkcreatedevice().pcreateinfo().queuecreateinfocount(); pQueueCreateInfos_indx++) {
+  for (int pQueueCreateInfos_indx = 0; pQueueCreateInfos_indx < request.vkcreatedevice().pcreateinfo().pqueuecreateinfos_size(); pQueueCreateInfos_indx++) {
     VkDeviceQueueCreateInfo &pCreateInfo_pQueueCreateInfos_i = pCreateInfo_pQueueCreateInfos[pQueueCreateInfos_indx];
     pCreateInfo_pQueueCreateInfos_i.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     pCreateInfo_pQueueCreateInfos_i.pNext = nullptr; // pNext chains are currently unsupported
@@ -284,9 +284,9 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
     }
     pCreateInfo_pQueueCreateInfos_i.queueFamilyIndex = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuefamilyindex();
     pCreateInfo_pQueueCreateInfos_i.queueCount = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuecount();
-    float* pCreateInfo_pQueueCreateInfos_i_pQueuePriorities = new float[request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuecount()]();
+    float* pCreateInfo_pQueueCreateInfos_i_pQueuePriorities = new float[request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).pqueuepriorities_size()]();
     pCreateInfo_pQueueCreateInfos_i.pQueuePriorities = pCreateInfo_pQueueCreateInfos_i_pQueuePriorities;
-    for (int pQueuePriorities_indx = 0; pQueuePriorities_indx < request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuecount(); pQueuePriorities_indx++) {
+    for (int pQueuePriorities_indx = 0; pQueuePriorities_indx < request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).pqueuepriorities_size(); pQueuePriorities_indx++) {
       pCreateInfo_pQueueCreateInfos_i_pQueuePriorities[pQueuePriorities_indx] = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).pqueuepriorities(pQueuePriorities_indx);
     }
   }
@@ -370,7 +370,7 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
   VkResult result = vkCreateDevice(context.physical_device(), &pCreateInfo, nullptr, &server_pDevice);
   response->mutable_vkcreatedevice()->set_pdevice(reinterpret_cast<uint64_t>(server_pDevice));
   response->set_result(result);
-  for (int pQueueCreateInfos_indx = 0; pQueueCreateInfos_indx < request.vkcreatedevice().pcreateinfo().queuecreateinfocount(); pQueueCreateInfos_indx++)  {
+  for (int pQueueCreateInfos_indx = 0; pQueueCreateInfos_indx < request.vkcreatedevice().pcreateinfo().pqueuecreateinfos_size(); pQueueCreateInfos_indx++)  {
     VkDeviceQueueCreateInfo &pCreateInfo_pQueueCreateInfos_i = pCreateInfo_pQueueCreateInfos[pQueueCreateInfos_indx];
     delete[] pCreateInfo_pQueueCreateInfos_i.pQueuePriorities;
   }
@@ -641,9 +641,9 @@ void UnpackAndExecuteVkCreateImage(vvk::ExecutionContext& context, const vvk::se
   if (request.vkcreateimage().pcreateinfo().has_queuefamilyindexcount()) {
     pCreateInfo.queueFamilyIndexCount = request.vkcreateimage().pcreateinfo().queuefamilyindexcount();
   }
-  uint32_t* pCreateInfo_pQueueFamilyIndices = new uint32_t[request.vkcreateimage().pcreateinfo().queuefamilyindexcount()]();
+  uint32_t* pCreateInfo_pQueueFamilyIndices = new uint32_t[request.vkcreateimage().pcreateinfo().pqueuefamilyindices_size()]();
   pCreateInfo.pQueueFamilyIndices = pCreateInfo_pQueueFamilyIndices;
-  for (int pQueueFamilyIndices_indx = 0; pQueueFamilyIndices_indx < request.vkcreateimage().pcreateinfo().queuefamilyindexcount(); pQueueFamilyIndices_indx++) {
+  for (int pQueueFamilyIndices_indx = 0; pQueueFamilyIndices_indx < request.vkcreateimage().pcreateinfo().pqueuefamilyindices_size(); pQueueFamilyIndices_indx++) {
     pCreateInfo_pQueueFamilyIndices[pQueueFamilyIndices_indx] = request.vkcreateimage().pcreateinfo().pqueuefamilyindices(pQueueFamilyIndices_indx);
   }
   pCreateInfo.initialLayout = static_cast<VkImageLayout>(request.vkcreateimage().pcreateinfo().initiallayout());
