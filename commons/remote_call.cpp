@@ -36,13 +36,15 @@ VkResult PackAndCallVkCreateInstance(grpc::ClientReaderWriter<vvk::server::VvkRe
   if (pCreateInfo->enabledLayerCount) {
     pCreateInfo_proto->set_enabledlayercount(pCreateInfo->enabledLayerCount);
   }
-  for (int ppEnabledLayerNames_indx = 0; ppEnabledLayerNames_indx < pCreateInfo->enabledLayerCount; ppEnabledLayerNames_indx++) {
+  const size_t pCreateInfo_proto_ppEnabledLayerNames_length = pCreateInfo->enabledLayerCount;
+  for (int ppEnabledLayerNames_indx = 0; ppEnabledLayerNames_indx < pCreateInfo_proto_ppEnabledLayerNames_length; ppEnabledLayerNames_indx++) {
     pCreateInfo_proto->add_ppenabledlayernames(pCreateInfo->ppEnabledLayerNames[ppEnabledLayerNames_indx]);
   }
   if (pCreateInfo->enabledExtensionCount) {
     pCreateInfo_proto->set_enabledextensioncount(pCreateInfo->enabledExtensionCount);
   }
-  for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < pCreateInfo->enabledExtensionCount; ppEnabledExtensionNames_indx++) {
+  const size_t pCreateInfo_proto_ppEnabledExtensionNames_length = pCreateInfo->enabledExtensionCount;
+  for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < pCreateInfo_proto_ppEnabledExtensionNames_length; ppEnabledExtensionNames_indx++) {
     pCreateInfo_proto->add_ppenabledextensionnames(pCreateInfo->ppEnabledExtensionNames[ppEnabledExtensionNames_indx]);
   }
   request.mutable_vkcreateinstance()->set_pinstance(reinterpret_cast<uint64_t>(*pInstance));
@@ -305,7 +307,8 @@ VkResult PackAndCallVkCreateDevice(grpc::ClientReaderWriter<vvk::server::VvkRequ
     pCreateInfo_proto->set_flags(pCreateInfo->flags);
   }
   pCreateInfo_proto->set_queuecreateinfocount(pCreateInfo->queueCreateInfoCount);
-  for (int pQueueCreateInfos_indx = 0; pQueueCreateInfos_indx < pCreateInfo->queueCreateInfoCount; pQueueCreateInfos_indx++) {
+  const size_t pCreateInfo_proto_pQueueCreateInfos_length = pCreateInfo->queueCreateInfoCount;
+  for (int pQueueCreateInfos_indx = 0; pQueueCreateInfos_indx < pCreateInfo_proto_pQueueCreateInfos_length; pQueueCreateInfos_indx++) {
     vvk::server::VkDeviceQueueCreateInfo* pCreateInfo_proto_pQueueCreateInfos_proto = pCreateInfo_proto->add_pqueuecreateinfos();
     if ((&pCreateInfo->pQueueCreateInfos[pQueueCreateInfos_indx])->pNext) {
       // pNext chains are currently not supported
@@ -315,20 +318,23 @@ VkResult PackAndCallVkCreateDevice(grpc::ClientReaderWriter<vvk::server::VvkRequ
     }
     pCreateInfo_proto_pQueueCreateInfos_proto->set_queuefamilyindex((&pCreateInfo->pQueueCreateInfos[pQueueCreateInfos_indx])->queueFamilyIndex);
     pCreateInfo_proto_pQueueCreateInfos_proto->set_queuecount((&pCreateInfo->pQueueCreateInfos[pQueueCreateInfos_indx])->queueCount);
-    for (int pQueuePriorities_indx = 0; pQueuePriorities_indx < (&pCreateInfo->pQueueCreateInfos[pQueueCreateInfos_indx])->queueCount; pQueuePriorities_indx++) {
+    const size_t pCreateInfo_proto_pQueueCreateInfos_proto_pQueuePriorities_length = (&pCreateInfo->pQueueCreateInfos[pQueueCreateInfos_indx])->queueCount;
+    for (int pQueuePriorities_indx = 0; pQueuePriorities_indx < pCreateInfo_proto_pQueueCreateInfos_proto_pQueuePriorities_length; pQueuePriorities_indx++) {
       pCreateInfo_proto_pQueueCreateInfos_proto->add_pqueuepriorities((&pCreateInfo->pQueueCreateInfos[pQueueCreateInfos_indx])->pQueuePriorities[pQueuePriorities_indx]);
     }
   }
   if (pCreateInfo->enabledLayerCount) {
     pCreateInfo_proto->set_enabledlayercount(pCreateInfo->enabledLayerCount);
   }
-  for (int ppEnabledLayerNames_indx = 0; ppEnabledLayerNames_indx < pCreateInfo->enabledLayerCount; ppEnabledLayerNames_indx++) {
+  const size_t pCreateInfo_proto_ppEnabledLayerNames_length = pCreateInfo->enabledLayerCount;
+  for (int ppEnabledLayerNames_indx = 0; ppEnabledLayerNames_indx < pCreateInfo_proto_ppEnabledLayerNames_length; ppEnabledLayerNames_indx++) {
     pCreateInfo_proto->add_ppenabledlayernames(pCreateInfo->ppEnabledLayerNames[ppEnabledLayerNames_indx]);
   }
   if (pCreateInfo->enabledExtensionCount) {
     pCreateInfo_proto->set_enabledextensioncount(pCreateInfo->enabledExtensionCount);
   }
-  for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < pCreateInfo->enabledExtensionCount; ppEnabledExtensionNames_indx++) {
+  const size_t pCreateInfo_proto_ppEnabledExtensionNames_length = pCreateInfo->enabledExtensionCount;
+  for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < pCreateInfo_proto_ppEnabledExtensionNames_length; ppEnabledExtensionNames_indx++) {
     pCreateInfo_proto->add_ppenabledextensionnames(pCreateInfo->ppEnabledExtensionNames[ppEnabledExtensionNames_indx]);
   }
   if (pCreateInfo->pEnabledFeatures) {
@@ -784,7 +790,8 @@ VkResult PackAndCallVkCreateImage(grpc::ClientReaderWriter<vvk::server::VvkReque
   if (pCreateInfo->queueFamilyIndexCount) {
     pCreateInfo_proto->set_queuefamilyindexcount(pCreateInfo->queueFamilyIndexCount);
   }
-  for (int pQueueFamilyIndices_indx = 0; pQueueFamilyIndices_indx < pCreateInfo->queueFamilyIndexCount; pQueueFamilyIndices_indx++) {
+  const size_t pCreateInfo_proto_pQueueFamilyIndices_length = pCreateInfo->queueFamilyIndexCount;
+  for (int pQueueFamilyIndices_indx = 0; pQueueFamilyIndices_indx < pCreateInfo_proto_pQueueFamilyIndices_length; pQueueFamilyIndices_indx++) {
     pCreateInfo_proto->add_pqueuefamilyindices(pCreateInfo->pQueueFamilyIndices[pQueueFamilyIndices_indx]);
   }
   pCreateInfo_proto->set_initiallayout(static_cast<vvk::server::VkImageLayout>(pCreateInfo->initialLayout));

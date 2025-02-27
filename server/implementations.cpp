@@ -98,7 +98,8 @@ void UnpackAndExecuteVkGetPhysicalDeviceProperties(vvk::ExecutionContext& contex
   pProperties_proto->set_deviceid((&pProperties)->deviceID);
   pProperties_proto->set_devicetype(static_cast<vvk::server::VkPhysicalDeviceType>((&pProperties)->deviceType));
   pProperties_proto->set_devicename((&pProperties)->deviceName);
-  for (int pipelineCacheUUID_indx = 0; pipelineCacheUUID_indx < VK_UUID_SIZE; pipelineCacheUUID_indx++) {
+  const size_t pProperties_proto_pipelineCacheUUID_length = VK_UUID_SIZE;
+  for (int pipelineCacheUUID_indx = 0; pipelineCacheUUID_indx < pProperties_proto_pipelineCacheUUID_length; pipelineCacheUUID_indx++) {
     pProperties_proto->add_pipelinecacheuuid(static_cast<uint32_t>((&pProperties)->pipelineCacheUUID[pipelineCacheUUID_indx]));
   }
   vvk::server::VkPhysicalDeviceLimits* pProperties_proto_limits_proto = pProperties_proto->mutable_limits();
@@ -154,11 +155,13 @@ void UnpackAndExecuteVkGetPhysicalDeviceProperties(vvk::ExecutionContext& contex
   pProperties_proto_limits_proto->set_maxfragmentdualsrcattachments((&(&pProperties)->limits)->maxFragmentDualSrcAttachments);
   pProperties_proto_limits_proto->set_maxfragmentcombinedoutputresources((&(&pProperties)->limits)->maxFragmentCombinedOutputResources);
   pProperties_proto_limits_proto->set_maxcomputesharedmemorysize((&(&pProperties)->limits)->maxComputeSharedMemorySize);
-  for (int maxComputeWorkGroupCount_indx = 0; maxComputeWorkGroupCount_indx < 3; maxComputeWorkGroupCount_indx++) {
+  const size_t pProperties_proto_limits_proto_maxComputeWorkGroupCount_length = 3;
+  for (int maxComputeWorkGroupCount_indx = 0; maxComputeWorkGroupCount_indx < pProperties_proto_limits_proto_maxComputeWorkGroupCount_length; maxComputeWorkGroupCount_indx++) {
     pProperties_proto_limits_proto->add_maxcomputeworkgroupcount((&(&pProperties)->limits)->maxComputeWorkGroupCount[maxComputeWorkGroupCount_indx]);
   }
   pProperties_proto_limits_proto->set_maxcomputeworkgroupinvocations((&(&pProperties)->limits)->maxComputeWorkGroupInvocations);
-  for (int maxComputeWorkGroupSize_indx = 0; maxComputeWorkGroupSize_indx < 3; maxComputeWorkGroupSize_indx++) {
+  const size_t pProperties_proto_limits_proto_maxComputeWorkGroupSize_length = 3;
+  for (int maxComputeWorkGroupSize_indx = 0; maxComputeWorkGroupSize_indx < pProperties_proto_limits_proto_maxComputeWorkGroupSize_length; maxComputeWorkGroupSize_indx++) {
     pProperties_proto_limits_proto->add_maxcomputeworkgroupsize((&(&pProperties)->limits)->maxComputeWorkGroupSize[maxComputeWorkGroupSize_indx]);
   }
   pProperties_proto_limits_proto->set_subpixelprecisionbits((&(&pProperties)->limits)->subPixelPrecisionBits);
@@ -169,10 +172,12 @@ void UnpackAndExecuteVkGetPhysicalDeviceProperties(vvk::ExecutionContext& contex
   pProperties_proto_limits_proto->set_maxsamplerlodbias((&(&pProperties)->limits)->maxSamplerLodBias);
   pProperties_proto_limits_proto->set_maxsampleranisotropy((&(&pProperties)->limits)->maxSamplerAnisotropy);
   pProperties_proto_limits_proto->set_maxviewports((&(&pProperties)->limits)->maxViewports);
-  for (int maxViewportDimensions_indx = 0; maxViewportDimensions_indx < 2; maxViewportDimensions_indx++) {
+  const size_t pProperties_proto_limits_proto_maxViewportDimensions_length = 2;
+  for (int maxViewportDimensions_indx = 0; maxViewportDimensions_indx < pProperties_proto_limits_proto_maxViewportDimensions_length; maxViewportDimensions_indx++) {
     pProperties_proto_limits_proto->add_maxviewportdimensions((&(&pProperties)->limits)->maxViewportDimensions[maxViewportDimensions_indx]);
   }
-  for (int viewportBoundsRange_indx = 0; viewportBoundsRange_indx < 2; viewportBoundsRange_indx++) {
+  const size_t pProperties_proto_limits_proto_viewportBoundsRange_length = 2;
+  for (int viewportBoundsRange_indx = 0; viewportBoundsRange_indx < pProperties_proto_limits_proto_viewportBoundsRange_length; viewportBoundsRange_indx++) {
     pProperties_proto_limits_proto->add_viewportboundsrange((&(&pProperties)->limits)->viewportBoundsRange[viewportBoundsRange_indx]);
   }
   pProperties_proto_limits_proto->set_viewportsubpixelbits((&(&pProperties)->limits)->viewportSubPixelBits);
@@ -225,10 +230,12 @@ void UnpackAndExecuteVkGetPhysicalDeviceProperties(vvk::ExecutionContext& contex
   pProperties_proto_limits_proto->set_maxculldistances((&(&pProperties)->limits)->maxCullDistances);
   pProperties_proto_limits_proto->set_maxcombinedclipandculldistances((&(&pProperties)->limits)->maxCombinedClipAndCullDistances);
   pProperties_proto_limits_proto->set_discretequeuepriorities((&(&pProperties)->limits)->discreteQueuePriorities);
-  for (int pointSizeRange_indx = 0; pointSizeRange_indx < 2; pointSizeRange_indx++) {
+  const size_t pProperties_proto_limits_proto_pointSizeRange_length = 2;
+  for (int pointSizeRange_indx = 0; pointSizeRange_indx < pProperties_proto_limits_proto_pointSizeRange_length; pointSizeRange_indx++) {
     pProperties_proto_limits_proto->add_pointsizerange((&(&pProperties)->limits)->pointSizeRange[pointSizeRange_indx]);
   }
-  for (int lineWidthRange_indx = 0; lineWidthRange_indx < 2; lineWidthRange_indx++) {
+  const size_t pProperties_proto_limits_proto_lineWidthRange_length = 2;
+  for (int lineWidthRange_indx = 0; lineWidthRange_indx < pProperties_proto_limits_proto_lineWidthRange_length; lineWidthRange_indx++) {
     pProperties_proto_limits_proto->add_linewidthrange((&(&pProperties)->limits)->lineWidthRange[lineWidthRange_indx]);
   }
   pProperties_proto_limits_proto->set_pointsizegranularity((&(&pProperties)->limits)->pointSizeGranularity);
@@ -437,7 +444,8 @@ void UnpackAndExecuteVkGetPhysicalDeviceMemoryProperties(vvk::ExecutionContext& 
   vkGetPhysicalDeviceMemoryProperties(context.physical_device(), &pMemoryProperties);
   vvk::server::VkPhysicalDeviceMemoryProperties* pMemoryProperties_proto = response->mutable_vkgetphysicaldevicememoryproperties()->mutable_pmemoryproperties();
   pMemoryProperties_proto->set_memorytypecount((&pMemoryProperties)->memoryTypeCount);
-  for (int memoryTypes_indx = 0; memoryTypes_indx < (&pMemoryProperties)->memoryTypeCount; memoryTypes_indx++) {
+  const size_t pMemoryProperties_proto_memoryTypes_length = (&pMemoryProperties)->memoryTypeCount;
+  for (int memoryTypes_indx = 0; memoryTypes_indx < pMemoryProperties_proto_memoryTypes_length; memoryTypes_indx++) {
     vvk::server::VkMemoryType* pMemoryProperties_proto_memoryTypes_proto = pMemoryProperties_proto->add_memorytypes();
     if ((&(&pMemoryProperties)->memoryTypes[memoryTypes_indx])->propertyFlags) {
       pMemoryProperties_proto_memoryTypes_proto->set_propertyflags((&(&pMemoryProperties)->memoryTypes[memoryTypes_indx])->propertyFlags);
@@ -445,7 +453,8 @@ void UnpackAndExecuteVkGetPhysicalDeviceMemoryProperties(vvk::ExecutionContext& 
     pMemoryProperties_proto_memoryTypes_proto->set_heapindex((&(&pMemoryProperties)->memoryTypes[memoryTypes_indx])->heapIndex);
   }
   pMemoryProperties_proto->set_memoryheapcount((&pMemoryProperties)->memoryHeapCount);
-  for (int memoryHeaps_indx = 0; memoryHeaps_indx < (&pMemoryProperties)->memoryHeapCount; memoryHeaps_indx++) {
+  const size_t pMemoryProperties_proto_memoryHeaps_length = (&pMemoryProperties)->memoryHeapCount;
+  for (int memoryHeaps_indx = 0; memoryHeaps_indx < pMemoryProperties_proto_memoryHeaps_length; memoryHeaps_indx++) {
     vvk::server::VkMemoryHeap* pMemoryProperties_proto_memoryHeaps_proto = pMemoryProperties_proto->add_memoryheaps();
     pMemoryProperties_proto_memoryHeaps_proto->set_size(static_cast<uint64_t>((&(&pMemoryProperties)->memoryHeaps[memoryHeaps_indx])->size));
     if ((&(&pMemoryProperties)->memoryHeaps[memoryHeaps_indx])->flags) {
