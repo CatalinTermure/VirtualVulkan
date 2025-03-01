@@ -38,16 +38,17 @@ message VvkRequest {
     VkDestroySemaphoreParams vkDestroySemaphore = 22;
     VkCreateImageParams vkCreateImage = 23;
     VkDestroyImageParams vkDestroyImage = 24;
-    VkCreateImageViewParams vkCreateImageView = 25;
-    VkDestroyImageViewParams vkDestroyImageView = 26;
-    VkCreateCommandPoolParams vkCreateCommandPool = 27;
-    VkDestroyCommandPoolParams vkDestroyCommandPool = 28;
-    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 29;
-    VkFreeCommandBuffersParams vkFreeCommandBuffers = 30;
-    VkBeginCommandBufferParams vkBeginCommandBuffer = 31;
-    VkEndCommandBufferParams vkEndCommandBuffer = 32;
-    VkBindImageMemory2Params vkBindImageMemory2 = 33;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 34;
+    VkGetImageSubresourceLayoutParams vkGetImageSubresourceLayout = 25;
+    VkCreateImageViewParams vkCreateImageView = 26;
+    VkDestroyImageViewParams vkDestroyImageView = 27;
+    VkCreateCommandPoolParams vkCreateCommandPool = 28;
+    VkDestroyCommandPoolParams vkDestroyCommandPool = 29;
+    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 30;
+    VkFreeCommandBuffersParams vkFreeCommandBuffers = 31;
+    VkBeginCommandBufferParams vkBeginCommandBuffer = 32;
+    VkEndCommandBufferParams vkEndCommandBuffer = 33;
+    VkBindImageMemory2Params vkBindImageMemory2 = 34;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 35;
   }
 }
 
@@ -70,10 +71,11 @@ message VvkResponse {
     VkCreateFenceResponse vkCreateFence = 15;
     VkCreateSemaphoreResponse vkCreateSemaphore = 16;
     VkCreateImageResponse vkCreateImage = 17;
-    VkCreateImageViewResponse vkCreateImageView = 18;
-    VkCreateCommandPoolResponse vkCreateCommandPool = 19;
-    VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 20;
-    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 21;
+    VkGetImageSubresourceLayoutResponse vkGetImageSubresourceLayout = 18;
+    VkCreateImageViewResponse vkCreateImageView = 19;
+    VkCreateCommandPoolResponse vkCreateCommandPool = 20;
+    VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 21;
+    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 22;
   }
 }
 
@@ -284,6 +286,17 @@ message VkDestroyImageParams {
   uint64 device = 1; // VkDevice device
   optional uint64 image = 2; // VkImage image
   optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
+}
+
+message VkGetImageSubresourceLayoutResponse {
+  VkSubresourceLayout pLayout = 1; // VkSubresourceLayout* pLayout
+}
+
+message VkGetImageSubresourceLayoutParams {
+  uint64 device = 1; // VkDevice device
+  uint64 image = 2; // VkImage image
+  VkImageSubresource pSubresource = 3; // const VkImageSubresource* pSubresource
+  VkSubresourceLayout pLayout = 4; // VkSubresourceLayout* pLayout NON-CONST POINTER
 }
 
 message VkCreateImageViewResponse {

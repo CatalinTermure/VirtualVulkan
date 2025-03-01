@@ -1111,5 +1111,30 @@ VkResult PackAndCallVkEndCommandBuffer(grpc::ClientReaderWriter<vvk::server::Vvk
   }
   return static_cast<VkResult>(response.result());
 }
+void PackAndCallVkGetImageSubresourceLayout(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkImage image, const VkImageSubresource* pSubresource, VkSubresourceLayout* pLayout) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkGetImageSubresourceLayout");
+  request.mutable_vkgetimagesubresourcelayout()->set_device(reinterpret_cast<uint64_t>(device));
+  request.mutable_vkgetimagesubresourcelayout()->set_image(reinterpret_cast<uint64_t>(image));
+  vvk::server::VkImageSubresource* pSubresource_proto = request.mutable_vkgetimagesubresourcelayout()->mutable_psubresource();
+  pSubresource_proto->set_aspectmask(pSubresource->aspectMask);
+  pSubresource_proto->set_miplevel(pSubresource->mipLevel);
+  pSubresource_proto->set_arraylayer(pSubresource->arrayLayer);
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  VkSubresourceLayout& pLayout_ref = *pLayout;
+  pLayout_ref.offset = static_cast<VkDeviceSize>(response.vkgetimagesubresourcelayout().playout().offset());
+  pLayout_ref.size = static_cast<VkDeviceSize>(response.vkgetimagesubresourcelayout().playout().size());
+  pLayout_ref.rowPitch = static_cast<VkDeviceSize>(response.vkgetimagesubresourcelayout().playout().rowpitch());
+  pLayout_ref.arrayPitch = static_cast<VkDeviceSize>(response.vkgetimagesubresourcelayout().playout().arraypitch());
+  pLayout_ref.depthPitch = static_cast<VkDeviceSize>(response.vkgetimagesubresourcelayout().playout().depthpitch());
+}
 }  // namespace vvk
 

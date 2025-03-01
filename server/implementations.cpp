@@ -836,4 +836,21 @@ void UnpackAndExecuteVkEndCommandBuffer(vvk::ExecutionContext& context, const vv
   VkResult result = vkEndCommandBuffer(reinterpret_cast<VkCommandBuffer>(request.vkendcommandbuffer().commandbuffer()));
   response->set_result(result);
 }
+void UnpackAndExecuteVkGetImageSubresourceLayout(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkGetImageSubresourceLayout");
+
+  VkImageSubresource pSubresource = {};
+  pSubresource.aspectMask = static_cast<VkImageAspectFlags>(request.vkgetimagesubresourcelayout().psubresource().aspectmask());
+  pSubresource.mipLevel = request.vkgetimagesubresourcelayout().psubresource().miplevel();
+  pSubresource.arrayLayer = request.vkgetimagesubresourcelayout().psubresource().arraylayer();
+  VkSubresourceLayout pLayout = {};
+  vkGetImageSubresourceLayout(reinterpret_cast<VkDevice>(request.vkgetimagesubresourcelayout().device()), reinterpret_cast<VkImage>(request.vkgetimagesubresourcelayout().image()), &pSubresource, &pLayout);
+  vvk::server::VkSubresourceLayout* pLayout_proto = response->mutable_vkgetimagesubresourcelayout()->mutable_playout();
+  pLayout_proto->set_offset(static_cast<uint64_t>((&pLayout)->offset));
+  pLayout_proto->set_size(static_cast<uint64_t>((&pLayout)->size));
+  pLayout_proto->set_rowpitch(static_cast<uint64_t>((&pLayout)->rowPitch));
+  pLayout_proto->set_arraypitch(static_cast<uint64_t>((&pLayout)->arrayPitch));
+  pLayout_proto->set_depthpitch(static_cast<uint64_t>((&pLayout)->depthPitch));
+  response->set_result(VK_SUCCESS);
+}
 

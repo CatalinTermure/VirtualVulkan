@@ -59,6 +59,7 @@ COMMANDS_TO_GENERATE = [
     "vkFreeCommandBuffers",
     "vkBeginCommandBuffer",
     "vkEndCommandBuffer",
+    "vkGetImageSubresourceLayout",
 ]
 
 

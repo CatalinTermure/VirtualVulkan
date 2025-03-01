@@ -2902,6 +2902,12 @@ message VkMemoryRequirements {
   uint32 memoryTypeBits = 3; // uint32_t memoryTypeBits
 }
 
+message VkImageSubresource {
+  uint32 aspectMask = 1; // VkImageAspectFlags aspectMask
+  uint32 mipLevel = 2; // uint32_t mipLevel
+  uint32 arrayLayer = 3; // uint32_t arrayLayer
+}
+
 message VkFenceCreateInfo {
   optional uint32 flags = 1; // VkFenceCreateFlags flags
 }
@@ -2924,6 +2930,14 @@ message VkImageCreateInfo {
   optional uint32 queueFamilyIndexCount = 11; // uint32_t queueFamilyIndexCount
   repeated uint32 pQueueFamilyIndices = 12; // const uint32_t* pQueueFamilyIndices
   VkImageLayout initialLayout = 13; // VkImageLayout initialLayout
+}
+
+message VkSubresourceLayout {
+  uint64 offset = 1; // VkDeviceSize offset
+  uint64 size = 2; // VkDeviceSize size
+  uint64 rowPitch = 3; // VkDeviceSize rowPitch
+  uint64 arrayPitch = 4; // VkDeviceSize arrayPitch
+  uint64 depthPitch = 5; // VkDeviceSize depthPitch
 }
 
 message VkComponentMapping {

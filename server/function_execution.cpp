@@ -45,6 +45,7 @@ const std::unordered_map<
         {"vkFreeCommandBuffers", UnpackAndExecuteVkFreeCommandBuffers},
         {"vkBeginCommandBuffer", UnpackAndExecuteVkBeginCommandBuffer},
         {"vkEndCommandBuffer", UnpackAndExecuteVkEndCommandBuffer},
+        {"vkGetImageSubresourceLayout", UnpackAndExecuteVkGetImageSubresourceLayout},
 };
 
 }  // namespace

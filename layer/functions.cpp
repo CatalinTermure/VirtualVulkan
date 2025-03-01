@@ -676,4 +676,17 @@ VKAPI_ATTR VkResult VKAPI_CALL EndCommandBuffer(VkCommandBuffer commandBuffer) {
   return PackAndCallVkEndCommandBuffer(device_info.instance_info.command_stream.get(),
                                        device_info.GetRemoteHandle(commandBuffer));
 }
+
+VKAPI_ATTR void VKAPI_CALL GetImageSubresourceLayout(VkDevice device, VkImage image,
+                                                     const VkImageSubresource* pSubresource,
+                                                     VkSubresourceLayout* pLayout) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  VkImage image_to_check = image;
+  if (device_info.HasRemoteHandle(image)) {
+    image_to_check = device_info.GetRemoteHandle(image);
+  }
+  PackAndCallVkGetImageSubresourceLayout(device_info.instance_info.command_stream.get(),
+                                         device_info.instance_info.GetRemoteHandle(device), image_to_check,
+                                         pSubresource, pLayout);
+}
 }  // namespace vvk
