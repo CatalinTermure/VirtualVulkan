@@ -1,5 +1,4 @@
 find_package(spdlog CONFIG REQUIRED)
-find_package(Vulkan REQUIRED)
 
 add_library(
   VirtualVulkanCommons
@@ -7,4 +6,4 @@ add_library(
 )
 
 target_link_libraries(VirtualVulkanCommons PRIVATE spdlog::spdlog vvkproto)
-target_include_directories(VirtualVulkanCommons PRIVATE ${Vulkan_INCLUDE_DIRS})
+target_include_directories(VirtualVulkanCommons PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Vulkan-Headers/include)
