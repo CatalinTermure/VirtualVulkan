@@ -7,7 +7,9 @@ add_library(
     layer.cpp
     function_loading.h function_loading.cpp
     functions.h functions.cpp
-    context.h context.cpp
+    context/device.h context/device.cpp
+    context/instance.h context/instance.cpp
+    context/swapchain.h context/swapchain.cpp
 )
 target_include_directories(VirtualVulkanLayer PRIVATE ../)
 
