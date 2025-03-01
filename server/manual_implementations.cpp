@@ -5,7 +5,7 @@
 
 #include <vector>
 
-#include "implementations.h"
+#include "server/implementations.h"
 
 void UnpackAndExecuteVkCreateInstanceManual(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
                                             vvk::server::VvkResponse* response) {

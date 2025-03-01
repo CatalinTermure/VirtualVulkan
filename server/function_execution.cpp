@@ -2,8 +2,8 @@
 
 #include <spdlog/spdlog.h>
 
-#include "implementations.h"
-#include "manual_implementations.h"
+#include "server/implementations.h"
+#include "server/manual_implementations.h"
 
 namespace vvk::server {
 

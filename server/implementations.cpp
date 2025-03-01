@@ -9,7 +9,7 @@
 #include <vector>
 #include <cstdlib>
 
-#include "execution_context.h"
+#include "server/execution_context.h"
 
 void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateInstance");

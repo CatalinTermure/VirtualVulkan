@@ -4,7 +4,7 @@
 #define VVK_SERVER_IMPLEMENTATIONS_H
 #include <vulkan/vulkan_core.h>
 
-#include "execution_context.h"
+#include "server/execution_context.h"
 #include "vvk_server.pb.h"
 
 void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context,

@@ -29,7 +29,7 @@ class ServerSrcGenerator(BaseGenerator):
 #include <vector>
 #include <cstdlib>
 
-#include "execution_context.h"
+#include "server/execution_context.h"
 
 ''')
 
@@ -247,7 +247,7 @@ class ServerHeaderGenerator(BaseGenerator):
 #define VVK_SERVER_IMPLEMENTATIONS_H
 #include <vulkan/vulkan_core.h>
 
-#include "execution_context.h"
+#include "server/execution_context.h"
 #include "vvk_server.pb.h"
 
 ''')

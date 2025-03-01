@@ -10,6 +10,7 @@ add_executable(
     manual_implementations.h manual_implementations.cpp
     execution_context.h
   )
+target_include_directories(VirtualVulkanServer PRIVATE ../)
 
 target_link_libraries(VirtualVulkanServer PRIVATE spdlog::spdlog vvkproto vulkan)
 target_include_directories(VirtualVulkanServer PRIVATE ${Vulkan_INCLUDE_DIRS})

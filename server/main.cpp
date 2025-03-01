@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "server.h"
+#include "server/server.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;

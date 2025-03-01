@@ -3,8 +3,8 @@
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.h>
 
-#include "execution_context.h"
-#include "function_execution.h"
+#include "server/execution_context.h"
+#include "server/function_execution.h"
 #include "vvk_server.pb.h"
 
 namespace vvk::server {
