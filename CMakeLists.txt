@@ -17,6 +17,8 @@ endif()
 
 add_subdirectory(server)
 
+add_subdirectory(Vulkan-Loader)
+
 include(CTest)
 enable_testing()
 add_subdirectory(tests)

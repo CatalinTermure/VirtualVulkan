@@ -1,6 +1,5 @@
 find_package(spdlog CONFIG REQUIRED)
 find_package(VulkanMemoryAllocator CONFIG REQUIRED)
-add_subdirectory(../Vulkan-Loader ${CMAKE_BINARY_DIR}/Vulkan-Loader)
 
 file(GLOB layer_tests LIST_DIRECTORIES true ./*)
 foreach(test ${layer_tests})
