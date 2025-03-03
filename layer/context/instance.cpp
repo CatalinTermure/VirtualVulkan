@@ -67,7 +67,7 @@ InstanceInfo& GetInstanceInfo(VkDevice device) { return GetDeviceInfo(device).in
 void AssociatePhysicalDeviceWithInstance(VkPhysicalDevice physical_device, VkInstance instance) {
   std::lock_guard lock(physical_device_to_instance_lock);
   auto [_, inserted] = g_physical_device_to_instance.try_emplace(physical_device, instance);
-  if (!inserted) {
+  if (!inserted && g_physical_device_to_instance.at(physical_device) != instance) {
     throw std::runtime_error("This VkPhysicalDevice already has a VkInstance associated with it");
   }
 }
