@@ -28,17 +28,6 @@ namespace vvk {
 namespace {
 
 template <typename FooType, typename... Args>
-std::result_of_t<FooType(VkInstance, Args...)> CallDownInstanceFunc(std::string_view func_name, VkInstance instance,
-                                                                    Args... args) {
-  FooType nxt_func = reinterpret_cast<FooType>(GetInstanceInfo(instance).nxt_gipa(instance, func_name.data()));
-  if (!nxt_func) {
-    spdlog::critical("Failed to fetch {} from next layer", func_name);
-  }
-
-  return nxt_func(instance, args...);
-}
-
-template <typename FooType, typename... Args>
 std::result_of_t<FooType(VkDevice, Args...)> CallDownDeviceFunc(std::string_view func_name, VkDevice device,
                                                                 Args... args) {
   FooType nxt_func = reinterpret_cast<FooType>(GetDeviceInfo(device).nxt_gdpa(device, func_name.data()));
@@ -221,7 +210,7 @@ VKAPI_ATTR VkResult VKAPI_CALL GetSwapchainImagesKHR(VkDevice device, VkSwapchai
 }
 
 PFN_vkVoidFunction DefaultGetInstanceProcAddr(VkInstance instance, const char* pName) {
-  return GetInstanceInfo(instance).nxt_gipa(instance, pName);
+  return GetInstanceInfo(instance).dispatch_table().GetInstanceProcAddr(instance, pName);
 }
 PFN_vkVoidFunction DefaultGetDeviceProcAddr(VkDevice device, const char* pName) {
   return GetDeviceInfo(device).nxt_gdpa(device, pName);
@@ -282,7 +271,7 @@ VKAPI_ATTR void VKAPI_CALL DestroyInstance(VkInstance instance, const VkAllocati
   spdlog::trace("DestroyInstance");
 
   InstanceInfo& instance_info = GetInstanceInfo(instance);
-  CallDownInstanceFunc<PFN_vkDestroyInstance>("vkDestroyInstance", instance, pAllocator);
+  instance_info.dispatch_table().DestroyInstance(instance, pAllocator);
 
   auto reader_writer = instance_info.command_stream();
   PackAndCallVkDestroyInstance(reader_writer, instance_info.GetRemoteHandle(instance), pAllocator);
@@ -294,8 +283,10 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumeratePhysicalDevices(VkInstance instance, uin
                                                         VkPhysicalDevice* pPhysicalDevices) {
   spdlog::trace("EnumeratePhysicalDevices");
 
-  VkResult result = CallDownInstanceFunc<PFN_vkEnumeratePhysicalDevices>("vkEnumeratePhysicalDevices", instance,
-                                                                         pPhysicalDeviceCount, pPhysicalDevices);
+  InstanceInfo& instance_info = GetInstanceInfo(instance);
+
+  VkResult result =
+      instance_info.dispatch_table().EnumeratePhysicalDevices(instance, pPhysicalDeviceCount, pPhysicalDevices);
   if (result != VK_SUCCESS) {
     return result;
   }
@@ -338,14 +329,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 
   InstanceInfo& instance_info = GetInstanceInfo(physicalDevice);
 
-  PFN_vkCreateDevice nxtCreateDevice =
-      reinterpret_cast<PFN_vkCreateDevice>(instance_info.nxt_gipa(nullptr, "vkCreateDevice"));
-  if (!nxtCreateDevice) {
-    spdlog::error("Failed to fetch vkCreateDevice from next layer");
-    return VK_ERROR_INITIALIZATION_FAILED;
-  }
-
-  VkResult result = nxtCreateDevice(physicalDevice, pCreateInfo, pAllocator, pDevice);
+  VkResult result = instance_info.dispatch_table().CreateDevice(physicalDevice, pCreateInfo, pAllocator, pDevice);
 
   VmaVulkanFunctions vma_vulkan_funcs = {
       .vkGetInstanceProcAddr = nullptr,
@@ -435,17 +419,9 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(VkPhysicalDevi
                                                                   const char* pLayerName, uint32_t* pPropertyCount,
                                                                   VkExtensionProperties* pProperties) {
   if (!pLayerName || strcmp(pLayerName, "VK_LAYER_VVK_virtual_vulkan") != 0) {
-    VkInstance instance = GetInstanceForPhysicalDevice(physicalDevice);
-    PFN_vkGetInstanceProcAddr nxt_gipa = GetInstanceInfo(instance).nxt_gipa;
-    PFN_vkEnumerateDeviceExtensionProperties nxtEnumerateDeviceExtensionProperties =
-        reinterpret_cast<PFN_vkEnumerateDeviceExtensionProperties>(
-            nxt_gipa(instance, "vkEnumerateDeviceExtensionProperties"));
-    if (!nxtEnumerateDeviceExtensionProperties) {
-      spdlog::error("Failed to fetch vkEnumerateDeviceExtensionProperties from next layer");
-      return VK_ERROR_INITIALIZATION_FAILED;
-    }
-
-    return nxtEnumerateDeviceExtensionProperties(physicalDevice, pLayerName, pPropertyCount, pProperties);
+    InstanceInfo& instance_info = GetInstanceInfo(physicalDevice);
+    return instance_info.dispatch_table().EnumerateDeviceExtensionProperties(physicalDevice, pLayerName, pPropertyCount,
+                                                                             pProperties);
   }
 
   auto command_stream = GetInstanceInfo(physicalDevice).command_stream();

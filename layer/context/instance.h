@@ -2,6 +2,7 @@
 #define VVK_LAYER_CONTEXT_INSTANCE_H
 
 #include <grpcpp/grpcpp.h>
+#include <vulkan/utility/vk_dispatch_table.h>
 #include <vulkan/vulkan_core.h>
 
 #include <map>
@@ -14,9 +15,10 @@ namespace vvk {
 
 class InstanceInfo {
  public:
-  PFN_vkGetInstanceProcAddr nxt_gipa;
+  InstanceInfo(VkInstance instance, PFN_vkGetInstanceProcAddr nxt_gipa, std::shared_ptr<grpc::Channel> channel);
 
-  InstanceInfo(PFN_vkGetInstanceProcAddr nxt_gipa, std::shared_ptr<grpc::Channel> channel);
+  // Dispatch table for calling down the chain
+  const VkuInstanceDispatchTable& dispatch_table() const { return dispatch_table_; }
 
   grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* command_stream() {
     return command_stream_.get();
@@ -43,6 +45,8 @@ class InstanceInfo {
   std::shared_ptr<grpc::Channel> channel_;
   vvk::server::VvkServer::Stub stub_;
   std::map<void*, void*> local_to_remote_handle_;
+  VkuInstanceDispatchTable dispatch_table_;
+  PFN_vkGetInstanceProcAddr nxt_gipa_;
 };
 
 InstanceInfo& GetInstanceInfo(VkInstance instance);

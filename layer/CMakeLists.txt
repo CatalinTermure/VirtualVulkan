@@ -12,6 +12,7 @@ add_library(
     context/swapchain.h context/swapchain.cpp
 )
 target_include_directories(VirtualVulkanLayer PRIVATE ../)
+target_include_directories(VirtualVulkanLayer PRIVATE ../Vulkan-Utility-Libraries/include)
 
 target_link_libraries(VirtualVulkanLayer PRIVATE spdlog::spdlog vvkproto VirtualVulkanCommons GPUOpen::VulkanMemoryAllocator)
 set_target_properties(VirtualVulkanLayer PROPERTIES PREFIX "lib")

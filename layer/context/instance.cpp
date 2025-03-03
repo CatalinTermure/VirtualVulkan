@@ -11,9 +11,12 @@ std::mutex physical_device_to_instance_lock;
 std::map<VkPhysicalDevice, VkInstance> g_physical_device_to_instance;
 }  // namespace
 
-InstanceInfo::InstanceInfo(PFN_vkGetInstanceProcAddr nxt_gipa, std::shared_ptr<grpc::Channel> channel)
-    : nxt_gipa(nxt_gipa), channel_(channel), stub_(channel) {
+InstanceInfo::InstanceInfo(VkInstance instance, PFN_vkGetInstanceProcAddr nxt_gipa,
+                           std::shared_ptr<grpc::Channel> channel)
+    : nxt_gipa_(nxt_gipa), channel_(channel), stub_(channel) {
   command_stream_ = stub_.CallMethods(&client_context_);
+  vkuInitInstanceDispatchTable(instance, &dispatch_table_, nxt_gipa);
+  dispatch_table_.CreateDevice = reinterpret_cast<PFN_vkCreateDevice>(nxt_gipa(instance, "vkCreateDevice"));
 }
 
 InstanceInfo::~InstanceInfo() {
@@ -29,7 +32,7 @@ InstanceInfo& GetInstanceInfo(VkInstance instance) {
 InstanceInfo& SetInstanceInfo(VkInstance instance, PFN_vkGetInstanceProcAddr nxt_gipa,
                               std::shared_ptr<grpc::Channel> channel) {
   std::lock_guard lock(instance_info_lock);
-  auto [iter, inserted] = g_instance_infos.try_emplace(instance, nxt_gipa, channel);
+  auto [iter, inserted] = g_instance_infos.try_emplace(instance, instance, nxt_gipa, channel);
   if (!inserted) {
     throw std::runtime_error("This VkInstance already has an InstanceInfo associated with it");
   }
