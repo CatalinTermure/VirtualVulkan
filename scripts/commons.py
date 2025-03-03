@@ -156,13 +156,14 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
                 generator, member.type, f'{name}_{member.name}_i', f'{proto_accessor}.{member.name.lower()}({index_name})')
             out.append(indent(out_, 2))
             out.append('  }\n')
-            after.append(
-                f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
-            after.append('  {\n')
-            after.append(
-                f'    {member.type} &{name}_{member.name}_i = {name}_{member.name}[{index_name}];\n')
-            after.append(indent(after_, 2))
-            after.append('  }\n')
+            if after_:
+                after.append(
+                    f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
+                after.append('  {\n')
+                after.append(
+                    f'    {member.type} &{name}_{member.name}_i = {name}_{member.name}[{index_name}];\n')
+                after.append(indent(after_, 2))
+                after.append('  }\n')
             after.append(f'  delete[] {name}.{member.name};\n')
     elif not member.pointer and member.type in generator.vk.structs:
         if member.length is None:
@@ -224,8 +225,12 @@ def fill_struct_from_proto(generator: BaseGenerator, struct_type: str, name: str
                 declarations_, out_, after_ = __fill_struct_member_from_proto(
                     generator, struct_type, name, proto_accessor, member)
                 out.append(declarations_)
-                out.append(
-                    f'  if ({proto_accessor}.has_{member.name.lower()}()) {{\n')
+                if member.length is None:
+                    out.append(
+                        f'  if ({proto_accessor}.has_{member.name.lower()}()) {{\n')
+                else:
+                    out.append(
+                        f'  if ({proto_accessor}.{member.name.lower()}_size()) {{\n')
                 out.append(
                     indent(out_, 2))
                 out.append('  }\n')
