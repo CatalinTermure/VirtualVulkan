@@ -19,6 +19,8 @@ void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context, const vvk:
   pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
   if (request.vkcreateinstance().pcreateinfo().has_flags()) {
     pCreateInfo.flags = static_cast<VkInstanceCreateFlags>(request.vkcreateinstance().pcreateinfo().flags());
+  } else {
+    pCreateInfo.flags = VkInstanceCreateFlags{};
   }
   VkApplicationInfo pCreateInfo_pApplicationInfo = {};
   if (request.vkcreateinstance().pcreateinfo().has_papplicationinfo()) {
@@ -26,17 +28,25 @@ void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context, const vvk:
     pCreateInfo_pApplicationInfo.pNext = nullptr; // pNext chains are currently unsupported
     if (request.vkcreateinstance().pcreateinfo().papplicationinfo().has_papplicationname()) {
       pCreateInfo_pApplicationInfo.pApplicationName = request.vkcreateinstance().pcreateinfo().papplicationinfo().papplicationname().data();
+    } else {
+      pCreateInfo_pApplicationInfo.pApplicationName = nullptr;
     }
     pCreateInfo_pApplicationInfo.applicationVersion = request.vkcreateinstance().pcreateinfo().papplicationinfo().applicationversion();
     if (request.vkcreateinstance().pcreateinfo().papplicationinfo().has_penginename()) {
       pCreateInfo_pApplicationInfo.pEngineName = request.vkcreateinstance().pcreateinfo().papplicationinfo().penginename().data();
+    } else {
+      pCreateInfo_pApplicationInfo.pEngineName = nullptr;
     }
     pCreateInfo_pApplicationInfo.engineVersion = request.vkcreateinstance().pcreateinfo().papplicationinfo().engineversion();
     pCreateInfo_pApplicationInfo.apiVersion = request.vkcreateinstance().pcreateinfo().papplicationinfo().apiversion();
     pCreateInfo.pApplicationInfo = &pCreateInfo_pApplicationInfo;
+  } else {
+    pCreateInfo.pApplicationInfo = nullptr;
   }
   if (request.vkcreateinstance().pcreateinfo().has_enabledlayercount()) {
     pCreateInfo.enabledLayerCount = request.vkcreateinstance().pcreateinfo().enabledlayercount();
+  } else {
+    pCreateInfo.enabledLayerCount = uint32_t{};
   }
   const char** pCreateInfo_ppEnabledLayerNames = new const char*[request.vkcreateinstance().pcreateinfo().ppenabledlayernames_size()]();
   pCreateInfo.ppEnabledLayerNames = pCreateInfo_ppEnabledLayerNames;
@@ -45,6 +55,8 @@ void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context, const vvk:
   }
   if (request.vkcreateinstance().pcreateinfo().has_enabledextensioncount()) {
     pCreateInfo.enabledExtensionCount = request.vkcreateinstance().pcreateinfo().enabledextensioncount();
+  } else {
+    pCreateInfo.enabledExtensionCount = uint32_t{};
   }
   const char** pCreateInfo_ppEnabledExtensionNames = new const char*[request.vkcreateinstance().pcreateinfo().ppenabledextensionnames_size()]();
   pCreateInfo.ppEnabledExtensionNames = pCreateInfo_ppEnabledExtensionNames;
@@ -278,6 +290,8 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
   pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
   if (request.vkcreatedevice().pcreateinfo().has_flags()) {
     pCreateInfo.flags = static_cast<VkDeviceCreateFlags>(request.vkcreatedevice().pcreateinfo().flags());
+  } else {
+    pCreateInfo.flags = VkDeviceCreateFlags{};
   }
   pCreateInfo.queueCreateInfoCount = request.vkcreatedevice().pcreateinfo().queuecreateinfocount();
   VkDeviceQueueCreateInfo* pCreateInfo_pQueueCreateInfos = new VkDeviceQueueCreateInfo[request.vkcreatedevice().pcreateinfo().pqueuecreateinfos_size()]();
@@ -288,6 +302,8 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
     pCreateInfo_pQueueCreateInfos_i.pNext = nullptr; // pNext chains are currently unsupported
     if (request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).has_flags()) {
       pCreateInfo_pQueueCreateInfos_i.flags = static_cast<VkDeviceQueueCreateFlags>(request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).flags());
+    } else {
+      pCreateInfo_pQueueCreateInfos_i.flags = VkDeviceQueueCreateFlags{};
     }
     pCreateInfo_pQueueCreateInfos_i.queueFamilyIndex = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuefamilyindex();
     pCreateInfo_pQueueCreateInfos_i.queueCount = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuecount();
@@ -299,6 +315,8 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
   }
   if (request.vkcreatedevice().pcreateinfo().has_enabledlayercount()) {
     pCreateInfo.enabledLayerCount = request.vkcreatedevice().pcreateinfo().enabledlayercount();
+  } else {
+    pCreateInfo.enabledLayerCount = uint32_t{};
   }
   const char** pCreateInfo_ppEnabledLayerNames = new const char*[request.vkcreatedevice().pcreateinfo().ppenabledlayernames_size()]();
   pCreateInfo.ppEnabledLayerNames = pCreateInfo_ppEnabledLayerNames;
@@ -307,6 +325,8 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
   }
   if (request.vkcreatedevice().pcreateinfo().has_enabledextensioncount()) {
     pCreateInfo.enabledExtensionCount = request.vkcreatedevice().pcreateinfo().enabledextensioncount();
+  } else {
+    pCreateInfo.enabledExtensionCount = uint32_t{};
   }
   const char** pCreateInfo_ppEnabledExtensionNames = new const char*[request.vkcreatedevice().pcreateinfo().ppenabledextensionnames_size()]();
   pCreateInfo.ppEnabledExtensionNames = pCreateInfo_ppEnabledExtensionNames;
@@ -371,6 +391,8 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
     pCreateInfo_pEnabledFeatures.variableMultisampleRate = request.vkcreatedevice().pcreateinfo().penabledfeatures().variablemultisamplerate();
     pCreateInfo_pEnabledFeatures.inheritedQueries = request.vkcreatedevice().pcreateinfo().penabledfeatures().inheritedqueries();
     pCreateInfo.pEnabledFeatures = &pCreateInfo_pEnabledFeatures;
+  } else {
+    pCreateInfo.pEnabledFeatures = nullptr;
   }
   VkDevice client_pDevice = reinterpret_cast<VkDevice>(request.vkcreatedevice().pdevice());
   VkDevice server_pDevice;
@@ -573,6 +595,8 @@ void UnpackAndExecuteVkCreateFence(vvk::ExecutionContext& context, const vvk::se
   pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
   if (request.vkcreatefence().pcreateinfo().has_flags()) {
     pCreateInfo.flags = static_cast<VkFenceCreateFlags>(request.vkcreatefence().pcreateinfo().flags());
+  } else {
+    pCreateInfo.flags = VkFenceCreateFlags{};
   }
   VkFence client_pFence = reinterpret_cast<VkFence>(request.vkcreatefence().pfence());
   VkFence server_pFence;
@@ -594,6 +618,8 @@ void UnpackAndExecuteVkCreateSemaphore(vvk::ExecutionContext& context, const vvk
   pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
   if (request.vkcreatesemaphore().pcreateinfo().has_flags()) {
     pCreateInfo.flags = static_cast<VkSemaphoreCreateFlags>(request.vkcreatesemaphore().pcreateinfo().flags());
+  } else {
+    pCreateInfo.flags = VkSemaphoreCreateFlags{};
   }
   VkSemaphore client_pSemaphore = reinterpret_cast<VkSemaphore>(request.vkcreatesemaphore().psemaphore());
   VkSemaphore server_pSemaphore;
@@ -635,6 +661,8 @@ void UnpackAndExecuteVkCreateImage(vvk::ExecutionContext& context, const vvk::se
   pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
   if (request.vkcreateimage().pcreateinfo().has_flags()) {
     pCreateInfo.flags = static_cast<VkImageCreateFlags>(request.vkcreateimage().pcreateinfo().flags());
+  } else {
+    pCreateInfo.flags = VkImageCreateFlags{};
   }
   pCreateInfo.imageType = static_cast<VkImageType>(request.vkcreateimage().pcreateinfo().imagetype());
   pCreateInfo.format = static_cast<VkFormat>(request.vkcreateimage().pcreateinfo().format());
@@ -649,6 +677,8 @@ void UnpackAndExecuteVkCreateImage(vvk::ExecutionContext& context, const vvk::se
   pCreateInfo.sharingMode = static_cast<VkSharingMode>(request.vkcreateimage().pcreateinfo().sharingmode());
   if (request.vkcreateimage().pcreateinfo().has_queuefamilyindexcount()) {
     pCreateInfo.queueFamilyIndexCount = request.vkcreateimage().pcreateinfo().queuefamilyindexcount();
+  } else {
+    pCreateInfo.queueFamilyIndexCount = uint32_t{};
   }
   uint32_t* pCreateInfo_pQueueFamilyIndices = new uint32_t[request.vkcreateimage().pcreateinfo().pqueuefamilyindices_size()]();
   pCreateInfo.pQueueFamilyIndices = pCreateInfo_pQueueFamilyIndices;
@@ -729,6 +759,8 @@ void UnpackAndExecuteVkCreateImageView(vvk::ExecutionContext& context, const vvk
   pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
   if (request.vkcreateimageview().pcreateinfo().has_flags()) {
     pCreateInfo.flags = static_cast<VkImageViewCreateFlags>(request.vkcreateimageview().pcreateinfo().flags());
+  } else {
+    pCreateInfo.flags = VkImageViewCreateFlags{};
   }
   pCreateInfo.image = reinterpret_cast<VkImage>(request.vkcreateimageview().pcreateinfo().image());
   pCreateInfo.viewType = static_cast<VkImageViewType>(request.vkcreateimageview().pcreateinfo().viewtype());
@@ -762,6 +794,8 @@ void UnpackAndExecuteVkCreateCommandPool(vvk::ExecutionContext& context, const v
   pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
   if (request.vkcreatecommandpool().pcreateinfo().has_flags()) {
     pCreateInfo.flags = static_cast<VkCommandPoolCreateFlags>(request.vkcreatecommandpool().pcreateinfo().flags());
+  } else {
+    pCreateInfo.flags = VkCommandPoolCreateFlags{};
   }
   pCreateInfo.queueFamilyIndex = request.vkcreatecommandpool().pcreateinfo().queuefamilyindex();
   VkCommandPool client_pCommandPool = reinterpret_cast<VkCommandPool>(request.vkcreatecommandpool().pcommandpool());
@@ -806,6 +840,8 @@ void UnpackAndExecuteVkBeginCommandBuffer(vvk::ExecutionContext& context, const 
   pBeginInfo.pNext = nullptr; // pNext chains are currently unsupported
   if (request.vkbegincommandbuffer().pbegininfo().has_flags()) {
     pBeginInfo.flags = static_cast<VkCommandBufferUsageFlags>(request.vkbegincommandbuffer().pbegininfo().flags());
+  } else {
+    pBeginInfo.flags = VkCommandBufferUsageFlags{};
   }
   VkCommandBufferInheritanceInfo pBeginInfo_pInheritanceInfo = {};
   if (request.vkbegincommandbuffer().pbegininfo().has_pinheritanceinfo()) {
@@ -813,19 +849,29 @@ void UnpackAndExecuteVkBeginCommandBuffer(vvk::ExecutionContext& context, const 
     pBeginInfo_pInheritanceInfo.pNext = nullptr; // pNext chains are currently unsupported
     if (request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().has_renderpass()) {
       pBeginInfo_pInheritanceInfo.renderPass = reinterpret_cast<VkRenderPass>(request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().renderpass());
+    } else {
+      pBeginInfo_pInheritanceInfo.renderPass = VkRenderPass{};
     }
     pBeginInfo_pInheritanceInfo.subpass = request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().subpass();
     if (request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().has_framebuffer()) {
       pBeginInfo_pInheritanceInfo.framebuffer = reinterpret_cast<VkFramebuffer>(request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().framebuffer());
+    } else {
+      pBeginInfo_pInheritanceInfo.framebuffer = VkFramebuffer{};
     }
     pBeginInfo_pInheritanceInfo.occlusionQueryEnable = request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().occlusionqueryenable();
     if (request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().has_queryflags()) {
       pBeginInfo_pInheritanceInfo.queryFlags = static_cast<VkQueryControlFlags>(request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().queryflags());
+    } else {
+      pBeginInfo_pInheritanceInfo.queryFlags = VkQueryControlFlags{};
     }
     if (request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().has_pipelinestatistics()) {
       pBeginInfo_pInheritanceInfo.pipelineStatistics = static_cast<VkQueryPipelineStatisticFlags>(request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().pipelinestatistics());
+    } else {
+      pBeginInfo_pInheritanceInfo.pipelineStatistics = VkQueryPipelineStatisticFlags{};
     }
     pBeginInfo.pInheritanceInfo = &pBeginInfo_pInheritanceInfo;
+  } else {
+    pBeginInfo.pInheritanceInfo = nullptr;
   }
   VkResult result = vkBeginCommandBuffer(reinterpret_cast<VkCommandBuffer>(request.vkbegincommandbuffer().commandbuffer()), &pBeginInfo);
   response->set_result(result);
@@ -861,9 +907,13 @@ void UnpackAndExecuteVkCreateRenderPass(vvk::ExecutionContext& context, const vv
   pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
   if (request.vkcreaterenderpass().pcreateinfo().has_flags()) {
     pCreateInfo.flags = static_cast<VkRenderPassCreateFlags>(request.vkcreaterenderpass().pcreateinfo().flags());
+  } else {
+    pCreateInfo.flags = VkRenderPassCreateFlags{};
   }
   if (request.vkcreaterenderpass().pcreateinfo().has_attachmentcount()) {
     pCreateInfo.attachmentCount = request.vkcreaterenderpass().pcreateinfo().attachmentcount();
+  } else {
+    pCreateInfo.attachmentCount = uint32_t{};
   }
   VkAttachmentDescription* pCreateInfo_pAttachments = new VkAttachmentDescription[request.vkcreaterenderpass().pcreateinfo().pattachments_size()]();
   pCreateInfo.pAttachments = pCreateInfo_pAttachments;
@@ -871,6 +921,8 @@ void UnpackAndExecuteVkCreateRenderPass(vvk::ExecutionContext& context, const vv
     VkAttachmentDescription &pCreateInfo_pAttachments_i = pCreateInfo_pAttachments[pAttachments_indx];
     if (request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).has_flags()) {
       pCreateInfo_pAttachments_i.flags = static_cast<VkAttachmentDescriptionFlags>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).flags());
+    } else {
+      pCreateInfo_pAttachments_i.flags = VkAttachmentDescriptionFlags{};
     }
     pCreateInfo_pAttachments_i.format = static_cast<VkFormat>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).format());
     pCreateInfo_pAttachments_i.samples = static_cast<VkSampleCountFlagBits>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).samples());
@@ -888,10 +940,14 @@ void UnpackAndExecuteVkCreateRenderPass(vvk::ExecutionContext& context, const vv
     VkSubpassDescription &pCreateInfo_pSubpasses_i = pCreateInfo_pSubpasses[pSubpasses_indx];
     if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_flags()) {
       pCreateInfo_pSubpasses_i.flags = static_cast<VkSubpassDescriptionFlags>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).flags());
+    } else {
+      pCreateInfo_pSubpasses_i.flags = VkSubpassDescriptionFlags{};
     }
     pCreateInfo_pSubpasses_i.pipelineBindPoint = static_cast<VkPipelineBindPoint>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pipelinebindpoint());
     if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_inputattachmentcount()) {
       pCreateInfo_pSubpasses_i.inputAttachmentCount = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).inputattachmentcount();
+    } else {
+      pCreateInfo_pSubpasses_i.inputAttachmentCount = uint32_t{};
     }
     VkAttachmentReference* pCreateInfo_pSubpasses_i_pInputAttachments = new VkAttachmentReference[request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pinputattachments_size()]();
     pCreateInfo_pSubpasses_i.pInputAttachments = pCreateInfo_pSubpasses_i_pInputAttachments;
@@ -902,6 +958,8 @@ void UnpackAndExecuteVkCreateRenderPass(vvk::ExecutionContext& context, const vv
     }
     if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_colorattachmentcount()) {
       pCreateInfo_pSubpasses_i.colorAttachmentCount = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).colorattachmentcount();
+    } else {
+      pCreateInfo_pSubpasses_i.colorAttachmentCount = uint32_t{};
     }
     VkAttachmentReference* pCreateInfo_pSubpasses_i_pColorAttachments = new VkAttachmentReference[request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pcolorattachments_size()]();
     pCreateInfo_pSubpasses_i.pColorAttachments = pCreateInfo_pSubpasses_i_pColorAttachments;
@@ -918,15 +976,21 @@ void UnpackAndExecuteVkCreateRenderPass(vvk::ExecutionContext& context, const vv
         pCreateInfo_pSubpasses_i_pResolveAttachments_i.attachment = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).presolveattachments(pResolveAttachments_indx).attachment();
         pCreateInfo_pSubpasses_i_pResolveAttachments_i.layout = static_cast<VkImageLayout>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).presolveattachments(pResolveAttachments_indx).layout());
       }
+    } else {
+      pCreateInfo_pSubpasses_i.pResolveAttachments = nullptr;
     }
     VkAttachmentReference pCreateInfo_pSubpasses_i_pDepthStencilAttachment = {};
     if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_pdepthstencilattachment()) {
       pCreateInfo_pSubpasses_i_pDepthStencilAttachment.attachment = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pdepthstencilattachment().attachment();
       pCreateInfo_pSubpasses_i_pDepthStencilAttachment.layout = static_cast<VkImageLayout>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pdepthstencilattachment().layout());
       pCreateInfo_pSubpasses_i.pDepthStencilAttachment = &pCreateInfo_pSubpasses_i_pDepthStencilAttachment;
+    } else {
+      pCreateInfo_pSubpasses_i.pDepthStencilAttachment = nullptr;
     }
     if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_preserveattachmentcount()) {
       pCreateInfo_pSubpasses_i.preserveAttachmentCount = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).preserveattachmentcount();
+    } else {
+      pCreateInfo_pSubpasses_i.preserveAttachmentCount = uint32_t{};
     }
     uint32_t* pCreateInfo_pSubpasses_i_pPreserveAttachments = new uint32_t[request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).ppreserveattachments_size()]();
     pCreateInfo_pSubpasses_i.pPreserveAttachments = pCreateInfo_pSubpasses_i_pPreserveAttachments;
@@ -936,6 +1000,8 @@ void UnpackAndExecuteVkCreateRenderPass(vvk::ExecutionContext& context, const vv
   }
   if (request.vkcreaterenderpass().pcreateinfo().has_dependencycount()) {
     pCreateInfo.dependencyCount = request.vkcreaterenderpass().pcreateinfo().dependencycount();
+  } else {
+    pCreateInfo.dependencyCount = uint32_t{};
   }
   VkSubpassDependency* pCreateInfo_pDependencies = new VkSubpassDependency[request.vkcreaterenderpass().pcreateinfo().pdependencies_size()]();
   pCreateInfo.pDependencies = pCreateInfo_pDependencies;
@@ -945,18 +1011,28 @@ void UnpackAndExecuteVkCreateRenderPass(vvk::ExecutionContext& context, const vv
     pCreateInfo_pDependencies_i.dstSubpass = request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).dstsubpass();
     if (request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).has_srcstagemask()) {
       pCreateInfo_pDependencies_i.srcStageMask = static_cast<VkPipelineStageFlags>(request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).srcstagemask());
+    } else {
+      pCreateInfo_pDependencies_i.srcStageMask = VkPipelineStageFlags{};
     }
     if (request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).has_dststagemask()) {
       pCreateInfo_pDependencies_i.dstStageMask = static_cast<VkPipelineStageFlags>(request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).dststagemask());
+    } else {
+      pCreateInfo_pDependencies_i.dstStageMask = VkPipelineStageFlags{};
     }
     if (request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).has_srcaccessmask()) {
       pCreateInfo_pDependencies_i.srcAccessMask = static_cast<VkAccessFlags>(request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).srcaccessmask());
+    } else {
+      pCreateInfo_pDependencies_i.srcAccessMask = VkAccessFlags{};
     }
     if (request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).has_dstaccessmask()) {
       pCreateInfo_pDependencies_i.dstAccessMask = static_cast<VkAccessFlags>(request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).dstaccessmask());
+    } else {
+      pCreateInfo_pDependencies_i.dstAccessMask = VkAccessFlags{};
     }
     if (request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).has_dependencyflags()) {
       pCreateInfo_pDependencies_i.dependencyFlags = static_cast<VkDependencyFlags>(request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).dependencyflags());
+    } else {
+      pCreateInfo_pDependencies_i.dependencyFlags = VkDependencyFlags{};
     }
   }
   VkRenderPass client_pRenderPass = reinterpret_cast<VkRenderPass>(request.vkcreaterenderpass().prenderpass());

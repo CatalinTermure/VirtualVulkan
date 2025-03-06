@@ -238,6 +238,13 @@ def fill_struct_from_proto(generator: BaseGenerator, struct_type: str, name: str
                         f'  if ({proto_accessor}.{member.name.lower()}_size()) {{\n')
                 out.append(
                     indent(out_, 2))
+                out.append('  } else {\n')
+                if member.pointer:
+                    out.append(
+                        f'    {name}.{member.name} = nullptr;\n')
+                else:
+                    out.append(
+                        f'    {name}.{member.name} = {member.type}{{}};\n')
                 out.append('  }\n')
                 after.append(after_)
         else:

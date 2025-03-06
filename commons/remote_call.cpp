@@ -218,31 +218,49 @@ void PackAndCallVkGetPhysicalDeviceProperties(grpc::ClientReaderWriter<vvk::serv
   pProperties_ref.limits.maxFramebufferLayers = response.vkgetphysicaldeviceproperties().pproperties().limits().maxframebufferlayers();
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_framebuffercolorsamplecounts()) {
     pProperties_ref.limits.framebufferColorSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().framebuffercolorsamplecounts());
+  } else {
+    pProperties_ref.limits.framebufferColorSampleCounts = VkSampleCountFlags{};
   }
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_framebufferdepthsamplecounts()) {
     pProperties_ref.limits.framebufferDepthSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().framebufferdepthsamplecounts());
+  } else {
+    pProperties_ref.limits.framebufferDepthSampleCounts = VkSampleCountFlags{};
   }
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_framebufferstencilsamplecounts()) {
     pProperties_ref.limits.framebufferStencilSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().framebufferstencilsamplecounts());
+  } else {
+    pProperties_ref.limits.framebufferStencilSampleCounts = VkSampleCountFlags{};
   }
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_framebuffernoattachmentssamplecounts()) {
     pProperties_ref.limits.framebufferNoAttachmentsSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().framebuffernoattachmentssamplecounts());
+  } else {
+    pProperties_ref.limits.framebufferNoAttachmentsSampleCounts = VkSampleCountFlags{};
   }
   pProperties_ref.limits.maxColorAttachments = response.vkgetphysicaldeviceproperties().pproperties().limits().maxcolorattachments();
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_sampledimagecolorsamplecounts()) {
     pProperties_ref.limits.sampledImageColorSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimagecolorsamplecounts());
+  } else {
+    pProperties_ref.limits.sampledImageColorSampleCounts = VkSampleCountFlags{};
   }
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_sampledimageintegersamplecounts()) {
     pProperties_ref.limits.sampledImageIntegerSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimageintegersamplecounts());
+  } else {
+    pProperties_ref.limits.sampledImageIntegerSampleCounts = VkSampleCountFlags{};
   }
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_sampledimagedepthsamplecounts()) {
     pProperties_ref.limits.sampledImageDepthSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimagedepthsamplecounts());
+  } else {
+    pProperties_ref.limits.sampledImageDepthSampleCounts = VkSampleCountFlags{};
   }
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_sampledimagestencilsamplecounts()) {
     pProperties_ref.limits.sampledImageStencilSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimagestencilsamplecounts());
+  } else {
+    pProperties_ref.limits.sampledImageStencilSampleCounts = VkSampleCountFlags{};
   }
   if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_storageimagesamplecounts()) {
     pProperties_ref.limits.storageImageSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().storageimagesamplecounts());
+  } else {
+    pProperties_ref.limits.storageImageSampleCounts = VkSampleCountFlags{};
   }
   pProperties_ref.limits.maxSampleMaskWords = response.vkgetphysicaldeviceproperties().pproperties().limits().maxsamplemaskwords();
   pProperties_ref.limits.timestampComputeAndGraphics = response.vkgetphysicaldeviceproperties().pproperties().limits().timestampcomputeandgraphics();
@@ -287,12 +305,18 @@ void PackAndCallVkGetPhysicalDeviceFormatProperties(grpc::ClientReaderWriter<vvk
   VkFormatProperties& pFormatProperties_ref = *pFormatProperties;
   if (response.vkgetphysicaldeviceformatproperties().pformatproperties().has_lineartilingfeatures()) {
     pFormatProperties_ref.linearTilingFeatures = static_cast<VkFormatFeatureFlags>(response.vkgetphysicaldeviceformatproperties().pformatproperties().lineartilingfeatures());
+  } else {
+    pFormatProperties_ref.linearTilingFeatures = VkFormatFeatureFlags{};
   }
   if (response.vkgetphysicaldeviceformatproperties().pformatproperties().has_optimaltilingfeatures()) {
     pFormatProperties_ref.optimalTilingFeatures = static_cast<VkFormatFeatureFlags>(response.vkgetphysicaldeviceformatproperties().pformatproperties().optimaltilingfeatures());
+  } else {
+    pFormatProperties_ref.optimalTilingFeatures = VkFormatFeatureFlags{};
   }
   if (response.vkgetphysicaldeviceformatproperties().pformatproperties().has_bufferfeatures()) {
     pFormatProperties_ref.bufferFeatures = static_cast<VkFormatFeatureFlags>(response.vkgetphysicaldeviceformatproperties().pformatproperties().bufferfeatures());
+  } else {
+    pFormatProperties_ref.bufferFeatures = VkFormatFeatureFlags{};
   }
 }
 VkResult PackAndCallVkCreateDevice(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) {
@@ -506,6 +530,8 @@ void PackAndCallVkGetPhysicalDeviceMemoryProperties(grpc::ClientReaderWriter<vvk
     VkMemoryType &pMemoryProperties_ref_memoryTypes_i = pMemoryProperties_ref.memoryTypes[memoryTypes_indx];
     if (response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).has_propertyflags()) {
       pMemoryProperties_ref_memoryTypes_i.propertyFlags = static_cast<VkMemoryPropertyFlags>(response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).propertyflags());
+    } else {
+      pMemoryProperties_ref_memoryTypes_i.propertyFlags = VkMemoryPropertyFlags{};
     }
     pMemoryProperties_ref_memoryTypes_i.heapIndex = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).heapindex();
   }
@@ -515,6 +541,8 @@ void PackAndCallVkGetPhysicalDeviceMemoryProperties(grpc::ClientReaderWriter<vvk
     pMemoryProperties_ref_memoryHeaps_i.size = static_cast<VkDeviceSize>(response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx).size());
     if (response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx).has_flags()) {
       pMemoryProperties_ref_memoryHeaps_i.flags = static_cast<VkMemoryHeapFlags>(response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx).flags());
+    } else {
+      pMemoryProperties_ref_memoryHeaps_i.flags = VkMemoryHeapFlags{};
     }
   }
 }
@@ -615,6 +643,8 @@ void PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(grpc::ClientReaderWrite
       VkQueueFamilyProperties& pQueueFamilyProperties_ref = pQueueFamilyProperties[pQueueFamilyProperties_indx];
       if (response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).has_queueflags()) {
         pQueueFamilyProperties_ref.queueFlags = static_cast<VkQueueFlags>(response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).queueflags());
+      } else {
+        pQueueFamilyProperties_ref.queueFlags = VkQueueFlags{};
       }
       pQueueFamilyProperties_ref.queueCount = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).queuecount();
       pQueueFamilyProperties_ref.timestampValidBits = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).timestampvalidbits();
