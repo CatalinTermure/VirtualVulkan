@@ -2956,6 +2956,12 @@ message VkImageViewCreateInfo {
   VkImageSubresourceRange subresourceRange = 6; // VkImageSubresourceRange subresourceRange
 }
 
+message VkShaderModuleCreateInfo {
+  optional uint32 flags = 1; // VkShaderModuleCreateFlags flags
+  uint64 codeSize = 2; // size_t codeSize
+  repeated uint32 pCode = 3; // const uint32_t* pCode
+}
+
 message VkPushConstantRange {
   uint32 stageFlags = 1; // VkShaderStageFlags stageFlags
   uint32 offset = 2; // uint32_t offset

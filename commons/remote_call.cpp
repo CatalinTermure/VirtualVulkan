@@ -1354,5 +1354,51 @@ void PackAndCallVkDestroyPipelineLayout(grpc::ClientReaderWriter<vvk::server::Vv
     spdlog::error("Failed to read response from server");
   }
 }
+VkResult PackAndCallVkCreateShaderModule(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkShaderModuleCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkShaderModule* pShaderModule) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCreateShaderModule");
+  request.mutable_vkcreateshadermodule()->set_device(reinterpret_cast<uint64_t>(device));
+  vvk::server::VkShaderModuleCreateInfo* pCreateInfo_proto = request.mutable_vkcreateshadermodule()->mutable_pcreateinfo();
+  if (pCreateInfo->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (pCreateInfo->flags) {
+    pCreateInfo_proto->set_flags(pCreateInfo->flags);
+  }
+  pCreateInfo_proto->set_codesize(pCreateInfo->codeSize);
+  const size_t pCreateInfo_proto_pCode_length = pCreateInfo->codeSize / 4;
+  for (int pCode_indx = 0; pCode_indx < pCreateInfo_proto_pCode_length; pCode_indx++) {
+    pCreateInfo_proto->add_pcode(pCreateInfo->pCode[pCode_indx]);
+  }
+  request.mutable_vkcreateshadermodule()->set_pshadermodule(reinterpret_cast<uint64_t>(*pShaderModule));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pShaderModule = reinterpret_cast<VkShaderModule>(response.vkcreateshadermodule().pshadermodule());
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkDestroyShaderModule(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkShaderModule shaderModule, const VkAllocationCallbacks* pAllocator) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkDestroyShaderModule");
+  request.mutable_vkdestroyshadermodule()->set_device(reinterpret_cast<uint64_t>(device));
+  if (shaderModule) {
+    request.mutable_vkdestroyshadermodule()->set_shadermodule(reinterpret_cast<uint64_t>(shaderModule));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 

@@ -50,6 +50,8 @@ const std::unordered_map<
         {"vkDestroyRenderPass", UnpackAndExecuteVkDestroyRenderPass},
         {"vkCreatePipelineLayout", UnpackAndExecuteVkCreatePipelineLayout},
         {"vkDestroyPipelineLayout", UnpackAndExecuteVkDestroyPipelineLayout},
+        {"vkCreateShaderModule", UnpackAndExecuteVkCreateShaderModule},
+        {"vkDestroyShaderModule", UnpackAndExecuteVkDestroyShaderModule},
 };
 
 }  // namespace

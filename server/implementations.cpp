@@ -1100,4 +1100,34 @@ void UnpackAndExecuteVkDestroyPipelineLayout(vvk::ExecutionContext& context, con
   vkDestroyPipelineLayout(reinterpret_cast<VkDevice>(request.vkdestroypipelinelayout().device()), reinterpret_cast<VkPipelineLayout>(request.vkdestroypipelinelayout().pipelinelayout()), nullptr);
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkCreateShaderModule(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreateShaderModule");
+
+  VkShaderModuleCreateInfo pCreateInfo = {};
+  pCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
+  if (request.vkcreateshadermodule().pcreateinfo().has_flags()) {
+    pCreateInfo.flags = static_cast<VkShaderModuleCreateFlags>(request.vkcreateshadermodule().pcreateinfo().flags());
+  } else {
+    pCreateInfo.flags = VkShaderModuleCreateFlags{};
+  }
+  pCreateInfo.codeSize = request.vkcreateshadermodule().pcreateinfo().codesize();
+  uint32_t* pCreateInfo_pCode = new uint32_t[request.vkcreateshadermodule().pcreateinfo().pcode_size()]();
+  pCreateInfo.pCode = pCreateInfo_pCode;
+  for (int pCode_indx = 0; pCode_indx < request.vkcreateshadermodule().pcreateinfo().pcode_size(); pCode_indx++) {
+    pCreateInfo_pCode[pCode_indx] = request.vkcreateshadermodule().pcreateinfo().pcode(pCode_indx);
+  }
+  VkShaderModule client_pShaderModule = reinterpret_cast<VkShaderModule>(request.vkcreateshadermodule().pshadermodule());
+  VkShaderModule server_pShaderModule;
+  VkResult result = vkCreateShaderModule(reinterpret_cast<VkDevice>(request.vkcreateshadermodule().device()), &pCreateInfo, nullptr, &server_pShaderModule);
+  response->mutable_vkcreateshadermodule()->set_pshadermodule(reinterpret_cast<uint64_t>(server_pShaderModule));
+  response->set_result(result);
+  delete[] pCreateInfo.pCode;
+}
+void UnpackAndExecuteVkDestroyShaderModule(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDestroyShaderModule");
+
+  vkDestroyShaderModule(reinterpret_cast<VkDevice>(request.vkdestroyshadermodule().device()), reinterpret_cast<VkShaderModule>(request.vkdestroyshadermodule().shadermodule()), nullptr);
+  response->set_result(VK_SUCCESS);
+}
 

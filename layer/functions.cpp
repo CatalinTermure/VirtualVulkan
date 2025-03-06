@@ -692,4 +692,19 @@ VKAPI_ATTR void VKAPI_CALL DestroyPipelineLayout(VkDevice device, VkPipelineLayo
   PackAndCallVkDestroyPipelineLayout(device_info.instance_info.command_stream(),
                                      device_info.instance_info.GetRemoteHandle(device), pipelineLayout, pAllocator);
 }
+
+VKAPI_ATTR VkResult VKAPI_CALL CreateShaderModule(VkDevice device, const VkShaderModuleCreateInfo* pCreateInfo,
+                                                  const VkAllocationCallbacks* pAllocator,
+                                                  VkShaderModule* pShaderModule) {
+  DeviceInfo device_info = GetDeviceInfo(device);
+  return PackAndCallVkCreateShaderModule(device_info.instance_info.command_stream(),
+                                         device_info.instance_info.GetRemoteHandle(device), pCreateInfo, pAllocator,
+                                         pShaderModule);
+}
+VKAPI_ATTR void VKAPI_CALL DestroyShaderModule(VkDevice device, VkShaderModule shaderModule,
+                                               const VkAllocationCallbacks* pAllocator) {
+  DeviceInfo device_info = GetDeviceInfo(device);
+  PackAndCallVkDestroyShaderModule(device_info.instance_info.command_stream(),
+                                   device_info.instance_info.GetRemoteHandle(device), shaderModule, pAllocator);
+}
 }  // namespace vvk
