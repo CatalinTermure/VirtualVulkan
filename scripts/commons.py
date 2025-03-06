@@ -187,8 +187,11 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
             out.append(indent(out_, 2))
             out.append('  }\n')
             after.append(after_)
-    elif member.type in generator.vk.handles:
-        assert (not member.pointer)
+    elif member.pointer and member.type in generator.vk.handles:
+        assert (member.const)
+        out.append(
+            f'  {name}.{member.name} = reinterpret_cast<const {member.type}*>({proto_accessor}.{member.name.lower()}().data());\n')
+    elif not member.pointer and member.type in generator.vk.handles:
         out.append(
             f'  {name}.{member.name} = reinterpret_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
     elif 'const char* const*' in member.cDeclaration:
@@ -340,8 +343,17 @@ def __fill_proto_from_member(generator: BaseGenerator, struct_type: str, name: s
             out.append(indent(fill_proto_from_struct(generator,
                                                      member.type, f'{name}_{member.name}_proto', f'(&{struct_accessor}->{member.name}[{index_name}])'), 2))
             out.append('  }\n')
-    elif member.type in generator.vk.handles:
-        assert (not member.pointer)
+    elif member.pointer and member.type in generator.vk.handles:
+        assert (member.const)
+        out.append(access_length_member_from_struct(
+            generator, struct_type, name, struct_accessor, member))
+        index_name = f'{member.name}_indx'
+        out.append(
+            f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
+        out.append(
+            f'    {name}->add_{member.name.lower()}(reinterpret_cast<uint64_t>({struct_accessor}->{member.name}[{index_name}]));\n')
+        out.append('  }\n')
+    elif not member.pointer and member.type in generator.vk.handles:
         out.append(
             f'  {name}->set_{member.name.lower()}(reinterpret_cast<uint64_t>({struct_accessor}->{member.name}));\n')
     elif 'const char* const*' in member.cDeclaration:
