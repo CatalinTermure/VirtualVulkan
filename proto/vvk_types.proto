@@ -2956,6 +2956,20 @@ message VkImageViewCreateInfo {
   VkImageSubresourceRange subresourceRange = 6; // VkImageSubresourceRange subresourceRange
 }
 
+message VkPushConstantRange {
+  uint32 stageFlags = 1; // VkShaderStageFlags stageFlags
+  uint32 offset = 2; // uint32_t offset
+  uint32 size = 3; // uint32_t size
+}
+
+message VkPipelineLayoutCreateInfo {
+  optional uint32 flags = 1; // VkPipelineLayoutCreateFlags flags
+  optional uint32 setLayoutCount = 2; // uint32_t setLayoutCount
+  repeated uint64 pSetLayouts = 3; // const VkDescriptorSetLayout* pSetLayouts
+  optional uint32 pushConstantRangeCount = 4; // uint32_t pushConstantRangeCount
+  repeated VkPushConstantRange pPushConstantRanges = 5; // const VkPushConstantRange* pPushConstantRanges
+}
+
 message VkAttachmentDescription {
   optional uint32 flags = 1; // VkAttachmentDescriptionFlags flags
   VkFormat format = 2; // VkFormat format

@@ -677,4 +677,19 @@ VKAPI_ATTR void VKAPI_CALL DestroyRenderPass(VkDevice device, VkRenderPass rende
   PackAndCallVkDestroyRenderPass(device_info.instance_info.command_stream(),
                                  device_info.instance_info.GetRemoteHandle(device), renderPass, pAllocator);
 }
+
+VKAPI_ATTR VkResult VKAPI_CALL CreatePipelineLayout(VkDevice device, const VkPipelineLayoutCreateInfo* pCreateInfo,
+                                                    const VkAllocationCallbacks* pAllocator,
+                                                    VkPipelineLayout* pPipelineLayout) {
+  DeviceInfo device_info = GetDeviceInfo(device);
+  return PackAndCallVkCreatePipelineLayout(device_info.instance_info.command_stream(),
+                                           device_info.instance_info.GetRemoteHandle(device), pCreateInfo, pAllocator,
+                                           pPipelineLayout);
+}
+VKAPI_ATTR void VKAPI_CALL DestroyPipelineLayout(VkDevice device, VkPipelineLayout pipelineLayout,
+                                                 const VkAllocationCallbacks* pAllocator) {
+  DeviceInfo device_info = GetDeviceInfo(device);
+  PackAndCallVkDestroyPipelineLayout(device_info.instance_info.command_stream(),
+                                     device_info.instance_info.GetRemoteHandle(device), pipelineLayout, pAllocator);
+}
 }  // namespace vvk

@@ -79,4 +79,8 @@ void UnpackAndExecuteVkCreateRenderPass(vvk::ExecutionContext& context,
                                       const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
 void UnpackAndExecuteVkDestroyRenderPass(vvk::ExecutionContext& context,
                                       const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkCreatePipelineLayout(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkDestroyPipelineLayout(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
 #endif  // VVK_SERVER_IMPLEMENTATIONS_H

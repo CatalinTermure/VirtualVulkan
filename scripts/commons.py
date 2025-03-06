@@ -62,6 +62,8 @@ COMMANDS_TO_GENERATE = [
     "vkGetImageSubresourceLayout",
     "vkCreateRenderPass",
     "vkDestroyRenderPass",
+    "vkCreatePipelineLayout",
+    "vkDestroyPipelineLayout",
 ]
 
 

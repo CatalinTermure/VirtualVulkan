@@ -1296,5 +1296,63 @@ void PackAndCallVkDestroyRenderPass(grpc::ClientReaderWriter<vvk::server::VvkReq
     spdlog::error("Failed to read response from server");
   }
 }
+VkResult PackAndCallVkCreatePipelineLayout(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkPipelineLayoutCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkPipelineLayout* pPipelineLayout) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCreatePipelineLayout");
+  request.mutable_vkcreatepipelinelayout()->set_device(reinterpret_cast<uint64_t>(device));
+  vvk::server::VkPipelineLayoutCreateInfo* pCreateInfo_proto = request.mutable_vkcreatepipelinelayout()->mutable_pcreateinfo();
+  if (pCreateInfo->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (pCreateInfo->flags) {
+    pCreateInfo_proto->set_flags(pCreateInfo->flags);
+  }
+  if (pCreateInfo->setLayoutCount) {
+    pCreateInfo_proto->set_setlayoutcount(pCreateInfo->setLayoutCount);
+  }
+  const size_t pCreateInfo_proto_pSetLayouts_length = pCreateInfo->setLayoutCount;
+  for (int pSetLayouts_indx = 0; pSetLayouts_indx < pCreateInfo_proto_pSetLayouts_length; pSetLayouts_indx++) {
+    pCreateInfo_proto->add_psetlayouts(reinterpret_cast<uint64_t>(pCreateInfo->pSetLayouts[pSetLayouts_indx]));
+  }
+  if (pCreateInfo->pushConstantRangeCount) {
+    pCreateInfo_proto->set_pushconstantrangecount(pCreateInfo->pushConstantRangeCount);
+  }
+  const size_t pCreateInfo_proto_pPushConstantRanges_length = pCreateInfo->pushConstantRangeCount;
+  for (int pPushConstantRanges_indx = 0; pPushConstantRanges_indx < pCreateInfo_proto_pPushConstantRanges_length; pPushConstantRanges_indx++) {
+    vvk::server::VkPushConstantRange* pCreateInfo_proto_pPushConstantRanges_proto = pCreateInfo_proto->add_ppushconstantranges();
+    pCreateInfo_proto_pPushConstantRanges_proto->set_stageflags((&pCreateInfo->pPushConstantRanges[pPushConstantRanges_indx])->stageFlags);
+    pCreateInfo_proto_pPushConstantRanges_proto->set_offset((&pCreateInfo->pPushConstantRanges[pPushConstantRanges_indx])->offset);
+    pCreateInfo_proto_pPushConstantRanges_proto->set_size((&pCreateInfo->pPushConstantRanges[pPushConstantRanges_indx])->size);
+  }
+  request.mutable_vkcreatepipelinelayout()->set_ppipelinelayout(reinterpret_cast<uint64_t>(*pPipelineLayout));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pPipelineLayout = reinterpret_cast<VkPipelineLayout>(response.vkcreatepipelinelayout().ppipelinelayout());
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkDestroyPipelineLayout(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkPipelineLayout pipelineLayout, const VkAllocationCallbacks* pAllocator) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkDestroyPipelineLayout");
+  request.mutable_vkdestroypipelinelayout()->set_device(reinterpret_cast<uint64_t>(device));
+  if (pipelineLayout) {
+    request.mutable_vkdestroypipelinelayout()->set_pipelinelayout(reinterpret_cast<uint64_t>(pipelineLayout));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 

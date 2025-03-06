@@ -44,6 +44,8 @@ VkResult PackAndCallVkEndCommandBuffer(grpc::ClientReaderWriter<vvk::server::Vvk
 void PackAndCallVkGetImageSubresourceLayout(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkImage image, const VkImageSubresource* pSubresource, VkSubresourceLayout* pLayout);
 VkResult PackAndCallVkCreateRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkRenderPassCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkRenderPass* pRenderPass);
 void PackAndCallVkDestroyRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkRenderPass renderPass, const VkAllocationCallbacks* pAllocator);
+VkResult PackAndCallVkCreatePipelineLayout(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkPipelineLayoutCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkPipelineLayout* pPipelineLayout);
+void PackAndCallVkDestroyPipelineLayout(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkPipelineLayout pipelineLayout, const VkAllocationCallbacks* pAllocator);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

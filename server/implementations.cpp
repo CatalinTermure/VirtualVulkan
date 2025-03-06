@@ -1057,4 +1057,47 @@ void UnpackAndExecuteVkDestroyRenderPass(vvk::ExecutionContext& context, const v
   vkDestroyRenderPass(reinterpret_cast<VkDevice>(request.vkdestroyrenderpass().device()), reinterpret_cast<VkRenderPass>(request.vkdestroyrenderpass().renderpass()), nullptr);
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkCreatePipelineLayout(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreatePipelineLayout");
+
+  VkPipelineLayoutCreateInfo pCreateInfo = {};
+  pCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
+  if (request.vkcreatepipelinelayout().pcreateinfo().has_flags()) {
+    pCreateInfo.flags = static_cast<VkPipelineLayoutCreateFlags>(request.vkcreatepipelinelayout().pcreateinfo().flags());
+  } else {
+    pCreateInfo.flags = VkPipelineLayoutCreateFlags{};
+  }
+  if (request.vkcreatepipelinelayout().pcreateinfo().has_setlayoutcount()) {
+    pCreateInfo.setLayoutCount = request.vkcreatepipelinelayout().pcreateinfo().setlayoutcount();
+  } else {
+    pCreateInfo.setLayoutCount = uint32_t{};
+  }
+  pCreateInfo.pSetLayouts = reinterpret_cast<const VkDescriptorSetLayout*>(request.vkcreatepipelinelayout().pcreateinfo().psetlayouts().data());
+  if (request.vkcreatepipelinelayout().pcreateinfo().has_pushconstantrangecount()) {
+    pCreateInfo.pushConstantRangeCount = request.vkcreatepipelinelayout().pcreateinfo().pushconstantrangecount();
+  } else {
+    pCreateInfo.pushConstantRangeCount = uint32_t{};
+  }
+  VkPushConstantRange* pCreateInfo_pPushConstantRanges = new VkPushConstantRange[request.vkcreatepipelinelayout().pcreateinfo().ppushconstantranges_size()]();
+  pCreateInfo.pPushConstantRanges = pCreateInfo_pPushConstantRanges;
+  for (int pPushConstantRanges_indx = 0; pPushConstantRanges_indx < request.vkcreatepipelinelayout().pcreateinfo().ppushconstantranges_size(); pPushConstantRanges_indx++) {
+    VkPushConstantRange &pCreateInfo_pPushConstantRanges_i = pCreateInfo_pPushConstantRanges[pPushConstantRanges_indx];
+    pCreateInfo_pPushConstantRanges_i.stageFlags = static_cast<VkShaderStageFlags>(request.vkcreatepipelinelayout().pcreateinfo().ppushconstantranges(pPushConstantRanges_indx).stageflags());
+    pCreateInfo_pPushConstantRanges_i.offset = request.vkcreatepipelinelayout().pcreateinfo().ppushconstantranges(pPushConstantRanges_indx).offset();
+    pCreateInfo_pPushConstantRanges_i.size = request.vkcreatepipelinelayout().pcreateinfo().ppushconstantranges(pPushConstantRanges_indx).size();
+  }
+  VkPipelineLayout client_pPipelineLayout = reinterpret_cast<VkPipelineLayout>(request.vkcreatepipelinelayout().ppipelinelayout());
+  VkPipelineLayout server_pPipelineLayout;
+  VkResult result = vkCreatePipelineLayout(reinterpret_cast<VkDevice>(request.vkcreatepipelinelayout().device()), &pCreateInfo, nullptr, &server_pPipelineLayout);
+  response->mutable_vkcreatepipelinelayout()->set_ppipelinelayout(reinterpret_cast<uint64_t>(server_pPipelineLayout));
+  response->set_result(result);
+  delete[] pCreateInfo.pPushConstantRanges;
+}
+void UnpackAndExecuteVkDestroyPipelineLayout(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDestroyPipelineLayout");
+
+  vkDestroyPipelineLayout(reinterpret_cast<VkDevice>(request.vkdestroypipelinelayout().device()), reinterpret_cast<VkPipelineLayout>(request.vkdestroypipelinelayout().pipelinelayout()), nullptr);
+  response->set_result(VK_SUCCESS);
+}
 

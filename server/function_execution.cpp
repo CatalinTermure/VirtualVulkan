@@ -48,6 +48,8 @@ const std::unordered_map<
         {"vkGetImageSubresourceLayout", UnpackAndExecuteVkGetImageSubresourceLayout},
         {"vkCreateRenderPass", UnpackAndExecuteVkCreateRenderPass},
         {"vkDestroyRenderPass", UnpackAndExecuteVkDestroyRenderPass},
+        {"vkCreatePipelineLayout", UnpackAndExecuteVkCreatePipelineLayout},
+        {"vkDestroyPipelineLayout", UnpackAndExecuteVkDestroyPipelineLayout},
 };
 
 }  // namespace

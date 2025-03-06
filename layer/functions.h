@@ -178,6 +178,15 @@ VKAPI_ATTR void VKAPI_CALL DestroyRenderPass(
     VkDevice                                    device,
     VkRenderPass                                renderPass,
     const VkAllocationCallbacks*                pAllocator);
+VKAPI_ATTR VkResult VKAPI_CALL CreatePipelineLayout(
+    VkDevice                                    device,
+    const VkPipelineLayoutCreateInfo*           pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkPipelineLayout*                           pPipelineLayout);
+VKAPI_ATTR void VKAPI_CALL DestroyPipelineLayout(
+    VkDevice                                    device,
+    VkPipelineLayout                            pipelineLayout,
+    const VkAllocationCallbacks*                pAllocator);
 
 inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = {
     {"vkCreateInstance", reinterpret_cast<PFN_vkVoidFunction>(CreateInstance)},
@@ -216,6 +225,8 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkGetImageSubresourceLayout", reinterpret_cast<PFN_vkVoidFunction>(GetImageSubresourceLayout)},
     {"vkCreateRenderPass", reinterpret_cast<PFN_vkVoidFunction>(CreateRenderPass)},
     {"vkDestroyRenderPass", reinterpret_cast<PFN_vkVoidFunction>(DestroyRenderPass)},
+    {"vkCreatePipelineLayout", reinterpret_cast<PFN_vkVoidFunction>(CreatePipelineLayout)},
+    {"vkDestroyPipelineLayout", reinterpret_cast<PFN_vkVoidFunction>(DestroyPipelineLayout)},
 };
 
 }  // namespace vvk
