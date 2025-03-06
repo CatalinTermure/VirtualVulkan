@@ -60,6 +60,8 @@ COMMANDS_TO_GENERATE = [
     "vkBeginCommandBuffer",
     "vkEndCommandBuffer",
     "vkGetImageSubresourceLayout",
+    "vkCreateRenderPass",
+    "vkDestroyRenderPass",
 ]
 
 

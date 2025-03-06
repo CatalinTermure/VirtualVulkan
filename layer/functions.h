@@ -169,6 +169,15 @@ VKAPI_ATTR void VKAPI_CALL GetImageSubresourceLayout(
     VkImage                                     image,
     const VkImageSubresource*                   pSubresource,
     VkSubresourceLayout*                        pLayout);
+VKAPI_ATTR VkResult VKAPI_CALL CreateRenderPass(
+    VkDevice                                    device,
+    const VkRenderPassCreateInfo*               pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkRenderPass*                               pRenderPass);
+VKAPI_ATTR void VKAPI_CALL DestroyRenderPass(
+    VkDevice                                    device,
+    VkRenderPass                                renderPass,
+    const VkAllocationCallbacks*                pAllocator);
 
 inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = {
     {"vkCreateInstance", reinterpret_cast<PFN_vkVoidFunction>(CreateInstance)},
@@ -205,6 +214,8 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkBeginCommandBuffer", reinterpret_cast<PFN_vkVoidFunction>(BeginCommandBuffer)},
     {"vkEndCommandBuffer", reinterpret_cast<PFN_vkVoidFunction>(EndCommandBuffer)},
     {"vkGetImageSubresourceLayout", reinterpret_cast<PFN_vkVoidFunction>(GetImageSubresourceLayout)},
+    {"vkCreateRenderPass", reinterpret_cast<PFN_vkVoidFunction>(CreateRenderPass)},
+    {"vkDestroyRenderPass", reinterpret_cast<PFN_vkVoidFunction>(DestroyRenderPass)},
 };
 
 }  // namespace vvk

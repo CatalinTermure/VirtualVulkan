@@ -853,4 +853,132 @@ void UnpackAndExecuteVkGetImageSubresourceLayout(vvk::ExecutionContext& context,
   pLayout_proto->set_depthpitch(static_cast<uint64_t>((&pLayout)->depthPitch));
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkCreateRenderPass(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreateRenderPass");
+
+  VkRenderPassCreateInfo pCreateInfo = {};
+  pCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
+  if (request.vkcreaterenderpass().pcreateinfo().has_flags()) {
+    pCreateInfo.flags = static_cast<VkRenderPassCreateFlags>(request.vkcreaterenderpass().pcreateinfo().flags());
+  }
+  if (request.vkcreaterenderpass().pcreateinfo().has_attachmentcount()) {
+    pCreateInfo.attachmentCount = request.vkcreaterenderpass().pcreateinfo().attachmentcount();
+  }
+  VkAttachmentDescription* pCreateInfo_pAttachments = new VkAttachmentDescription[request.vkcreaterenderpass().pcreateinfo().pattachments_size()]();
+  pCreateInfo.pAttachments = pCreateInfo_pAttachments;
+  for (int pAttachments_indx = 0; pAttachments_indx < request.vkcreaterenderpass().pcreateinfo().pattachments_size(); pAttachments_indx++) {
+    VkAttachmentDescription &pCreateInfo_pAttachments_i = pCreateInfo_pAttachments[pAttachments_indx];
+    if (request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).has_flags()) {
+      pCreateInfo_pAttachments_i.flags = static_cast<VkAttachmentDescriptionFlags>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).flags());
+    }
+    pCreateInfo_pAttachments_i.format = static_cast<VkFormat>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).format());
+    pCreateInfo_pAttachments_i.samples = static_cast<VkSampleCountFlagBits>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).samples());
+    pCreateInfo_pAttachments_i.loadOp = static_cast<VkAttachmentLoadOp>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).loadop());
+    pCreateInfo_pAttachments_i.storeOp = static_cast<VkAttachmentStoreOp>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).storeop());
+    pCreateInfo_pAttachments_i.stencilLoadOp = static_cast<VkAttachmentLoadOp>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).stencilloadop());
+    pCreateInfo_pAttachments_i.stencilStoreOp = static_cast<VkAttachmentStoreOp>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).stencilstoreop());
+    pCreateInfo_pAttachments_i.initialLayout = static_cast<VkImageLayout>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).initiallayout());
+    pCreateInfo_pAttachments_i.finalLayout = static_cast<VkImageLayout>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).finallayout());
+  }
+  pCreateInfo.subpassCount = request.vkcreaterenderpass().pcreateinfo().subpasscount();
+  VkSubpassDescription* pCreateInfo_pSubpasses = new VkSubpassDescription[request.vkcreaterenderpass().pcreateinfo().psubpasses_size()]();
+  pCreateInfo.pSubpasses = pCreateInfo_pSubpasses;
+  for (int pSubpasses_indx = 0; pSubpasses_indx < request.vkcreaterenderpass().pcreateinfo().psubpasses_size(); pSubpasses_indx++) {
+    VkSubpassDescription &pCreateInfo_pSubpasses_i = pCreateInfo_pSubpasses[pSubpasses_indx];
+    if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_flags()) {
+      pCreateInfo_pSubpasses_i.flags = static_cast<VkSubpassDescriptionFlags>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).flags());
+    }
+    pCreateInfo_pSubpasses_i.pipelineBindPoint = static_cast<VkPipelineBindPoint>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pipelinebindpoint());
+    if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_inputattachmentcount()) {
+      pCreateInfo_pSubpasses_i.inputAttachmentCount = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).inputattachmentcount();
+    }
+    VkAttachmentReference* pCreateInfo_pSubpasses_i_pInputAttachments = new VkAttachmentReference[request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pinputattachments_size()]();
+    pCreateInfo_pSubpasses_i.pInputAttachments = pCreateInfo_pSubpasses_i_pInputAttachments;
+    for (int pInputAttachments_indx = 0; pInputAttachments_indx < request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pinputattachments_size(); pInputAttachments_indx++) {
+      VkAttachmentReference &pCreateInfo_pSubpasses_i_pInputAttachments_i = pCreateInfo_pSubpasses_i_pInputAttachments[pInputAttachments_indx];
+      pCreateInfo_pSubpasses_i_pInputAttachments_i.attachment = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pinputattachments(pInputAttachments_indx).attachment();
+      pCreateInfo_pSubpasses_i_pInputAttachments_i.layout = static_cast<VkImageLayout>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pinputattachments(pInputAttachments_indx).layout());
+    }
+    if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_colorattachmentcount()) {
+      pCreateInfo_pSubpasses_i.colorAttachmentCount = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).colorattachmentcount();
+    }
+    VkAttachmentReference* pCreateInfo_pSubpasses_i_pColorAttachments = new VkAttachmentReference[request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pcolorattachments_size()]();
+    pCreateInfo_pSubpasses_i.pColorAttachments = pCreateInfo_pSubpasses_i_pColorAttachments;
+    for (int pColorAttachments_indx = 0; pColorAttachments_indx < request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pcolorattachments_size(); pColorAttachments_indx++) {
+      VkAttachmentReference &pCreateInfo_pSubpasses_i_pColorAttachments_i = pCreateInfo_pSubpasses_i_pColorAttachments[pColorAttachments_indx];
+      pCreateInfo_pSubpasses_i_pColorAttachments_i.attachment = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pcolorattachments(pColorAttachments_indx).attachment();
+      pCreateInfo_pSubpasses_i_pColorAttachments_i.layout = static_cast<VkImageLayout>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pcolorattachments(pColorAttachments_indx).layout());
+    }
+    VkAttachmentReference* pCreateInfo_pSubpasses_i_pResolveAttachments = new VkAttachmentReference[request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).presolveattachments_size()]();
+    pCreateInfo_pSubpasses_i.pResolveAttachments = pCreateInfo_pSubpasses_i_pResolveAttachments;
+    if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).presolveattachments_size()) {
+      for (int pResolveAttachments_indx = 0; pResolveAttachments_indx < request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).presolveattachments_size(); pResolveAttachments_indx++) {
+        VkAttachmentReference &pCreateInfo_pSubpasses_i_pResolveAttachments_i = pCreateInfo_pSubpasses_i_pResolveAttachments[pResolveAttachments_indx];
+        pCreateInfo_pSubpasses_i_pResolveAttachments_i.attachment = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).presolveattachments(pResolveAttachments_indx).attachment();
+        pCreateInfo_pSubpasses_i_pResolveAttachments_i.layout = static_cast<VkImageLayout>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).presolveattachments(pResolveAttachments_indx).layout());
+      }
+    }
+    VkAttachmentReference pCreateInfo_pSubpasses_i_pDepthStencilAttachment = {};
+    if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_pdepthstencilattachment()) {
+      pCreateInfo_pSubpasses_i_pDepthStencilAttachment.attachment = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pdepthstencilattachment().attachment();
+      pCreateInfo_pSubpasses_i_pDepthStencilAttachment.layout = static_cast<VkImageLayout>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pdepthstencilattachment().layout());
+      pCreateInfo_pSubpasses_i.pDepthStencilAttachment = &pCreateInfo_pSubpasses_i_pDepthStencilAttachment;
+    }
+    if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_preserveattachmentcount()) {
+      pCreateInfo_pSubpasses_i.preserveAttachmentCount = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).preserveattachmentcount();
+    }
+    uint32_t* pCreateInfo_pSubpasses_i_pPreserveAttachments = new uint32_t[request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).ppreserveattachments_size()]();
+    pCreateInfo_pSubpasses_i.pPreserveAttachments = pCreateInfo_pSubpasses_i_pPreserveAttachments;
+    for (int pPreserveAttachments_indx = 0; pPreserveAttachments_indx < request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).ppreserveattachments_size(); pPreserveAttachments_indx++) {
+      pCreateInfo_pSubpasses_i_pPreserveAttachments[pPreserveAttachments_indx] = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).ppreserveattachments(pPreserveAttachments_indx);
+    }
+  }
+  if (request.vkcreaterenderpass().pcreateinfo().has_dependencycount()) {
+    pCreateInfo.dependencyCount = request.vkcreaterenderpass().pcreateinfo().dependencycount();
+  }
+  VkSubpassDependency* pCreateInfo_pDependencies = new VkSubpassDependency[request.vkcreaterenderpass().pcreateinfo().pdependencies_size()]();
+  pCreateInfo.pDependencies = pCreateInfo_pDependencies;
+  for (int pDependencies_indx = 0; pDependencies_indx < request.vkcreaterenderpass().pcreateinfo().pdependencies_size(); pDependencies_indx++) {
+    VkSubpassDependency &pCreateInfo_pDependencies_i = pCreateInfo_pDependencies[pDependencies_indx];
+    pCreateInfo_pDependencies_i.srcSubpass = request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).srcsubpass();
+    pCreateInfo_pDependencies_i.dstSubpass = request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).dstsubpass();
+    if (request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).has_srcstagemask()) {
+      pCreateInfo_pDependencies_i.srcStageMask = static_cast<VkPipelineStageFlags>(request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).srcstagemask());
+    }
+    if (request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).has_dststagemask()) {
+      pCreateInfo_pDependencies_i.dstStageMask = static_cast<VkPipelineStageFlags>(request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).dststagemask());
+    }
+    if (request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).has_srcaccessmask()) {
+      pCreateInfo_pDependencies_i.srcAccessMask = static_cast<VkAccessFlags>(request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).srcaccessmask());
+    }
+    if (request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).has_dstaccessmask()) {
+      pCreateInfo_pDependencies_i.dstAccessMask = static_cast<VkAccessFlags>(request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).dstaccessmask());
+    }
+    if (request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).has_dependencyflags()) {
+      pCreateInfo_pDependencies_i.dependencyFlags = static_cast<VkDependencyFlags>(request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).dependencyflags());
+    }
+  }
+  VkRenderPass client_pRenderPass = reinterpret_cast<VkRenderPass>(request.vkcreaterenderpass().prenderpass());
+  VkRenderPass server_pRenderPass;
+  VkResult result = vkCreateRenderPass(reinterpret_cast<VkDevice>(request.vkcreaterenderpass().device()), &pCreateInfo, nullptr, &server_pRenderPass);
+  response->mutable_vkcreaterenderpass()->set_prenderpass(reinterpret_cast<uint64_t>(server_pRenderPass));
+  response->set_result(result);
+  delete[] pCreateInfo.pAttachments;
+  for (int pSubpasses_indx = 0; pSubpasses_indx < request.vkcreaterenderpass().pcreateinfo().psubpasses_size(); pSubpasses_indx++)  {
+    VkSubpassDescription &pCreateInfo_pSubpasses_i = pCreateInfo_pSubpasses[pSubpasses_indx];
+    delete[] pCreateInfo_pSubpasses_i.pInputAttachments;
+    delete[] pCreateInfo_pSubpasses_i.pColorAttachments;
+    delete[] pCreateInfo_pSubpasses_i.pResolveAttachments;
+    delete[] pCreateInfo_pSubpasses_i.pPreserveAttachments;
+  }
+  delete[] pCreateInfo.pSubpasses;
+  delete[] pCreateInfo.pDependencies;
+}
+void UnpackAndExecuteVkDestroyRenderPass(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDestroyRenderPass");
+
+  vkDestroyRenderPass(reinterpret_cast<VkDevice>(request.vkdestroyrenderpass().device()), reinterpret_cast<VkRenderPass>(request.vkdestroyrenderpass().renderpass()), nullptr);
+  response->set_result(VK_SUCCESS);
+}
 

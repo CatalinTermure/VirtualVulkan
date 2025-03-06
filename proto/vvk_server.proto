@@ -41,14 +41,16 @@ message VvkRequest {
     VkGetImageSubresourceLayoutParams vkGetImageSubresourceLayout = 25;
     VkCreateImageViewParams vkCreateImageView = 26;
     VkDestroyImageViewParams vkDestroyImageView = 27;
-    VkCreateCommandPoolParams vkCreateCommandPool = 28;
-    VkDestroyCommandPoolParams vkDestroyCommandPool = 29;
-    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 30;
-    VkFreeCommandBuffersParams vkFreeCommandBuffers = 31;
-    VkBeginCommandBufferParams vkBeginCommandBuffer = 32;
-    VkEndCommandBufferParams vkEndCommandBuffer = 33;
-    VkBindImageMemory2Params vkBindImageMemory2 = 34;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 35;
+    VkCreateRenderPassParams vkCreateRenderPass = 28;
+    VkDestroyRenderPassParams vkDestroyRenderPass = 29;
+    VkCreateCommandPoolParams vkCreateCommandPool = 30;
+    VkDestroyCommandPoolParams vkDestroyCommandPool = 31;
+    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 32;
+    VkFreeCommandBuffersParams vkFreeCommandBuffers = 33;
+    VkBeginCommandBufferParams vkBeginCommandBuffer = 34;
+    VkEndCommandBufferParams vkEndCommandBuffer = 35;
+    VkBindImageMemory2Params vkBindImageMemory2 = 36;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 37;
   }
 }
 
@@ -73,9 +75,10 @@ message VvkResponse {
     VkCreateImageResponse vkCreateImage = 17;
     VkGetImageSubresourceLayoutResponse vkGetImageSubresourceLayout = 18;
     VkCreateImageViewResponse vkCreateImageView = 19;
-    VkCreateCommandPoolResponse vkCreateCommandPool = 20;
-    VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 21;
-    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 22;
+    VkCreateRenderPassResponse vkCreateRenderPass = 20;
+    VkCreateCommandPoolResponse vkCreateCommandPool = 21;
+    VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 22;
+    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 23;
   }
 }
 
@@ -313,6 +316,23 @@ message VkCreateImageViewParams {
 message VkDestroyImageViewParams {
   uint64 device = 1; // VkDevice device
   optional uint64 imageView = 2; // VkImageView imageView
+  optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
+}
+
+message VkCreateRenderPassResponse {
+  uint64 pRenderPass = 1; // VkRenderPass* pRenderPass
+}
+
+message VkCreateRenderPassParams {
+  uint64 device = 1; // VkDevice device
+  VkRenderPassCreateInfo pCreateInfo = 2; // const VkRenderPassCreateInfo* pCreateInfo
+  optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
+  uint64 pRenderPass = 4; // VkRenderPass* pRenderPass NON-CONST POINTER
+}
+
+message VkDestroyRenderPassParams {
+  uint64 device = 1; // VkDevice device
+  optional uint64 renderPass = 2; // VkRenderPass renderPass
   optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
 }
 

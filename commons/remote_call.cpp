@@ -1136,5 +1136,135 @@ void PackAndCallVkGetImageSubresourceLayout(grpc::ClientReaderWriter<vvk::server
   pLayout_ref.arrayPitch = static_cast<VkDeviceSize>(response.vkgetimagesubresourcelayout().playout().arraypitch());
   pLayout_ref.depthPitch = static_cast<VkDeviceSize>(response.vkgetimagesubresourcelayout().playout().depthpitch());
 }
+VkResult PackAndCallVkCreateRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkRenderPassCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkRenderPass* pRenderPass) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCreateRenderPass");
+  request.mutable_vkcreaterenderpass()->set_device(reinterpret_cast<uint64_t>(device));
+  vvk::server::VkRenderPassCreateInfo* pCreateInfo_proto = request.mutable_vkcreaterenderpass()->mutable_pcreateinfo();
+  if (pCreateInfo->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (pCreateInfo->flags) {
+    pCreateInfo_proto->set_flags(pCreateInfo->flags);
+  }
+  if (pCreateInfo->attachmentCount) {
+    pCreateInfo_proto->set_attachmentcount(pCreateInfo->attachmentCount);
+  }
+  const size_t pCreateInfo_proto_pAttachments_length = pCreateInfo->attachmentCount;
+  for (int pAttachments_indx = 0; pAttachments_indx < pCreateInfo_proto_pAttachments_length; pAttachments_indx++) {
+    vvk::server::VkAttachmentDescription* pCreateInfo_proto_pAttachments_proto = pCreateInfo_proto->add_pattachments();
+    if ((&pCreateInfo->pAttachments[pAttachments_indx])->flags) {
+      pCreateInfo_proto_pAttachments_proto->set_flags((&pCreateInfo->pAttachments[pAttachments_indx])->flags);
+    }
+    pCreateInfo_proto_pAttachments_proto->set_format(static_cast<vvk::server::VkFormat>((&pCreateInfo->pAttachments[pAttachments_indx])->format));
+    pCreateInfo_proto_pAttachments_proto->set_samples((&pCreateInfo->pAttachments[pAttachments_indx])->samples);
+    pCreateInfo_proto_pAttachments_proto->set_loadop(static_cast<vvk::server::VkAttachmentLoadOp>((&pCreateInfo->pAttachments[pAttachments_indx])->loadOp));
+    pCreateInfo_proto_pAttachments_proto->set_storeop(static_cast<vvk::server::VkAttachmentStoreOp>((&pCreateInfo->pAttachments[pAttachments_indx])->storeOp));
+    pCreateInfo_proto_pAttachments_proto->set_stencilloadop(static_cast<vvk::server::VkAttachmentLoadOp>((&pCreateInfo->pAttachments[pAttachments_indx])->stencilLoadOp));
+    pCreateInfo_proto_pAttachments_proto->set_stencilstoreop(static_cast<vvk::server::VkAttachmentStoreOp>((&pCreateInfo->pAttachments[pAttachments_indx])->stencilStoreOp));
+    pCreateInfo_proto_pAttachments_proto->set_initiallayout(static_cast<vvk::server::VkImageLayout>((&pCreateInfo->pAttachments[pAttachments_indx])->initialLayout));
+    pCreateInfo_proto_pAttachments_proto->set_finallayout(static_cast<vvk::server::VkImageLayout>((&pCreateInfo->pAttachments[pAttachments_indx])->finalLayout));
+  }
+  pCreateInfo_proto->set_subpasscount(pCreateInfo->subpassCount);
+  const size_t pCreateInfo_proto_pSubpasses_length = pCreateInfo->subpassCount;
+  for (int pSubpasses_indx = 0; pSubpasses_indx < pCreateInfo_proto_pSubpasses_length; pSubpasses_indx++) {
+    vvk::server::VkSubpassDescription* pCreateInfo_proto_pSubpasses_proto = pCreateInfo_proto->add_psubpasses();
+    if ((&pCreateInfo->pSubpasses[pSubpasses_indx])->flags) {
+      pCreateInfo_proto_pSubpasses_proto->set_flags((&pCreateInfo->pSubpasses[pSubpasses_indx])->flags);
+    }
+    pCreateInfo_proto_pSubpasses_proto->set_pipelinebindpoint(static_cast<vvk::server::VkPipelineBindPoint>((&pCreateInfo->pSubpasses[pSubpasses_indx])->pipelineBindPoint));
+    if ((&pCreateInfo->pSubpasses[pSubpasses_indx])->inputAttachmentCount) {
+      pCreateInfo_proto_pSubpasses_proto->set_inputattachmentcount((&pCreateInfo->pSubpasses[pSubpasses_indx])->inputAttachmentCount);
+    }
+    const size_t pCreateInfo_proto_pSubpasses_proto_pInputAttachments_length = (&pCreateInfo->pSubpasses[pSubpasses_indx])->inputAttachmentCount;
+    for (int pInputAttachments_indx = 0; pInputAttachments_indx < pCreateInfo_proto_pSubpasses_proto_pInputAttachments_length; pInputAttachments_indx++) {
+      vvk::server::VkAttachmentReference* pCreateInfo_proto_pSubpasses_proto_pInputAttachments_proto = pCreateInfo_proto_pSubpasses_proto->add_pinputattachments();
+      pCreateInfo_proto_pSubpasses_proto_pInputAttachments_proto->set_attachment((&(&pCreateInfo->pSubpasses[pSubpasses_indx])->pInputAttachments[pInputAttachments_indx])->attachment);
+      pCreateInfo_proto_pSubpasses_proto_pInputAttachments_proto->set_layout(static_cast<vvk::server::VkImageLayout>((&(&pCreateInfo->pSubpasses[pSubpasses_indx])->pInputAttachments[pInputAttachments_indx])->layout));
+    }
+    if ((&pCreateInfo->pSubpasses[pSubpasses_indx])->colorAttachmentCount) {
+      pCreateInfo_proto_pSubpasses_proto->set_colorattachmentcount((&pCreateInfo->pSubpasses[pSubpasses_indx])->colorAttachmentCount);
+    }
+    const size_t pCreateInfo_proto_pSubpasses_proto_pColorAttachments_length = (&pCreateInfo->pSubpasses[pSubpasses_indx])->colorAttachmentCount;
+    for (int pColorAttachments_indx = 0; pColorAttachments_indx < pCreateInfo_proto_pSubpasses_proto_pColorAttachments_length; pColorAttachments_indx++) {
+      vvk::server::VkAttachmentReference* pCreateInfo_proto_pSubpasses_proto_pColorAttachments_proto = pCreateInfo_proto_pSubpasses_proto->add_pcolorattachments();
+      pCreateInfo_proto_pSubpasses_proto_pColorAttachments_proto->set_attachment((&(&pCreateInfo->pSubpasses[pSubpasses_indx])->pColorAttachments[pColorAttachments_indx])->attachment);
+      pCreateInfo_proto_pSubpasses_proto_pColorAttachments_proto->set_layout(static_cast<vvk::server::VkImageLayout>((&(&pCreateInfo->pSubpasses[pSubpasses_indx])->pColorAttachments[pColorAttachments_indx])->layout));
+    }
+    if ((&pCreateInfo->pSubpasses[pSubpasses_indx])->pResolveAttachments) {
+      const size_t pCreateInfo_proto_pSubpasses_proto_pResolveAttachments_length = (&pCreateInfo->pSubpasses[pSubpasses_indx])->colorAttachmentCount;
+      for (int pResolveAttachments_indx = 0; pResolveAttachments_indx < pCreateInfo_proto_pSubpasses_proto_pResolveAttachments_length; pResolveAttachments_indx++) {
+        vvk::server::VkAttachmentReference* pCreateInfo_proto_pSubpasses_proto_pResolveAttachments_proto = pCreateInfo_proto_pSubpasses_proto->add_presolveattachments();
+        pCreateInfo_proto_pSubpasses_proto_pResolveAttachments_proto->set_attachment((&(&pCreateInfo->pSubpasses[pSubpasses_indx])->pResolveAttachments[pResolveAttachments_indx])->attachment);
+        pCreateInfo_proto_pSubpasses_proto_pResolveAttachments_proto->set_layout(static_cast<vvk::server::VkImageLayout>((&(&pCreateInfo->pSubpasses[pSubpasses_indx])->pResolveAttachments[pResolveAttachments_indx])->layout));
+      }
+    }
+    if ((&pCreateInfo->pSubpasses[pSubpasses_indx])->pDepthStencilAttachment) {
+      vvk::server::VkAttachmentReference* pCreateInfo_proto_pSubpasses_proto_pDepthStencilAttachment_proto = pCreateInfo_proto_pSubpasses_proto->mutable_pdepthstencilattachment();
+      pCreateInfo_proto_pSubpasses_proto_pDepthStencilAttachment_proto->set_attachment((&pCreateInfo->pSubpasses[pSubpasses_indx])->pDepthStencilAttachment->attachment);
+      pCreateInfo_proto_pSubpasses_proto_pDepthStencilAttachment_proto->set_layout(static_cast<vvk::server::VkImageLayout>((&pCreateInfo->pSubpasses[pSubpasses_indx])->pDepthStencilAttachment->layout));
+    }
+    if ((&pCreateInfo->pSubpasses[pSubpasses_indx])->preserveAttachmentCount) {
+      pCreateInfo_proto_pSubpasses_proto->set_preserveattachmentcount((&pCreateInfo->pSubpasses[pSubpasses_indx])->preserveAttachmentCount);
+    }
+    const size_t pCreateInfo_proto_pSubpasses_proto_pPreserveAttachments_length = (&pCreateInfo->pSubpasses[pSubpasses_indx])->preserveAttachmentCount;
+    for (int pPreserveAttachments_indx = 0; pPreserveAttachments_indx < pCreateInfo_proto_pSubpasses_proto_pPreserveAttachments_length; pPreserveAttachments_indx++) {
+      pCreateInfo_proto_pSubpasses_proto->add_ppreserveattachments((&pCreateInfo->pSubpasses[pSubpasses_indx])->pPreserveAttachments[pPreserveAttachments_indx]);
+    }
+  }
+  if (pCreateInfo->dependencyCount) {
+    pCreateInfo_proto->set_dependencycount(pCreateInfo->dependencyCount);
+  }
+  const size_t pCreateInfo_proto_pDependencies_length = pCreateInfo->dependencyCount;
+  for (int pDependencies_indx = 0; pDependencies_indx < pCreateInfo_proto_pDependencies_length; pDependencies_indx++) {
+    vvk::server::VkSubpassDependency* pCreateInfo_proto_pDependencies_proto = pCreateInfo_proto->add_pdependencies();
+    pCreateInfo_proto_pDependencies_proto->set_srcsubpass((&pCreateInfo->pDependencies[pDependencies_indx])->srcSubpass);
+    pCreateInfo_proto_pDependencies_proto->set_dstsubpass((&pCreateInfo->pDependencies[pDependencies_indx])->dstSubpass);
+    if ((&pCreateInfo->pDependencies[pDependencies_indx])->srcStageMask) {
+      pCreateInfo_proto_pDependencies_proto->set_srcstagemask((&pCreateInfo->pDependencies[pDependencies_indx])->srcStageMask);
+    }
+    if ((&pCreateInfo->pDependencies[pDependencies_indx])->dstStageMask) {
+      pCreateInfo_proto_pDependencies_proto->set_dststagemask((&pCreateInfo->pDependencies[pDependencies_indx])->dstStageMask);
+    }
+    if ((&pCreateInfo->pDependencies[pDependencies_indx])->srcAccessMask) {
+      pCreateInfo_proto_pDependencies_proto->set_srcaccessmask((&pCreateInfo->pDependencies[pDependencies_indx])->srcAccessMask);
+    }
+    if ((&pCreateInfo->pDependencies[pDependencies_indx])->dstAccessMask) {
+      pCreateInfo_proto_pDependencies_proto->set_dstaccessmask((&pCreateInfo->pDependencies[pDependencies_indx])->dstAccessMask);
+    }
+    if ((&pCreateInfo->pDependencies[pDependencies_indx])->dependencyFlags) {
+      pCreateInfo_proto_pDependencies_proto->set_dependencyflags((&pCreateInfo->pDependencies[pDependencies_indx])->dependencyFlags);
+    }
+  }
+  request.mutable_vkcreaterenderpass()->set_prenderpass(reinterpret_cast<uint64_t>(*pRenderPass));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pRenderPass = reinterpret_cast<VkRenderPass>(response.vkcreaterenderpass().prenderpass());
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkDestroyRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkRenderPass renderPass, const VkAllocationCallbacks* pAllocator) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkDestroyRenderPass");
+  request.mutable_vkdestroyrenderpass()->set_device(reinterpret_cast<uint64_t>(device));
+  if (renderPass) {
+    request.mutable_vkdestroyrenderpass()->set_renderpass(reinterpret_cast<uint64_t>(renderPass));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 

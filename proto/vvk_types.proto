@@ -2956,6 +2956,56 @@ message VkImageViewCreateInfo {
   VkImageSubresourceRange subresourceRange = 6; // VkImageSubresourceRange subresourceRange
 }
 
+message VkAttachmentDescription {
+  optional uint32 flags = 1; // VkAttachmentDescriptionFlags flags
+  VkFormat format = 2; // VkFormat format
+  uint32 samples = 3; // VkSampleCountFlagBits samples
+  VkAttachmentLoadOp loadOp = 4; // VkAttachmentLoadOp loadOp
+  VkAttachmentStoreOp storeOp = 5; // VkAttachmentStoreOp storeOp
+  VkAttachmentLoadOp stencilLoadOp = 6; // VkAttachmentLoadOp stencilLoadOp
+  VkAttachmentStoreOp stencilStoreOp = 7; // VkAttachmentStoreOp stencilStoreOp
+  VkImageLayout initialLayout = 8; // VkImageLayout initialLayout
+  VkImageLayout finalLayout = 9; // VkImageLayout finalLayout
+}
+
+message VkAttachmentReference {
+  uint32 attachment = 1; // uint32_t attachment
+  VkImageLayout layout = 2; // VkImageLayout layout
+}
+
+message VkSubpassDescription {
+  optional uint32 flags = 1; // VkSubpassDescriptionFlags flags
+  VkPipelineBindPoint pipelineBindPoint = 2; // VkPipelineBindPoint pipelineBindPoint
+  optional uint32 inputAttachmentCount = 3; // uint32_t inputAttachmentCount
+  repeated VkAttachmentReference pInputAttachments = 4; // const VkAttachmentReference* pInputAttachments
+  optional uint32 colorAttachmentCount = 5; // uint32_t colorAttachmentCount
+  repeated VkAttachmentReference pColorAttachments = 6; // const VkAttachmentReference* pColorAttachments
+  repeated VkAttachmentReference pResolveAttachments = 7; // const VkAttachmentReference* pResolveAttachments
+  optional VkAttachmentReference pDepthStencilAttachment = 8; // const VkAttachmentReference* pDepthStencilAttachment
+  optional uint32 preserveAttachmentCount = 9; // uint32_t preserveAttachmentCount
+  repeated uint32 pPreserveAttachments = 10; // const uint32_t* pPreserveAttachments
+}
+
+message VkSubpassDependency {
+  uint32 srcSubpass = 1; // uint32_t srcSubpass
+  uint32 dstSubpass = 2; // uint32_t dstSubpass
+  optional uint32 srcStageMask = 3; // VkPipelineStageFlags srcStageMask
+  optional uint32 dstStageMask = 4; // VkPipelineStageFlags dstStageMask
+  optional uint32 srcAccessMask = 5; // VkAccessFlags srcAccessMask
+  optional uint32 dstAccessMask = 6; // VkAccessFlags dstAccessMask
+  optional uint32 dependencyFlags = 7; // VkDependencyFlags dependencyFlags
+}
+
+message VkRenderPassCreateInfo {
+  optional uint32 flags = 1; // VkRenderPassCreateFlags flags
+  optional uint32 attachmentCount = 2; // uint32_t attachmentCount
+  repeated VkAttachmentDescription pAttachments = 3; // const VkAttachmentDescription* pAttachments
+  uint32 subpassCount = 4; // uint32_t subpassCount
+  repeated VkSubpassDescription pSubpasses = 5; // const VkSubpassDescription* pSubpasses
+  optional uint32 dependencyCount = 6; // uint32_t dependencyCount
+  repeated VkSubpassDependency pDependencies = 7; // const VkSubpassDependency* pDependencies
+}
+
 message VkCommandPoolCreateInfo {
   optional uint32 flags = 1; // VkCommandPoolCreateFlags flags
   uint32 queueFamilyIndex = 2; // uint32_t queueFamilyIndex

@@ -659,12 +659,22 @@ VKAPI_ATTR void VKAPI_CALL GetImageSubresourceLayout(VkDevice device, VkImage im
                                                      const VkImageSubresource* pSubresource,
                                                      VkSubresourceLayout* pLayout) {
   DeviceInfo& device_info = GetDeviceInfo(device);
-  VkImage image_to_check = image;
-  if (device_info.HasRemoteHandle(image)) {
-    image_to_check = device_info.GetRemoteHandle(image);
-  }
   PackAndCallVkGetImageSubresourceLayout(device_info.instance_info.command_stream(),
-                                         device_info.instance_info.GetRemoteHandle(device), image_to_check,
-                                         pSubresource, pLayout);
+                                         device_info.instance_info.GetRemoteHandle(device), image, pSubresource,
+                                         pLayout);
+}
+
+VKAPI_ATTR VkResult VKAPI_CALL CreateRenderPass(VkDevice device, const VkRenderPassCreateInfo* pCreateInfo,
+                                                const VkAllocationCallbacks* pAllocator, VkRenderPass* pRenderPass) {
+  DeviceInfo device_info = GetDeviceInfo(device);
+  return PackAndCallVkCreateRenderPass(device_info.instance_info.command_stream(),
+                                       device_info.instance_info.GetRemoteHandle(device), pCreateInfo, pAllocator,
+                                       pRenderPass);
+}
+VKAPI_ATTR void VKAPI_CALL DestroyRenderPass(VkDevice device, VkRenderPass renderPass,
+                                             const VkAllocationCallbacks* pAllocator) {
+  DeviceInfo device_info = GetDeviceInfo(device);
+  PackAndCallVkDestroyRenderPass(device_info.instance_info.command_stream(),
+                                 device_info.instance_info.GetRemoteHandle(device), renderPass, pAllocator);
 }
 }  // namespace vvk
