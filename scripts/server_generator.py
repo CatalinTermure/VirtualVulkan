@@ -73,7 +73,13 @@ class ServerSrcGenerator(BaseGenerator):
                                                               param.type, f'{param.name}_ref', f'{param_accessor}.{param.name.lower()}(i)')
                         out.append(indent(out_, 2))
                         out.append("  }\n")
-                        deletions.append(after_)
+                        if after_:
+                            deletions.append(
+                                f'  for (int i = 0; i < {param.name}.size(); i++) {{\n')
+                            deletions.append(
+                                f'    {param.type}& {param.name}_ref = {param.name}[i];\n')
+                            deletions.append(indent(after_, 2))
+                            deletions.append("  }\n")
                 elif param.const and param.pointer:
                     if param.length is None:
                         assert (param.type == 'char')
