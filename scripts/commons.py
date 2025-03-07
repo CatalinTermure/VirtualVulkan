@@ -76,6 +76,7 @@ TRIVIAL_TYPES: dict[str, TypeInfo] = {
     "size_t": TypeInfo(cast_to=None),
     "int32_t": TypeInfo(cast_to=None),
     "VkDeviceSize": TypeInfo(cast_to="uint64_t"),
+    "VkSampleMask": TypeInfo(cast_to="uint32_t"),
     "uint8_t": TypeInfo(cast_to="uint32_t"),
 }
 
@@ -99,8 +100,13 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
         out.append(
             f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
     elif member.type in generator.vk.enums:
-        out.append(
-            f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
+        if member.length is None:
+            out.append(
+                f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
+        else:
+            assert (member.const and member.pointer)
+            out.append(
+                f'  {name}.{member.name} = reinterpret_cast<const {member.type}*>({proto_accessor}.{member.name.lower()}().data());\n')
     elif member.type in TRIVIAL_TYPES:
         type_info = TRIVIAL_TYPES[member.type]
         if member.fixedSizeArray:

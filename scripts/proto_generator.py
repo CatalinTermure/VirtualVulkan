@@ -17,6 +17,8 @@ C_TYPE_TO_PROTO_TYPE = {
     "size_t": "uint64",
     "int32_t": "int32",
     "uint8_t": "uint32",
+    "void*": "bytes",
+    "VkSampleMask": "uint32",
 }
 
 required_structs: set[str] = set()
