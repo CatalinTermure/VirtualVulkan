@@ -182,10 +182,16 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
             after.append(f'  delete[] {name}.{member.name};\n')
     elif not member.pointer and member.type in generator.vk.structs:
         if member.length is None:
+            aux_var = f'{name}_{member.name}'
+            pre_fill_declarations.append(
+                f'  {member.type} &{aux_var} = {name}.{member.name};\n')
             out_, after_ = fill_struct_from_proto(generator, member.type,
-                                                  f'{name}.{member.name}', f'{proto_accessor}.{member.name.lower()}()')
+                                                  aux_var, f'{proto_accessor}.{member.name.lower()}()')
             out.append(out_)
-            after.append(after_)
+            if after_:
+                after.append(
+                    f'  const {member.type} &{aux_var} = {name}.{member.name};\n')
+                after.append(after_)
         else:
             # if it's not a pointer, it must be a fixed size array
             assert (member.fixedSizeArray)
