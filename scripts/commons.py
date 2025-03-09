@@ -176,7 +176,7 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
                     f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
                 after.append('  {\n')
                 after.append(
-                    f'    {member.type} &{name}_{member.name}_i = {name}_{member.name}[{index_name}];\n')
+                    f'    const {member.type} &{name}_{member.name}_i = {name}.{member.name}[{index_name}];\n')
                 after.append(indent(after_, 2))
                 after.append('  }\n')
             after.append(f'  delete[] {name}.{member.name};\n')

@@ -400,7 +400,7 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
   response->mutable_vkcreatedevice()->set_pdevice(reinterpret_cast<uint64_t>(server_pDevice));
   response->set_result(result);
   for (int pQueueCreateInfos_indx = 0; pQueueCreateInfos_indx < request.vkcreatedevice().pcreateinfo().pqueuecreateinfos_size(); pQueueCreateInfos_indx++)  {
-    VkDeviceQueueCreateInfo &pCreateInfo_pQueueCreateInfos_i = pCreateInfo_pQueueCreateInfos[pQueueCreateInfos_indx];
+    const VkDeviceQueueCreateInfo &pCreateInfo_pQueueCreateInfos_i = pCreateInfo.pQueueCreateInfos[pQueueCreateInfos_indx];
     delete[] pCreateInfo_pQueueCreateInfos_i.pQueuePriorities;
   }
   delete[] pCreateInfo.pQueueCreateInfos;
@@ -1042,7 +1042,7 @@ void UnpackAndExecuteVkCreateRenderPass(vvk::ExecutionContext& context, const vv
   response->set_result(result);
   delete[] pCreateInfo.pAttachments;
   for (int pSubpasses_indx = 0; pSubpasses_indx < request.vkcreaterenderpass().pcreateinfo().psubpasses_size(); pSubpasses_indx++)  {
-    VkSubpassDescription &pCreateInfo_pSubpasses_i = pCreateInfo_pSubpasses[pSubpasses_indx];
+    const VkSubpassDescription &pCreateInfo_pSubpasses_i = pCreateInfo.pSubpasses[pSubpasses_indx];
     delete[] pCreateInfo_pSubpasses_i.pInputAttachments;
     delete[] pCreateInfo_pSubpasses_i.pColorAttachments;
     delete[] pCreateInfo_pSubpasses_i.pResolveAttachments;
