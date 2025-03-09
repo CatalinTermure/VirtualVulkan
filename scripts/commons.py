@@ -265,7 +265,16 @@ def fill_struct_from_proto(generator: BaseGenerator, struct_type: str, name: str
                     out.append(
                         f'    {name}.{member.name} = {member.type}{{}};\n')
                 out.append('  }\n')
-                after.append(after_)
+                if after_:
+                    # if the member is an array, then we always allocate it, even if it's empty
+                    # so we always need to free it, this is not true for members that are not arrays
+                    if member.length is None:
+                        after.append(
+                            f'  if ({proto_accessor}.has_{member.name.lower()}()) {{\n')
+                        after.append(indent(after_, 2))
+                        after.append('  }\n')
+                    else:
+                        after.append(after_)
         else:
             out1_, out2_, after_ = __fill_struct_member_from_proto(
                 generator, struct_type, name, proto_accessor, member)
