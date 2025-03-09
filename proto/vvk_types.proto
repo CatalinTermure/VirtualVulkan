@@ -3171,6 +3171,16 @@ message VkAttachmentReference {
   VkImageLayout layout = 2; // VkImageLayout layout
 }
 
+message VkFramebufferCreateInfo {
+  optional uint32 flags = 1; // VkFramebufferCreateFlags flags
+  uint64 renderPass = 2; // VkRenderPass renderPass
+  optional uint32 attachmentCount = 3; // uint32_t attachmentCount
+  repeated uint64 pAttachments = 4; // const VkImageView* pAttachments
+  uint32 width = 5; // uint32_t width
+  uint32 height = 6; // uint32_t height
+  uint32 layers = 7; // uint32_t layers
+}
+
 message VkSubpassDescription {
   optional uint32 flags = 1; // VkSubpassDescriptionFlags flags
   VkPipelineBindPoint pipelineBindPoint = 2; // VkPipelineBindPoint pipelineBindPoint

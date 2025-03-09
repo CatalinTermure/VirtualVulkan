@@ -91,4 +91,8 @@ void UnpackAndExecuteVkCreateGraphicsPipelines(vvk::ExecutionContext& context,
                                       const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
 void UnpackAndExecuteVkDestroyPipeline(vvk::ExecutionContext& context,
                                       const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkCreateFramebuffer(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkDestroyFramebuffer(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
 #endif  // VVK_SERVER_IMPLEMENTATIONS_H

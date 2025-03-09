@@ -207,6 +207,15 @@ VKAPI_ATTR void VKAPI_CALL DestroyPipeline(
     VkDevice                                    device,
     VkPipeline                                  pipeline,
     const VkAllocationCallbacks*                pAllocator);
+VKAPI_ATTR VkResult VKAPI_CALL CreateFramebuffer(
+    VkDevice                                    device,
+    const VkFramebufferCreateInfo*              pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkFramebuffer*                              pFramebuffer);
+VKAPI_ATTR void VKAPI_CALL DestroyFramebuffer(
+    VkDevice                                    device,
+    VkFramebuffer                               framebuffer,
+    const VkAllocationCallbacks*                pAllocator);
 
 inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = {
     {"vkCreateInstance", reinterpret_cast<PFN_vkVoidFunction>(CreateInstance)},
@@ -251,6 +260,8 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkDestroyShaderModule", reinterpret_cast<PFN_vkVoidFunction>(DestroyShaderModule)},
     {"vkCreateGraphicsPipelines", reinterpret_cast<PFN_vkVoidFunction>(CreateGraphicsPipelines)},
     {"vkDestroyPipeline", reinterpret_cast<PFN_vkVoidFunction>(DestroyPipeline)},
+    {"vkCreateFramebuffer", reinterpret_cast<PFN_vkVoidFunction>(CreateFramebuffer)},
+    {"vkDestroyFramebuffer", reinterpret_cast<PFN_vkVoidFunction>(DestroyFramebuffer)},
 };
 
 }  // namespace vvk

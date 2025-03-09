@@ -1715,5 +1715,57 @@ void PackAndCallVkDestroyPipeline(grpc::ClientReaderWriter<vvk::server::VvkReque
     spdlog::error("Failed to read response from server");
   }
 }
+VkResult PackAndCallVkCreateFramebuffer(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkFramebufferCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkFramebuffer* pFramebuffer) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCreateFramebuffer");
+  request.mutable_vkcreateframebuffer()->set_device(reinterpret_cast<uint64_t>(device));
+  vvk::server::VkFramebufferCreateInfo* pCreateInfo_proto = request.mutable_vkcreateframebuffer()->mutable_pcreateinfo();
+  if (pCreateInfo->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (pCreateInfo->flags) {
+    pCreateInfo_proto->set_flags(pCreateInfo->flags);
+  }
+  pCreateInfo_proto->set_renderpass(reinterpret_cast<uint64_t>(pCreateInfo->renderPass));
+  if (pCreateInfo->attachmentCount) {
+    pCreateInfo_proto->set_attachmentcount(pCreateInfo->attachmentCount);
+  }
+  const size_t pCreateInfo_proto_pAttachments_length = pCreateInfo->attachmentCount;
+  for (int pAttachments_indx = 0; pAttachments_indx < pCreateInfo_proto_pAttachments_length; pAttachments_indx++) {
+    pCreateInfo_proto->add_pattachments(reinterpret_cast<uint64_t>(pCreateInfo->pAttachments[pAttachments_indx]));
+  }
+  pCreateInfo_proto->set_width(pCreateInfo->width);
+  pCreateInfo_proto->set_height(pCreateInfo->height);
+  pCreateInfo_proto->set_layers(pCreateInfo->layers);
+  request.mutable_vkcreateframebuffer()->set_pframebuffer(reinterpret_cast<uint64_t>(*pFramebuffer));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pFramebuffer = reinterpret_cast<VkFramebuffer>(response.vkcreateframebuffer().pframebuffer());
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkDestroyFramebuffer(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkFramebuffer framebuffer, const VkAllocationCallbacks* pAllocator) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkDestroyFramebuffer");
+  request.mutable_vkdestroyframebuffer()->set_device(reinterpret_cast<uint64_t>(device));
+  if (framebuffer) {
+    request.mutable_vkdestroyframebuffer()->set_framebuffer(reinterpret_cast<uint64_t>(framebuffer));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 

@@ -724,4 +724,18 @@ VKAPI_ATTR void VKAPI_CALL DestroyPipeline(VkDevice device, VkPipeline pipeline,
   PackAndCallVkDestroyPipeline(device_info.instance_info.command_stream(),
                                device_info.instance_info.GetRemoteHandle(device), pipeline, pAllocator);
 }
+
+VKAPI_ATTR VkResult VKAPI_CALL CreateFramebuffer(VkDevice device, const VkFramebufferCreateInfo* pCreateInfo,
+                                                 const VkAllocationCallbacks* pAllocator, VkFramebuffer* pFramebuffer) {
+  DeviceInfo device_info = GetDeviceInfo(device);
+  return PackAndCallVkCreateFramebuffer(device_info.instance_info.command_stream(),
+                                        device_info.instance_info.GetRemoteHandle(device), pCreateInfo, pAllocator,
+                                        pFramebuffer);
+}
+VKAPI_ATTR void VKAPI_CALL DestroyFramebuffer(VkDevice device, VkFramebuffer framebuffer,
+                                              const VkAllocationCallbacks* pAllocator) {
+  DeviceInfo device_info = GetDeviceInfo(device);
+  PackAndCallVkDestroyFramebuffer(device_info.instance_info.command_stream(),
+                                  device_info.instance_info.GetRemoteHandle(device), framebuffer, pAllocator);
+}
 }  // namespace vvk

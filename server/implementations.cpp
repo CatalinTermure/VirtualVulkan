@@ -1534,4 +1534,37 @@ void UnpackAndExecuteVkDestroyPipeline(vvk::ExecutionContext& context, const vvk
   vkDestroyPipeline(reinterpret_cast<VkDevice>(request.vkdestroypipeline().device()), reinterpret_cast<VkPipeline>(request.vkdestroypipeline().pipeline()), nullptr);
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkCreateFramebuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreateFramebuffer");
+
+  VkFramebufferCreateInfo pCreateInfo = {};
+  pCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
+  if (request.vkcreateframebuffer().pcreateinfo().has_flags()) {
+    pCreateInfo.flags = static_cast<VkFramebufferCreateFlags>(request.vkcreateframebuffer().pcreateinfo().flags());
+  } else {
+    pCreateInfo.flags = VkFramebufferCreateFlags{};
+  }
+  pCreateInfo.renderPass = reinterpret_cast<VkRenderPass>(request.vkcreateframebuffer().pcreateinfo().renderpass());
+  if (request.vkcreateframebuffer().pcreateinfo().has_attachmentcount()) {
+    pCreateInfo.attachmentCount = request.vkcreateframebuffer().pcreateinfo().attachmentcount();
+  } else {
+    pCreateInfo.attachmentCount = uint32_t{};
+  }
+  pCreateInfo.pAttachments = reinterpret_cast<const VkImageView*>(request.vkcreateframebuffer().pcreateinfo().pattachments().data());
+  pCreateInfo.width = request.vkcreateframebuffer().pcreateinfo().width();
+  pCreateInfo.height = request.vkcreateframebuffer().pcreateinfo().height();
+  pCreateInfo.layers = request.vkcreateframebuffer().pcreateinfo().layers();
+  VkFramebuffer client_pFramebuffer = reinterpret_cast<VkFramebuffer>(request.vkcreateframebuffer().pframebuffer());
+  VkFramebuffer server_pFramebuffer;
+  VkResult result = vkCreateFramebuffer(reinterpret_cast<VkDevice>(request.vkcreateframebuffer().device()), &pCreateInfo, nullptr, &server_pFramebuffer);
+  response->mutable_vkcreateframebuffer()->set_pframebuffer(reinterpret_cast<uint64_t>(server_pFramebuffer));
+  response->set_result(result);
+}
+void UnpackAndExecuteVkDestroyFramebuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDestroyFramebuffer");
+
+  vkDestroyFramebuffer(reinterpret_cast<VkDevice>(request.vkdestroyframebuffer().device()), reinterpret_cast<VkFramebuffer>(request.vkdestroyframebuffer().framebuffer()), nullptr);
+  response->set_result(VK_SUCCESS);
+}
 

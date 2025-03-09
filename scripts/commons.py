@@ -68,6 +68,8 @@ COMMANDS_TO_GENERATE = [
     "vkDestroyShaderModule",
     "vkCreateGraphicsPipelines",
     "vkDestroyPipeline",
+    "vkCreateFramebuffer",
+    "vkDestroyFramebuffer",
 ]
 
 

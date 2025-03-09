@@ -50,6 +50,8 @@ VkResult PackAndCallVkCreateShaderModule(grpc::ClientReaderWriter<vvk::server::V
 void PackAndCallVkDestroyShaderModule(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkShaderModule shaderModule, const VkAllocationCallbacks* pAllocator);
 VkResult PackAndCallVkCreateGraphicsPipelines(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkPipelineCache pipelineCache, uint32_t createInfoCount, const VkGraphicsPipelineCreateInfo* pCreateInfos, const VkAllocationCallbacks* pAllocator, VkPipeline* pPipelines);
 void PackAndCallVkDestroyPipeline(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkPipeline pipeline, const VkAllocationCallbacks* pAllocator);
+VkResult PackAndCallVkCreateFramebuffer(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkFramebufferCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkFramebuffer* pFramebuffer);
+void PackAndCallVkDestroyFramebuffer(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkFramebuffer framebuffer, const VkAllocationCallbacks* pAllocator);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H
