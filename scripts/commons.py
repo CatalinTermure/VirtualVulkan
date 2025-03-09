@@ -325,8 +325,18 @@ def __fill_proto_from_member(generator: BaseGenerator, struct_type: str, name: s
         out.append(
             f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
     elif member.type in generator.vk.enums:
-        out.append(
-            f'  {name}->set_{member.name.lower()}(static_cast<vvk::server::{member.type}>({struct_accessor}->{member.name}));\n')
+        if member.length is None:
+            out.append(
+                f'  {name}->set_{member.name.lower()}(static_cast<vvk::server::{member.type}>({struct_accessor}->{member.name}));\n')
+        else:
+            out.append(access_length_member_from_struct(
+                generator, struct_type, name, struct_accessor, member))
+            index_name = f'{member.name}_indx'
+            out.append(
+                f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
+            out.append(
+                f'    {name}->add_{member.name.lower()}(static_cast<vvk::server::{member.type}>({struct_accessor}->{member.name}[{index_name}]));\n')
+            out.append('  }\n')
     elif member.pointer and member.const and member.type in generator.vk.structs:
         if member.length is None:
             out.append(
