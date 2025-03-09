@@ -1133,4 +1133,405 @@ void UnpackAndExecuteVkDestroyShaderModule(vvk::ExecutionContext& context, const
   vkDestroyShaderModule(reinterpret_cast<VkDevice>(request.vkdestroyshadermodule().device()), reinterpret_cast<VkShaderModule>(request.vkdestroyshadermodule().shadermodule()), nullptr);
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkCreateGraphicsPipelines(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreateGraphicsPipelines");
+
+  std::vector<VkGraphicsPipelineCreateInfo> pCreateInfos(request.vkcreategraphicspipelines().createinfocount());
+  for (int i = 0; i < pCreateInfos.size(); i++) {
+    VkGraphicsPipelineCreateInfo& pCreateInfos_ref = pCreateInfos[i];
+    pCreateInfos_ref.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pCreateInfos_ref.pNext = nullptr; // pNext chains are currently unsupported
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_flags()) {
+      pCreateInfos_ref.flags = static_cast<VkPipelineCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).flags());
+    } else {
+      pCreateInfos_ref.flags = VkPipelineCreateFlags{};
+    }
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_stagecount()) {
+      pCreateInfos_ref.stageCount = request.vkcreategraphicspipelines().pcreateinfos(i).stagecount();
+    } else {
+      pCreateInfos_ref.stageCount = uint32_t{};
+    }
+    VkPipelineShaderStageCreateInfo* pCreateInfos_ref_pStages = new VkPipelineShaderStageCreateInfo[request.vkcreategraphicspipelines().pcreateinfos(i).pstages_size()]();
+    pCreateInfos_ref.pStages = pCreateInfos_ref_pStages;
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).pstages_size()) {
+      for (int pStages_indx = 0; pStages_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pstages_size(); pStages_indx++) {
+        VkPipelineShaderStageCreateInfo &pCreateInfos_ref_pStages_i = pCreateInfos_ref_pStages[pStages_indx];
+        pCreateInfos_ref_pStages_i.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        pCreateInfos_ref_pStages_i.pNext = nullptr; // pNext chains are currently unsupported
+        if (request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).has_flags()) {
+          pCreateInfos_ref_pStages_i.flags = static_cast<VkPipelineShaderStageCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).flags());
+        } else {
+          pCreateInfos_ref_pStages_i.flags = VkPipelineShaderStageCreateFlags{};
+        }
+        pCreateInfos_ref_pStages_i.stage = static_cast<VkShaderStageFlagBits>(request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).stage());
+        if (request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).has_module()) {
+          pCreateInfos_ref_pStages_i.module = reinterpret_cast<VkShaderModule>(request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).module());
+        } else {
+          pCreateInfos_ref_pStages_i.module = VkShaderModule{};
+        }
+        pCreateInfos_ref_pStages_i.pName = request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pname().data();
+        VkSpecializationInfo pCreateInfos_ref_pStages_i_pSpecializationInfo = {};
+        if (request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).has_pspecializationinfo()) {
+          if (request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().has_mapentrycount()) {
+            pCreateInfos_ref_pStages_i_pSpecializationInfo.mapEntryCount = request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().mapentrycount();
+          } else {
+            pCreateInfos_ref_pStages_i_pSpecializationInfo.mapEntryCount = uint32_t{};
+          }
+          VkSpecializationMapEntry* pCreateInfos_ref_pStages_i_pSpecializationInfo_pMapEntries = new VkSpecializationMapEntry[request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().pmapentries_size()]();
+          pCreateInfos_ref_pStages_i_pSpecializationInfo.pMapEntries = pCreateInfos_ref_pStages_i_pSpecializationInfo_pMapEntries;
+          for (int pMapEntries_indx = 0; pMapEntries_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().pmapentries_size(); pMapEntries_indx++) {
+            VkSpecializationMapEntry &pCreateInfos_ref_pStages_i_pSpecializationInfo_pMapEntries_i = pCreateInfos_ref_pStages_i_pSpecializationInfo_pMapEntries[pMapEntries_indx];
+            pCreateInfos_ref_pStages_i_pSpecializationInfo_pMapEntries_i.constantID = request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().pmapentries(pMapEntries_indx).constantid();
+            pCreateInfos_ref_pStages_i_pSpecializationInfo_pMapEntries_i.offset = request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().pmapentries(pMapEntries_indx).offset();
+            pCreateInfos_ref_pStages_i_pSpecializationInfo_pMapEntries_i.size = request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().pmapentries(pMapEntries_indx).size();
+          }
+          if (request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().has_datasize()) {
+            pCreateInfos_ref_pStages_i_pSpecializationInfo.dataSize = request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().datasize();
+          } else {
+            pCreateInfos_ref_pStages_i_pSpecializationInfo.dataSize = size_t{};
+          }
+          pCreateInfos_ref_pStages_i_pSpecializationInfo.pData = request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().pdata().data();
+          pCreateInfos_ref_pStages_i.pSpecializationInfo = &pCreateInfos_ref_pStages_i_pSpecializationInfo;
+        } else {
+          pCreateInfos_ref_pStages_i.pSpecializationInfo = nullptr;
+        }
+      }
+    } else {
+      pCreateInfos_ref.pStages = nullptr;
+    }
+    VkPipelineVertexInputStateCreateInfo pCreateInfos_ref_pVertexInputState = {};
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pvertexinputstate()) {
+      pCreateInfos_ref_pVertexInputState.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+      pCreateInfos_ref_pVertexInputState.pNext = nullptr; // pNext chains are currently unsupported
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().has_flags()) {
+        pCreateInfos_ref_pVertexInputState.flags = static_cast<VkPipelineVertexInputStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().flags());
+      } else {
+        pCreateInfos_ref_pVertexInputState.flags = VkPipelineVertexInputStateCreateFlags{};
+      }
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().has_vertexbindingdescriptioncount()) {
+        pCreateInfos_ref_pVertexInputState.vertexBindingDescriptionCount = request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().vertexbindingdescriptioncount();
+      } else {
+        pCreateInfos_ref_pVertexInputState.vertexBindingDescriptionCount = uint32_t{};
+      }
+      VkVertexInputBindingDescription* pCreateInfos_ref_pVertexInputState_pVertexBindingDescriptions = new VkVertexInputBindingDescription[request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexbindingdescriptions_size()]();
+      pCreateInfos_ref_pVertexInputState.pVertexBindingDescriptions = pCreateInfos_ref_pVertexInputState_pVertexBindingDescriptions;
+      for (int pVertexBindingDescriptions_indx = 0; pVertexBindingDescriptions_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexbindingdescriptions_size(); pVertexBindingDescriptions_indx++) {
+        VkVertexInputBindingDescription &pCreateInfos_ref_pVertexInputState_pVertexBindingDescriptions_i = pCreateInfos_ref_pVertexInputState_pVertexBindingDescriptions[pVertexBindingDescriptions_indx];
+        pCreateInfos_ref_pVertexInputState_pVertexBindingDescriptions_i.binding = request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexbindingdescriptions(pVertexBindingDescriptions_indx).binding();
+        pCreateInfos_ref_pVertexInputState_pVertexBindingDescriptions_i.stride = request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexbindingdescriptions(pVertexBindingDescriptions_indx).stride();
+        pCreateInfos_ref_pVertexInputState_pVertexBindingDescriptions_i.inputRate = static_cast<VkVertexInputRate>(request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexbindingdescriptions(pVertexBindingDescriptions_indx).inputrate());
+      }
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().has_vertexattributedescriptioncount()) {
+        pCreateInfos_ref_pVertexInputState.vertexAttributeDescriptionCount = request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().vertexattributedescriptioncount();
+      } else {
+        pCreateInfos_ref_pVertexInputState.vertexAttributeDescriptionCount = uint32_t{};
+      }
+      VkVertexInputAttributeDescription* pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions = new VkVertexInputAttributeDescription[request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexattributedescriptions_size()]();
+      pCreateInfos_ref_pVertexInputState.pVertexAttributeDescriptions = pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions;
+      for (int pVertexAttributeDescriptions_indx = 0; pVertexAttributeDescriptions_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexattributedescriptions_size(); pVertexAttributeDescriptions_indx++) {
+        VkVertexInputAttributeDescription &pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions_i = pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions[pVertexAttributeDescriptions_indx];
+        pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions_i.location = request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexattributedescriptions(pVertexAttributeDescriptions_indx).location();
+        pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions_i.binding = request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexattributedescriptions(pVertexAttributeDescriptions_indx).binding();
+        pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions_i.format = static_cast<VkFormat>(request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexattributedescriptions(pVertexAttributeDescriptions_indx).format());
+        pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions_i.offset = request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexattributedescriptions(pVertexAttributeDescriptions_indx).offset();
+      }
+      pCreateInfos_ref.pVertexInputState = &pCreateInfos_ref_pVertexInputState;
+    } else {
+      pCreateInfos_ref.pVertexInputState = nullptr;
+    }
+    VkPipelineInputAssemblyStateCreateInfo pCreateInfos_ref_pInputAssemblyState = {};
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pinputassemblystate()) {
+      pCreateInfos_ref_pInputAssemblyState.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+      pCreateInfos_ref_pInputAssemblyState.pNext = nullptr; // pNext chains are currently unsupported
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pinputassemblystate().has_flags()) {
+        pCreateInfos_ref_pInputAssemblyState.flags = static_cast<VkPipelineInputAssemblyStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pinputassemblystate().flags());
+      } else {
+        pCreateInfos_ref_pInputAssemblyState.flags = VkPipelineInputAssemblyStateCreateFlags{};
+      }
+      pCreateInfos_ref_pInputAssemblyState.topology = static_cast<VkPrimitiveTopology>(request.vkcreategraphicspipelines().pcreateinfos(i).pinputassemblystate().topology());
+      pCreateInfos_ref_pInputAssemblyState.primitiveRestartEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pinputassemblystate().primitiverestartenable();
+      pCreateInfos_ref.pInputAssemblyState = &pCreateInfos_ref_pInputAssemblyState;
+    } else {
+      pCreateInfos_ref.pInputAssemblyState = nullptr;
+    }
+    VkPipelineTessellationStateCreateInfo pCreateInfos_ref_pTessellationState = {};
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_ptessellationstate()) {
+      pCreateInfos_ref_pTessellationState.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+      pCreateInfos_ref_pTessellationState.pNext = nullptr; // pNext chains are currently unsupported
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).ptessellationstate().has_flags()) {
+        pCreateInfos_ref_pTessellationState.flags = static_cast<VkPipelineTessellationStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).ptessellationstate().flags());
+      } else {
+        pCreateInfos_ref_pTessellationState.flags = VkPipelineTessellationStateCreateFlags{};
+      }
+      pCreateInfos_ref_pTessellationState.patchControlPoints = request.vkcreategraphicspipelines().pcreateinfos(i).ptessellationstate().patchcontrolpoints();
+      pCreateInfos_ref.pTessellationState = &pCreateInfos_ref_pTessellationState;
+    } else {
+      pCreateInfos_ref.pTessellationState = nullptr;
+    }
+    VkPipelineViewportStateCreateInfo pCreateInfos_ref_pViewportState = {};
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pviewportstate()) {
+      pCreateInfos_ref_pViewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+      pCreateInfos_ref_pViewportState.pNext = nullptr; // pNext chains are currently unsupported
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().has_flags()) {
+        pCreateInfos_ref_pViewportState.flags = static_cast<VkPipelineViewportStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().flags());
+      } else {
+        pCreateInfos_ref_pViewportState.flags = VkPipelineViewportStateCreateFlags{};
+      }
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().has_viewportcount()) {
+        pCreateInfos_ref_pViewportState.viewportCount = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().viewportcount();
+      } else {
+        pCreateInfos_ref_pViewportState.viewportCount = uint32_t{};
+      }
+      VkViewport* pCreateInfos_ref_pViewportState_pViewports = new VkViewport[request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports_size()]();
+      pCreateInfos_ref_pViewportState.pViewports = pCreateInfos_ref_pViewportState_pViewports;
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports_size()) {
+        for (int pViewports_indx = 0; pViewports_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports_size(); pViewports_indx++) {
+          VkViewport &pCreateInfos_ref_pViewportState_pViewports_i = pCreateInfos_ref_pViewportState_pViewports[pViewports_indx];
+          pCreateInfos_ref_pViewportState_pViewports_i.x = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports(pViewports_indx).x();
+          pCreateInfos_ref_pViewportState_pViewports_i.y = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports(pViewports_indx).y();
+          pCreateInfos_ref_pViewportState_pViewports_i.width = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports(pViewports_indx).width();
+          pCreateInfos_ref_pViewportState_pViewports_i.height = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports(pViewports_indx).height();
+          pCreateInfos_ref_pViewportState_pViewports_i.minDepth = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports(pViewports_indx).mindepth();
+          pCreateInfos_ref_pViewportState_pViewports_i.maxDepth = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports(pViewports_indx).maxdepth();
+        }
+      } else {
+        pCreateInfos_ref_pViewportState.pViewports = nullptr;
+      }
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().has_scissorcount()) {
+        pCreateInfos_ref_pViewportState.scissorCount = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().scissorcount();
+      } else {
+        pCreateInfos_ref_pViewportState.scissorCount = uint32_t{};
+      }
+      VkRect2D* pCreateInfos_ref_pViewportState_pScissors = new VkRect2D[request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pscissors_size()]();
+      pCreateInfos_ref_pViewportState.pScissors = pCreateInfos_ref_pViewportState_pScissors;
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pscissors_size()) {
+        for (int pScissors_indx = 0; pScissors_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pscissors_size(); pScissors_indx++) {
+          VkRect2D &pCreateInfos_ref_pViewportState_pScissors_i = pCreateInfos_ref_pViewportState_pScissors[pScissors_indx];
+          VkOffset2D &pCreateInfos_ref_pViewportState_pScissors_i_offset = pCreateInfos_ref_pViewportState_pScissors_i.offset;
+          pCreateInfos_ref_pViewportState_pScissors_i_offset.x = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pscissors(pScissors_indx).offset().x();
+          pCreateInfos_ref_pViewportState_pScissors_i_offset.y = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pscissors(pScissors_indx).offset().y();
+          VkExtent2D &pCreateInfos_ref_pViewportState_pScissors_i_extent = pCreateInfos_ref_pViewportState_pScissors_i.extent;
+          pCreateInfos_ref_pViewportState_pScissors_i_extent.width = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pscissors(pScissors_indx).extent().width();
+          pCreateInfos_ref_pViewportState_pScissors_i_extent.height = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pscissors(pScissors_indx).extent().height();
+        }
+      } else {
+        pCreateInfos_ref_pViewportState.pScissors = nullptr;
+      }
+      pCreateInfos_ref.pViewportState = &pCreateInfos_ref_pViewportState;
+    } else {
+      pCreateInfos_ref.pViewportState = nullptr;
+    }
+    VkPipelineRasterizationStateCreateInfo pCreateInfos_ref_pRasterizationState = {};
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_prasterizationstate()) {
+      pCreateInfos_ref_pRasterizationState.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+      pCreateInfos_ref_pRasterizationState.pNext = nullptr; // pNext chains are currently unsupported
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().has_flags()) {
+        pCreateInfos_ref_pRasterizationState.flags = static_cast<VkPipelineRasterizationStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().flags());
+      } else {
+        pCreateInfos_ref_pRasterizationState.flags = VkPipelineRasterizationStateCreateFlags{};
+      }
+      pCreateInfos_ref_pRasterizationState.depthClampEnable = request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().depthclampenable();
+      pCreateInfos_ref_pRasterizationState.rasterizerDiscardEnable = request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().rasterizerdiscardenable();
+      pCreateInfos_ref_pRasterizationState.polygonMode = static_cast<VkPolygonMode>(request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().polygonmode());
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().has_cullmode()) {
+        pCreateInfos_ref_pRasterizationState.cullMode = static_cast<VkCullModeFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().cullmode());
+      } else {
+        pCreateInfos_ref_pRasterizationState.cullMode = VkCullModeFlags{};
+      }
+      pCreateInfos_ref_pRasterizationState.frontFace = static_cast<VkFrontFace>(request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().frontface());
+      pCreateInfos_ref_pRasterizationState.depthBiasEnable = request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().depthbiasenable();
+      pCreateInfos_ref_pRasterizationState.depthBiasConstantFactor = request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().depthbiasconstantfactor();
+      pCreateInfos_ref_pRasterizationState.depthBiasClamp = request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().depthbiasclamp();
+      pCreateInfos_ref_pRasterizationState.depthBiasSlopeFactor = request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().depthbiasslopefactor();
+      pCreateInfos_ref_pRasterizationState.lineWidth = request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().linewidth();
+      pCreateInfos_ref.pRasterizationState = &pCreateInfos_ref_pRasterizationState;
+    } else {
+      pCreateInfos_ref.pRasterizationState = nullptr;
+    }
+    VkPipelineMultisampleStateCreateInfo pCreateInfos_ref_pMultisampleState = {};
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pmultisamplestate()) {
+      pCreateInfos_ref_pMultisampleState.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+      pCreateInfos_ref_pMultisampleState.pNext = nullptr; // pNext chains are currently unsupported
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().has_flags()) {
+        pCreateInfos_ref_pMultisampleState.flags = static_cast<VkPipelineMultisampleStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().flags());
+      } else {
+        pCreateInfos_ref_pMultisampleState.flags = VkPipelineMultisampleStateCreateFlags{};
+      }
+      pCreateInfos_ref_pMultisampleState.rasterizationSamples = static_cast<VkSampleCountFlagBits>(request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().rasterizationsamples());
+      pCreateInfos_ref_pMultisampleState.sampleShadingEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().sampleshadingenable();
+      pCreateInfos_ref_pMultisampleState.minSampleShading = request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().minsampleshading();
+      VkSampleMask* pCreateInfos_ref_pMultisampleState_pSampleMask = new VkSampleMask[request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().psamplemask_size()]();
+      pCreateInfos_ref_pMultisampleState.pSampleMask = pCreateInfos_ref_pMultisampleState_pSampleMask;
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().psamplemask_size()) {
+        for (int pSampleMask_indx = 0; pSampleMask_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().psamplemask_size(); pSampleMask_indx++) {
+          pCreateInfos_ref_pMultisampleState_pSampleMask[pSampleMask_indx] = request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().psamplemask(pSampleMask_indx);
+        }
+      } else {
+        pCreateInfos_ref_pMultisampleState.pSampleMask = nullptr;
+      }
+      pCreateInfos_ref_pMultisampleState.alphaToCoverageEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().alphatocoverageenable();
+      pCreateInfos_ref_pMultisampleState.alphaToOneEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().alphatooneenable();
+      pCreateInfos_ref.pMultisampleState = &pCreateInfos_ref_pMultisampleState;
+    } else {
+      pCreateInfos_ref.pMultisampleState = nullptr;
+    }
+    VkPipelineDepthStencilStateCreateInfo pCreateInfos_ref_pDepthStencilState = {};
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pdepthstencilstate()) {
+      pCreateInfos_ref_pDepthStencilState.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+      pCreateInfos_ref_pDepthStencilState.pNext = nullptr; // pNext chains are currently unsupported
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().has_flags()) {
+        pCreateInfos_ref_pDepthStencilState.flags = static_cast<VkPipelineDepthStencilStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().flags());
+      } else {
+        pCreateInfos_ref_pDepthStencilState.flags = VkPipelineDepthStencilStateCreateFlags{};
+      }
+      pCreateInfos_ref_pDepthStencilState.depthTestEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().depthtestenable();
+      pCreateInfos_ref_pDepthStencilState.depthWriteEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().depthwriteenable();
+      pCreateInfos_ref_pDepthStencilState.depthCompareOp = static_cast<VkCompareOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().depthcompareop());
+      pCreateInfos_ref_pDepthStencilState.depthBoundsTestEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().depthboundstestenable();
+      pCreateInfos_ref_pDepthStencilState.stencilTestEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().stenciltestenable();
+      VkStencilOpState &pCreateInfos_ref_pDepthStencilState_front = pCreateInfos_ref_pDepthStencilState.front;
+      pCreateInfos_ref_pDepthStencilState_front.failOp = static_cast<VkStencilOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().front().failop());
+      pCreateInfos_ref_pDepthStencilState_front.passOp = static_cast<VkStencilOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().front().passop());
+      pCreateInfos_ref_pDepthStencilState_front.depthFailOp = static_cast<VkStencilOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().front().depthfailop());
+      pCreateInfos_ref_pDepthStencilState_front.compareOp = static_cast<VkCompareOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().front().compareop());
+      pCreateInfos_ref_pDepthStencilState_front.compareMask = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().front().comparemask();
+      pCreateInfos_ref_pDepthStencilState_front.writeMask = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().front().writemask();
+      pCreateInfos_ref_pDepthStencilState_front.reference = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().front().reference();
+      VkStencilOpState &pCreateInfos_ref_pDepthStencilState_back = pCreateInfos_ref_pDepthStencilState.back;
+      pCreateInfos_ref_pDepthStencilState_back.failOp = static_cast<VkStencilOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().back().failop());
+      pCreateInfos_ref_pDepthStencilState_back.passOp = static_cast<VkStencilOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().back().passop());
+      pCreateInfos_ref_pDepthStencilState_back.depthFailOp = static_cast<VkStencilOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().back().depthfailop());
+      pCreateInfos_ref_pDepthStencilState_back.compareOp = static_cast<VkCompareOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().back().compareop());
+      pCreateInfos_ref_pDepthStencilState_back.compareMask = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().back().comparemask();
+      pCreateInfos_ref_pDepthStencilState_back.writeMask = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().back().writemask();
+      pCreateInfos_ref_pDepthStencilState_back.reference = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().back().reference();
+      pCreateInfos_ref_pDepthStencilState.minDepthBounds = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().mindepthbounds();
+      pCreateInfos_ref_pDepthStencilState.maxDepthBounds = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().maxdepthbounds();
+      pCreateInfos_ref.pDepthStencilState = &pCreateInfos_ref_pDepthStencilState;
+    } else {
+      pCreateInfos_ref.pDepthStencilState = nullptr;
+    }
+    VkPipelineColorBlendStateCreateInfo pCreateInfos_ref_pColorBlendState = {};
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pcolorblendstate()) {
+      pCreateInfos_ref_pColorBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+      pCreateInfos_ref_pColorBlendState.pNext = nullptr; // pNext chains are currently unsupported
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().has_flags()) {
+        pCreateInfos_ref_pColorBlendState.flags = static_cast<VkPipelineColorBlendStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().flags());
+      } else {
+        pCreateInfos_ref_pColorBlendState.flags = VkPipelineColorBlendStateCreateFlags{};
+      }
+      pCreateInfos_ref_pColorBlendState.logicOpEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().logicopenable();
+      pCreateInfos_ref_pColorBlendState.logicOp = static_cast<VkLogicOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().logicop());
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().has_attachmentcount()) {
+        pCreateInfos_ref_pColorBlendState.attachmentCount = request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().attachmentcount();
+      } else {
+        pCreateInfos_ref_pColorBlendState.attachmentCount = uint32_t{};
+      }
+      VkPipelineColorBlendAttachmentState* pCreateInfos_ref_pColorBlendState_pAttachments = new VkPipelineColorBlendAttachmentState[request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments_size()]();
+      pCreateInfos_ref_pColorBlendState.pAttachments = pCreateInfos_ref_pColorBlendState_pAttachments;
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments_size()) {
+        for (int pAttachments_indx = 0; pAttachments_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments_size(); pAttachments_indx++) {
+          VkPipelineColorBlendAttachmentState &pCreateInfos_ref_pColorBlendState_pAttachments_i = pCreateInfos_ref_pColorBlendState_pAttachments[pAttachments_indx];
+          pCreateInfos_ref_pColorBlendState_pAttachments_i.blendEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).blendenable();
+          pCreateInfos_ref_pColorBlendState_pAttachments_i.srcColorBlendFactor = static_cast<VkBlendFactor>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).srccolorblendfactor());
+          pCreateInfos_ref_pColorBlendState_pAttachments_i.dstColorBlendFactor = static_cast<VkBlendFactor>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).dstcolorblendfactor());
+          pCreateInfos_ref_pColorBlendState_pAttachments_i.colorBlendOp = static_cast<VkBlendOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).colorblendop());
+          pCreateInfos_ref_pColorBlendState_pAttachments_i.srcAlphaBlendFactor = static_cast<VkBlendFactor>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).srcalphablendfactor());
+          pCreateInfos_ref_pColorBlendState_pAttachments_i.dstAlphaBlendFactor = static_cast<VkBlendFactor>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).dstalphablendfactor());
+          pCreateInfos_ref_pColorBlendState_pAttachments_i.alphaBlendOp = static_cast<VkBlendOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).alphablendop());
+          if (request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).has_colorwritemask()) {
+            pCreateInfos_ref_pColorBlendState_pAttachments_i.colorWriteMask = static_cast<VkColorComponentFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).colorwritemask());
+          } else {
+            pCreateInfos_ref_pColorBlendState_pAttachments_i.colorWriteMask = VkColorComponentFlags{};
+          }
+        }
+      } else {
+        pCreateInfos_ref_pColorBlendState.pAttachments = nullptr;
+      }
+      for (int blendConstants_indx = 0; blendConstants_indx < 4; blendConstants_indx++) {
+        pCreateInfos_ref_pColorBlendState.blendConstants[blendConstants_indx] = request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().blendconstants(blendConstants_indx);
+      }
+      pCreateInfos_ref.pColorBlendState = &pCreateInfos_ref_pColorBlendState;
+    } else {
+      pCreateInfos_ref.pColorBlendState = nullptr;
+    }
+    VkPipelineDynamicStateCreateInfo pCreateInfos_ref_pDynamicState = {};
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pdynamicstate()) {
+      pCreateInfos_ref_pDynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+      pCreateInfos_ref_pDynamicState.pNext = nullptr; // pNext chains are currently unsupported
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pdynamicstate().has_flags()) {
+        pCreateInfos_ref_pDynamicState.flags = static_cast<VkPipelineDynamicStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pdynamicstate().flags());
+      } else {
+        pCreateInfos_ref_pDynamicState.flags = VkPipelineDynamicStateCreateFlags{};
+      }
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pdynamicstate().has_dynamicstatecount()) {
+        pCreateInfos_ref_pDynamicState.dynamicStateCount = request.vkcreategraphicspipelines().pcreateinfos(i).pdynamicstate().dynamicstatecount();
+      } else {
+        pCreateInfos_ref_pDynamicState.dynamicStateCount = uint32_t{};
+      }
+      pCreateInfos_ref_pDynamicState.pDynamicStates = reinterpret_cast<const VkDynamicState*>(request.vkcreategraphicspipelines().pcreateinfos(i).pdynamicstate().pdynamicstates().data());
+      pCreateInfos_ref.pDynamicState = &pCreateInfos_ref_pDynamicState;
+    } else {
+      pCreateInfos_ref.pDynamicState = nullptr;
+    }
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_layout()) {
+      pCreateInfos_ref.layout = reinterpret_cast<VkPipelineLayout>(request.vkcreategraphicspipelines().pcreateinfos(i).layout());
+    } else {
+      pCreateInfos_ref.layout = VkPipelineLayout{};
+    }
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_renderpass()) {
+      pCreateInfos_ref.renderPass = reinterpret_cast<VkRenderPass>(request.vkcreategraphicspipelines().pcreateinfos(i).renderpass());
+    } else {
+      pCreateInfos_ref.renderPass = VkRenderPass{};
+    }
+    pCreateInfos_ref.subpass = request.vkcreategraphicspipelines().pcreateinfos(i).subpass();
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_basepipelinehandle()) {
+      pCreateInfos_ref.basePipelineHandle = reinterpret_cast<VkPipeline>(request.vkcreategraphicspipelines().pcreateinfos(i).basepipelinehandle());
+    } else {
+      pCreateInfos_ref.basePipelineHandle = VkPipeline{};
+    }
+    pCreateInfos_ref.basePipelineIndex = request.vkcreategraphicspipelines().pcreateinfos(i).basepipelineindex();
+  }
+  std::vector<VkPipeline> pPipelines(request.vkcreategraphicspipelines().createinfocount());
+  VkResult result = vkCreateGraphicsPipelines(reinterpret_cast<VkDevice>(request.vkcreategraphicspipelines().device()), reinterpret_cast<VkPipelineCache>(request.vkcreategraphicspipelines().pipelinecache()), request.vkcreategraphicspipelines().createinfocount(), pCreateInfos.data(), nullptr, pPipelines.data());
+  for (VkPipeline pPipelines_elem : pPipelines) {
+    response->mutable_vkcreategraphicspipelines()->add_ppipelines(reinterpret_cast<uint64_t>(pPipelines_elem));
+  }
+  response->set_result(result);
+  for (int i = 0; i < pCreateInfos.size(); i++) {
+    VkGraphicsPipelineCreateInfo& pCreateInfos_ref = pCreateInfos[i];
+    for (int pStages_indx = 0; pStages_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pstages_size(); pStages_indx++)  {
+      const VkPipelineShaderStageCreateInfo &pCreateInfos_ref_pStages_i = pCreateInfos_ref.pStages[pStages_indx];
+      if (request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).has_pspecializationinfo()) {
+        const VkSpecializationInfo &pCreateInfos_ref_pStages_i_pSpecializationInfo = *pCreateInfos_ref_pStages_i.pSpecializationInfo;
+        delete[] pCreateInfos_ref_pStages_i_pSpecializationInfo.pMapEntries;
+      }
+    }
+    delete[] pCreateInfos_ref.pStages;
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pvertexinputstate()) {
+      const VkPipelineVertexInputStateCreateInfo &pCreateInfos_ref_pVertexInputState = *pCreateInfos_ref.pVertexInputState;
+      delete[] pCreateInfos_ref_pVertexInputState.pVertexBindingDescriptions;
+      delete[] pCreateInfos_ref_pVertexInputState.pVertexAttributeDescriptions;
+    }
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pviewportstate()) {
+      const VkPipelineViewportStateCreateInfo &pCreateInfos_ref_pViewportState = *pCreateInfos_ref.pViewportState;
+      delete[] pCreateInfos_ref_pViewportState.pViewports;
+      delete[] pCreateInfos_ref_pViewportState.pScissors;
+    }
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pmultisamplestate()) {
+      const VkPipelineMultisampleStateCreateInfo &pCreateInfos_ref_pMultisampleState = *pCreateInfos_ref.pMultisampleState;
+      delete[] pCreateInfos_ref_pMultisampleState.pSampleMask;
+    }
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pcolorblendstate()) {
+      const VkPipelineColorBlendStateCreateInfo &pCreateInfos_ref_pColorBlendState = *pCreateInfos_ref.pColorBlendState;
+      delete[] pCreateInfos_ref_pColorBlendState.pAttachments;
+    }
+  }
+}
+void UnpackAndExecuteVkDestroyPipeline(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDestroyPipeline");
+
+  vkDestroyPipeline(reinterpret_cast<VkDevice>(request.vkdestroypipeline().device()), reinterpret_cast<VkPipeline>(request.vkdestroypipeline().pipeline()), nullptr);
+  response->set_result(VK_SUCCESS);
+}
 

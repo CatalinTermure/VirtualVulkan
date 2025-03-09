@@ -43,18 +43,20 @@ message VvkRequest {
     VkDestroyImageViewParams vkDestroyImageView = 27;
     VkCreateShaderModuleParams vkCreateShaderModule = 28;
     VkDestroyShaderModuleParams vkDestroyShaderModule = 29;
-    VkCreatePipelineLayoutParams vkCreatePipelineLayout = 30;
-    VkDestroyPipelineLayoutParams vkDestroyPipelineLayout = 31;
-    VkCreateRenderPassParams vkCreateRenderPass = 32;
-    VkDestroyRenderPassParams vkDestroyRenderPass = 33;
-    VkCreateCommandPoolParams vkCreateCommandPool = 34;
-    VkDestroyCommandPoolParams vkDestroyCommandPool = 35;
-    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 36;
-    VkFreeCommandBuffersParams vkFreeCommandBuffers = 37;
-    VkBeginCommandBufferParams vkBeginCommandBuffer = 38;
-    VkEndCommandBufferParams vkEndCommandBuffer = 39;
-    VkBindImageMemory2Params vkBindImageMemory2 = 40;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 41;
+    VkCreateGraphicsPipelinesParams vkCreateGraphicsPipelines = 30;
+    VkDestroyPipelineParams vkDestroyPipeline = 31;
+    VkCreatePipelineLayoutParams vkCreatePipelineLayout = 32;
+    VkDestroyPipelineLayoutParams vkDestroyPipelineLayout = 33;
+    VkCreateRenderPassParams vkCreateRenderPass = 34;
+    VkDestroyRenderPassParams vkDestroyRenderPass = 35;
+    VkCreateCommandPoolParams vkCreateCommandPool = 36;
+    VkDestroyCommandPoolParams vkDestroyCommandPool = 37;
+    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 38;
+    VkFreeCommandBuffersParams vkFreeCommandBuffers = 39;
+    VkBeginCommandBufferParams vkBeginCommandBuffer = 40;
+    VkEndCommandBufferParams vkEndCommandBuffer = 41;
+    VkBindImageMemory2Params vkBindImageMemory2 = 42;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 43;
   }
 }
 
@@ -80,11 +82,12 @@ message VvkResponse {
     VkGetImageSubresourceLayoutResponse vkGetImageSubresourceLayout = 18;
     VkCreateImageViewResponse vkCreateImageView = 19;
     VkCreateShaderModuleResponse vkCreateShaderModule = 20;
-    VkCreatePipelineLayoutResponse vkCreatePipelineLayout = 21;
-    VkCreateRenderPassResponse vkCreateRenderPass = 22;
-    VkCreateCommandPoolResponse vkCreateCommandPool = 23;
-    VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 24;
-    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 25;
+    VkCreateGraphicsPipelinesResponse vkCreateGraphicsPipelines = 21;
+    VkCreatePipelineLayoutResponse vkCreatePipelineLayout = 22;
+    VkCreateRenderPassResponse vkCreateRenderPass = 23;
+    VkCreateCommandPoolResponse vkCreateCommandPool = 24;
+    VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 25;
+    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 26;
   }
 }
 
@@ -339,6 +342,25 @@ message VkCreateShaderModuleParams {
 message VkDestroyShaderModuleParams {
   uint64 device = 1; // VkDevice device
   optional uint64 shaderModule = 2; // VkShaderModule shaderModule
+  optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
+}
+
+message VkCreateGraphicsPipelinesResponse {
+  repeated uint64 pPipelines = 1; // VkPipeline* pPipelines NON-CONST POINTER
+}
+
+message VkCreateGraphicsPipelinesParams {
+  uint64 device = 1; // VkDevice device
+  optional uint64 pipelineCache = 2; // VkPipelineCache pipelineCache
+  uint32 createInfoCount = 3; // uint32_t createInfoCount
+  repeated VkGraphicsPipelineCreateInfo pCreateInfos = 4; // const VkGraphicsPipelineCreateInfo* pCreateInfos
+  optional VkAllocationCallbacks pAllocator = 5; // const VkAllocationCallbacks* pAllocator
+  repeated uint64 pPipelines = 6; // VkPipeline* pPipelines NON-CONST POINTER
+}
+
+message VkDestroyPipelineParams {
+  uint64 device = 1; // VkDevice device
+  optional uint64 pipeline = 2; // VkPipeline pipeline
   optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
 }
 

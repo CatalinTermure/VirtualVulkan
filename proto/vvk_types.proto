@@ -2620,10 +2620,25 @@ enum VkShaderGroupShaderKHR {
   VK_SHADER_GROUP_SHADER_INTERSECTION_KHR = 3;
 }
 
+message VkExtent2D {
+  uint32 width = 1; // uint32_t width
+  uint32 height = 2; // uint32_t height
+}
+
 message VkExtent3D {
   uint32 width = 1; // uint32_t width
   uint32 height = 2; // uint32_t height
   uint32 depth = 3; // uint32_t depth
+}
+
+message VkOffset2D {
+  int32 x = 1; // int32_t x
+  int32 y = 2; // int32_t y
+}
+
+message VkRect2D {
+  VkOffset2D offset = 1; // VkOffset2D offset
+  VkExtent2D extent = 2; // VkExtent2D extent
 }
 
 message VkImageSubresourceRange {
@@ -2960,6 +2975,169 @@ message VkShaderModuleCreateInfo {
   optional uint32 flags = 1; // VkShaderModuleCreateFlags flags
   uint64 codeSize = 2; // size_t codeSize
   repeated uint32 pCode = 3; // const uint32_t* pCode
+}
+
+message VkSpecializationMapEntry {
+  uint32 constantID = 1; // uint32_t constantID
+  uint32 offset = 2; // uint32_t offset
+  uint64 size = 3; // size_t size
+}
+
+message VkSpecializationInfo {
+  optional uint32 mapEntryCount = 1; // uint32_t mapEntryCount
+  repeated VkSpecializationMapEntry pMapEntries = 2; // const VkSpecializationMapEntry* pMapEntries
+  optional uint64 dataSize = 3; // size_t dataSize
+  bytes pData = 4; // const void* pData
+}
+
+message VkPipelineShaderStageCreateInfo {
+  optional uint32 flags = 1; // VkPipelineShaderStageCreateFlags flags
+  uint32 stage = 2; // VkShaderStageFlagBits stage
+  optional uint64 module = 3; // VkShaderModule module
+  string pName = 4; // const char* pName
+  optional VkSpecializationInfo pSpecializationInfo = 5; // const VkSpecializationInfo* pSpecializationInfo
+}
+
+message VkVertexInputBindingDescription {
+  uint32 binding = 1; // uint32_t binding
+  uint32 stride = 2; // uint32_t stride
+  VkVertexInputRate inputRate = 3; // VkVertexInputRate inputRate
+}
+
+message VkVertexInputAttributeDescription {
+  uint32 location = 1; // uint32_t location
+  uint32 binding = 2; // uint32_t binding
+  VkFormat format = 3; // VkFormat format
+  uint32 offset = 4; // uint32_t offset
+}
+
+message VkPipelineVertexInputStateCreateInfo {
+  optional uint32 flags = 1; // VkPipelineVertexInputStateCreateFlags flags
+  optional uint32 vertexBindingDescriptionCount = 2; // uint32_t vertexBindingDescriptionCount
+  repeated VkVertexInputBindingDescription pVertexBindingDescriptions = 3; // const VkVertexInputBindingDescription* pVertexBindingDescriptions
+  optional uint32 vertexAttributeDescriptionCount = 4; // uint32_t vertexAttributeDescriptionCount
+  repeated VkVertexInputAttributeDescription pVertexAttributeDescriptions = 5; // const VkVertexInputAttributeDescription* pVertexAttributeDescriptions
+}
+
+message VkPipelineInputAssemblyStateCreateInfo {
+  optional uint32 flags = 1; // VkPipelineInputAssemblyStateCreateFlags flags
+  VkPrimitiveTopology topology = 2; // VkPrimitiveTopology topology
+  bool primitiveRestartEnable = 3; // VkBool32 primitiveRestartEnable
+}
+
+message VkPipelineTessellationStateCreateInfo {
+  optional uint32 flags = 1; // VkPipelineTessellationStateCreateFlags flags
+  uint32 patchControlPoints = 2; // uint32_t patchControlPoints
+}
+
+message VkViewport {
+  float x = 1; // float x
+  float y = 2; // float y
+  float width = 3; // float width
+  float height = 4; // float height
+  float minDepth = 5; // float minDepth
+  float maxDepth = 6; // float maxDepth
+}
+
+message VkPipelineViewportStateCreateInfo {
+  optional uint32 flags = 1; // VkPipelineViewportStateCreateFlags flags
+  optional uint32 viewportCount = 2; // uint32_t viewportCount
+  repeated VkViewport pViewports = 3; // const VkViewport* pViewports
+  optional uint32 scissorCount = 4; // uint32_t scissorCount
+  repeated VkRect2D pScissors = 5; // const VkRect2D* pScissors
+}
+
+message VkPipelineRasterizationStateCreateInfo {
+  optional uint32 flags = 1; // VkPipelineRasterizationStateCreateFlags flags
+  bool depthClampEnable = 2; // VkBool32 depthClampEnable
+  bool rasterizerDiscardEnable = 3; // VkBool32 rasterizerDiscardEnable
+  VkPolygonMode polygonMode = 4; // VkPolygonMode polygonMode
+  optional uint32 cullMode = 5; // VkCullModeFlags cullMode
+  VkFrontFace frontFace = 6; // VkFrontFace frontFace
+  bool depthBiasEnable = 7; // VkBool32 depthBiasEnable
+  float depthBiasConstantFactor = 8; // float depthBiasConstantFactor
+  float depthBiasClamp = 9; // float depthBiasClamp
+  float depthBiasSlopeFactor = 10; // float depthBiasSlopeFactor
+  float lineWidth = 11; // float lineWidth
+}
+
+message VkPipelineMultisampleStateCreateInfo {
+  optional uint32 flags = 1; // VkPipelineMultisampleStateCreateFlags flags
+  uint32 rasterizationSamples = 2; // VkSampleCountFlagBits rasterizationSamples
+  bool sampleShadingEnable = 3; // VkBool32 sampleShadingEnable
+  float minSampleShading = 4; // float minSampleShading
+  repeated uint32 pSampleMask = 5; // const VkSampleMask* pSampleMask
+  bool alphaToCoverageEnable = 6; // VkBool32 alphaToCoverageEnable
+  bool alphaToOneEnable = 7; // VkBool32 alphaToOneEnable
+}
+
+message VkStencilOpState {
+  VkStencilOp failOp = 1; // VkStencilOp failOp
+  VkStencilOp passOp = 2; // VkStencilOp passOp
+  VkStencilOp depthFailOp = 3; // VkStencilOp depthFailOp
+  VkCompareOp compareOp = 4; // VkCompareOp compareOp
+  uint32 compareMask = 5; // uint32_t compareMask
+  uint32 writeMask = 6; // uint32_t writeMask
+  uint32 reference = 7; // uint32_t reference
+}
+
+message VkPipelineDepthStencilStateCreateInfo {
+  optional uint32 flags = 1; // VkPipelineDepthStencilStateCreateFlags flags
+  bool depthTestEnable = 2; // VkBool32 depthTestEnable
+  bool depthWriteEnable = 3; // VkBool32 depthWriteEnable
+  VkCompareOp depthCompareOp = 4; // VkCompareOp depthCompareOp
+  bool depthBoundsTestEnable = 5; // VkBool32 depthBoundsTestEnable
+  bool stencilTestEnable = 6; // VkBool32 stencilTestEnable
+  VkStencilOpState front = 7; // VkStencilOpState front
+  VkStencilOpState back = 8; // VkStencilOpState back
+  float minDepthBounds = 9; // float minDepthBounds
+  float maxDepthBounds = 10; // float maxDepthBounds
+}
+
+message VkPipelineColorBlendAttachmentState {
+  bool blendEnable = 1; // VkBool32 blendEnable
+  VkBlendFactor srcColorBlendFactor = 2; // VkBlendFactor srcColorBlendFactor
+  VkBlendFactor dstColorBlendFactor = 3; // VkBlendFactor dstColorBlendFactor
+  VkBlendOp colorBlendOp = 4; // VkBlendOp colorBlendOp
+  VkBlendFactor srcAlphaBlendFactor = 5; // VkBlendFactor srcAlphaBlendFactor
+  VkBlendFactor dstAlphaBlendFactor = 6; // VkBlendFactor dstAlphaBlendFactor
+  VkBlendOp alphaBlendOp = 7; // VkBlendOp alphaBlendOp
+  optional uint32 colorWriteMask = 8; // VkColorComponentFlags colorWriteMask
+}
+
+message VkPipelineColorBlendStateCreateInfo {
+  optional uint32 flags = 1; // VkPipelineColorBlendStateCreateFlags flags
+  bool logicOpEnable = 2; // VkBool32 logicOpEnable
+  VkLogicOp logicOp = 3; // VkLogicOp logicOp
+  optional uint32 attachmentCount = 4; // uint32_t attachmentCount
+  repeated VkPipelineColorBlendAttachmentState pAttachments = 5; // const VkPipelineColorBlendAttachmentState* pAttachments
+  repeated float blendConstants = 6; // float blendConstants[4]
+}
+
+message VkPipelineDynamicStateCreateInfo {
+  optional uint32 flags = 1; // VkPipelineDynamicStateCreateFlags flags
+  optional uint32 dynamicStateCount = 2; // uint32_t dynamicStateCount
+  repeated VkDynamicState pDynamicStates = 3; // const VkDynamicState* pDynamicStates
+}
+
+message VkGraphicsPipelineCreateInfo {
+  optional uint32 flags = 1; // VkPipelineCreateFlags flags
+  optional uint32 stageCount = 2; // uint32_t stageCount
+  repeated VkPipelineShaderStageCreateInfo pStages = 3; // const VkPipelineShaderStageCreateInfo* pStages
+  optional VkPipelineVertexInputStateCreateInfo pVertexInputState = 4; // const VkPipelineVertexInputStateCreateInfo* pVertexInputState
+  optional VkPipelineInputAssemblyStateCreateInfo pInputAssemblyState = 5; // const VkPipelineInputAssemblyStateCreateInfo* pInputAssemblyState
+  optional VkPipelineTessellationStateCreateInfo pTessellationState = 6; // const VkPipelineTessellationStateCreateInfo* pTessellationState
+  optional VkPipelineViewportStateCreateInfo pViewportState = 7; // const VkPipelineViewportStateCreateInfo* pViewportState
+  optional VkPipelineRasterizationStateCreateInfo pRasterizationState = 8; // const VkPipelineRasterizationStateCreateInfo* pRasterizationState
+  optional VkPipelineMultisampleStateCreateInfo pMultisampleState = 9; // const VkPipelineMultisampleStateCreateInfo* pMultisampleState
+  optional VkPipelineDepthStencilStateCreateInfo pDepthStencilState = 10; // const VkPipelineDepthStencilStateCreateInfo* pDepthStencilState
+  optional VkPipelineColorBlendStateCreateInfo pColorBlendState = 11; // const VkPipelineColorBlendStateCreateInfo* pColorBlendState
+  optional VkPipelineDynamicStateCreateInfo pDynamicState = 12; // const VkPipelineDynamicStateCreateInfo* pDynamicState
+  optional uint64 layout = 13; // VkPipelineLayout layout
+  optional uint64 renderPass = 14; // VkRenderPass renderPass
+  uint32 subpass = 15; // uint32_t subpass
+  optional uint64 basePipelineHandle = 16; // VkPipeline basePipelineHandle
+  int32 basePipelineIndex = 17; // int32_t basePipelineIndex
 }
 
 message VkPushConstantRange {
