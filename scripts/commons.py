@@ -402,8 +402,15 @@ def __fill_proto_from_member(generator: BaseGenerator, struct_type: str, name: s
             f'    {name}->add_{member.name.lower()}({struct_accessor}->{member.name}[{index_name}]);\n')
         out.append('  }\n')
     elif member.pointer and member.const:
-        out.append(
-            f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
+        if member.type == 'void':
+            assert (member.length is not None)
+            out.append(access_length_member_from_struct(
+                generator, struct_type, name, struct_accessor, member))
+            out.append(
+                f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name}, {name}_{member.name}_length);\n')
+        else:
+            out.append(
+                f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
     else:
         out.append(f'  // Unsupported member: {member.cDeclaration}\n')
         print("UNSUPPORTED MEMBER:", struct_type, member.cDeclaration)
