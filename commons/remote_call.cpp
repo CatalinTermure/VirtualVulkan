@@ -1891,5 +1891,21 @@ void PackAndCallVkCmdEndRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRequ
     spdlog::error("Failed to read response from server");
   }
 }
+void PackAndCallVkCmdBindPipeline(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint, VkPipeline pipeline) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdBindPipeline");
+  request.mutable_vkcmdbindpipeline()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  request.mutable_vkcmdbindpipeline()->set_pipelinebindpoint(static_cast<vvk::server::VkPipelineBindPoint>(pipelineBindPoint));
+  request.mutable_vkcmdbindpipeline()->set_pipeline(reinterpret_cast<uint64_t>(pipeline));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 

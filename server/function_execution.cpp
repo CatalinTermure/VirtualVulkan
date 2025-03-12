@@ -61,6 +61,7 @@ const std::unordered_map<
         {"vkResetCommandPool", UnpackAndExecuteVkResetCommandPool},
         {"vkCmdBeginRenderPass", UnpackAndExecuteVkCmdBeginRenderPass},
         {"vkCmdEndRenderPass", UnpackAndExecuteVkCmdEndRenderPass},
+        {"vkCmdBindPipeline", UnpackAndExecuteVkCmdBindPipeline},
 };
 
 }  // namespace

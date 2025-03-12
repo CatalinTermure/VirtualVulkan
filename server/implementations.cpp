@@ -1633,4 +1633,10 @@ void UnpackAndExecuteVkCmdEndRenderPass(vvk::ExecutionContext& context, const vv
   vkCmdEndRenderPass(reinterpret_cast<VkCommandBuffer>(request.vkcmdendrenderpass().commandbuffer()));
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkCmdBindPipeline(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCmdBindPipeline");
+
+  vkCmdBindPipeline(reinterpret_cast<VkCommandBuffer>(request.vkcmdbindpipeline().commandbuffer()), static_cast<VkPipelineBindPoint>(request.vkcmdbindpipeline().pipelinebindpoint()), reinterpret_cast<VkPipeline>(request.vkcmdbindpipeline().pipeline()));
+  response->set_result(VK_SUCCESS);
+}
 

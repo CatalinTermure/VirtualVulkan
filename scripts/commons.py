@@ -75,6 +75,7 @@ COMMANDS_TO_GENERATE = [
     "vkResetCommandPool",
     "vkCmdBeginRenderPass",
     "vkCmdEndRenderPass",
+    "vkCmdBindPipeline",
 ]
 
 

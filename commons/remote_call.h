@@ -57,6 +57,7 @@ VkResult PackAndCallVkResetFences(grpc::ClientReaderWriter<vvk::server::VvkReque
 VkResult PackAndCallVkResetCommandPool(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkCommandPool commandPool, VkCommandPoolResetFlags flags);
 void PackAndCallVkCmdBeginRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo* pRenderPassBegin, VkSubpassContents contents);
 void PackAndCallVkCmdEndRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer);
+void PackAndCallVkCmdBindPipeline(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint, VkPipeline pipeline);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

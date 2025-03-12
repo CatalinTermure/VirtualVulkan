@@ -880,4 +880,11 @@ VKAPI_ATTR void VKAPI_CALL CmdEndRenderPass(VkCommandBuffer commandBuffer) {
   PackAndCallVkCmdEndRenderPass(device_info.instance_info().command_stream(),
                                 device_info.GetRemoteHandle(commandBuffer));
 }
+
+VKAPI_ATTR void VKAPI_CALL CmdBindPipeline(VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint,
+                                           VkPipeline pipeline) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdBindPipeline(device_info.instance_info().command_stream(), device_info.GetRemoteHandle(commandBuffer),
+                               pipelineBindPoint, pipeline);
+}
 }  // namespace vvk
