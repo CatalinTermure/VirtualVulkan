@@ -37,6 +37,10 @@ VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(
     VkFence                                     fence,
     uint32_t*                                   pImageIndex);
 
+VKAPI_ATTR VkResult VKAPI_CALL QueuePresentKHR(
+    VkQueue                                     queue,
+    const VkPresentInfoKHR*                     pPresentInfo);
+
 VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(
     const VkInstanceCreateInfo*                 pCreateInfo,
     const VkAllocationCallbacks*                pAllocator,

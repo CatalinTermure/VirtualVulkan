@@ -49,6 +49,10 @@ VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(
     VkFence                                     fence,
     uint32_t*                                   pImageIndex);
 
+VKAPI_ATTR VkResult VKAPI_CALL QueuePresentKHR(
+    VkQueue                                     queue,
+    const VkPresentInfoKHR*                     pPresentInfo);
+
 ''')
         name_to_func_ptr_map = [
             'inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = {\n'
