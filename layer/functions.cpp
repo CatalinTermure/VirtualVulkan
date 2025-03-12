@@ -5,18 +5,8 @@
 #include <vk_mem_alloc.h>
 #include <vulkan/vk_icd.h>
 #include <vulkan/vk_layer.h>
-#include <vvk_server.grpc.pb.h>
-#include <vvk_server.pb.h>
-#include <vvk_types.pb.h>
 
 #include <cassert>
-#include <functional>
-#include <map>
-#include <memory>
-#include <mutex>
-#include <string_view>
-#include <type_traits>
-#include <utility>
 
 #include "commons/remote_call.h"
 #include "layer/context/device.h"
