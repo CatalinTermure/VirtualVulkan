@@ -1807,5 +1807,24 @@ VkResult PackAndCallVkResetFences(grpc::ClientReaderWriter<vvk::server::VvkReque
   }
   return static_cast<VkResult>(response.result());
 }
+VkResult PackAndCallVkResetCommandPool(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkCommandPool commandPool, VkCommandPoolResetFlags flags) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkResetCommandPool");
+  request.mutable_vkresetcommandpool()->set_device(reinterpret_cast<uint64_t>(device));
+  request.mutable_vkresetcommandpool()->set_commandpool(reinterpret_cast<uint64_t>(commandPool));
+  if (flags) {
+    request.mutable_vkresetcommandpool()->set_flags(flags);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  return static_cast<VkResult>(response.result());
+}
 }  // namespace vvk
 

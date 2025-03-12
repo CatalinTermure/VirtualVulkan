@@ -1579,4 +1579,10 @@ void UnpackAndExecuteVkResetFences(vvk::ExecutionContext& context, const vvk::se
   VkResult result = vkResetFences(reinterpret_cast<VkDevice>(request.vkresetfences().device()), request.vkresetfences().fencecount(), reinterpret_cast<const VkFence*>(request.vkresetfences().pfences().data()));
   response->set_result(result);
 }
+void UnpackAndExecuteVkResetCommandPool(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkResetCommandPool");
+
+  VkResult result = vkResetCommandPool(reinterpret_cast<VkDevice>(request.vkresetcommandpool().device()), reinterpret_cast<VkCommandPool>(request.vkresetcommandpool().commandpool()), static_cast<VkCommandPoolResetFlags>(request.vkresetcommandpool().flags()));
+  response->set_result(result);
+}
 

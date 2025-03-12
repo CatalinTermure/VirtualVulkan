@@ -72,6 +72,7 @@ COMMANDS_TO_GENERATE = [
     "vkDestroyFramebuffer",
     "vkWaitForFences",
     "vkResetFences",
+    "vkResetCommandPool",
 ]
 
 

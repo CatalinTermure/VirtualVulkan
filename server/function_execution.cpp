@@ -56,6 +56,9 @@ const std::unordered_map<
         {"vkDestroyPipeline", UnpackAndExecuteVkDestroyPipeline},
         {"vkCreateFramebuffer", UnpackAndExecuteVkCreateFramebuffer},
         {"vkDestroyFramebuffer", UnpackAndExecuteVkDestroyFramebuffer},
+        {"vkWaitForFences", UnpackAndExecuteVkWaitForFences},
+        {"vkResetFences", UnpackAndExecuteVkResetFences},
+        {"vkResetCommandPool", UnpackAndExecuteVkResetCommandPool},
 };
 
 }  // namespace

@@ -51,6 +51,9 @@ class ServerSrcGenerator(BaseGenerator):
                     assert (not param.pointer and param.length is None)
                     actual_parameters.append(
                         f'static_cast<{param.type}>({param_accessor}.{param.name.lower()}())')
+                elif "Flags" in param.type or "FlagBits" in param.type:
+                    actual_parameters.append(
+                        f'static_cast<{param.type}>({param_accessor}.{param.name.lower()}())')
                 elif param.const and param.pointer and param.type in self.vk.structs:
                     if param.length is None:
                         actual_parameters.append(f'&{param.name}')

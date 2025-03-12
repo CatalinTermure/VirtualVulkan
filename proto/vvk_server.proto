@@ -55,12 +55,13 @@ message VvkRequest {
     VkDestroyRenderPassParams vkDestroyRenderPass = 39;
     VkCreateCommandPoolParams vkCreateCommandPool = 40;
     VkDestroyCommandPoolParams vkDestroyCommandPool = 41;
-    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 42;
-    VkFreeCommandBuffersParams vkFreeCommandBuffers = 43;
-    VkBeginCommandBufferParams vkBeginCommandBuffer = 44;
-    VkEndCommandBufferParams vkEndCommandBuffer = 45;
-    VkBindImageMemory2Params vkBindImageMemory2 = 46;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 47;
+    VkResetCommandPoolParams vkResetCommandPool = 42;
+    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 43;
+    VkFreeCommandBuffersParams vkFreeCommandBuffers = 44;
+    VkBeginCommandBufferParams vkBeginCommandBuffer = 45;
+    VkEndCommandBufferParams vkEndCommandBuffer = 46;
+    VkBindImageMemory2Params vkBindImageMemory2 = 47;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 48;
   }
 }
 
@@ -449,6 +450,12 @@ message VkDestroyCommandPoolParams {
   uint64 device = 1; // VkDevice device
   optional uint64 commandPool = 2; // VkCommandPool commandPool
   optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
+}
+
+message VkResetCommandPoolParams {
+  uint64 device = 1; // VkDevice device
+  uint64 commandPool = 2; // VkCommandPool commandPool
+  optional uint32 flags = 3; // VkCommandPoolResetFlags flags
 }
 
 message VkAllocateCommandBuffersResponse {

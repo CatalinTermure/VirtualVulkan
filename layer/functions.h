@@ -234,6 +234,10 @@ VKAPI_ATTR VkResult VKAPI_CALL ResetFences(
     VkDevice                                    device,
     uint32_t                                    fenceCount,
     const VkFence*                              pFences);
+VKAPI_ATTR VkResult VKAPI_CALL ResetCommandPool(
+    VkDevice                                    device,
+    VkCommandPool                               commandPool,
+    VkCommandPoolResetFlags                     flags);
 
 inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = {
     {"vkCreateInstance", reinterpret_cast<PFN_vkVoidFunction>(CreateInstance)},
@@ -282,6 +286,7 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkDestroyFramebuffer", reinterpret_cast<PFN_vkVoidFunction>(DestroyFramebuffer)},
     {"vkWaitForFences", reinterpret_cast<PFN_vkVoidFunction>(WaitForFences)},
     {"vkResetFences", reinterpret_cast<PFN_vkVoidFunction>(ResetFences)},
+    {"vkResetCommandPool", reinterpret_cast<PFN_vkVoidFunction>(ResetCommandPool)},
 };
 
 }  // namespace vvk

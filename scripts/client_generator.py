@@ -23,6 +23,9 @@ class ClientSrcGenerator(BaseGenerator):
             assert (not param.pointer and param.length is None)
             out.append(
                 f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}(static_cast<vvk::server::{param.type}>({param.name}));\n')
+        elif "Flags" in param.type or "FlagBits" in param.type:
+            out.append(
+                f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}({param.name});\n')
         elif param.pointer and param.const and param.type in self.vk.structs:
             if param.length is None:
                 out.append(

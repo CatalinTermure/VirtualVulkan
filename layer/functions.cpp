@@ -860,4 +860,11 @@ VKAPI_ATTR VkResult VKAPI_CALL ResetFences(VkDevice device, uint32_t fenceCount,
 
   return VK_SUCCESS;
 }
+
+VKAPI_ATTR VkResult VKAPI_CALL ResetCommandPool(VkDevice device, VkCommandPool commandPool,
+                                                VkCommandPoolResetFlags flags) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  return PackAndCallVkResetCommandPool(device_info.instance_info().command_stream(),
+                                       device_info.instance_info().GetRemoteHandle(device), commandPool, flags);
+}
 }  // namespace vvk
