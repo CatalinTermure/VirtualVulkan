@@ -29,6 +29,14 @@ VKAPI_ATTR VkResult VKAPI_CALL GetSwapchainImagesKHR(
     uint32_t*                                   pSwapchainImageCount,
     VkImage*                                    pSwapchainImages);
 
+VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(
+    VkDevice                                    device,
+    VkSwapchainKHR                              swapchain,
+    uint64_t                                    timeout,
+    VkSemaphore                                 semaphore,
+    VkFence                                     fence,
+    uint32_t*                                   pImageIndex);
+
 VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(
     const VkInstanceCreateInfo*                 pCreateInfo,
     const VkAllocationCallbacks*                pAllocator,

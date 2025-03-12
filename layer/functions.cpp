@@ -187,6 +187,23 @@ VKAPI_ATTR VkResult VKAPI_CALL GetSwapchainImagesKHR(VkDevice device, VkSwapchai
   return VK_SUCCESS;
 }
 
+VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(VkDevice device, VkSwapchainKHR swapchain, uint64_t timeout,
+                                                   VkSemaphore semaphore, VkFence fence, uint32_t* pImageIndex) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  VkResult result =
+      device_info.dispatch_table().AcquireNextImageKHR(device, swapchain, timeout, semaphore, fence, pImageIndex);
+  if (result != VK_SUCCESS) {
+    return result;
+  }
+  if (semaphore != VK_NULL_HANDLE) {
+    device_info.SetLocalSynchronizationPrimitive(semaphore);
+  }
+  if (fence != VK_NULL_HANDLE) {
+    device_info.SetLocalSynchronizationPrimitive(fence);
+  }
+  return VK_SUCCESS;
+}
+
 PFN_vkVoidFunction DefaultGetInstanceProcAddr(VkInstance instance, const char* pName) {
   return GetInstanceInfo(instance).dispatch_table().GetInstanceProcAddr(instance, pName);
 }

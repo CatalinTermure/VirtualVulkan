@@ -78,6 +78,7 @@ PFN_vkVoidFunction GetDeviceProcAddr(VkDevice device, const char* pName) {
   GET_PROC_ADDR(CreateSwapchainKHR);
   GET_PROC_ADDR(DestroySwapchainKHR);
   GET_PROC_ADDR(GetSwapchainImagesKHR);
+  GET_PROC_ADDR(AcquireNextImageKHR);
 
   for (const auto& func : non_intercepted_functions) {
     if (strcmp(pName, func) == 0) {
