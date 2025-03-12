@@ -62,7 +62,7 @@ InstanceInfo& GetInstanceInfo(VkPhysicalDevice physical_device) {
   return GetInstanceInfo(GetInstanceForPhysicalDevice(physical_device));
 }
 
-InstanceInfo& GetInstanceInfo(VkDevice device) { return GetDeviceInfo(device).instance_info; }
+InstanceInfo& GetInstanceInfo(VkDevice device) { return GetDeviceInfo(device).instance_info(); }
 
 void AssociatePhysicalDeviceWithInstance(VkPhysicalDevice physical_device, VkInstance instance) {
   std::lock_guard lock(physical_device_to_instance_lock);

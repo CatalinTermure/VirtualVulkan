@@ -11,18 +11,18 @@
 
 namespace vvk {
 struct DeviceInfo {
-  PFN_vkGetDeviceProcAddr nxt_gdpa;
-  VkPhysicalDevice physical_device;
-  VkInstance instance;
-  InstanceInfo& instance_info;
-  VmaAllocator allocator_;
+  PFN_vkGetDeviceProcAddr nxt_gdpa_;
 
-  DeviceInfo(PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device);
+  DeviceInfo(PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
+             const VmaAllocatorCreateInfo& allocator_create_info);
 
   template <typename T>
   T GetRemoteHandle(T local_handle) const {
     return reinterpret_cast<T>(local_to_remote_handle_.at(reinterpret_cast<void*>(local_handle)));
   }
+
+  VmaAllocator allocator() const { return allocator_; }
+  InstanceInfo& instance_info() { return instance_info_; }
 
   bool HasRemoteHandle(void* local_handle) const {
     return local_to_remote_handle_.find(local_handle) != local_to_remote_handle_.end();
@@ -35,6 +35,10 @@ struct DeviceInfo {
 
  private:
   std::map<void*, void*> local_to_remote_handle_;
+  VkPhysicalDevice physical_device_;
+  VkInstance instance_;
+  VmaAllocator allocator_;
+  InstanceInfo& instance_info_;
 };
 
 DeviceInfo& GetDeviceInfo(VkDevice device);
