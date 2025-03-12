@@ -1959,5 +1959,23 @@ void PackAndCallVkCmdSetScissor(grpc::ClientReaderWriter<vvk::server::VvkRequest
     spdlog::error("Failed to read response from server");
   }
 }
+void PackAndCallVkCmdDraw(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdDraw");
+  request.mutable_vkcmddraw()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  request.mutable_vkcmddraw()->set_vertexcount(vertexCount);
+  request.mutable_vkcmddraw()->set_instancecount(instanceCount);
+  request.mutable_vkcmddraw()->set_firstvertex(firstVertex);
+  request.mutable_vkcmddraw()->set_firstinstance(firstInstance);
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 

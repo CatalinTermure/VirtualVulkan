@@ -64,6 +64,7 @@ const std::unordered_map<
         {"vkCmdBindPipeline", UnpackAndExecuteVkCmdBindPipeline},
         {"vkCmdSetViewport", UnpackAndExecuteVkCmdSetViewport},
         {"vkCmdSetScissor", UnpackAndExecuteVkCmdSetScissor},
+        {"vkCmdDraw", UnpackAndExecuteVkCmdDraw},
 };
 
 }  // namespace

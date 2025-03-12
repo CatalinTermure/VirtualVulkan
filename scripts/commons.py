@@ -78,6 +78,7 @@ COMMANDS_TO_GENERATE = [
     "vkCmdBindPipeline",
     "vkCmdSetViewport",
     "vkCmdSetScissor",
+    "vkCmdDraw",
 ]
 
 

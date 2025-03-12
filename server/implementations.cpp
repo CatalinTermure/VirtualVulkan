@@ -1671,4 +1671,10 @@ void UnpackAndExecuteVkCmdSetScissor(vvk::ExecutionContext& context, const vvk::
   vkCmdSetScissor(reinterpret_cast<VkCommandBuffer>(request.vkcmdsetscissor().commandbuffer()), request.vkcmdsetscissor().firstscissor(), request.vkcmdsetscissor().scissorcount(), pScissors.data());
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkCmdDraw(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCmdDraw");
+
+  vkCmdDraw(reinterpret_cast<VkCommandBuffer>(request.vkcmddraw().commandbuffer()), request.vkcmddraw().vertexcount(), request.vkcmddraw().instancecount(), request.vkcmddraw().firstvertex(), request.vkcmddraw().firstinstance());
+  response->set_result(VK_SUCCESS);
+}
 

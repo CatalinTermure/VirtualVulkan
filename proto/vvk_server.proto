@@ -63,10 +63,11 @@ message VvkRequest {
     VkCmdBindPipelineParams vkCmdBindPipeline = 47;
     VkCmdSetViewportParams vkCmdSetViewport = 48;
     VkCmdSetScissorParams vkCmdSetScissor = 49;
-    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 50;
-    VkCmdEndRenderPassParams vkCmdEndRenderPass = 51;
-    VkBindImageMemory2Params vkBindImageMemory2 = 52;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 53;
+    VkCmdDrawParams vkCmdDraw = 50;
+    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 51;
+    VkCmdEndRenderPassParams vkCmdEndRenderPass = 52;
+    VkBindImageMemory2Params vkBindImageMemory2 = 53;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 54;
   }
 }
 
@@ -507,6 +508,14 @@ message VkCmdSetScissorParams {
   uint32 firstScissor = 2; // uint32_t firstScissor
   uint32 scissorCount = 3; // uint32_t scissorCount
   repeated VkRect2D pScissors = 4; // const VkRect2D* pScissors
+}
+
+message VkCmdDrawParams {
+  uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+  uint32 vertexCount = 2; // uint32_t vertexCount
+  uint32 instanceCount = 3; // uint32_t instanceCount
+  uint32 firstVertex = 4; // uint32_t firstVertex
+  uint32 firstInstance = 5; // uint32_t firstInstance
 }
 
 message VkCmdBeginRenderPassParams {
