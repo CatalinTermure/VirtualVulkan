@@ -33,21 +33,12 @@ struct DeviceInfo {
     local_to_remote_handle_.emplace(reinterpret_cast<void*>(local_handle), reinterpret_cast<void*>(remote_handle));
   }
 
-  // Returns true if the primitive should be waited on locally.
-  template <typename T>
-  bool CheckLocalSynchronizationPrimitive(T primitive) {
-    auto iter = local_synchronization_primitives_.find(reinterpret_cast<void*>(primitive));
-    if (iter == local_synchronization_primitives_.end()) {
-      return false;
-    }
-    local_synchronization_primitives_.erase(iter);
-    return true;
+  bool IsLocalFence(VkFence fence) const {
+    return local_synchronization_primitives_.find(reinterpret_cast<void*>(fence)) !=
+           local_synchronization_primitives_.end();
   }
-
-  template <typename T>
-  void SetLocalSynchronizationPrimitive(T primitive) {
-    local_synchronization_primitives_.insert(reinterpret_cast<void*>(primitive));
-  }
+  void ResetFenceLocal(VkFence fence) { local_synchronization_primitives_.erase(reinterpret_cast<void*>(fence)); }
+  void SetFenceLocal(VkFence fence) { local_synchronization_primitives_.insert(reinterpret_cast<void*>(fence)); }
 
  private:
   std::map<void*, void*> local_to_remote_handle_;

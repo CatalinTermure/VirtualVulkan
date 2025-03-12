@@ -1567,4 +1567,16 @@ void UnpackAndExecuteVkDestroyFramebuffer(vvk::ExecutionContext& context, const 
   vkDestroyFramebuffer(reinterpret_cast<VkDevice>(request.vkdestroyframebuffer().device()), reinterpret_cast<VkFramebuffer>(request.vkdestroyframebuffer().framebuffer()), nullptr);
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkWaitForFences(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkWaitForFences");
+
+  VkResult result = vkWaitForFences(reinterpret_cast<VkDevice>(request.vkwaitforfences().device()), request.vkwaitforfences().fencecount(), reinterpret_cast<const VkFence*>(request.vkwaitforfences().pfences().data()), request.vkwaitforfences().waitall(), request.vkwaitforfences().timeout());
+  response->set_result(result);
+}
+void UnpackAndExecuteVkResetFences(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkResetFences");
+
+  VkResult result = vkResetFences(reinterpret_cast<VkDevice>(request.vkresetfences().device()), request.vkresetfences().fencecount(), reinterpret_cast<const VkFence*>(request.vkresetfences().pfences().data()));
+  response->set_result(result);
+}
 

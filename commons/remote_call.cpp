@@ -1767,5 +1767,45 @@ void PackAndCallVkDestroyFramebuffer(grpc::ClientReaderWriter<vvk::server::VvkRe
     spdlog::error("Failed to read response from server");
   }
 }
+VkResult PackAndCallVkWaitForFences(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, uint32_t fenceCount, const VkFence* pFences, VkBool32 waitAll, uint64_t timeout) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkWaitForFences");
+  request.mutable_vkwaitforfences()->set_device(reinterpret_cast<uint64_t>(device));
+  request.mutable_vkwaitforfences()->set_fencecount(fenceCount);
+  for (int i = 0; i < fenceCount; i++) {
+    request.mutable_vkwaitforfences()->add_pfences(reinterpret_cast<uint64_t>(pFences[i]));
+  }
+  request.mutable_vkwaitforfences()->set_waitall(waitAll);
+  request.mutable_vkwaitforfences()->set_timeout(timeout);
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  return static_cast<VkResult>(response.result());
+}
+VkResult PackAndCallVkResetFences(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, uint32_t fenceCount, const VkFence* pFences) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkResetFences");
+  request.mutable_vkresetfences()->set_device(reinterpret_cast<uint64_t>(device));
+  request.mutable_vkresetfences()->set_fencecount(fenceCount);
+  for (int i = 0; i < fenceCount; i++) {
+    request.mutable_vkresetfences()->add_pfences(reinterpret_cast<uint64_t>(pFences[i]));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  return static_cast<VkResult>(response.result());
+}
 }  // namespace vvk
 

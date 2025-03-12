@@ -224,6 +224,16 @@ VKAPI_ATTR void VKAPI_CALL DestroyFramebuffer(
     VkDevice                                    device,
     VkFramebuffer                               framebuffer,
     const VkAllocationCallbacks*                pAllocator);
+VKAPI_ATTR VkResult VKAPI_CALL WaitForFences(
+    VkDevice                                    device,
+    uint32_t                                    fenceCount,
+    const VkFence*                              pFences,
+    VkBool32                                    waitAll,
+    uint64_t                                    timeout);
+VKAPI_ATTR VkResult VKAPI_CALL ResetFences(
+    VkDevice                                    device,
+    uint32_t                                    fenceCount,
+    const VkFence*                              pFences);
 
 inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = {
     {"vkCreateInstance", reinterpret_cast<PFN_vkVoidFunction>(CreateInstance)},
@@ -270,6 +280,8 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkDestroyPipeline", reinterpret_cast<PFN_vkVoidFunction>(DestroyPipeline)},
     {"vkCreateFramebuffer", reinterpret_cast<PFN_vkVoidFunction>(CreateFramebuffer)},
     {"vkDestroyFramebuffer", reinterpret_cast<PFN_vkVoidFunction>(DestroyFramebuffer)},
+    {"vkWaitForFences", reinterpret_cast<PFN_vkVoidFunction>(WaitForFences)},
+    {"vkResetFences", reinterpret_cast<PFN_vkVoidFunction>(ResetFences)},
 };
 
 }  // namespace vvk

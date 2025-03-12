@@ -9,6 +9,7 @@ import inflection
 
 C_TYPE_TO_PROTO_TYPE = {
     "uint32_t": "uint32",
+    "uint64_t": "uint64",
     "char*": "string",
     "char**": "repeated string",
     "VkDeviceSize": "uint64",

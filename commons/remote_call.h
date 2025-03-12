@@ -52,6 +52,8 @@ VkResult PackAndCallVkCreateGraphicsPipelines(grpc::ClientReaderWriter<vvk::serv
 void PackAndCallVkDestroyPipeline(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkPipeline pipeline, const VkAllocationCallbacks* pAllocator);
 VkResult PackAndCallVkCreateFramebuffer(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkFramebufferCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkFramebuffer* pFramebuffer);
 void PackAndCallVkDestroyFramebuffer(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkFramebuffer framebuffer, const VkAllocationCallbacks* pAllocator);
+VkResult PackAndCallVkWaitForFences(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, uint32_t fenceCount, const VkFence* pFences, VkBool32 waitAll, uint64_t timeout);
+VkResult PackAndCallVkResetFences(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, uint32_t fenceCount, const VkFence* pFences);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

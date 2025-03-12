@@ -70,6 +70,8 @@ COMMANDS_TO_GENERATE = [
     "vkDestroyPipeline",
     "vkCreateFramebuffer",
     "vkDestroyFramebuffer",
+    "vkWaitForFences",
+    "vkResetFences",
 ]
 
 
@@ -79,6 +81,7 @@ TRIVIAL_TYPES: dict[str, TypeInfo] = {
     "float": TypeInfo(cast_to=None),
     "size_t": TypeInfo(cast_to=None),
     "int32_t": TypeInfo(cast_to=None),
+    "uint64_t": TypeInfo(cast_to=None),
     "VkDeviceSize": TypeInfo(cast_to="uint64_t"),
     "VkSampleMask": TypeInfo(cast_to="uint32_t"),
     "uint8_t": TypeInfo(cast_to="uint32_t"),

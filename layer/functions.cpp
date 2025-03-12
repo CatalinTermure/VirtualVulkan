@@ -196,10 +196,10 @@ VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(VkDevice device, VkSwapchainK
     return result;
   }
   if (semaphore != VK_NULL_HANDLE) {
-    device_info.SetLocalSynchronizationPrimitive(semaphore);
+    throw std::runtime_error("Local semaphore signaling is not supported");
   }
   if (fence != VK_NULL_HANDLE) {
-    device_info.SetLocalSynchronizationPrimitive(fence);
+    device_info.SetFenceLocal(fence);
   }
   return VK_SUCCESS;
 }
@@ -732,5 +732,97 @@ VKAPI_ATTR void VKAPI_CALL DestroyFramebuffer(VkDevice device, VkFramebuffer fra
   DeviceInfo device_info = GetDeviceInfo(device);
   PackAndCallVkDestroyFramebuffer(device_info.instance_info().command_stream(),
                                   device_info.instance_info().GetRemoteHandle(device), framebuffer, pAllocator);
+}
+
+VKAPI_ATTR VkResult VKAPI_CALL WaitForFences(VkDevice device, uint32_t fenceCount, const VkFence* pFences,
+                                             VkBool32 waitAll, uint64_t timeout) {
+  if (!waitAll) {
+    throw std::runtime_error("WaitForFences with waitAll=false is not supported");
+  }
+  DeviceInfo& device_info = GetDeviceInfo(device);
+
+  std::vector<VkFence> local_fences;
+  local_fences.reserve(fenceCount);
+  std::vector<VkFence> remote_fences;
+  remote_fences.reserve(fenceCount);
+
+  for (uint32_t i = 0; i < fenceCount; i++) {
+    if (device_info.IsLocalFence(pFences[i])) {
+      local_fences.push_back(pFences[i]);
+    } else {
+      remote_fences.push_back(device_info.GetRemoteHandle(pFences[i]));
+    }
+  }
+
+  VkResult local_result = VK_SUCCESS;
+  VkResult remote_result = VK_SUCCESS;
+  std::thread local_wait_thread;
+  std::thread remote_wait_thread;
+
+  if (!local_fences.empty()) {
+    local_wait_thread =
+        std::thread([&device_info, &local_fences, &local_result, device, fenceCount, waitAll, timeout]() {
+          local_result = device_info.dispatch_table().WaitForFences(device, local_fences.size(), local_fences.data(),
+                                                                    waitAll, timeout);
+        });
+  }
+  if (!remote_fences.empty()) {
+    remote_wait_thread =
+        std::thread([&device_info, &remote_fences, &remote_result, device, fenceCount, waitAll, timeout]() {
+          remote_result = PackAndCallVkWaitForFences(device_info.instance_info().command_stream(),
+                                                     device_info.instance_info().GetRemoteHandle(device), fenceCount,
+                                                     remote_fences.data(), waitAll, timeout);
+        });
+  }
+
+  if (local_wait_thread.joinable()) {
+    local_wait_thread.join();
+  }
+  if (remote_wait_thread.joinable()) {
+    remote_wait_thread.join();
+  }
+
+  if (local_result != VK_SUCCESS) {
+    return local_result;
+  }
+  return remote_result;
+}
+
+VKAPI_ATTR VkResult VKAPI_CALL ResetFences(VkDevice device, uint32_t fenceCount, const VkFence* pFences) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+
+  std::vector<VkFence> local_fences;
+  local_fences.reserve(fenceCount);
+  std::vector<VkFence> remote_fences;
+  remote_fences.reserve(fenceCount);
+
+  for (uint32_t i = 0; i < fenceCount; i++) {
+    if (device_info.IsLocalFence(pFences[i])) {
+      local_fences.push_back(pFences[i]);
+    } else {
+      remote_fences.push_back(device_info.GetRemoteHandle(pFences[i]));
+    }
+  }
+
+  if (!local_fences.empty()) {
+    VkResult result = device_info.dispatch_table().ResetFences(device, local_fences.size(), local_fences.data());
+    if (result != VK_SUCCESS) {
+      return result;
+    }
+    for (VkFence fence : local_fences) {
+      device_info.ResetFenceLocal(fence);
+    }
+  }
+
+  if (!remote_fences.empty()) {
+    VkResult result = PackAndCallVkResetFences(device_info.instance_info().command_stream(),
+                                               device_info.instance_info().GetRemoteHandle(device),
+                                               remote_fences.size(), remote_fences.data());
+    if (result != VK_SUCCESS) {
+      return result;
+    }
+  }
+
+  return VK_SUCCESS;
 }
 }  // namespace vvk
