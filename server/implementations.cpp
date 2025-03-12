@@ -1639,4 +1639,36 @@ void UnpackAndExecuteVkCmdBindPipeline(vvk::ExecutionContext& context, const vvk
   vkCmdBindPipeline(reinterpret_cast<VkCommandBuffer>(request.vkcmdbindpipeline().commandbuffer()), static_cast<VkPipelineBindPoint>(request.vkcmdbindpipeline().pipelinebindpoint()), reinterpret_cast<VkPipeline>(request.vkcmdbindpipeline().pipeline()));
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkCmdSetViewport(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCmdSetViewport");
+
+  std::vector<VkViewport> pViewports(request.vkcmdsetviewport().viewportcount());
+  for (int i = 0; i < pViewports.size(); i++) {
+    VkViewport& pViewports_ref = pViewports[i];
+    pViewports_ref.x = request.vkcmdsetviewport().pviewports(i).x();
+    pViewports_ref.y = request.vkcmdsetviewport().pviewports(i).y();
+    pViewports_ref.width = request.vkcmdsetviewport().pviewports(i).width();
+    pViewports_ref.height = request.vkcmdsetviewport().pviewports(i).height();
+    pViewports_ref.minDepth = request.vkcmdsetviewport().pviewports(i).mindepth();
+    pViewports_ref.maxDepth = request.vkcmdsetviewport().pviewports(i).maxdepth();
+  }
+  vkCmdSetViewport(reinterpret_cast<VkCommandBuffer>(request.vkcmdsetviewport().commandbuffer()), request.vkcmdsetviewport().firstviewport(), request.vkcmdsetviewport().viewportcount(), pViewports.data());
+  response->set_result(VK_SUCCESS);
+}
+void UnpackAndExecuteVkCmdSetScissor(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCmdSetScissor");
+
+  std::vector<VkRect2D> pScissors(request.vkcmdsetscissor().scissorcount());
+  for (int i = 0; i < pScissors.size(); i++) {
+    VkRect2D& pScissors_ref = pScissors[i];
+    VkOffset2D &pScissors_ref_offset = pScissors_ref.offset;
+    pScissors_ref_offset.x = request.vkcmdsetscissor().pscissors(i).offset().x();
+    pScissors_ref_offset.y = request.vkcmdsetscissor().pscissors(i).offset().y();
+    VkExtent2D &pScissors_ref_extent = pScissors_ref.extent;
+    pScissors_ref_extent.width = request.vkcmdsetscissor().pscissors(i).extent().width();
+    pScissors_ref_extent.height = request.vkcmdsetscissor().pscissors(i).extent().height();
+  }
+  vkCmdSetScissor(reinterpret_cast<VkCommandBuffer>(request.vkcmdsetscissor().commandbuffer()), request.vkcmdsetscissor().firstscissor(), request.vkcmdsetscissor().scissorcount(), pScissors.data());
+  response->set_result(VK_SUCCESS);
+}
 

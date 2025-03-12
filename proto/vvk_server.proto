@@ -61,10 +61,12 @@ message VvkRequest {
     VkBeginCommandBufferParams vkBeginCommandBuffer = 45;
     VkEndCommandBufferParams vkEndCommandBuffer = 46;
     VkCmdBindPipelineParams vkCmdBindPipeline = 47;
-    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 48;
-    VkCmdEndRenderPassParams vkCmdEndRenderPass = 49;
-    VkBindImageMemory2Params vkBindImageMemory2 = 50;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 51;
+    VkCmdSetViewportParams vkCmdSetViewport = 48;
+    VkCmdSetScissorParams vkCmdSetScissor = 49;
+    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 50;
+    VkCmdEndRenderPassParams vkCmdEndRenderPass = 51;
+    VkBindImageMemory2Params vkBindImageMemory2 = 52;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 53;
   }
 }
 
@@ -491,6 +493,20 @@ message VkCmdBindPipelineParams {
   uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
   VkPipelineBindPoint pipelineBindPoint = 2; // VkPipelineBindPoint pipelineBindPoint
   uint64 pipeline = 3; // VkPipeline pipeline
+}
+
+message VkCmdSetViewportParams {
+  uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+  uint32 firstViewport = 2; // uint32_t firstViewport
+  uint32 viewportCount = 3; // uint32_t viewportCount
+  repeated VkViewport pViewports = 4; // const VkViewport* pViewports
+}
+
+message VkCmdSetScissorParams {
+  uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+  uint32 firstScissor = 2; // uint32_t firstScissor
+  uint32 scissorCount = 3; // uint32_t scissorCount
+  repeated VkRect2D pScissors = 4; // const VkRect2D* pScissors
 }
 
 message VkCmdBeginRenderPassParams {

@@ -76,6 +76,8 @@ COMMANDS_TO_GENERATE = [
     "vkCmdBeginRenderPass",
     "vkCmdEndRenderPass",
     "vkCmdBindPipeline",
+    "vkCmdSetViewport",
+    "vkCmdSetScissor",
 ]
 
 

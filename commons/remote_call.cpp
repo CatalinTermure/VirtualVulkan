@@ -1907,5 +1907,57 @@ void PackAndCallVkCmdBindPipeline(grpc::ClientReaderWriter<vvk::server::VvkReque
     spdlog::error("Failed to read response from server");
   }
 }
+void PackAndCallVkCmdSetViewport(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, uint32_t firstViewport, uint32_t viewportCount, const VkViewport* pViewports) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdSetViewport");
+  request.mutable_vkcmdsetviewport()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  request.mutable_vkcmdsetviewport()->set_firstviewport(firstViewport);
+  request.mutable_vkcmdsetviewport()->set_viewportcount(viewportCount);
+  for (int pViewports_indx = 0; pViewports_indx < viewportCount; pViewports_indx++) {
+    vvk::server::VkViewport* pViewports_proto = request.mutable_vkcmdsetviewport()->add_pviewports();
+    const VkViewport* pViewports_i = &pViewports[pViewports_indx];
+    pViewports_proto->set_x(pViewports_i->x);
+    pViewports_proto->set_y(pViewports_i->y);
+    pViewports_proto->set_width(pViewports_i->width);
+    pViewports_proto->set_height(pViewports_i->height);
+    pViewports_proto->set_mindepth(pViewports_i->minDepth);
+    pViewports_proto->set_maxdepth(pViewports_i->maxDepth);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
+void PackAndCallVkCmdSetScissor(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, uint32_t firstScissor, uint32_t scissorCount, const VkRect2D* pScissors) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdSetScissor");
+  request.mutable_vkcmdsetscissor()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  request.mutable_vkcmdsetscissor()->set_firstscissor(firstScissor);
+  request.mutable_vkcmdsetscissor()->set_scissorcount(scissorCount);
+  for (int pScissors_indx = 0; pScissors_indx < scissorCount; pScissors_indx++) {
+    vvk::server::VkRect2D* pScissors_proto = request.mutable_vkcmdsetscissor()->add_pscissors();
+    const VkRect2D* pScissors_i = &pScissors[pScissors_indx];
+    vvk::server::VkOffset2D* pScissors_proto_offset_proto = pScissors_proto->mutable_offset();
+    pScissors_proto_offset_proto->set_x((&pScissors_i->offset)->x);
+    pScissors_proto_offset_proto->set_y((&pScissors_i->offset)->y);
+    vvk::server::VkExtent2D* pScissors_proto_extent_proto = pScissors_proto->mutable_extent();
+    pScissors_proto_extent_proto->set_width((&pScissors_i->extent)->width);
+    pScissors_proto_extent_proto->set_height((&pScissors_i->extent)->height);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 

@@ -887,4 +887,17 @@ VKAPI_ATTR void VKAPI_CALL CmdBindPipeline(VkCommandBuffer commandBuffer, VkPipe
   PackAndCallVkCmdBindPipeline(device_info.instance_info().command_stream(), device_info.GetRemoteHandle(commandBuffer),
                                pipelineBindPoint, pipeline);
 }
+
+VKAPI_ATTR void VKAPI_CALL CmdSetViewport(VkCommandBuffer commandBuffer, uint32_t firstViewport, uint32_t viewportCount,
+                                          const VkViewport* pViewports) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdSetViewport(device_info.instance_info().command_stream(), device_info.GetRemoteHandle(commandBuffer),
+                              firstViewport, viewportCount, pViewports);
+}
+VKAPI_ATTR void VKAPI_CALL CmdSetScissor(VkCommandBuffer commandBuffer, uint32_t firstScissor, uint32_t scissorCount,
+                                         const VkRect2D* pScissors) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdSetScissor(device_info.instance_info().command_stream(), device_info.GetRemoteHandle(commandBuffer),
+                             firstScissor, scissorCount, pScissors);
+}
 }  // namespace vvk
