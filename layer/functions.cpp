@@ -13,6 +13,19 @@
 #include "layer/context/instance.h"
 #include "layer/context/swapchain.h"
 
+enum class SemaphoreState {
+  kUnsignaled,
+  kToBeSignaledLocal,
+  kToBeSignaledRemote,
+};
+
+struct VkSemaphore_T {
+  VkSemaphore local_handle;
+  VkSemaphore remote_handle;
+  VkFence local_to_remote_fence;
+  SemaphoreState state;
+};
+
 namespace vvk {
 
 namespace {
@@ -190,18 +203,23 @@ VKAPI_ATTR VkResult VKAPI_CALL GetSwapchainImagesKHR(VkDevice device, VkSwapchai
 VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(VkDevice device, VkSwapchainKHR swapchain, uint64_t timeout,
                                                    VkSemaphore semaphore, VkFence fence, uint32_t* pImageIndex) {
   DeviceInfo& device_info = GetDeviceInfo(device);
-  VkResult result =
-      device_info.dispatch_table().AcquireNextImageKHR(device, swapchain, timeout, semaphore, fence, pImageIndex);
-  if (result != VK_SUCCESS) {
-    return result;
-  }
   if (semaphore != VK_NULL_HANDLE) {
-    throw std::runtime_error("Local semaphore signaling is not supported");
+    if (fence != VK_NULL_HANDLE) {
+      throw std::runtime_error("Cannot use both semaphore and fence in AcquireNextImageKHR");
+    }
+    semaphore->state = SemaphoreState::kToBeSignaledLocal;
+    fence = semaphore->local_to_remote_fence;
   }
   if (fence != VK_NULL_HANDLE) {
     device_info.SetFenceLocal(fence);
   }
-  return VK_SUCCESS;
+  VkResult result = device_info.dispatch_table().AcquireNextImageKHR(device, swapchain, timeout,
+                                                                     semaphore->local_handle, fence, pImageIndex);
+  if (result != VK_SUCCESS) {
+    semaphore->state = SemaphoreState::kUnsignaled;
+    device_info.ResetFenceLocal(fence);
+  }
+  return result;
 }
 
 PFN_vkVoidFunction DefaultGetInstanceProcAddr(VkInstance instance, const char* pName) {
@@ -488,9 +506,22 @@ VKAPI_ATTR void VKAPI_CALL DestroyFence(VkDevice device, VkFence fence, const Vk
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphoreCreateInfo* pCreateInfo,
                                                const VkAllocationCallbacks* pAllocator, VkSemaphore* pSemaphore) {
+  *pSemaphore = new VkSemaphore_T;
   DeviceInfo& device_info = GetDeviceInfo(device);
-  VkResult result = device_info.dispatch_table().CreateSemaphore(device, pCreateInfo, pAllocator, pSemaphore);
+  VkResult result =
+      device_info.dispatch_table().CreateSemaphore(device, pCreateInfo, pAllocator, &(*pSemaphore)->local_handle);
   if (result != VK_SUCCESS) {
+    return result;
+  }
+  VkFenceCreateInfo fence_create_info = {
+      .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+      .pNext = nullptr,
+      .flags = 0,
+  };
+  result = device_info.dispatch_table().CreateFence(device, &fence_create_info, pAllocator,
+                                                    &(*pSemaphore)->local_to_remote_fence);
+  if (result != VK_SUCCESS) {
+    device_info.dispatch_table().DestroySemaphore(device, (*pSemaphore)->local_handle, pAllocator);
     return result;
   }
   VkSemaphore remote_semaphore = VK_NULL_HANDLE;
@@ -498,20 +529,24 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphor
                                         device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator,
                                         &remote_semaphore);
   if (result != VK_SUCCESS) {
-    device_info.dispatch_table().DestroySemaphore(device, *pSemaphore, pAllocator);
+    device_info.dispatch_table().DestroySemaphore(device, (*pSemaphore)->local_handle, pAllocator);
+    device_info.dispatch_table().DestroyFence(device, (*pSemaphore)->local_to_remote_fence, pAllocator);
     return result;
   }
-  device_info.SetRemoteHandle(*pSemaphore, remote_semaphore);
+  (*pSemaphore)->remote_handle = remote_semaphore;
+  (*pSemaphore)->state = SemaphoreState::kUnsignaled;
   return result;
 }
 
 VKAPI_ATTR void VKAPI_CALL DestroySemaphore(VkDevice device, VkSemaphore semaphore,
                                             const VkAllocationCallbacks* pAllocator) {
   DeviceInfo& device_info = GetDeviceInfo(device);
-  device_info.dispatch_table().DestroySemaphore(device, semaphore, pAllocator);
+  device_info.dispatch_table().DestroySemaphore(device, semaphore->local_handle, pAllocator);
+  device_info.dispatch_table().DestroyFence(device, semaphore->local_to_remote_fence, pAllocator);
   PackAndCallVkDestroySemaphore(device_info.instance_info().command_stream(),
                                 device_info.instance_info().GetRemoteHandle(device),
-                                device_info.GetRemoteHandle(semaphore), pAllocator);
+                                device_info.GetRemoteHandle(semaphore->remote_handle), pAllocator);
+  delete semaphore;
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL AllocateMemory(VkDevice device, const VkMemoryAllocateInfo* pAllocateInfo,
