@@ -11,10 +11,7 @@ std::map<VkCommandBuffer, VkDevice> g_command_buffer_to_device;
 
 DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
                        const VmaAllocatorCreateInfo& allocator_create_info)
-    : nxt_gdpa_(nxt_gdpa),
-      physical_device_(physical_device),
-      instance_(GetInstanceForPhysicalDevice(physical_device)),
-      instance_info_(GetInstanceInfo(physical_device)) {
+    : nxt_gdpa_(nxt_gdpa), instance_info_(GetInstanceInfo(physical_device)) {
   if (vmaCreateAllocator(&allocator_create_info, &allocator_) != VK_SUCCESS) {
     throw std::runtime_error("Failed to create VMA allocator");
   }

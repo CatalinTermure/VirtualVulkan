@@ -34,8 +34,6 @@ struct DeviceInfo {
 
  private:
   std::map<void*, void*> local_to_remote_handle_;
-  VkPhysicalDevice physical_device_;
-  VkInstance instance_;
   VmaAllocator allocator_;
   InstanceInfo& instance_info_;
   PFN_vkGetDeviceProcAddr nxt_gdpa_;
