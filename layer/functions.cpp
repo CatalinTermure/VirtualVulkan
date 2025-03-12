@@ -27,17 +27,6 @@ namespace vvk {
 
 namespace {
 
-template <typename FooType, typename... Args>
-std::result_of_t<FooType(VkDevice, Args...)> CallDownDeviceFunc(std::string_view func_name, VkDevice device,
-                                                                Args... args) {
-  FooType nxt_func = reinterpret_cast<FooType>(GetDeviceInfo(device).nxt_gdpa_(device, func_name.data()));
-  if (!nxt_func) {
-    spdlog::critical("Failed to fetch {} from next layer", func_name);
-  }
-
-  return nxt_func(device, args...);
-}
-
 template <typename T, VkStructureType sType>
 T* FindLayerLinkInfo(const void* p_next_chain) {
   const T* layer_info = nullptr;
@@ -81,30 +70,28 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
                                                   const VkAllocationCallbacks* pAllocator, VkSwapchainKHR* pSwapchain) {
   spdlog::trace("CreateSwapchainKHR");
 
-  VkResult result =
-      CallDownDeviceFunc<PFN_vkCreateSwapchainKHR>("vkCreateSwapchainKHR", device, pCreateInfo, pAllocator, pSwapchain);
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  VkResult result = device_info.dispatch_table().CreateSwapchainKHR(device, pCreateInfo, pAllocator, pSwapchain);
   if (result != VK_SUCCESS) {
     return result;
   }
 
   uint32_t swapchain_image_count = 0;
   std::vector<VkImage> client_swapchain_images;
-  result = CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, *pSwapchain,
-                                                           &swapchain_image_count, nullptr);
+  result = device_info.dispatch_table().GetSwapchainImagesKHR(device, *pSwapchain, &swapchain_image_count, nullptr);
   if (result != VK_SUCCESS) {
-    CallDownDeviceFunc<PFN_vkDestroySwapchainKHR>("vkDestroySwapchainKHR", device, *pSwapchain, pAllocator);
+    device_info.dispatch_table().DestroySwapchainKHR(device, *pSwapchain, pAllocator);
     return VK_ERROR_INITIALIZATION_FAILED;
   }
 
   client_swapchain_images.resize(swapchain_image_count);
-  result = CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, *pSwapchain,
-                                                           &swapchain_image_count, client_swapchain_images.data());
+  result = device_info.dispatch_table().GetSwapchainImagesKHR(device, *pSwapchain, &swapchain_image_count,
+                                                              client_swapchain_images.data());
   if (result != VK_SUCCESS) {
-    CallDownDeviceFunc<PFN_vkDestroySwapchainKHR>("vkDestroySwapchainKHR", device, *pSwapchain, pAllocator);
+    device_info.dispatch_table().DestroySwapchainKHR(device, *pSwapchain, pAllocator);
     return VK_ERROR_INITIALIZATION_FAILED;
   }
 
-  DeviceInfo& device_info = GetDeviceInfo(device);
   InstanceInfo& instance_info = device_info.instance_info();
   auto reader_writer = instance_info.command_stream();
 
@@ -148,7 +135,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
     VkImage server_image;
     server_image = swapchain_info.CreateImage(image_create_info, alloc_create_info);
     if (result != VK_SUCCESS) {
-      CallDownDeviceFunc<PFN_vkDestroySwapchainKHR>("vkDestroySwapchainKHR", device, *pSwapchain, pAllocator);
+      device_info.dispatch_table().DestroySwapchainKHR(device, *pSwapchain, pAllocator);
       RemoveSwapchainInfo(*pSwapchain);
       return VK_ERROR_INITIALIZATION_FAILED;
     }
@@ -160,24 +147,25 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
 
 VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(VkDevice device, VkSwapchainKHR swapchain,
                                                const VkAllocationCallbacks* pAllocator) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+
   uint32_t swapchain_image_count = 0;
   std::vector<VkImage> client_swapchain_images;
-  VkResult result = CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, swapchain,
-                                                                    &swapchain_image_count, nullptr);
+  VkResult result =
+      device_info.dispatch_table().GetSwapchainImagesKHR(device, swapchain, &swapchain_image_count, nullptr);
   if (result != VK_SUCCESS) {
     spdlog::critical("Failed to get swapchain images to destroy");
     return;
   }
 
   client_swapchain_images.resize(swapchain_image_count);
-  result = CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, swapchain,
-                                                           &swapchain_image_count, client_swapchain_images.data());
+  result = device_info.dispatch_table().GetSwapchainImagesKHR(device, swapchain, &swapchain_image_count,
+                                                              client_swapchain_images.data());
   if (result != VK_SUCCESS) {
     spdlog::critical("Failed to get swapchain images to destroy");
     return;
   }
 
-  DeviceInfo& device_info = GetDeviceInfo(device);
   InstanceInfo& instance_info = device_info.instance_info();
   auto reader_writer = instance_info.command_stream();
 
@@ -186,22 +174,22 @@ VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(VkDevice device, VkSwapchainKHR s
     PackAndCallVkDestroyImage(reader_writer, instance_info.GetRemoteHandle(device), server_image, nullptr);
   }
 
-  CallDownDeviceFunc<PFN_vkDestroySwapchainKHR>("vkDestroySwapchainKHR", device, swapchain, pAllocator);
+  device_info.dispatch_table().DestroySwapchainKHR(device, swapchain, pAllocator);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL GetSwapchainImagesKHR(VkDevice device, VkSwapchainKHR swapchain,
                                                      uint32_t* pSwapchainImageCount, VkImage* pSwapchainImages) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+
   if (pSwapchainImages == nullptr) {
-    return CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, swapchain,
-                                                           pSwapchainImageCount, nullptr);
+    return device_info.dispatch_table().GetSwapchainImagesKHR(device, swapchain, pSwapchainImageCount, nullptr);
   }
-  VkResult result = CallDownDeviceFunc<PFN_vkGetSwapchainImagesKHR>("vkGetSwapchainImagesKHR", device, swapchain,
-                                                                    pSwapchainImageCount, pSwapchainImages);
+  VkResult result =
+      device_info.dispatch_table().GetSwapchainImagesKHR(device, swapchain, pSwapchainImageCount, pSwapchainImages);
   if (result != VK_SUCCESS) {
     return result;
   }
 
-  DeviceInfo& device_info = GetDeviceInfo(device);
   for (uint32_t i = 0; i < *pSwapchainImageCount; i++) {
     pSwapchainImages[i] = device_info.GetRemoteHandle(pSwapchainImages[i]);
   }
@@ -213,7 +201,7 @@ PFN_vkVoidFunction DefaultGetInstanceProcAddr(VkInstance instance, const char* p
   return GetInstanceInfo(instance).dispatch_table().GetInstanceProcAddr(instance, pName);
 }
 PFN_vkVoidFunction DefaultGetDeviceProcAddr(VkDevice device, const char* pName) {
-  return GetDeviceInfo(device).nxt_gdpa_(device, pName);
+  return GetDeviceInfo(device).dispatch_table().GetDeviceProcAddr(device, pName);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreateInfo,
@@ -393,12 +381,13 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 }
 
 VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCallbacks* pAllocator) {
-  CallDownDeviceFunc<PFN_vkDestroyDevice>("vkDestroyDevice", device, pAllocator);
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  device_info.dispatch_table().DestroyDevice(device, pAllocator);
 
   InstanceInfo& instance_info = GetInstanceInfo(device);
 
-  auto reader_writer = instance_info.command_stream();
-  PackAndCallVkDestroyDevice(reader_writer, instance_info.GetRemoteHandle(device), pAllocator);
+  auto reader_writer = device_info.instance_info().command_stream();
+  PackAndCallVkDestroyDevice(reader_writer, device_info.instance_info().GetRemoteHandle(device), pAllocator);
 
   RemoveDeviceInfo(device);
 }
@@ -455,7 +444,7 @@ VKAPI_ATTR void VKAPI_CALL GetDeviceQueue(VkDevice device, uint32_t queueFamilyI
                                           VkQueue* pQueue) {
   DeviceInfo& device_info = GetDeviceInfo(device);
 
-  CallDownDeviceFunc<PFN_vkGetDeviceQueue>("vkGetDeviceQueue", device, queueFamilyIndex, queueIndex, pQueue);
+  device_info.dispatch_table().GetDeviceQueue(device, queueFamilyIndex, queueIndex, pQueue);
   VkQueue remote_queue = VK_NULL_HANDLE;
   PackAndCallVkGetDeviceQueue(device_info.instance_info().command_stream(),
                               device_info.instance_info().GetRemoteHandle(device), queueFamilyIndex, queueIndex,
@@ -466,7 +455,7 @@ VKAPI_ATTR void VKAPI_CALL GetDeviceQueue(VkDevice device, uint32_t queueFamilyI
 VKAPI_ATTR VkResult VKAPI_CALL CreateFence(VkDevice device, const VkFenceCreateInfo* pCreateInfo,
                                            const VkAllocationCallbacks* pAllocator, VkFence* pFence) {
   DeviceInfo& device_info = GetDeviceInfo(device);
-  VkResult result = CallDownDeviceFunc<PFN_vkCreateFence>("vkCreateFence", device, pCreateInfo, pAllocator, pFence);
+  VkResult result = device_info.dispatch_table().CreateFence(device, pCreateInfo, pAllocator, pFence);
   if (result != VK_SUCCESS) {
     return result;
   }
@@ -475,7 +464,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateFence(VkDevice device, const VkFenceCreateI
                                     device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator,
                                     &remote_fence);
   if (result != VK_SUCCESS) {
-    CallDownDeviceFunc<PFN_vkDestroyFence>("vkDestroyFence", device, *pFence, pAllocator);
+    device_info.dispatch_table().DestroyFence(device, *pFence, pAllocator);
     return result;
   }
   device_info.SetRemoteHandle(*pFence, remote_fence);
@@ -484,7 +473,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateFence(VkDevice device, const VkFenceCreateI
 
 VKAPI_ATTR void VKAPI_CALL DestroyFence(VkDevice device, VkFence fence, const VkAllocationCallbacks* pAllocator) {
   DeviceInfo& device_info = GetDeviceInfo(device);
-  CallDownDeviceFunc<PFN_vkDestroyFence>("vkDestroyFence", device, fence, pAllocator);
+  device_info.dispatch_table().DestroyFence(device, fence, pAllocator);
   PackAndCallVkDestroyFence(device_info.instance_info().command_stream(),
                             device_info.instance_info().GetRemoteHandle(device), device_info.GetRemoteHandle(fence),
                             pAllocator);
@@ -493,8 +482,7 @@ VKAPI_ATTR void VKAPI_CALL DestroyFence(VkDevice device, VkFence fence, const Vk
 VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphoreCreateInfo* pCreateInfo,
                                                const VkAllocationCallbacks* pAllocator, VkSemaphore* pSemaphore) {
   DeviceInfo& device_info = GetDeviceInfo(device);
-  VkResult result =
-      CallDownDeviceFunc<PFN_vkCreateSemaphore>("vkCreateSemaphore", device, pCreateInfo, pAllocator, pSemaphore);
+  VkResult result = device_info.dispatch_table().CreateSemaphore(device, pCreateInfo, pAllocator, pSemaphore);
   if (result != VK_SUCCESS) {
     return result;
   }
@@ -503,7 +491,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphor
                                         device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator,
                                         &remote_semaphore);
   if (result != VK_SUCCESS) {
-    CallDownDeviceFunc<PFN_vkDestroySemaphore>("vkDestroySemaphore", device, *pSemaphore, pAllocator);
+    device_info.dispatch_table().DestroySemaphore(device, *pSemaphore, pAllocator);
     return result;
   }
   device_info.SetRemoteHandle(*pSemaphore, remote_semaphore);
@@ -513,7 +501,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphor
 VKAPI_ATTR void VKAPI_CALL DestroySemaphore(VkDevice device, VkSemaphore semaphore,
                                             const VkAllocationCallbacks* pAllocator) {
   DeviceInfo& device_info = GetDeviceInfo(device);
-  CallDownDeviceFunc<PFN_vkDestroySemaphore>("vkDestroySemaphore", device, semaphore, pAllocator);
+  device_info.dispatch_table().DestroySemaphore(device, semaphore, pAllocator);
   PackAndCallVkDestroySemaphore(device_info.instance_info().command_stream(),
                                 device_info.instance_info().GetRemoteHandle(device),
                                 device_info.GetRemoteHandle(semaphore), pAllocator);

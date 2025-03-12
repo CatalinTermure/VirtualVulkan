@@ -9,7 +9,7 @@ std::mutex command_buffer_to_device_lock;
 std::map<VkCommandBuffer, VkDevice> g_command_buffer_to_device;
 }  // namespace
 
-DeviceInfo::DeviceInfo(PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
+DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
                        const VmaAllocatorCreateInfo& allocator_create_info)
     : nxt_gdpa_(nxt_gdpa),
       physical_device_(physical_device),
@@ -18,6 +18,7 @@ DeviceInfo::DeviceInfo(PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physic
   if (vmaCreateAllocator(&allocator_create_info, &allocator_) != VK_SUCCESS) {
     throw std::runtime_error("Failed to create VMA allocator");
   }
+  vkuInitDeviceDispatchTable(device, &dispatch_table_, nxt_gdpa);
 }
 
 DeviceInfo& GetDeviceInfo(VkDevice device) {
@@ -32,7 +33,7 @@ DeviceInfo& GetDeviceInfo(VkCommandBuffer command_buffer) {
 void SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
                    const VmaAllocatorCreateInfo& allocator_create_info) {
   std::lock_guard lock(device_info_lock);
-  auto [iter, inserted] = g_device_infos.try_emplace(device, nxt_gdpa, physical_device, allocator_create_info);
+  auto [iter, inserted] = g_device_infos.try_emplace(device, device, nxt_gdpa, physical_device, allocator_create_info);
   assert(inserted);
 }
 
