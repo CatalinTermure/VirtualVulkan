@@ -51,6 +51,7 @@ struct DeviceInfo {
 
 DeviceInfo& GetDeviceInfo(VkDevice device);
 DeviceInfo& GetDeviceInfo(VkCommandBuffer command_buffer);
+DeviceInfo& GetDeviceInfo(VkQueue queue);
 void SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
                    const VmaAllocatorCreateInfo& allocator_create_info);
 void RemoveDeviceInfo(VkDevice device);
@@ -58,6 +59,9 @@ void RemoveDeviceInfo(VkDevice device);
 void AssociateCommandBufferWithDevice(VkCommandBuffer command_buffer, VkDevice device);
 VkDevice GetDeviceForCommandBuffer(VkCommandBuffer command_buffer);
 void RemoveCommandBuffer(VkCommandBuffer command_buffer);
+
+void AssociateQueueWithDevice(VkQueue queue, VkDevice device);
+VkDevice GetDeviceForQueue(VkQueue queue);
 }  // namespace vvk
 
 #endif  // VVK_LAYER_CONTEXT_DEVICE_H

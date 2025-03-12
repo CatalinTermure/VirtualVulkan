@@ -61,6 +61,7 @@ void PackAndCallVkCmdBindPipeline(grpc::ClientReaderWriter<vvk::server::VvkReque
 void PackAndCallVkCmdSetViewport(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, uint32_t firstViewport, uint32_t viewportCount, const VkViewport* pViewports);
 void PackAndCallVkCmdSetScissor(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, uint32_t firstScissor, uint32_t scissorCount, const VkRect2D* pScissors);
 void PackAndCallVkCmdDraw(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance);
+VkResult PackAndCallVkQueueSubmit(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkQueue queue, uint32_t submitCount, const VkSubmitInfo* pSubmits, VkFence fence);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

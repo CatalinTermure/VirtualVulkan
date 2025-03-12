@@ -1677,4 +1677,43 @@ void UnpackAndExecuteVkCmdDraw(vvk::ExecutionContext& context, const vvk::server
   vkCmdDraw(reinterpret_cast<VkCommandBuffer>(request.vkcmddraw().commandbuffer()), request.vkcmddraw().vertexcount(), request.vkcmddraw().instancecount(), request.vkcmddraw().firstvertex(), request.vkcmddraw().firstinstance());
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkQueueSubmit(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkQueueSubmit");
+
+  std::vector<VkSubmitInfo> pSubmits(request.vkqueuesubmit().submitcount());
+  for (int i = 0; i < pSubmits.size(); i++) {
+    VkSubmitInfo& pSubmits_ref = pSubmits[i];
+    pSubmits_ref.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    pSubmits_ref.pNext = nullptr; // pNext chains are currently unsupported
+    if (request.vkqueuesubmit().psubmits(i).has_waitsemaphorecount()) {
+      pSubmits_ref.waitSemaphoreCount = request.vkqueuesubmit().psubmits(i).waitsemaphorecount();
+    } else {
+      pSubmits_ref.waitSemaphoreCount = uint32_t{};
+    }
+    pSubmits_ref.pWaitSemaphores = reinterpret_cast<const VkSemaphore*>(request.vkqueuesubmit().psubmits(i).pwaitsemaphores().data());
+    VkPipelineStageFlags* pSubmits_ref_pWaitDstStageMask = new VkPipelineStageFlags[request.vkqueuesubmit().psubmits(i).pwaitdststagemask_size()]();
+    pSubmits_ref.pWaitDstStageMask = pSubmits_ref_pWaitDstStageMask;
+    for (int pWaitDstStageMask_indx = 0; pWaitDstStageMask_indx < request.vkqueuesubmit().psubmits(i).pwaitdststagemask_size(); pWaitDstStageMask_indx++) {
+      pSubmits_ref_pWaitDstStageMask[pWaitDstStageMask_indx] = static_cast<VkPipelineStageFlags>(request.vkqueuesubmit().psubmits(i).pwaitdststagemask(pWaitDstStageMask_indx));
+    }
+    if (request.vkqueuesubmit().psubmits(i).has_commandbuffercount()) {
+      pSubmits_ref.commandBufferCount = request.vkqueuesubmit().psubmits(i).commandbuffercount();
+    } else {
+      pSubmits_ref.commandBufferCount = uint32_t{};
+    }
+    pSubmits_ref.pCommandBuffers = reinterpret_cast<const VkCommandBuffer*>(request.vkqueuesubmit().psubmits(i).pcommandbuffers().data());
+    if (request.vkqueuesubmit().psubmits(i).has_signalsemaphorecount()) {
+      pSubmits_ref.signalSemaphoreCount = request.vkqueuesubmit().psubmits(i).signalsemaphorecount();
+    } else {
+      pSubmits_ref.signalSemaphoreCount = uint32_t{};
+    }
+    pSubmits_ref.pSignalSemaphores = reinterpret_cast<const VkSemaphore*>(request.vkqueuesubmit().psubmits(i).psignalsemaphores().data());
+  }
+  VkResult result = vkQueueSubmit(reinterpret_cast<VkQueue>(request.vkqueuesubmit().queue()), request.vkqueuesubmit().submitcount(), pSubmits.data(), reinterpret_cast<VkFence>(request.vkqueuesubmit().fence()));
+  response->set_result(result);
+  for (int i = 0; i < pSubmits.size(); i++) {
+    VkSubmitInfo& pSubmits_ref = pSubmits[i];
+    delete[] pSubmits_ref.pWaitDstStageMask;
+  }
+}
 

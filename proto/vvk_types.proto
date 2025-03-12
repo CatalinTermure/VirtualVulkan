@@ -2906,6 +2906,16 @@ message VkExtensionProperties {
   uint32 specVersion = 2; // uint32_t specVersion
 }
 
+message VkSubmitInfo {
+  optional uint32 waitSemaphoreCount = 1; // uint32_t waitSemaphoreCount
+  repeated uint64 pWaitSemaphores = 2; // const VkSemaphore* pWaitSemaphores
+  repeated uint32 pWaitDstStageMask = 3; // const VkPipelineStageFlags* pWaitDstStageMask
+  optional uint32 commandBufferCount = 4; // uint32_t commandBufferCount
+  repeated uint64 pCommandBuffers = 5; // const VkCommandBuffer* pCommandBuffers
+  optional uint32 signalSemaphoreCount = 6; // uint32_t signalSemaphoreCount
+  repeated uint64 pSignalSemaphores = 7; // const VkSemaphore* pSignalSemaphores
+}
+
 message VkMemoryAllocateInfo {
   uint64 allocationSize = 1; // VkDeviceSize allocationSize
   uint32 memoryTypeIndex = 2; // uint32_t memoryTypeIndex

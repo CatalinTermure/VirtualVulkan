@@ -1977,5 +1977,58 @@ void PackAndCallVkCmdDraw(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk:
     spdlog::error("Failed to read response from server");
   }
 }
+VkResult PackAndCallVkQueueSubmit(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkQueue queue, uint32_t submitCount, const VkSubmitInfo* pSubmits, VkFence fence) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkQueueSubmit");
+  request.mutable_vkqueuesubmit()->set_queue(reinterpret_cast<uint64_t>(queue));
+  if (submitCount) {
+    request.mutable_vkqueuesubmit()->set_submitcount(submitCount);
+  }
+  for (int pSubmits_indx = 0; pSubmits_indx < submitCount; pSubmits_indx++) {
+    vvk::server::VkSubmitInfo* pSubmits_proto = request.mutable_vkqueuesubmit()->add_psubmits();
+    const VkSubmitInfo* pSubmits_i = &pSubmits[pSubmits_indx];
+    if (pSubmits_i->pNext) {
+      // pNext chains are currently not supported
+    }
+    if (pSubmits_i->waitSemaphoreCount) {
+      pSubmits_proto->set_waitsemaphorecount(pSubmits_i->waitSemaphoreCount);
+    }
+    const size_t pSubmits_proto_pWaitSemaphores_length = pSubmits_i->waitSemaphoreCount;
+    for (int pWaitSemaphores_indx = 0; pWaitSemaphores_indx < pSubmits_proto_pWaitSemaphores_length; pWaitSemaphores_indx++) {
+      pSubmits_proto->add_pwaitsemaphores(reinterpret_cast<uint64_t>(pSubmits_i->pWaitSemaphores[pWaitSemaphores_indx]));
+    }
+    const size_t pSubmits_proto_pWaitDstStageMask_length = pSubmits_i->waitSemaphoreCount;
+    for (int pWaitDstStageMask_indx = 0; pWaitDstStageMask_indx < pSubmits_proto_pWaitDstStageMask_length; pWaitDstStageMask_indx++) {
+      pSubmits_proto->add_pwaitdststagemask(static_cast<VkPipelineStageFlags>(pSubmits_i->pWaitDstStageMask[pWaitDstStageMask_indx]));
+    }
+    if (pSubmits_i->commandBufferCount) {
+      pSubmits_proto->set_commandbuffercount(pSubmits_i->commandBufferCount);
+    }
+    const size_t pSubmits_proto_pCommandBuffers_length = pSubmits_i->commandBufferCount;
+    for (int pCommandBuffers_indx = 0; pCommandBuffers_indx < pSubmits_proto_pCommandBuffers_length; pCommandBuffers_indx++) {
+      pSubmits_proto->add_pcommandbuffers(reinterpret_cast<uint64_t>(pSubmits_i->pCommandBuffers[pCommandBuffers_indx]));
+    }
+    if (pSubmits_i->signalSemaphoreCount) {
+      pSubmits_proto->set_signalsemaphorecount(pSubmits_i->signalSemaphoreCount);
+    }
+    const size_t pSubmits_proto_pSignalSemaphores_length = pSubmits_i->signalSemaphoreCount;
+    for (int pSignalSemaphores_indx = 0; pSignalSemaphores_indx < pSubmits_proto_pSignalSemaphores_length; pSignalSemaphores_indx++) {
+      pSubmits_proto->add_psignalsemaphores(reinterpret_cast<uint64_t>(pSubmits_i->pSignalSemaphores[pSignalSemaphores_indx]));
+    }
+  }
+  if (fence) {
+    request.mutable_vkqueuesubmit()->set_fence(reinterpret_cast<uint64_t>(fence));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  return static_cast<VkResult>(response.result());
+}
 }  // namespace vvk
 

@@ -79,6 +79,7 @@ COMMANDS_TO_GENERATE = [
     "vkCmdSetViewport",
     "vkCmdSetScissor",
     "vkCmdDraw",
+    "vkQueueSubmit",
 ]
 
 
@@ -111,8 +112,23 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
         out.append(
             f'  strncpy({name}.{member.name}, {proto_accessor}.{member.name.lower()}().c_str(), {member.length});\n')
     elif "Flags" in member.type or "FlagBits" in member.type:
-        out.append(
-            f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
+        if member.length is None:
+            out.append(
+                f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
+        else:
+            aux_var = f'{name}_{member.name}'
+            index_name = f'{member.name}_indx'
+            pre_fill_declarations.append(
+                f'  {member.type}* {aux_var} = new {member.type}[{proto_accessor}.{member.name.lower()}_size()]();\n')
+            pre_fill_declarations.append(
+                f'  {name}.{member.name} = {aux_var};\n')
+            out.append(
+                f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
+            out.append(' {\n')
+            out.append(
+                f'    {aux_var}[{index_name}] = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}({index_name}));\n')
+            out.append('  }\n')
+            after.append(f'  delete[] {name}.{member.name};\n')
     elif member.type in generator.vk.enums:
         if member.length is None:
             out.append(
@@ -351,8 +367,18 @@ def __fill_proto_from_member(generator: BaseGenerator, struct_type: str, name: s
                     f'    {name}->add_{member.name.lower()}(static_cast<{type_info.cast_to}>({struct_accessor}->{member.name}[{index_name}]));\n')
             out.append('  }\n')
     elif "Flags" in member.type or "FlagBits" in member.type:
-        out.append(
-            f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
+        if member.length is None:
+            out.append(
+                f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
+        else:
+            out.append(access_length_member_from_struct(
+                generator, struct_type, name, struct_accessor, member))
+            index_name = f'{member.name}_indx'
+            out.append(
+                f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
+            out.append(
+                f'    {name}->add_{member.name.lower()}(static_cast<{member.type}>({struct_accessor}->{member.name}[{index_name}]));\n')
+            out.append('  }\n')
     elif member.type in generator.vk.enums:
         if member.length is None:
             out.append(
