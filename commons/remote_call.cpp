@@ -1826,5 +1826,70 @@ VkResult PackAndCallVkResetCommandPool(grpc::ClientReaderWriter<vvk::server::Vvk
   }
   return static_cast<VkResult>(response.result());
 }
+void PackAndCallVkCmdBeginRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo* pRenderPassBegin, VkSubpassContents contents) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdBeginRenderPass");
+  request.mutable_vkcmdbeginrenderpass()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  vvk::server::VkRenderPassBeginInfo* pRenderPassBegin_proto = request.mutable_vkcmdbeginrenderpass()->mutable_prenderpassbegin();
+  if (pRenderPassBegin->pNext) {
+    // pNext chains are currently not supported
+  }
+  pRenderPassBegin_proto->set_renderpass(reinterpret_cast<uint64_t>(pRenderPassBegin->renderPass));
+  pRenderPassBegin_proto->set_framebuffer(reinterpret_cast<uint64_t>(pRenderPassBegin->framebuffer));
+  vvk::server::VkRect2D* pRenderPassBegin_proto_renderArea_proto = pRenderPassBegin_proto->mutable_renderarea();
+  vvk::server::VkOffset2D* pRenderPassBegin_proto_renderArea_proto_offset_proto = pRenderPassBegin_proto_renderArea_proto->mutable_offset();
+  pRenderPassBegin_proto_renderArea_proto_offset_proto->set_x((&(&pRenderPassBegin->renderArea)->offset)->x);
+  pRenderPassBegin_proto_renderArea_proto_offset_proto->set_y((&(&pRenderPassBegin->renderArea)->offset)->y);
+  vvk::server::VkExtent2D* pRenderPassBegin_proto_renderArea_proto_extent_proto = pRenderPassBegin_proto_renderArea_proto->mutable_extent();
+  pRenderPassBegin_proto_renderArea_proto_extent_proto->set_width((&(&pRenderPassBegin->renderArea)->extent)->width);
+  pRenderPassBegin_proto_renderArea_proto_extent_proto->set_height((&(&pRenderPassBegin->renderArea)->extent)->height);
+  if (pRenderPassBegin->clearValueCount) {
+    pRenderPassBegin_proto->set_clearvaluecount(pRenderPassBegin->clearValueCount);
+  }
+  const size_t pRenderPassBegin_proto_pClearValues_length = pRenderPassBegin->clearValueCount;
+  for (int pClearValues_indx = 0; pClearValues_indx < pRenderPassBegin_proto_pClearValues_length; pClearValues_indx++) {
+    vvk::server::VkClearValue* pRenderPassBegin_proto_pClearValues_proto = pRenderPassBegin_proto->add_pclearvalues();
+    vvk::server::VkClearColorValue* pRenderPassBegin_proto_pClearValues_proto_color_proto = pRenderPassBegin_proto_pClearValues_proto->mutable_color();
+    const size_t pRenderPassBegin_proto_pClearValues_proto_color_proto_float32_length = 4;
+    for (int float32_indx = 0; float32_indx < pRenderPassBegin_proto_pClearValues_proto_color_proto_float32_length; float32_indx++) {
+      pRenderPassBegin_proto_pClearValues_proto_color_proto->add_float32((&(&pRenderPassBegin->pClearValues[pClearValues_indx])->color)->float32[float32_indx]);
+    }
+    const size_t pRenderPassBegin_proto_pClearValues_proto_color_proto_int32_length = 4;
+    for (int int32_indx = 0; int32_indx < pRenderPassBegin_proto_pClearValues_proto_color_proto_int32_length; int32_indx++) {
+      pRenderPassBegin_proto_pClearValues_proto_color_proto->add_int32((&(&pRenderPassBegin->pClearValues[pClearValues_indx])->color)->int32[int32_indx]);
+    }
+    const size_t pRenderPassBegin_proto_pClearValues_proto_color_proto_uint32_length = 4;
+    for (int uint32_indx = 0; uint32_indx < pRenderPassBegin_proto_pClearValues_proto_color_proto_uint32_length; uint32_indx++) {
+      pRenderPassBegin_proto_pClearValues_proto_color_proto->add_uint32((&(&pRenderPassBegin->pClearValues[pClearValues_indx])->color)->uint32[uint32_indx]);
+    }
+    vvk::server::VkClearDepthStencilValue* pRenderPassBegin_proto_pClearValues_proto_depthStencil_proto = pRenderPassBegin_proto_pClearValues_proto->mutable_depthstencil();
+    pRenderPassBegin_proto_pClearValues_proto_depthStencil_proto->set_depth((&(&pRenderPassBegin->pClearValues[pClearValues_indx])->depthStencil)->depth);
+    pRenderPassBegin_proto_pClearValues_proto_depthStencil_proto->set_stencil((&(&pRenderPassBegin->pClearValues[pClearValues_indx])->depthStencil)->stencil);
+  }
+  request.mutable_vkcmdbeginrenderpass()->set_contents(static_cast<vvk::server::VkSubpassContents>(contents));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
+void PackAndCallVkCmdEndRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdEndRenderPass");
+  request.mutable_vkcmdendrenderpass()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  vvk::server::VvkResponse response;
+
+  if (!stream->Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream->Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 

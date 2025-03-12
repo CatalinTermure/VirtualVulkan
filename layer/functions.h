@@ -238,6 +238,12 @@ VKAPI_ATTR VkResult VKAPI_CALL ResetCommandPool(
     VkDevice                                    device,
     VkCommandPool                               commandPool,
     VkCommandPoolResetFlags                     flags);
+VKAPI_ATTR void VKAPI_CALL CmdBeginRenderPass(
+    VkCommandBuffer                             commandBuffer,
+    const VkRenderPassBeginInfo*                pRenderPassBegin,
+    VkSubpassContents                           contents);
+VKAPI_ATTR void VKAPI_CALL CmdEndRenderPass(
+    VkCommandBuffer                             commandBuffer);
 
 inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = {
     {"vkCreateInstance", reinterpret_cast<PFN_vkVoidFunction>(CreateInstance)},
@@ -287,6 +293,8 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkWaitForFences", reinterpret_cast<PFN_vkVoidFunction>(WaitForFences)},
     {"vkResetFences", reinterpret_cast<PFN_vkVoidFunction>(ResetFences)},
     {"vkResetCommandPool", reinterpret_cast<PFN_vkVoidFunction>(ResetCommandPool)},
+    {"vkCmdBeginRenderPass", reinterpret_cast<PFN_vkVoidFunction>(CmdBeginRenderPass)},
+    {"vkCmdEndRenderPass", reinterpret_cast<PFN_vkVoidFunction>(CmdEndRenderPass)},
 };
 
 }  // namespace vvk

@@ -55,6 +55,8 @@ void PackAndCallVkDestroyFramebuffer(grpc::ClientReaderWriter<vvk::server::VvkRe
 VkResult PackAndCallVkWaitForFences(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, uint32_t fenceCount, const VkFence* pFences, VkBool32 waitAll, uint64_t timeout);
 VkResult PackAndCallVkResetFences(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, uint32_t fenceCount, const VkFence* pFences);
 VkResult PackAndCallVkResetCommandPool(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkCommandPool commandPool, VkCommandPoolResetFlags flags);
+void PackAndCallVkCmdBeginRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo* pRenderPassBegin, VkSubpassContents contents);
+void PackAndCallVkCmdEndRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

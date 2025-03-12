@@ -867,4 +867,17 @@ VKAPI_ATTR VkResult VKAPI_CALL ResetCommandPool(VkDevice device, VkCommandPool c
   return PackAndCallVkResetCommandPool(device_info.instance_info().command_stream(),
                                        device_info.instance_info().GetRemoteHandle(device), commandPool, flags);
 }
+
+VKAPI_ATTR void VKAPI_CALL CmdBeginRenderPass(VkCommandBuffer commandBuffer,
+                                              const VkRenderPassBeginInfo* pRenderPassBegin,
+                                              VkSubpassContents contents) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdBeginRenderPass(device_info.instance_info().command_stream(),
+                                  device_info.GetRemoteHandle(commandBuffer), pRenderPassBegin, contents);
+}
+VKAPI_ATTR void VKAPI_CALL CmdEndRenderPass(VkCommandBuffer commandBuffer) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdEndRenderPass(device_info.instance_info().command_stream(),
+                                device_info.GetRemoteHandle(commandBuffer));
+}
 }  // namespace vvk

@@ -1585,4 +1585,52 @@ void UnpackAndExecuteVkResetCommandPool(vvk::ExecutionContext& context, const vv
   VkResult result = vkResetCommandPool(reinterpret_cast<VkDevice>(request.vkresetcommandpool().device()), reinterpret_cast<VkCommandPool>(request.vkresetcommandpool().commandpool()), static_cast<VkCommandPoolResetFlags>(request.vkresetcommandpool().flags()));
   response->set_result(result);
 }
+void UnpackAndExecuteVkCmdBeginRenderPass(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCmdBeginRenderPass");
+
+  VkRenderPassBeginInfo pRenderPassBegin = {};
+  pRenderPassBegin.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+  pRenderPassBegin.pNext = nullptr; // pNext chains are currently unsupported
+  pRenderPassBegin.renderPass = reinterpret_cast<VkRenderPass>(request.vkcmdbeginrenderpass().prenderpassbegin().renderpass());
+  pRenderPassBegin.framebuffer = reinterpret_cast<VkFramebuffer>(request.vkcmdbeginrenderpass().prenderpassbegin().framebuffer());
+  VkRect2D &pRenderPassBegin_renderArea = pRenderPassBegin.renderArea;
+  VkOffset2D &pRenderPassBegin_renderArea_offset = pRenderPassBegin_renderArea.offset;
+  pRenderPassBegin_renderArea_offset.x = request.vkcmdbeginrenderpass().prenderpassbegin().renderarea().offset().x();
+  pRenderPassBegin_renderArea_offset.y = request.vkcmdbeginrenderpass().prenderpassbegin().renderarea().offset().y();
+  VkExtent2D &pRenderPassBegin_renderArea_extent = pRenderPassBegin_renderArea.extent;
+  pRenderPassBegin_renderArea_extent.width = request.vkcmdbeginrenderpass().prenderpassbegin().renderarea().extent().width();
+  pRenderPassBegin_renderArea_extent.height = request.vkcmdbeginrenderpass().prenderpassbegin().renderarea().extent().height();
+  if (request.vkcmdbeginrenderpass().prenderpassbegin().has_clearvaluecount()) {
+    pRenderPassBegin.clearValueCount = request.vkcmdbeginrenderpass().prenderpassbegin().clearvaluecount();
+  } else {
+    pRenderPassBegin.clearValueCount = uint32_t{};
+  }
+  VkClearValue* pRenderPassBegin_pClearValues = new VkClearValue[request.vkcmdbeginrenderpass().prenderpassbegin().pclearvalues_size()]();
+  pRenderPassBegin.pClearValues = pRenderPassBegin_pClearValues;
+  for (int pClearValues_indx = 0; pClearValues_indx < request.vkcmdbeginrenderpass().prenderpassbegin().pclearvalues_size(); pClearValues_indx++) {
+    VkClearValue &pRenderPassBegin_pClearValues_i = pRenderPassBegin_pClearValues[pClearValues_indx];
+    VkClearColorValue &pRenderPassBegin_pClearValues_i_color = pRenderPassBegin_pClearValues_i.color;
+    for (int float32_indx = 0; float32_indx < 4; float32_indx++) {
+      pRenderPassBegin_pClearValues_i_color.float32[float32_indx] = request.vkcmdbeginrenderpass().prenderpassbegin().pclearvalues(pClearValues_indx).color().float32(float32_indx);
+    }
+    for (int int32_indx = 0; int32_indx < 4; int32_indx++) {
+      pRenderPassBegin_pClearValues_i_color.int32[int32_indx] = request.vkcmdbeginrenderpass().prenderpassbegin().pclearvalues(pClearValues_indx).color().int32(int32_indx);
+    }
+    for (int uint32_indx = 0; uint32_indx < 4; uint32_indx++) {
+      pRenderPassBegin_pClearValues_i_color.uint32[uint32_indx] = request.vkcmdbeginrenderpass().prenderpassbegin().pclearvalues(pClearValues_indx).color().uint32(uint32_indx);
+    }
+    VkClearDepthStencilValue &pRenderPassBegin_pClearValues_i_depthStencil = pRenderPassBegin_pClearValues_i.depthStencil;
+    pRenderPassBegin_pClearValues_i_depthStencil.depth = request.vkcmdbeginrenderpass().prenderpassbegin().pclearvalues(pClearValues_indx).depthstencil().depth();
+    pRenderPassBegin_pClearValues_i_depthStencil.stencil = request.vkcmdbeginrenderpass().prenderpassbegin().pclearvalues(pClearValues_indx).depthstencil().stencil();
+  }
+  vkCmdBeginRenderPass(reinterpret_cast<VkCommandBuffer>(request.vkcmdbeginrenderpass().commandbuffer()), &pRenderPassBegin, static_cast<VkSubpassContents>(request.vkcmdbeginrenderpass().contents()));
+  response->set_result(VK_SUCCESS);
+  delete[] pRenderPassBegin.pClearValues;
+}
+void UnpackAndExecuteVkCmdEndRenderPass(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCmdEndRenderPass");
+
+  vkCmdEndRenderPass(reinterpret_cast<VkCommandBuffer>(request.vkcmdendrenderpass().commandbuffer()));
+  response->set_result(VK_SUCCESS);
+}
 

@@ -3239,6 +3239,30 @@ message VkCommandBufferBeginInfo {
   optional VkCommandBufferInheritanceInfo pInheritanceInfo = 2; // const VkCommandBufferInheritanceInfo* pInheritanceInfo
 }
 
+message VkClearColorValue {
+  repeated float float32 = 1; // float float32[4]
+  repeated int32 int32 = 2; // int32_t int32[4]
+  repeated uint32 uint32 = 3; // uint32_t uint32[4]
+}
+
+message VkClearDepthStencilValue {
+  float depth = 1; // float depth
+  uint32 stencil = 2; // uint32_t stencil
+}
+
+message VkClearValue {
+  VkClearColorValue color = 1; // VkClearColorValue color
+  VkClearDepthStencilValue depthStencil = 2; // VkClearDepthStencilValue depthStencil
+}
+
+message VkRenderPassBeginInfo {
+  uint64 renderPass = 1; // VkRenderPass renderPass
+  uint64 framebuffer = 2; // VkFramebuffer framebuffer
+  VkRect2D renderArea = 3; // VkRect2D renderArea
+  optional uint32 clearValueCount = 4; // uint32_t clearValueCount
+  repeated VkClearValue pClearValues = 5; // const VkClearValue* pClearValues
+}
+
 message VkBindImageMemoryInfo {
   uint64 image = 1; // VkImage image
   uint64 memory = 2; // VkDeviceMemory memory

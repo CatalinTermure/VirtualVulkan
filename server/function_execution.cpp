@@ -59,6 +59,8 @@ const std::unordered_map<
         {"vkWaitForFences", UnpackAndExecuteVkWaitForFences},
         {"vkResetFences", UnpackAndExecuteVkResetFences},
         {"vkResetCommandPool", UnpackAndExecuteVkResetCommandPool},
+        {"vkCmdBeginRenderPass", UnpackAndExecuteVkCmdBeginRenderPass},
+        {"vkCmdEndRenderPass", UnpackAndExecuteVkCmdEndRenderPass},
 };
 
 }  // namespace

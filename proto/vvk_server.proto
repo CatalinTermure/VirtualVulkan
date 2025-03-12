@@ -60,8 +60,10 @@ message VvkRequest {
     VkFreeCommandBuffersParams vkFreeCommandBuffers = 44;
     VkBeginCommandBufferParams vkBeginCommandBuffer = 45;
     VkEndCommandBufferParams vkEndCommandBuffer = 46;
-    VkBindImageMemory2Params vkBindImageMemory2 = 47;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 48;
+    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 47;
+    VkCmdEndRenderPassParams vkCmdEndRenderPass = 48;
+    VkBindImageMemory2Params vkBindImageMemory2 = 49;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 50;
   }
 }
 
@@ -481,6 +483,16 @@ message VkBeginCommandBufferParams {
 }
 
 message VkEndCommandBufferParams {
+  uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+}
+
+message VkCmdBeginRenderPassParams {
+  uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+  VkRenderPassBeginInfo pRenderPassBegin = 2; // const VkRenderPassBeginInfo* pRenderPassBegin
+  VkSubpassContents contents = 3; // VkSubpassContents contents
+}
+
+message VkCmdEndRenderPassParams {
   uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
 }
 

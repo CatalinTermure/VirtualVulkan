@@ -73,6 +73,8 @@ COMMANDS_TO_GENERATE = [
     "vkWaitForFences",
     "vkResetFences",
     "vkResetCommandPool",
+    "vkCmdBeginRenderPass",
+    "vkCmdEndRenderPass",
 ]
 
 
