@@ -17,7 +17,7 @@ endif()
 
 add_subdirectory(server)
 
-add_subdirectory(Vulkan-Loader)
+add_subdirectory(Vulkan-Loader EXCLUDE_FROM_ALL)
 
 include(CTest)
 enable_testing()
