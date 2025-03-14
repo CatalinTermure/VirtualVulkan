@@ -20,6 +20,52 @@ DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhys
     throw std::runtime_error("Failed to create remote VMA allocator");
   }
   vkuInitDeviceDispatchTable(device, &dispatch_table_, nxt_gdpa);
+
+  VmaVulkanFunctions vma_vulkan_funcs = {
+      .vkGetInstanceProcAddr = nullptr,
+      .vkGetDeviceProcAddr = nullptr,
+      .vkGetPhysicalDeviceProperties = instance_info_.dispatch_table().GetPhysicalDeviceProperties,
+      .vkGetPhysicalDeviceMemoryProperties = instance_info_.dispatch_table().GetPhysicalDeviceMemoryProperties,
+      .vkAllocateMemory = dispatch_table_.AllocateMemory,
+      .vkFreeMemory = dispatch_table_.FreeMemory,
+      .vkMapMemory = dispatch_table_.MapMemory,
+      .vkUnmapMemory = dispatch_table_.UnmapMemory,
+      .vkFlushMappedMemoryRanges = dispatch_table_.FlushMappedMemoryRanges,
+      .vkInvalidateMappedMemoryRanges = dispatch_table_.InvalidateMappedMemoryRanges,
+      .vkBindBufferMemory = dispatch_table_.BindBufferMemory,
+      .vkBindImageMemory = dispatch_table_.BindImageMemory,
+      .vkGetBufferMemoryRequirements = dispatch_table_.GetBufferMemoryRequirements,
+      .vkGetImageMemoryRequirements = dispatch_table_.GetImageMemoryRequirements,
+      .vkCreateBuffer = dispatch_table_.CreateBuffer,
+      .vkDestroyBuffer = dispatch_table_.DestroyBuffer,
+      .vkCreateImage = dispatch_table_.CreateImage,
+      .vkDestroyImage = dispatch_table_.DestroyImage,
+      .vkCmdCopyBuffer = dispatch_table_.CmdCopyBuffer,
+      .vkGetBufferMemoryRequirements2KHR = dispatch_table_.GetBufferMemoryRequirements2KHR,
+      .vkGetImageMemoryRequirements2KHR = dispatch_table_.GetImageMemoryRequirements2KHR,
+      .vkBindBufferMemory2KHR = dispatch_table_.BindBufferMemory2KHR,
+      .vkBindImageMemory2KHR = dispatch_table_.BindImageMemory2KHR,
+      .vkGetPhysicalDeviceMemoryProperties2KHR = instance_info_.dispatch_table().GetPhysicalDeviceMemoryProperties2KHR,
+      .vkGetDeviceBufferMemoryRequirements = dispatch_table_.GetDeviceBufferMemoryRequirements,
+      .vkGetDeviceImageMemoryRequirements = dispatch_table_.GetDeviceImageMemoryRequirements,
+  };
+  VmaAllocatorCreateInfo local_allocator_create_info = {
+      .flags = 0,
+      .physicalDevice = physical_device,
+      .device = device,
+      .preferredLargeHeapBlockSize = 0,
+      .pAllocationCallbacks = nullptr,
+      .pDeviceMemoryCallbacks = nullptr,
+      .pHeapSizeLimit = nullptr,
+      .pVulkanFunctions = &vma_vulkan_funcs,
+      .instance = GetInstanceForPhysicalDevice(physical_device),
+      .vulkanApiVersion = VK_API_VERSION_1_0,
+      .pTypeExternalMemoryHandleTypes = nullptr,
+  };
+
+  if (vmaCreateAllocator(&local_allocator_create_info, &local_allocator_) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create local VMA allocator");
+  }
 }
 
 DeviceInfo& GetDeviceInfo(VkDevice device) {

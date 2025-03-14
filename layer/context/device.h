@@ -16,6 +16,7 @@ struct DeviceInfo {
              const VmaAllocatorCreateInfo& remote_allocator_create_info);
 
   VmaAllocator remote_allocator() const { return remote_allocator_; }
+  VmaAllocator local_allocator() const { return local_allocator_; }
   InstanceInfo& instance_info() { return instance_info_; }
   const VkuDeviceDispatchTable& dispatch_table() { return dispatch_table_; }
 
@@ -44,6 +45,7 @@ struct DeviceInfo {
   std::map<void*, void*> local_to_remote_handle_;
   std::unordered_set<void*> local_synchronization_primitives_;
   VmaAllocator remote_allocator_;
+  VmaAllocator local_allocator_;
   InstanceInfo& instance_info_;
   PFN_vkGetDeviceProcAddr nxt_gdpa_;
   VkuDeviceDispatchTable dispatch_table_;
