@@ -7,6 +7,8 @@
 #include <vulkan/vk_layer.h>
 
 #include <cassert>
+#include <optional>
+#include <vector>
 
 #include "commons/remote_call.h"
 #include "layer/context/device.h"
@@ -75,6 +77,26 @@ void* AllocateHandle() {
   return handle;
 }
 
+std::optional<std::vector<VkImage>> GetLocalImagesForSwapchain(VkDevice device, VkSwapchainKHR swapchain) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  uint32_t swapchain_image_count = 0;
+  std::vector<VkImage> client_swapchain_images;
+  VkResult result =
+      device_info.dispatch_table().GetSwapchainImagesKHR(device, swapchain, &swapchain_image_count, nullptr);
+  if (result != VK_SUCCESS) {
+    return std::nullopt;
+  }
+
+  client_swapchain_images.resize(swapchain_image_count);
+  result = device_info.dispatch_table().GetSwapchainImagesKHR(device, swapchain, &swapchain_image_count,
+                                                              client_swapchain_images.data());
+  if (result != VK_SUCCESS) {
+    return std::nullopt;
+  }
+
+  return client_swapchain_images;
+}
+
 }  // namespace
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapchainCreateInfoKHR* pCreateInfo,
@@ -87,18 +109,8 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
     return result;
   }
 
-  uint32_t swapchain_image_count = 0;
-  std::vector<VkImage> client_swapchain_images;
-  result = device_info.dispatch_table().GetSwapchainImagesKHR(device, *pSwapchain, &swapchain_image_count, nullptr);
-  if (result != VK_SUCCESS) {
-    device_info.dispatch_table().DestroySwapchainKHR(device, *pSwapchain, pAllocator);
-    return VK_ERROR_INITIALIZATION_FAILED;
-  }
-
-  client_swapchain_images.resize(swapchain_image_count);
-  result = device_info.dispatch_table().GetSwapchainImagesKHR(device, *pSwapchain, &swapchain_image_count,
-                                                              client_swapchain_images.data());
-  if (result != VK_SUCCESS) {
+  std::optional<std::vector<VkImage>> client_swapchain_images = GetLocalImagesForSwapchain(device, *pSwapchain);
+  if (!client_swapchain_images) {
     device_info.dispatch_table().DestroySwapchainKHR(device, *pSwapchain, pAllocator);
     return VK_ERROR_INITIALIZATION_FAILED;
   }
@@ -112,6 +124,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
 
   SwapchainInfo& swapchain_info = SetSwapchainInfo(*pSwapchain, device, device_info.allocator());
 
+  // Create remote images for the swapchain
   VkImageCreateInfo image_create_info = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
       .pNext = nullptr,
@@ -129,7 +142,6 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
       .pQueueFamilyIndices = pCreateInfo->pQueueFamilyIndices,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
   };
-
   VmaAllocationCreateInfo alloc_create_info = {
       .flags = 0,
       .usage = VMA_MEMORY_USAGE_GPU_ONLY,
@@ -140,9 +152,8 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
       .pUserData = nullptr,
       .priority = 0.0f,
   };
-
   VkDevice remote_device = instance_info.GetRemoteHandle(device);
-  for (VkImage client_image : client_swapchain_images) {
+  for (VkImage client_image : *client_swapchain_images) {
     VkImage server_image;
     server_image = swapchain_info.CreateImage(image_create_info, alloc_create_info);
     if (result != VK_SUCCESS) {
@@ -161,18 +172,8 @@ VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(VkDevice device, VkSwapchainKHR s
   DeviceInfo& device_info = GetDeviceInfo(device);
 
   uint32_t swapchain_image_count = 0;
-  std::vector<VkImage> client_swapchain_images;
-  VkResult result =
-      device_info.dispatch_table().GetSwapchainImagesKHR(device, swapchain, &swapchain_image_count, nullptr);
-  if (result != VK_SUCCESS) {
-    spdlog::critical("Failed to get swapchain images to destroy");
-    return;
-  }
-
-  client_swapchain_images.resize(swapchain_image_count);
-  result = device_info.dispatch_table().GetSwapchainImagesKHR(device, swapchain, &swapchain_image_count,
-                                                              client_swapchain_images.data());
-  if (result != VK_SUCCESS) {
+  std::optional<std::vector<VkImage>> client_swapchain_images = GetLocalImagesForSwapchain(device, swapchain);
+  if (!client_swapchain_images) {
     spdlog::critical("Failed to get swapchain images to destroy");
     return;
   }
@@ -180,7 +181,7 @@ VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(VkDevice device, VkSwapchainKHR s
   InstanceInfo& instance_info = device_info.instance_info();
   auto reader_writer = instance_info.command_stream();
 
-  for (VkImage client_image : client_swapchain_images) {
+  for (VkImage client_image : *client_swapchain_images) {
     VkImage server_image = device_info.GetRemoteHandle(client_image);
     PackAndCallVkDestroyImage(reader_writer, instance_info.GetRemoteHandle(device), server_image, nullptr);
   }
