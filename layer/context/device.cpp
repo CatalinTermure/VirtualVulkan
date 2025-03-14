@@ -14,10 +14,10 @@ std::map<VkQueue, VkDevice> g_queue_to_device;
 }  // namespace
 
 DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
-                       const VmaAllocatorCreateInfo& allocator_create_info)
+                       const VmaAllocatorCreateInfo& remote_allocator_create_info)
     : nxt_gdpa_(nxt_gdpa), instance_info_(GetInstanceInfo(physical_device)) {
-  if (vmaCreateAllocator(&allocator_create_info, &allocator_) != VK_SUCCESS) {
-    throw std::runtime_error("Failed to create VMA allocator");
+  if (vmaCreateAllocator(&remote_allocator_create_info, &remote_allocator_) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create remote VMA allocator");
   }
   vkuInitDeviceDispatchTable(device, &dispatch_table_, nxt_gdpa);
 }
@@ -34,9 +34,10 @@ DeviceInfo& GetDeviceInfo(VkCommandBuffer command_buffer) {
 DeviceInfo& GetDeviceInfo(VkQueue queue) { return GetDeviceInfo(GetDeviceForQueue(queue)); }
 
 void SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
-                   const VmaAllocatorCreateInfo& allocator_create_info) {
+                   const VmaAllocatorCreateInfo& remote_allocator_create_info) {
   std::lock_guard lock(device_info_lock);
-  auto [iter, inserted] = g_device_infos.try_emplace(device, device, nxt_gdpa, physical_device, allocator_create_info);
+  auto [iter, inserted] =
+      g_device_infos.try_emplace(device, device, nxt_gdpa, physical_device, remote_allocator_create_info);
   assert(inserted);
 }
 

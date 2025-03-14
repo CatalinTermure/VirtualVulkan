@@ -122,7 +122,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
     RemoveSwapchainInfo(pCreateInfo->oldSwapchain);
   }
 
-  SwapchainInfo& swapchain_info = SetSwapchainInfo(*pSwapchain, device, device_info.allocator());
+  SwapchainInfo& swapchain_info = SetSwapchainInfo(*pSwapchain, device, device_info.remote_allocator());
 
   // Create remote images for the swapchain
   VkImageCreateInfo image_create_info = {
@@ -155,7 +155,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
   VkDevice remote_device = instance_info.GetRemoteHandle(device);
   for (VkImage client_image : *client_swapchain_images) {
     VkImage server_image;
-    server_image = swapchain_info.CreateImage(image_create_info, alloc_create_info);
+    server_image = swapchain_info.CreateImageRemote(image_create_info, alloc_create_info);
     if (result != VK_SUCCESS) {
       device_info.dispatch_table().DestroySwapchainKHR(device, *pSwapchain, pAllocator);
       RemoveSwapchainInfo(*pSwapchain);

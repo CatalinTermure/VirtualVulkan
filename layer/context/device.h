@@ -13,9 +13,9 @@
 namespace vvk {
 struct DeviceInfo {
   DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
-             const VmaAllocatorCreateInfo& allocator_create_info);
+             const VmaAllocatorCreateInfo& remote_allocator_create_info);
 
-  VmaAllocator allocator() const { return allocator_; }
+  VmaAllocator remote_allocator() const { return remote_allocator_; }
   InstanceInfo& instance_info() { return instance_info_; }
   const VkuDeviceDispatchTable& dispatch_table() { return dispatch_table_; }
 
@@ -43,7 +43,7 @@ struct DeviceInfo {
  private:
   std::map<void*, void*> local_to_remote_handle_;
   std::unordered_set<void*> local_synchronization_primitives_;
-  VmaAllocator allocator_;
+  VmaAllocator remote_allocator_;
   InstanceInfo& instance_info_;
   PFN_vkGetDeviceProcAddr nxt_gdpa_;
   VkuDeviceDispatchTable dispatch_table_;
@@ -53,7 +53,7 @@ DeviceInfo& GetDeviceInfo(VkDevice device);
 DeviceInfo& GetDeviceInfo(VkCommandBuffer command_buffer);
 DeviceInfo& GetDeviceInfo(VkQueue queue);
 void SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
-                   const VmaAllocatorCreateInfo& allocator_create_info);
+                   const VmaAllocatorCreateInfo& remote_allocator_create_info);
 void RemoveDeviceInfo(VkDevice device);
 
 void AssociateCommandBufferWithDevice(VkCommandBuffer command_buffer, VkDevice device);

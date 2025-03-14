@@ -12,19 +12,21 @@ std::mutex swapchain_info_lock;
 std::map<VkSwapchainKHR, SwapchainInfo> g_swapchain_infos;
 }  // namespace
 
-SwapchainInfo::SwapchainInfo(VkDevice device, VmaAllocator allocator)
-    : device_(device), allocator_(allocator), instance_info_(GetInstanceInfo(device)) {}
+SwapchainInfo::SwapchainInfo(VkDevice device, VmaAllocator remote_allocator)
+    : device_(device), remote_allocator_(remote_allocator), instance_info_(GetInstanceInfo(device)) {}
 
 SwapchainInfo::~SwapchainInfo() {
   for (auto [remote_image, remote_allocation] : remote_images_) {
-    vmaDestroyImage(allocator_, remote_image, remote_allocation);
+    vmaDestroyImage(remote_allocator_, remote_image, remote_allocation);
   }
 }
 
-VkImage SwapchainInfo::CreateImage(const VkImageCreateInfo& create_info, const VmaAllocationCreateInfo& alloc_info) {
+VkImage SwapchainInfo::CreateImageRemote(const VkImageCreateInfo& create_info,
+                                         const VmaAllocationCreateInfo& alloc_info) {
   VkImage remote_image;
   VmaAllocation remote_allocation;
-  VkResult result = vmaCreateImage(allocator_, &create_info, &alloc_info, &remote_image, &remote_allocation, nullptr);
+  VkResult result =
+      vmaCreateImage(remote_allocator_, &create_info, &alloc_info, &remote_image, &remote_allocation, nullptr);
   if (result != VK_SUCCESS) {
     return VK_NULL_HANDLE;
   }
@@ -37,9 +39,9 @@ SwapchainInfo& GetSwapchainInfo(VkSwapchainKHR swapchain) {
   return g_swapchain_infos.at(swapchain);
 }
 
-SwapchainInfo& SetSwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAllocator allocator) {
+SwapchainInfo& SetSwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAllocator remote_allocator) {
   std::lock_guard lock(swapchain_info_lock);
-  auto [iter, inserted] = g_swapchain_infos.try_emplace(swapchain, device, allocator);
+  auto [iter, inserted] = g_swapchain_infos.try_emplace(swapchain, device, remote_allocator);
   assert(inserted);
   return iter->second;
 }
