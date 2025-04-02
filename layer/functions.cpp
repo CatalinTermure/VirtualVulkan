@@ -206,6 +206,12 @@ VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(VkDevice device, VkSwapchainK
   }
   if (fence != VK_NULL_HANDLE) {
     device_info.SetFenceLocal(fence);
+    VkResult status = device_info.dispatch_table().GetFenceStatus(device, fence);
+    if (status == VK_SUCCESS) {
+      device_info.dispatch_table().WaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX);
+    } else if (status != VK_NOT_READY) {
+      return status;
+    }
   }
   VkResult result = device_info.dispatch_table().AcquireNextImageKHR(device, swapchain, timeout,
                                                                      semaphore->local_handle, fence, pImageIndex);
