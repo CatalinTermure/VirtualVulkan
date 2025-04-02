@@ -29,46 +29,47 @@ message VvkRequest {
     VkEnumerateDeviceExtensionPropertiesParams vkEnumerateDeviceExtensionProperties = 13;
     VkGetDeviceQueueParams vkGetDeviceQueue = 14;
     VkQueueSubmitParams vkQueueSubmit = 15;
-    VkAllocateMemoryParams vkAllocateMemory = 16;
-    VkFreeMemoryParams vkFreeMemory = 17;
-    VkBindImageMemoryParams vkBindImageMemory = 18;
-    VkGetImageMemoryRequirementsParams vkGetImageMemoryRequirements = 19;
-    VkCreateFenceParams vkCreateFence = 20;
-    VkDestroyFenceParams vkDestroyFence = 21;
-    VkResetFencesParams vkResetFences = 22;
-    VkWaitForFencesParams vkWaitForFences = 23;
-    VkCreateSemaphoreParams vkCreateSemaphore = 24;
-    VkDestroySemaphoreParams vkDestroySemaphore = 25;
-    VkCreateImageParams vkCreateImage = 26;
-    VkDestroyImageParams vkDestroyImage = 27;
-    VkGetImageSubresourceLayoutParams vkGetImageSubresourceLayout = 28;
-    VkCreateImageViewParams vkCreateImageView = 29;
-    VkDestroyImageViewParams vkDestroyImageView = 30;
-    VkCreateShaderModuleParams vkCreateShaderModule = 31;
-    VkDestroyShaderModuleParams vkDestroyShaderModule = 32;
-    VkCreateGraphicsPipelinesParams vkCreateGraphicsPipelines = 33;
-    VkDestroyPipelineParams vkDestroyPipeline = 34;
-    VkCreatePipelineLayoutParams vkCreatePipelineLayout = 35;
-    VkDestroyPipelineLayoutParams vkDestroyPipelineLayout = 36;
-    VkCreateFramebufferParams vkCreateFramebuffer = 37;
-    VkDestroyFramebufferParams vkDestroyFramebuffer = 38;
-    VkCreateRenderPassParams vkCreateRenderPass = 39;
-    VkDestroyRenderPassParams vkDestroyRenderPass = 40;
-    VkCreateCommandPoolParams vkCreateCommandPool = 41;
-    VkDestroyCommandPoolParams vkDestroyCommandPool = 42;
-    VkResetCommandPoolParams vkResetCommandPool = 43;
-    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 44;
-    VkFreeCommandBuffersParams vkFreeCommandBuffers = 45;
-    VkBeginCommandBufferParams vkBeginCommandBuffer = 46;
-    VkEndCommandBufferParams vkEndCommandBuffer = 47;
-    VkCmdBindPipelineParams vkCmdBindPipeline = 48;
-    VkCmdSetViewportParams vkCmdSetViewport = 49;
-    VkCmdSetScissorParams vkCmdSetScissor = 50;
-    VkCmdDrawParams vkCmdDraw = 51;
-    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 52;
-    VkCmdEndRenderPassParams vkCmdEndRenderPass = 53;
-    VkBindImageMemory2Params vkBindImageMemory2 = 54;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 55;
+    VkDeviceWaitIdleParams vkDeviceWaitIdle = 16;
+    VkAllocateMemoryParams vkAllocateMemory = 17;
+    VkFreeMemoryParams vkFreeMemory = 18;
+    VkBindImageMemoryParams vkBindImageMemory = 19;
+    VkGetImageMemoryRequirementsParams vkGetImageMemoryRequirements = 20;
+    VkCreateFenceParams vkCreateFence = 21;
+    VkDestroyFenceParams vkDestroyFence = 22;
+    VkResetFencesParams vkResetFences = 23;
+    VkWaitForFencesParams vkWaitForFences = 24;
+    VkCreateSemaphoreParams vkCreateSemaphore = 25;
+    VkDestroySemaphoreParams vkDestroySemaphore = 26;
+    VkCreateImageParams vkCreateImage = 27;
+    VkDestroyImageParams vkDestroyImage = 28;
+    VkGetImageSubresourceLayoutParams vkGetImageSubresourceLayout = 29;
+    VkCreateImageViewParams vkCreateImageView = 30;
+    VkDestroyImageViewParams vkDestroyImageView = 31;
+    VkCreateShaderModuleParams vkCreateShaderModule = 32;
+    VkDestroyShaderModuleParams vkDestroyShaderModule = 33;
+    VkCreateGraphicsPipelinesParams vkCreateGraphicsPipelines = 34;
+    VkDestroyPipelineParams vkDestroyPipeline = 35;
+    VkCreatePipelineLayoutParams vkCreatePipelineLayout = 36;
+    VkDestroyPipelineLayoutParams vkDestroyPipelineLayout = 37;
+    VkCreateFramebufferParams vkCreateFramebuffer = 38;
+    VkDestroyFramebufferParams vkDestroyFramebuffer = 39;
+    VkCreateRenderPassParams vkCreateRenderPass = 40;
+    VkDestroyRenderPassParams vkDestroyRenderPass = 41;
+    VkCreateCommandPoolParams vkCreateCommandPool = 42;
+    VkDestroyCommandPoolParams vkDestroyCommandPool = 43;
+    VkResetCommandPoolParams vkResetCommandPool = 44;
+    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 45;
+    VkFreeCommandBuffersParams vkFreeCommandBuffers = 46;
+    VkBeginCommandBufferParams vkBeginCommandBuffer = 47;
+    VkEndCommandBufferParams vkEndCommandBuffer = 48;
+    VkCmdBindPipelineParams vkCmdBindPipeline = 49;
+    VkCmdSetViewportParams vkCmdSetViewport = 50;
+    VkCmdSetScissorParams vkCmdSetScissor = 51;
+    VkCmdDrawParams vkCmdDraw = 52;
+    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 53;
+    VkCmdEndRenderPassParams vkCmdEndRenderPass = 54;
+    VkBindImageMemory2Params vkBindImageMemory2 = 55;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 56;
   }
 }
 
@@ -233,6 +234,10 @@ message VkQueueSubmitParams {
   optional uint32 submitCount = 2; // uint32_t submitCount
   repeated VkSubmitInfo pSubmits = 3; // const VkSubmitInfo* pSubmits
   optional uint64 fence = 4; // VkFence fence
+}
+
+message VkDeviceWaitIdleParams {
+  uint64 device = 1; // VkDevice device
 }
 
 message VkAllocateMemoryResponse {

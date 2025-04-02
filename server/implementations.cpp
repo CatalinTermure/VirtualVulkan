@@ -1716,4 +1716,10 @@ void UnpackAndExecuteVkQueueSubmit(vvk::ExecutionContext& context, const vvk::se
     delete[] pSubmits_ref.pWaitDstStageMask;
   }
 }
+void UnpackAndExecuteVkDeviceWaitIdle(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDeviceWaitIdle");
+
+  VkResult result = vkDeviceWaitIdle(reinterpret_cast<VkDevice>(request.vkdevicewaitidle().device()));
+  response->set_result(result);
+}
 

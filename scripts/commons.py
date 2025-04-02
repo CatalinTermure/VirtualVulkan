@@ -80,6 +80,7 @@ COMMANDS_TO_GENERATE = [
     "vkCmdSetScissor",
     "vkCmdDraw",
     "vkQueueSubmit",
+    "vkDeviceWaitIdle",
 ]
 
 

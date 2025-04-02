@@ -2032,5 +2032,20 @@ VkResult PackAndCallVkQueueSubmit(ClientBidiStream& stream, VkQueue queue, uint3
   }
   return static_cast<VkResult>(response.result());
 }
+VkResult PackAndCallVkDeviceWaitIdle(ClientBidiStream& stream, VkDevice device) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkDeviceWaitIdle");
+  request.mutable_vkdevicewaitidle()->set_device(reinterpret_cast<uint64_t>(device));
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  return static_cast<VkResult>(response.result());
+}
 }  // namespace vvk
 
