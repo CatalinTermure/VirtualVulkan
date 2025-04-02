@@ -605,8 +605,8 @@ VKAPI_ATTR void VKAPI_CALL DestroySemaphore(VkDevice device, VkSemaphore semapho
   device_info.dispatch_table().DestroySemaphore(device, semaphore->local_handle, pAllocator);
   device_info.dispatch_table().DestroyFence(device, semaphore->local_to_remote_fence, pAllocator);
   PackAndCallVkDestroySemaphore(device_info.instance_info().command_stream(),
-                                device_info.instance_info().GetRemoteHandle(device),
-                                device_info.GetRemoteHandle(semaphore->remote_handle), pAllocator);
+                                device_info.instance_info().GetRemoteHandle(device), semaphore->remote_handle,
+                                pAllocator);
   delete semaphore;
 }
 
