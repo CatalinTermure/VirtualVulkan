@@ -3,6 +3,7 @@ find_package(spdlog CONFIG REQUIRED)
 add_library(
   VirtualVulkanCommons
     remote_call.h remote_call.cpp
+    bidi_stream.h bidi_stream.cpp
 )
 
 target_link_libraries(VirtualVulkanCommons PRIVATE spdlog::spdlog vvkproto)

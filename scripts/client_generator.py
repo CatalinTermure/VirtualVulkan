@@ -176,6 +176,8 @@ class ClientSrcGenerator(BaseGenerator):
         out.append("// clang-format off\n")
         out.append('''#include "remote_call.h"
 
+#include "bidi_stream.h"
+
 #include <vulkan/vulkan.h>
 #include <spdlog/spdlog.h>
 #include "vvk_server.grpc.pb.h"
@@ -187,8 +189,7 @@ namespace vvk {
         for cmd_name in COMMANDS_TO_GENERATE:
             after_call_code = []
             command = self.vk.commands[cmd_name]
-            params = [
-                'grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream']
+            params = ['ClientBidiStream& stream']
             params.extend([param.cDeclaration.strip()
                           for param in command.params])
             out.append(
@@ -214,11 +215,11 @@ namespace vvk {
             out.append("  vvk::server::VvkResponse response;\n")
 
             out.append('''
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 ''')
@@ -250,6 +251,8 @@ class ClientHeaderGenerator(BaseGenerator):
         out.append("// clang-format off\n")
         out.append('''#ifndef VVK_COMMONS_REMOTE_CALL_H
 #define VVK_COMMONS_REMOTE_CALL_H
+#include "bidi_stream.h"
+
 #include "vulkan/vulkan_core.h"
 
 #include <grpcpp/grpcpp.h>
@@ -260,8 +263,7 @@ namespace vvk {
 
         for cmd_name in COMMANDS_TO_GENERATE:
             command = self.vk.commands[cmd_name]
-            params = [
-                'grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream']
+            params = ['ClientBidiStream& stream']
             params.extend([param.cDeclaration.strip()
                           for param in command.params])
             out.append(

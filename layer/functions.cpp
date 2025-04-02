@@ -116,7 +116,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
   }
 
   InstanceInfo& instance_info = device_info.instance_info();
-  auto reader_writer = instance_info.command_stream();
+  auto& reader_writer = instance_info.command_stream();
 
   if (pCreateInfo->oldSwapchain) {
     RemoveSwapchainInfo(pCreateInfo->oldSwapchain);
@@ -179,7 +179,7 @@ VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(VkDevice device, VkSwapchainKHR s
   }
 
   InstanceInfo& instance_info = device_info.instance_info();
-  auto reader_writer = instance_info.command_stream();
+  auto& reader_writer = instance_info.command_stream();
 
   for (VkImage client_image : *client_swapchain_images) {
     VkImage server_image = device_info.GetRemoteHandle(client_image);
@@ -329,7 +329,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
     RemoveStructsFromChain(reinterpret_cast<VkBaseInStructure*>(&remote_create_info),
                            VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO);
 
-    auto reader_writer = instance_info.command_stream();
+    auto& reader_writer = instance_info.command_stream();
 
     // We don't want to overwrite the local instance handle with the remote one
     VkInstance remote_instance = *pInstance;
@@ -346,7 +346,7 @@ VKAPI_ATTR void VKAPI_CALL DestroyInstance(VkInstance instance, const VkAllocati
   InstanceInfo& instance_info = GetInstanceInfo(instance);
   instance_info.dispatch_table().DestroyInstance(instance, pAllocator);
 
-  auto reader_writer = instance_info.command_stream();
+  auto& reader_writer = instance_info.command_stream();
   PackAndCallVkDestroyInstance(reader_writer, instance_info.GetRemoteHandle(instance), pAllocator);
 
   RemoveInstanceInfo(instance);
@@ -471,7 +471,7 @@ VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCall
 
   InstanceInfo& instance_info = GetInstanceInfo(device);
 
-  auto reader_writer = device_info.instance_info().command_stream();
+  auto& reader_writer = device_info.instance_info().command_stream();
   PackAndCallVkDestroyDevice(reader_writer, device_info.instance_info().GetRemoteHandle(device), pAllocator);
 
   RemoveDeviceInfo(device);
@@ -498,7 +498,7 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(VkPhysicalDevi
                                                                              pProperties);
   }
 
-  auto command_stream = GetInstanceInfo(physicalDevice).command_stream();
+  auto& command_stream = GetInstanceInfo(physicalDevice).command_stream();
 
   return PackAndCallVkEnumerateDeviceExtensionProperties(command_stream, physicalDevice, pLayerName, pPropertyCount,
                                                          pProperties);
@@ -507,20 +507,20 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(VkPhysicalDevi
 VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceMemoryProperties(VkPhysicalDevice physicalDevice,
                                                              VkPhysicalDeviceMemoryProperties* pMemoryProperties) {
   // TODO: investigate additional steps needed for this function
-  auto command_stream = GetInstanceInfo(physicalDevice).command_stream();
+  auto& command_stream = GetInstanceInfo(physicalDevice).command_stream();
   return PackAndCallVkGetPhysicalDeviceMemoryProperties(command_stream, physicalDevice, pMemoryProperties);
 }
 
 VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceFeatures(VkPhysicalDevice physicalDevice,
                                                      VkPhysicalDeviceFeatures* pFeatures) {
-  auto command_stream = GetInstanceInfo(physicalDevice).command_stream();
+  auto& command_stream = GetInstanceInfo(physicalDevice).command_stream();
   return PackAndCallVkGetPhysicalDeviceFeatures(command_stream, physicalDevice, pFeatures);
 }
 
 VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice,
                                                                   uint32_t* pQueueFamilyPropertyCount,
                                                                   VkQueueFamilyProperties* pQueueFamilyProperties) {
-  auto command_stream = GetInstanceInfo(physicalDevice).command_stream();
+  auto& command_stream = GetInstanceInfo(physicalDevice).command_stream();
   return PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(command_stream, physicalDevice, pQueueFamilyPropertyCount,
                                                              pQueueFamilyProperties);
 }
@@ -1034,7 +1034,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
       fences_to_wait.push_back(semaphore->local_to_remote_fence);
     }
     std::thread remote_caller(
-        [&dispatch_table = device_info.dispatch_table(), command_stream = device_info.instance_info().command_stream(),
+        [&dispatch_table = device_info.dispatch_table(), &command_stream = device_info.instance_info().command_stream(),
          remote_queue = device_info.GetRemoteHandle(queue), remote_fence = device_info.GetRemoteHandle(fence), device,
          remote_device = device_info.instance_info().GetRemoteHandle(device), submitCount,
          submits = std::move(submit_infos), fences = std::move(fences_to_wait),

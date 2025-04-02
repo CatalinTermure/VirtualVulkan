@@ -2,13 +2,15 @@
 // clang-format off
 #include "remote_call.h"
 
+#include "bidi_stream.h"
+
 #include <vulkan/vulkan.h>
 #include <spdlog/spdlog.h>
 #include "vvk_server.grpc.pb.h"
 #include <cstring>
 
 namespace vvk {
-VkResult PackAndCallVkCreateInstance(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, const VkInstanceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkInstance* pInstance) {
+VkResult PackAndCallVkCreateInstance(ClientBidiStream& stream, const VkInstanceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkInstance* pInstance) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreateInstance");
   vvk::server::VkInstanceCreateInfo* pCreateInfo_proto = request.mutable_vkcreateinstance()->mutable_pcreateinfo();
@@ -50,17 +52,17 @@ VkResult PackAndCallVkCreateInstance(grpc::ClientReaderWriter<vvk::server::VvkRe
   request.mutable_vkcreateinstance()->set_pinstance(reinterpret_cast<uint64_t>(*pInstance));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pInstance = reinterpret_cast<VkInstance>(response.vkcreateinstance().pinstance());
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkDestroyInstance(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkInstance instance, const VkAllocationCallbacks* pAllocator) {
+void PackAndCallVkDestroyInstance(ClientBidiStream& stream, VkInstance instance, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
   request.set_method("vkDestroyInstance");
   if (instance) {
@@ -68,15 +70,15 @@ void PackAndCallVkDestroyInstance(grpc::ClientReaderWriter<vvk::server::VvkReque
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-VkResult PackAndCallVkEnumeratePhysicalDevices(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkInstance instance, uint32_t* pPhysicalDeviceCount, VkPhysicalDevice* pPhysicalDevices) {
+VkResult PackAndCallVkEnumeratePhysicalDevices(ClientBidiStream& stream, VkInstance instance, uint32_t* pPhysicalDeviceCount, VkPhysicalDevice* pPhysicalDevices) {
   vvk::server::VvkRequest request;
   request.set_method("vkEnumeratePhysicalDevices");
   request.mutable_vkenumeratephysicaldevices()->set_instance(reinterpret_cast<uint64_t>(instance));
@@ -89,11 +91,11 @@ VkResult PackAndCallVkEnumeratePhysicalDevices(grpc::ClientReaderWriter<vvk::ser
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pPhysicalDeviceCount = response.vkenumeratephysicaldevices().pphysicaldevicecount();
@@ -105,17 +107,17 @@ VkResult PackAndCallVkEnumeratePhysicalDevices(grpc::ClientReaderWriter<vvk::ser
   }
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkGetPhysicalDeviceProperties(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkPhysicalDevice physicalDevice, VkPhysicalDeviceProperties* pProperties) {
+void PackAndCallVkGetPhysicalDeviceProperties(ClientBidiStream& stream, VkPhysicalDevice physicalDevice, VkPhysicalDeviceProperties* pProperties) {
   vvk::server::VvkRequest request;
   request.set_method("vkGetPhysicalDeviceProperties");
   request.mutable_vkgetphysicaldeviceproperties()->set_physicaldevice(reinterpret_cast<uint64_t>(physicalDevice));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   VkPhysicalDeviceProperties& pProperties_ref = *pProperties;
@@ -290,18 +292,18 @@ void PackAndCallVkGetPhysicalDeviceProperties(grpc::ClientReaderWriter<vvk::serv
   pProperties_ref_sparseProperties.residencyAlignedMipSize = response.vkgetphysicaldeviceproperties().pproperties().sparseproperties().residencyalignedmipsize();
   pProperties_ref_sparseProperties.residencyNonResidentStrict = response.vkgetphysicaldeviceproperties().pproperties().sparseproperties().residencynonresidentstrict();
 }
-void PackAndCallVkGetPhysicalDeviceFormatProperties(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkPhysicalDevice physicalDevice, VkFormat format, VkFormatProperties* pFormatProperties) {
+void PackAndCallVkGetPhysicalDeviceFormatProperties(ClientBidiStream& stream, VkPhysicalDevice physicalDevice, VkFormat format, VkFormatProperties* pFormatProperties) {
   vvk::server::VvkRequest request;
   request.set_method("vkGetPhysicalDeviceFormatProperties");
   request.mutable_vkgetphysicaldeviceformatproperties()->set_physicaldevice(reinterpret_cast<uint64_t>(physicalDevice));
   request.mutable_vkgetphysicaldeviceformatproperties()->set_format(static_cast<vvk::server::VkFormat>(format));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   VkFormatProperties& pFormatProperties_ref = *pFormatProperties;
@@ -321,7 +323,7 @@ void PackAndCallVkGetPhysicalDeviceFormatProperties(grpc::ClientReaderWriter<vvk
     pFormatProperties_ref.bufferFeatures = VkFormatFeatureFlags{};
   }
 }
-VkResult PackAndCallVkCreateDevice(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) {
+VkResult PackAndCallVkCreateDevice(ClientBidiStream& stream, VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreateDevice");
   request.mutable_vkcreatedevice()->set_physicaldevice(reinterpret_cast<uint64_t>(physicalDevice));
@@ -424,17 +426,17 @@ VkResult PackAndCallVkCreateDevice(grpc::ClientReaderWriter<vvk::server::VvkRequ
   request.mutable_vkcreatedevice()->set_pdevice(reinterpret_cast<uint64_t>(*pDevice));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pDevice = reinterpret_cast<VkDevice>(response.vkcreatedevice().pdevice());
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkDestroyDevice(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkAllocationCallbacks* pAllocator) {
+void PackAndCallVkDestroyDevice(ClientBidiStream& stream, VkDevice device, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
   request.set_method("vkDestroyDevice");
   if (device) {
@@ -442,15 +444,15 @@ void PackAndCallVkDestroyDevice(grpc::ClientReaderWriter<vvk::server::VvkRequest
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-VkResult PackAndCallVkEnumerateInstanceExtensionProperties(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, const char* pLayerName, uint32_t* pPropertyCount, VkExtensionProperties* pProperties) {
+VkResult PackAndCallVkEnumerateInstanceExtensionProperties(ClientBidiStream& stream, const char* pLayerName, uint32_t* pPropertyCount, VkExtensionProperties* pProperties) {
   vvk::server::VvkRequest request;
   request.set_method("vkEnumerateInstanceExtensionProperties");
   request.mutable_vkenumerateinstanceextensionproperties()->set_playername(pLayerName);
@@ -463,11 +465,11 @@ VkResult PackAndCallVkEnumerateInstanceExtensionProperties(grpc::ClientReaderWri
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pPropertyCount = response.vkenumerateinstanceextensionproperties().ppropertycount();
@@ -481,7 +483,7 @@ VkResult PackAndCallVkEnumerateInstanceExtensionProperties(grpc::ClientReaderWri
   }
   return static_cast<VkResult>(response.result());
 }
-VkResult PackAndCallVkEnumerateDeviceExtensionProperties(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkPhysicalDevice physicalDevice, const char* pLayerName, uint32_t* pPropertyCount, VkExtensionProperties* pProperties) {
+VkResult PackAndCallVkEnumerateDeviceExtensionProperties(ClientBidiStream& stream, VkPhysicalDevice physicalDevice, const char* pLayerName, uint32_t* pPropertyCount, VkExtensionProperties* pProperties) {
   vvk::server::VvkRequest request;
   request.set_method("vkEnumerateDeviceExtensionProperties");
   request.mutable_vkenumeratedeviceextensionproperties()->set_physicaldevice(reinterpret_cast<uint64_t>(physicalDevice));
@@ -495,11 +497,11 @@ VkResult PackAndCallVkEnumerateDeviceExtensionProperties(grpc::ClientReaderWrite
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pPropertyCount = response.vkenumeratedeviceextensionproperties().ppropertycount();
@@ -513,17 +515,17 @@ VkResult PackAndCallVkEnumerateDeviceExtensionProperties(grpc::ClientReaderWrite
   }
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkGetPhysicalDeviceMemoryProperties(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkPhysicalDevice physicalDevice, VkPhysicalDeviceMemoryProperties* pMemoryProperties) {
+void PackAndCallVkGetPhysicalDeviceMemoryProperties(ClientBidiStream& stream, VkPhysicalDevice physicalDevice, VkPhysicalDeviceMemoryProperties* pMemoryProperties) {
   vvk::server::VvkRequest request;
   request.set_method("vkGetPhysicalDeviceMemoryProperties");
   request.mutable_vkgetphysicaldevicememoryproperties()->set_physicaldevice(reinterpret_cast<uint64_t>(physicalDevice));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   VkPhysicalDeviceMemoryProperties& pMemoryProperties_ref = *pMemoryProperties;
@@ -548,17 +550,17 @@ void PackAndCallVkGetPhysicalDeviceMemoryProperties(grpc::ClientReaderWriter<vvk
     }
   }
 }
-void PackAndCallVkGetPhysicalDeviceFeatures(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkPhysicalDevice physicalDevice, VkPhysicalDeviceFeatures* pFeatures) {
+void PackAndCallVkGetPhysicalDeviceFeatures(ClientBidiStream& stream, VkPhysicalDevice physicalDevice, VkPhysicalDeviceFeatures* pFeatures) {
   vvk::server::VvkRequest request;
   request.set_method("vkGetPhysicalDeviceFeatures");
   request.mutable_vkgetphysicaldevicefeatures()->set_physicaldevice(reinterpret_cast<uint64_t>(physicalDevice));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   VkPhysicalDeviceFeatures& pFeatures_ref = *pFeatures;
@@ -618,7 +620,7 @@ void PackAndCallVkGetPhysicalDeviceFeatures(grpc::ClientReaderWriter<vvk::server
   pFeatures_ref.variableMultisampleRate = response.vkgetphysicaldevicefeatures().pfeatures().variablemultisamplerate();
   pFeatures_ref.inheritedQueries = response.vkgetphysicaldevicefeatures().pfeatures().inheritedqueries();
 }
-void PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkPhysicalDevice physicalDevice, uint32_t* pQueueFamilyPropertyCount, VkQueueFamilyProperties* pQueueFamilyProperties) {
+void PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(ClientBidiStream& stream, VkPhysicalDevice physicalDevice, uint32_t* pQueueFamilyPropertyCount, VkQueueFamilyProperties* pQueueFamilyProperties) {
   vvk::server::VvkRequest request;
   request.set_method("vkGetPhysicalDeviceQueueFamilyProperties");
   request.mutable_vkgetphysicaldevicequeuefamilyproperties()->set_physicaldevice(reinterpret_cast<uint64_t>(physicalDevice));
@@ -631,11 +633,11 @@ void PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(grpc::ClientReaderWrite
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pQueueFamilyPropertyCount = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilypropertycount();
@@ -657,7 +659,7 @@ void PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(grpc::ClientReaderWrite
     }
   }
 }
-void PackAndCallVkGetDeviceQueue(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, uint32_t queueFamilyIndex, uint32_t queueIndex, VkQueue* pQueue) {
+void PackAndCallVkGetDeviceQueue(ClientBidiStream& stream, VkDevice device, uint32_t queueFamilyIndex, uint32_t queueIndex, VkQueue* pQueue) {
   vvk::server::VvkRequest request;
   request.set_method("vkGetDeviceQueue");
   request.mutable_vkgetdevicequeue()->set_device(reinterpret_cast<uint64_t>(device));
@@ -666,16 +668,16 @@ void PackAndCallVkGetDeviceQueue(grpc::ClientReaderWriter<vvk::server::VvkReques
   request.mutable_vkgetdevicequeue()->set_pqueue(reinterpret_cast<uint64_t>(*pQueue));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pQueue = reinterpret_cast<VkQueue>(response.vkgetdevicequeue().pqueue());
 }
-VkResult PackAndCallVkCreateFence(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkFenceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkFence* pFence) {
+VkResult PackAndCallVkCreateFence(ClientBidiStream& stream, VkDevice device, const VkFenceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkFence* pFence) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreateFence");
   request.mutable_vkcreatefence()->set_device(reinterpret_cast<uint64_t>(device));
@@ -689,17 +691,17 @@ VkResult PackAndCallVkCreateFence(grpc::ClientReaderWriter<vvk::server::VvkReque
   request.mutable_vkcreatefence()->set_pfence(reinterpret_cast<uint64_t>(*pFence));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pFence = reinterpret_cast<VkFence>(response.vkcreatefence().pfence());
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkDestroyFence(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkFence fence, const VkAllocationCallbacks* pAllocator) {
+void PackAndCallVkDestroyFence(ClientBidiStream& stream, VkDevice device, VkFence fence, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
   request.set_method("vkDestroyFence");
   request.mutable_vkdestroyfence()->set_device(reinterpret_cast<uint64_t>(device));
@@ -708,15 +710,15 @@ void PackAndCallVkDestroyFence(grpc::ClientReaderWriter<vvk::server::VvkRequest,
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-VkResult PackAndCallVkCreateSemaphore(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkSemaphoreCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSemaphore* pSemaphore) {
+VkResult PackAndCallVkCreateSemaphore(ClientBidiStream& stream, VkDevice device, const VkSemaphoreCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSemaphore* pSemaphore) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreateSemaphore");
   request.mutable_vkcreatesemaphore()->set_device(reinterpret_cast<uint64_t>(device));
@@ -730,17 +732,17 @@ VkResult PackAndCallVkCreateSemaphore(grpc::ClientReaderWriter<vvk::server::VvkR
   request.mutable_vkcreatesemaphore()->set_psemaphore(reinterpret_cast<uint64_t>(*pSemaphore));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pSemaphore = reinterpret_cast<VkSemaphore>(response.vkcreatesemaphore().psemaphore());
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkDestroySemaphore(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkSemaphore semaphore, const VkAllocationCallbacks* pAllocator) {
+void PackAndCallVkDestroySemaphore(ClientBidiStream& stream, VkDevice device, VkSemaphore semaphore, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
   request.set_method("vkDestroySemaphore");
   request.mutable_vkdestroysemaphore()->set_device(reinterpret_cast<uint64_t>(device));
@@ -749,15 +751,15 @@ void PackAndCallVkDestroySemaphore(grpc::ClientReaderWriter<vvk::server::VvkRequ
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-VkResult PackAndCallVkAllocateMemory(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkMemoryAllocateInfo* pAllocateInfo, const VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMemory) {
+VkResult PackAndCallVkAllocateMemory(ClientBidiStream& stream, VkDevice device, const VkMemoryAllocateInfo* pAllocateInfo, const VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMemory) {
   vvk::server::VvkRequest request;
   request.set_method("vkAllocateMemory");
   request.mutable_vkallocatememory()->set_device(reinterpret_cast<uint64_t>(device));
@@ -770,17 +772,17 @@ VkResult PackAndCallVkAllocateMemory(grpc::ClientReaderWriter<vvk::server::VvkRe
   request.mutable_vkallocatememory()->set_pmemory(reinterpret_cast<uint64_t>(*pMemory));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pMemory = reinterpret_cast<VkDeviceMemory>(response.vkallocatememory().pmemory());
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkFreeMemory(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkDeviceMemory memory, const VkAllocationCallbacks* pAllocator) {
+void PackAndCallVkFreeMemory(ClientBidiStream& stream, VkDevice device, VkDeviceMemory memory, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
   request.set_method("vkFreeMemory");
   request.mutable_vkfreememory()->set_device(reinterpret_cast<uint64_t>(device));
@@ -789,15 +791,15 @@ void PackAndCallVkFreeMemory(grpc::ClientReaderWriter<vvk::server::VvkRequest, v
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-VkResult PackAndCallVkCreateImage(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkImageCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkImage* pImage) {
+VkResult PackAndCallVkCreateImage(ClientBidiStream& stream, VkDevice device, const VkImageCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkImage* pImage) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreateImage");
   request.mutable_vkcreateimage()->set_device(reinterpret_cast<uint64_t>(device));
@@ -831,17 +833,17 @@ VkResult PackAndCallVkCreateImage(grpc::ClientReaderWriter<vvk::server::VvkReque
   request.mutable_vkcreateimage()->set_pimage(reinterpret_cast<uint64_t>(*pImage));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pImage = reinterpret_cast<VkImage>(response.vkcreateimage().pimage());
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkDestroyImage(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkImage image, const VkAllocationCallbacks* pAllocator) {
+void PackAndCallVkDestroyImage(ClientBidiStream& stream, VkDevice device, VkImage image, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
   request.set_method("vkDestroyImage");
   request.mutable_vkdestroyimage()->set_device(reinterpret_cast<uint64_t>(device));
@@ -850,15 +852,15 @@ void PackAndCallVkDestroyImage(grpc::ClientReaderWriter<vvk::server::VvkRequest,
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-VkResult PackAndCallVkBindImageMemory(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkImage image, VkDeviceMemory memory, VkDeviceSize memoryOffset) {
+VkResult PackAndCallVkBindImageMemory(ClientBidiStream& stream, VkDevice device, VkImage image, VkDeviceMemory memory, VkDeviceSize memoryOffset) {
   vvk::server::VvkRequest request;
   request.set_method("vkBindImageMemory");
   request.mutable_vkbindimagememory()->set_device(reinterpret_cast<uint64_t>(device));
@@ -867,16 +869,16 @@ VkResult PackAndCallVkBindImageMemory(grpc::ClientReaderWriter<vvk::server::VvkR
   request.mutable_vkbindimagememory()->set_memoryoffset(static_cast<uint64_t>(memoryOffset));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   return static_cast<VkResult>(response.result());
 }
-VkResult PackAndCallVkBindImageMemory2(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, uint32_t bindInfoCount, const VkBindImageMemoryInfo* pBindInfos) {
+VkResult PackAndCallVkBindImageMemory2(ClientBidiStream& stream, VkDevice device, uint32_t bindInfoCount, const VkBindImageMemoryInfo* pBindInfos) {
   vvk::server::VvkRequest request;
   request.set_method("vkBindImageMemory2");
   request.mutable_vkbindimagememory2()->set_device(reinterpret_cast<uint64_t>(device));
@@ -893,27 +895,27 @@ VkResult PackAndCallVkBindImageMemory2(grpc::ClientReaderWriter<vvk::server::Vvk
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkGetImageMemoryRequirements(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkImage image, VkMemoryRequirements* pMemoryRequirements) {
+void PackAndCallVkGetImageMemoryRequirements(ClientBidiStream& stream, VkDevice device, VkImage image, VkMemoryRequirements* pMemoryRequirements) {
   vvk::server::VvkRequest request;
   request.set_method("vkGetImageMemoryRequirements");
   request.mutable_vkgetimagememoryrequirements()->set_device(reinterpret_cast<uint64_t>(device));
   request.mutable_vkgetimagememoryrequirements()->set_image(reinterpret_cast<uint64_t>(image));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   VkMemoryRequirements& pMemoryRequirements_ref = *pMemoryRequirements;
@@ -921,7 +923,7 @@ void PackAndCallVkGetImageMemoryRequirements(grpc::ClientReaderWriter<vvk::serve
   pMemoryRequirements_ref.alignment = static_cast<VkDeviceSize>(response.vkgetimagememoryrequirements().pmemoryrequirements().alignment());
   pMemoryRequirements_ref.memoryTypeBits = response.vkgetimagememoryrequirements().pmemoryrequirements().memorytypebits();
 }
-void PackAndCallVkGetImageMemoryRequirements2(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkImageMemoryRequirementsInfo2* pInfo, VkMemoryRequirements2* pMemoryRequirements) {
+void PackAndCallVkGetImageMemoryRequirements2(ClientBidiStream& stream, VkDevice device, const VkImageMemoryRequirementsInfo2* pInfo, VkMemoryRequirements2* pMemoryRequirements) {
   vvk::server::VvkRequest request;
   request.set_method("vkGetImageMemoryRequirements2");
   request.mutable_vkgetimagememoryrequirements2()->set_device(reinterpret_cast<uint64_t>(device));
@@ -932,11 +934,11 @@ void PackAndCallVkGetImageMemoryRequirements2(grpc::ClientReaderWriter<vvk::serv
   pInfo_proto->set_image(reinterpret_cast<uint64_t>(pInfo->image));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   VkMemoryRequirements2& pMemoryRequirements_ref = *pMemoryRequirements;
@@ -947,7 +949,7 @@ void PackAndCallVkGetImageMemoryRequirements2(grpc::ClientReaderWriter<vvk::serv
   pMemoryRequirements_ref_memoryRequirements.alignment = static_cast<VkDeviceSize>(response.vkgetimagememoryrequirements2().pmemoryrequirements().memoryrequirements().alignment());
   pMemoryRequirements_ref_memoryRequirements.memoryTypeBits = response.vkgetimagememoryrequirements2().pmemoryrequirements().memoryrequirements().memorytypebits();
 }
-VkResult PackAndCallVkCreateImageView(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkImageViewCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkImageView* pView) {
+VkResult PackAndCallVkCreateImageView(ClientBidiStream& stream, VkDevice device, const VkImageViewCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkImageView* pView) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreateImageView");
   request.mutable_vkcreateimageview()->set_device(reinterpret_cast<uint64_t>(device));
@@ -975,17 +977,17 @@ VkResult PackAndCallVkCreateImageView(grpc::ClientReaderWriter<vvk::server::VvkR
   request.mutable_vkcreateimageview()->set_pview(reinterpret_cast<uint64_t>(*pView));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pView = reinterpret_cast<VkImageView>(response.vkcreateimageview().pview());
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkDestroyImageView(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkImageView imageView, const VkAllocationCallbacks* pAllocator) {
+void PackAndCallVkDestroyImageView(ClientBidiStream& stream, VkDevice device, VkImageView imageView, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
   request.set_method("vkDestroyImageView");
   request.mutable_vkdestroyimageview()->set_device(reinterpret_cast<uint64_t>(device));
@@ -994,15 +996,15 @@ void PackAndCallVkDestroyImageView(grpc::ClientReaderWriter<vvk::server::VvkRequ
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-VkResult PackAndCallVkCreateCommandPool(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkCommandPoolCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkCommandPool* pCommandPool) {
+VkResult PackAndCallVkCreateCommandPool(ClientBidiStream& stream, VkDevice device, const VkCommandPoolCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkCommandPool* pCommandPool) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreateCommandPool");
   request.mutable_vkcreatecommandpool()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1017,17 +1019,17 @@ VkResult PackAndCallVkCreateCommandPool(grpc::ClientReaderWriter<vvk::server::Vv
   request.mutable_vkcreatecommandpool()->set_pcommandpool(reinterpret_cast<uint64_t>(*pCommandPool));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pCommandPool = reinterpret_cast<VkCommandPool>(response.vkcreatecommandpool().pcommandpool());
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkDestroyCommandPool(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkCommandPool commandPool, const VkAllocationCallbacks* pAllocator) {
+void PackAndCallVkDestroyCommandPool(ClientBidiStream& stream, VkDevice device, VkCommandPool commandPool, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
   request.set_method("vkDestroyCommandPool");
   request.mutable_vkdestroycommandpool()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1036,15 +1038,15 @@ void PackAndCallVkDestroyCommandPool(grpc::ClientReaderWriter<vvk::server::VvkRe
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-VkResult PackAndCallVkAllocateCommandBuffers(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkCommandBufferAllocateInfo* pAllocateInfo, VkCommandBuffer* pCommandBuffers) {
+VkResult PackAndCallVkAllocateCommandBuffers(ClientBidiStream& stream, VkDevice device, const VkCommandBufferAllocateInfo* pAllocateInfo, VkCommandBuffer* pCommandBuffers) {
   vvk::server::VvkRequest request;
   request.set_method("vkAllocateCommandBuffers");
   request.mutable_vkallocatecommandbuffers()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1057,11 +1059,11 @@ VkResult PackAndCallVkAllocateCommandBuffers(grpc::ClientReaderWriter<vvk::serve
   pAllocateInfo_proto->set_commandbuffercount(pAllocateInfo->commandBufferCount);
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   for (int i = 0; i < pAllocateInfo->commandBufferCount; i++) {
@@ -1069,7 +1071,7 @@ VkResult PackAndCallVkAllocateCommandBuffers(grpc::ClientReaderWriter<vvk::serve
   }
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkFreeCommandBuffers(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkCommandPool commandPool, uint32_t commandBufferCount, const VkCommandBuffer* pCommandBuffers) {
+void PackAndCallVkFreeCommandBuffers(ClientBidiStream& stream, VkDevice device, VkCommandPool commandPool, uint32_t commandBufferCount, const VkCommandBuffer* pCommandBuffers) {
   vvk::server::VvkRequest request;
   request.set_method("vkFreeCommandBuffers");
   request.mutable_vkfreecommandbuffers()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1080,15 +1082,15 @@ void PackAndCallVkFreeCommandBuffers(grpc::ClientReaderWriter<vvk::server::VvkRe
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-VkResult PackAndCallVkBeginCommandBuffer(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, const VkCommandBufferBeginInfo* pBeginInfo) {
+VkResult PackAndCallVkBeginCommandBuffer(ClientBidiStream& stream, VkCommandBuffer commandBuffer, const VkCommandBufferBeginInfo* pBeginInfo) {
   vvk::server::VvkRequest request;
   request.set_method("vkBeginCommandBuffer");
   request.mutable_vkbegincommandbuffer()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
@@ -1121,31 +1123,31 @@ VkResult PackAndCallVkBeginCommandBuffer(grpc::ClientReaderWriter<vvk::server::V
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   return static_cast<VkResult>(response.result());
 }
-VkResult PackAndCallVkEndCommandBuffer(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer) {
+VkResult PackAndCallVkEndCommandBuffer(ClientBidiStream& stream, VkCommandBuffer commandBuffer) {
   vvk::server::VvkRequest request;
   request.set_method("vkEndCommandBuffer");
   request.mutable_vkendcommandbuffer()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkGetImageSubresourceLayout(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkImage image, const VkImageSubresource* pSubresource, VkSubresourceLayout* pLayout) {
+void PackAndCallVkGetImageSubresourceLayout(ClientBidiStream& stream, VkDevice device, VkImage image, const VkImageSubresource* pSubresource, VkSubresourceLayout* pLayout) {
   vvk::server::VvkRequest request;
   request.set_method("vkGetImageSubresourceLayout");
   request.mutable_vkgetimagesubresourcelayout()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1156,11 +1158,11 @@ void PackAndCallVkGetImageSubresourceLayout(grpc::ClientReaderWriter<vvk::server
   pSubresource_proto->set_arraylayer(pSubresource->arrayLayer);
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   VkSubresourceLayout& pLayout_ref = *pLayout;
@@ -1170,7 +1172,7 @@ void PackAndCallVkGetImageSubresourceLayout(grpc::ClientReaderWriter<vvk::server
   pLayout_ref.arrayPitch = static_cast<VkDeviceSize>(response.vkgetimagesubresourcelayout().playout().arraypitch());
   pLayout_ref.depthPitch = static_cast<VkDeviceSize>(response.vkgetimagesubresourcelayout().playout().depthpitch());
 }
-VkResult PackAndCallVkCreateRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkRenderPassCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkRenderPass* pRenderPass) {
+VkResult PackAndCallVkCreateRenderPass(ClientBidiStream& stream, VkDevice device, const VkRenderPassCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkRenderPass* pRenderPass) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreateRenderPass");
   request.mutable_vkcreaterenderpass()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1273,17 +1275,17 @@ VkResult PackAndCallVkCreateRenderPass(grpc::ClientReaderWriter<vvk::server::Vvk
   request.mutable_vkcreaterenderpass()->set_prenderpass(reinterpret_cast<uint64_t>(*pRenderPass));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pRenderPass = reinterpret_cast<VkRenderPass>(response.vkcreaterenderpass().prenderpass());
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkDestroyRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkRenderPass renderPass, const VkAllocationCallbacks* pAllocator) {
+void PackAndCallVkDestroyRenderPass(ClientBidiStream& stream, VkDevice device, VkRenderPass renderPass, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
   request.set_method("vkDestroyRenderPass");
   request.mutable_vkdestroyrenderpass()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1292,15 +1294,15 @@ void PackAndCallVkDestroyRenderPass(grpc::ClientReaderWriter<vvk::server::VvkReq
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-VkResult PackAndCallVkCreatePipelineLayout(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkPipelineLayoutCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkPipelineLayout* pPipelineLayout) {
+VkResult PackAndCallVkCreatePipelineLayout(ClientBidiStream& stream, VkDevice device, const VkPipelineLayoutCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkPipelineLayout* pPipelineLayout) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreatePipelineLayout");
   request.mutable_vkcreatepipelinelayout()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1331,17 +1333,17 @@ VkResult PackAndCallVkCreatePipelineLayout(grpc::ClientReaderWriter<vvk::server:
   request.mutable_vkcreatepipelinelayout()->set_ppipelinelayout(reinterpret_cast<uint64_t>(*pPipelineLayout));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pPipelineLayout = reinterpret_cast<VkPipelineLayout>(response.vkcreatepipelinelayout().ppipelinelayout());
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkDestroyPipelineLayout(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkPipelineLayout pipelineLayout, const VkAllocationCallbacks* pAllocator) {
+void PackAndCallVkDestroyPipelineLayout(ClientBidiStream& stream, VkDevice device, VkPipelineLayout pipelineLayout, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
   request.set_method("vkDestroyPipelineLayout");
   request.mutable_vkdestroypipelinelayout()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1350,15 +1352,15 @@ void PackAndCallVkDestroyPipelineLayout(grpc::ClientReaderWriter<vvk::server::Vv
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-VkResult PackAndCallVkCreateShaderModule(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkShaderModuleCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkShaderModule* pShaderModule) {
+VkResult PackAndCallVkCreateShaderModule(ClientBidiStream& stream, VkDevice device, const VkShaderModuleCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkShaderModule* pShaderModule) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreateShaderModule");
   request.mutable_vkcreateshadermodule()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1377,17 +1379,17 @@ VkResult PackAndCallVkCreateShaderModule(grpc::ClientReaderWriter<vvk::server::V
   request.mutable_vkcreateshadermodule()->set_pshadermodule(reinterpret_cast<uint64_t>(*pShaderModule));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pShaderModule = reinterpret_cast<VkShaderModule>(response.vkcreateshadermodule().pshadermodule());
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkDestroyShaderModule(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkShaderModule shaderModule, const VkAllocationCallbacks* pAllocator) {
+void PackAndCallVkDestroyShaderModule(ClientBidiStream& stream, VkDevice device, VkShaderModule shaderModule, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
   request.set_method("vkDestroyShaderModule");
   request.mutable_vkdestroyshadermodule()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1396,15 +1398,15 @@ void PackAndCallVkDestroyShaderModule(grpc::ClientReaderWriter<vvk::server::VvkR
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-VkResult PackAndCallVkCreateGraphicsPipelines(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkPipelineCache pipelineCache, uint32_t createInfoCount, const VkGraphicsPipelineCreateInfo* pCreateInfos, const VkAllocationCallbacks* pAllocator, VkPipeline* pPipelines) {
+VkResult PackAndCallVkCreateGraphicsPipelines(ClientBidiStream& stream, VkDevice device, VkPipelineCache pipelineCache, uint32_t createInfoCount, const VkGraphicsPipelineCreateInfo* pCreateInfos, const VkAllocationCallbacks* pAllocator, VkPipeline* pPipelines) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreateGraphicsPipelines");
   request.mutable_vkcreategraphicspipelines()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1686,11 +1688,11 @@ VkResult PackAndCallVkCreateGraphicsPipelines(grpc::ClientReaderWriter<vvk::serv
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   for (int i = 0; i < createInfoCount; i++) {
@@ -1698,7 +1700,7 @@ VkResult PackAndCallVkCreateGraphicsPipelines(grpc::ClientReaderWriter<vvk::serv
   }
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkDestroyPipeline(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkPipeline pipeline, const VkAllocationCallbacks* pAllocator) {
+void PackAndCallVkDestroyPipeline(ClientBidiStream& stream, VkDevice device, VkPipeline pipeline, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
   request.set_method("vkDestroyPipeline");
   request.mutable_vkdestroypipeline()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1707,15 +1709,15 @@ void PackAndCallVkDestroyPipeline(grpc::ClientReaderWriter<vvk::server::VvkReque
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-VkResult PackAndCallVkCreateFramebuffer(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, const VkFramebufferCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkFramebuffer* pFramebuffer) {
+VkResult PackAndCallVkCreateFramebuffer(ClientBidiStream& stream, VkDevice device, const VkFramebufferCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkFramebuffer* pFramebuffer) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreateFramebuffer");
   request.mutable_vkcreateframebuffer()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1740,17 +1742,17 @@ VkResult PackAndCallVkCreateFramebuffer(grpc::ClientReaderWriter<vvk::server::Vv
   request.mutable_vkcreateframebuffer()->set_pframebuffer(reinterpret_cast<uint64_t>(*pFramebuffer));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   *pFramebuffer = reinterpret_cast<VkFramebuffer>(response.vkcreateframebuffer().pframebuffer());
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkDestroyFramebuffer(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkFramebuffer framebuffer, const VkAllocationCallbacks* pAllocator) {
+void PackAndCallVkDestroyFramebuffer(ClientBidiStream& stream, VkDevice device, VkFramebuffer framebuffer, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
   request.set_method("vkDestroyFramebuffer");
   request.mutable_vkdestroyframebuffer()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1759,15 +1761,15 @@ void PackAndCallVkDestroyFramebuffer(grpc::ClientReaderWriter<vvk::server::VvkRe
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-VkResult PackAndCallVkWaitForFences(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, uint32_t fenceCount, const VkFence* pFences, VkBool32 waitAll, uint64_t timeout) {
+VkResult PackAndCallVkWaitForFences(ClientBidiStream& stream, VkDevice device, uint32_t fenceCount, const VkFence* pFences, VkBool32 waitAll, uint64_t timeout) {
   vvk::server::VvkRequest request;
   request.set_method("vkWaitForFences");
   request.mutable_vkwaitforfences()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1779,16 +1781,16 @@ VkResult PackAndCallVkWaitForFences(grpc::ClientReaderWriter<vvk::server::VvkReq
   request.mutable_vkwaitforfences()->set_timeout(timeout);
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   return static_cast<VkResult>(response.result());
 }
-VkResult PackAndCallVkResetFences(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, uint32_t fenceCount, const VkFence* pFences) {
+VkResult PackAndCallVkResetFences(ClientBidiStream& stream, VkDevice device, uint32_t fenceCount, const VkFence* pFences) {
   vvk::server::VvkRequest request;
   request.set_method("vkResetFences");
   request.mutable_vkresetfences()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1798,16 +1800,16 @@ VkResult PackAndCallVkResetFences(grpc::ClientReaderWriter<vvk::server::VvkReque
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   return static_cast<VkResult>(response.result());
 }
-VkResult PackAndCallVkResetCommandPool(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkDevice device, VkCommandPool commandPool, VkCommandPoolResetFlags flags) {
+VkResult PackAndCallVkResetCommandPool(ClientBidiStream& stream, VkDevice device, VkCommandPool commandPool, VkCommandPoolResetFlags flags) {
   vvk::server::VvkRequest request;
   request.set_method("vkResetCommandPool");
   request.mutable_vkresetcommandpool()->set_device(reinterpret_cast<uint64_t>(device));
@@ -1817,16 +1819,16 @@ VkResult PackAndCallVkResetCommandPool(grpc::ClientReaderWriter<vvk::server::Vvk
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   return static_cast<VkResult>(response.result());
 }
-void PackAndCallVkCmdBeginRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo* pRenderPassBegin, VkSubpassContents contents) {
+void PackAndCallVkCmdBeginRenderPass(ClientBidiStream& stream, VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo* pRenderPassBegin, VkSubpassContents contents) {
   vvk::server::VvkRequest request;
   request.set_method("vkCmdBeginRenderPass");
   request.mutable_vkcmdbeginrenderpass()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
@@ -1869,29 +1871,29 @@ void PackAndCallVkCmdBeginRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRe
   request.mutable_vkcmdbeginrenderpass()->set_contents(static_cast<vvk::server::VkSubpassContents>(contents));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-void PackAndCallVkCmdEndRenderPass(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer) {
+void PackAndCallVkCmdEndRenderPass(ClientBidiStream& stream, VkCommandBuffer commandBuffer) {
   vvk::server::VvkRequest request;
   request.set_method("vkCmdEndRenderPass");
   request.mutable_vkcmdendrenderpass()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-void PackAndCallVkCmdBindPipeline(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint, VkPipeline pipeline) {
+void PackAndCallVkCmdBindPipeline(ClientBidiStream& stream, VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint, VkPipeline pipeline) {
   vvk::server::VvkRequest request;
   request.set_method("vkCmdBindPipeline");
   request.mutable_vkcmdbindpipeline()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
@@ -1899,15 +1901,15 @@ void PackAndCallVkCmdBindPipeline(grpc::ClientReaderWriter<vvk::server::VvkReque
   request.mutable_vkcmdbindpipeline()->set_pipeline(reinterpret_cast<uint64_t>(pipeline));
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-void PackAndCallVkCmdSetViewport(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, uint32_t firstViewport, uint32_t viewportCount, const VkViewport* pViewports) {
+void PackAndCallVkCmdSetViewport(ClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t firstViewport, uint32_t viewportCount, const VkViewport* pViewports) {
   vvk::server::VvkRequest request;
   request.set_method("vkCmdSetViewport");
   request.mutable_vkcmdsetviewport()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
@@ -1925,15 +1927,15 @@ void PackAndCallVkCmdSetViewport(grpc::ClientReaderWriter<vvk::server::VvkReques
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-void PackAndCallVkCmdSetScissor(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, uint32_t firstScissor, uint32_t scissorCount, const VkRect2D* pScissors) {
+void PackAndCallVkCmdSetScissor(ClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t firstScissor, uint32_t scissorCount, const VkRect2D* pScissors) {
   vvk::server::VvkRequest request;
   request.set_method("vkCmdSetScissor");
   request.mutable_vkcmdsetscissor()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
@@ -1951,15 +1953,15 @@ void PackAndCallVkCmdSetScissor(grpc::ClientReaderWriter<vvk::server::VvkRequest
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-void PackAndCallVkCmdDraw(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkCommandBuffer commandBuffer, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) {
+void PackAndCallVkCmdDraw(ClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) {
   vvk::server::VvkRequest request;
   request.set_method("vkCmdDraw");
   request.mutable_vkcmddraw()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
@@ -1969,15 +1971,15 @@ void PackAndCallVkCmdDraw(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk:
   request.mutable_vkcmddraw()->set_firstinstance(firstInstance);
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 }
-VkResult PackAndCallVkQueueSubmit(grpc::ClientReaderWriter<vvk::server::VvkRequest, vvk::server::VvkResponse>* stream, VkQueue queue, uint32_t submitCount, const VkSubmitInfo* pSubmits, VkFence fence) {
+VkResult PackAndCallVkQueueSubmit(ClientBidiStream& stream, VkQueue queue, uint32_t submitCount, const VkSubmitInfo* pSubmits, VkFence fence) {
   vvk::server::VvkRequest request;
   request.set_method("vkQueueSubmit");
   request.mutable_vkqueuesubmit()->set_queue(reinterpret_cast<uint64_t>(queue));
@@ -2021,11 +2023,11 @@ VkResult PackAndCallVkQueueSubmit(grpc::ClientReaderWriter<vvk::server::VvkReque
   }
   vvk::server::VvkResponse response;
 
-  if (!stream->Write(request)) {
+  if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
 
-  if (!stream->Read(&response)) {
+  if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
   return static_cast<VkResult>(response.result());
