@@ -169,23 +169,8 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
 
 VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(VkDevice device, VkSwapchainKHR swapchain,
                                                const VkAllocationCallbacks* pAllocator) {
+  RemoveSwapchainInfo(swapchain);
   DeviceInfo& device_info = GetDeviceInfo(device);
-
-  uint32_t swapchain_image_count = 0;
-  std::optional<std::vector<VkImage>> client_swapchain_images = GetLocalImagesForSwapchain(device, swapchain);
-  if (!client_swapchain_images) {
-    spdlog::critical("Failed to get swapchain images to destroy");
-    return;
-  }
-
-  InstanceInfo& instance_info = device_info.instance_info();
-  auto& reader_writer = instance_info.command_stream();
-
-  for (VkImage client_image : *client_swapchain_images) {
-    VkImage server_image = device_info.GetRemoteHandle(client_image);
-    PackAndCallVkDestroyImage(reader_writer, instance_info.GetRemoteHandle(device), server_image, nullptr);
-  }
-
   device_info.dispatch_table().DestroySwapchainKHR(device, swapchain, pAllocator);
 }
 
