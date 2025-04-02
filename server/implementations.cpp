@@ -1722,4 +1722,10 @@ void UnpackAndExecuteVkDeviceWaitIdle(vvk::ExecutionContext& context, const vvk:
   VkResult result = vkDeviceWaitIdle(reinterpret_cast<VkDevice>(request.vkdevicewaitidle().device()));
   response->set_result(result);
 }
+void UnpackAndExecuteVkQueueWaitIdle(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkQueueWaitIdle");
+
+  VkResult result = vkQueueWaitIdle(reinterpret_cast<VkQueue>(request.vkqueuewaitidle().queue()));
+  response->set_result(result);
+}
 

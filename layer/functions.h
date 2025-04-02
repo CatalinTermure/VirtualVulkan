@@ -275,6 +275,8 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(
     VkFence                                     fence);
 VKAPI_ATTR VkResult VKAPI_CALL DeviceWaitIdle(
     VkDevice                                    device);
+VKAPI_ATTR VkResult VKAPI_CALL QueueWaitIdle(
+    VkQueue                                     queue);
 
 inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = {
     {"vkCreateInstance", reinterpret_cast<PFN_vkVoidFunction>(CreateInstance)},
@@ -332,6 +334,7 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkCmdDraw", reinterpret_cast<PFN_vkVoidFunction>(CmdDraw)},
     {"vkQueueSubmit", reinterpret_cast<PFN_vkVoidFunction>(QueueSubmit)},
     {"vkDeviceWaitIdle", reinterpret_cast<PFN_vkVoidFunction>(DeviceWaitIdle)},
+    {"vkQueueWaitIdle", reinterpret_cast<PFN_vkVoidFunction>(QueueWaitIdle)},
 };
 
 }  // namespace vvk

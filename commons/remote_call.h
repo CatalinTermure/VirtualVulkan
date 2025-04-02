@@ -65,6 +65,7 @@ void PackAndCallVkCmdSetScissor(ClientBidiStream& stream, VkCommandBuffer comman
 void PackAndCallVkCmdDraw(ClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance);
 VkResult PackAndCallVkQueueSubmit(ClientBidiStream& stream, VkQueue queue, uint32_t submitCount, const VkSubmitInfo* pSubmits, VkFence fence);
 VkResult PackAndCallVkDeviceWaitIdle(ClientBidiStream& stream, VkDevice device);
+VkResult PackAndCallVkQueueWaitIdle(ClientBidiStream& stream, VkQueue queue);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

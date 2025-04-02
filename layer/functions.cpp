@@ -1066,4 +1066,8 @@ VKAPI_ATTR VkResult VKAPI_CALL DeviceWaitIdle(VkDevice device) {
   InstanceInfo& instance_info = GetInstanceInfo(device);
   return PackAndCallVkDeviceWaitIdle(instance_info.command_stream(), instance_info.GetRemoteHandle(device));
 }
+VKAPI_ATTR VkResult VKAPI_CALL QueueWaitIdle(VkQueue queue) {
+  DeviceInfo& device_info = GetDeviceInfo(queue);
+  return PackAndCallVkQueueWaitIdle(device_info.instance_info().command_stream(), device_info.GetRemoteHandle(queue));
+}
 }  // namespace vvk

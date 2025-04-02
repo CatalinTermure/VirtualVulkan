@@ -81,6 +81,7 @@ COMMANDS_TO_GENERATE = [
     "vkCmdDraw",
     "vkQueueSubmit",
     "vkDeviceWaitIdle",
+    "vkQueueWaitIdle",
 ]
 
 
