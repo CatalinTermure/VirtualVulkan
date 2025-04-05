@@ -45,6 +45,7 @@ constexpr std::array non_intercepted_functions = {
     "vkGetPhysicalDeviceSurfaceFormatsKHR",
     "vkGetPhysicalDeviceSurfaceCapabilitiesKHR",
     "vkGetPhysicalDeviceSurfacePresentModesKHR",
+    "vkDestroySurfaceKHR",
 };
 
 }  // namespace
