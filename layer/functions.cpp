@@ -40,6 +40,8 @@ namespace vvk {
 
 namespace {
 
+constexpr uint64_t kVkQueueSubmitTimeout = UINT64_MAX - 2;
+
 template <typename T, VkStructureType sType>
 T* FindLayerLinkInfo(const void* p_next_chain) {
   const T* layer_info = nullptr;
@@ -208,7 +210,14 @@ VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(VkDevice device, VkSwapchainK
     device_info.SetFenceLocal(fence);
     VkResult status = device_info.dispatch_table().GetFenceStatus(device, fence);
     if (status == VK_SUCCESS) {
-      device_info.dispatch_table().WaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX);
+      VkResult result = device_info.dispatch_table().WaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX);
+      if (result != VK_SUCCESS) {
+        throw std::runtime_error("Failed to wait for fence in AcquireNextImageKHR");
+      }
+      result = device_info.dispatch_table().ResetFences(device, 1, &fence);
+      if (result != VK_SUCCESS) {
+        throw std::runtime_error("Failed to reset fence in AcquireNextImageKHR");
+      }
     } else if (status != VK_NOT_READY) {
       return status;
     }
@@ -1038,13 +1047,18 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
           if (result != VK_SUCCESS) {
             throw std::runtime_error("Failed to wait for local semaphores");
           }
+          result = dispatch_table.ResetFences(device, fences.size(), fences.data());
+          if (result != VK_SUCCESS) {
+            throw std::runtime_error("Failed to reset local fences");
+          }
           spdlog::info("VkQueueSubmit: Finished waiting for local semaphores");
           result = PackAndCallVkQueueSubmit(command_stream, remote_queue, submitCount, submits.data(), remote_fence);
           if (result != VK_SUCCESS) {
             throw std::runtime_error("Failed to submit to remote queue");
           }
           spdlog::info("VkQueueSubmit: Finished submitting to remote queue");
-          result = PackAndCallVkWaitForFences(command_stream, remote_device, 1, &remote_fence, VK_TRUE, UINT64_MAX);
+          result = PackAndCallVkWaitForFences(command_stream, remote_device, 1, &remote_fence, VK_TRUE,
+                                              kVkQueueSubmitTimeout);
           if (result != VK_SUCCESS) {
             throw std::runtime_error("Failed to wait for remote fence");
           }
