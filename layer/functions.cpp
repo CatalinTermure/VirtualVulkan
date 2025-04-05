@@ -117,9 +117,6 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
     return VK_ERROR_INITIALIZATION_FAILED;
   }
 
-  InstanceInfo& instance_info = device_info.instance_info();
-  auto& reader_writer = instance_info.command_stream();
-
   if (pCreateInfo->oldSwapchain) {
     RemoveSwapchainInfo(pCreateInfo->oldSwapchain);
   }
@@ -154,7 +151,6 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
       .pUserData = nullptr,
       .priority = 0.0f,
   };
-  VkDevice remote_device = instance_info.GetRemoteHandle(device);
   for (VkImage client_image : *client_swapchain_images) {
     VkImage server_image;
     server_image = swapchain_info.CreateImageRemote(image_create_info, alloc_create_info);
@@ -468,8 +464,6 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCallbacks* pAllocator) {
   DeviceInfo& device_info = GetDeviceInfo(device);
   device_info.dispatch_table().DestroyDevice(device, pAllocator);
-
-  InstanceInfo& instance_info = GetInstanceInfo(device);
 
   auto& reader_writer = device_info.instance_info().command_stream();
   PackAndCallVkDestroyDevice(reader_writer, device_info.instance_info().GetRemoteHandle(device), pAllocator);

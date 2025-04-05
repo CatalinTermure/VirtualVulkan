@@ -46,8 +46,8 @@ struct DeviceInfo {
   std::unordered_set<void*> local_synchronization_primitives_;
   VmaAllocator remote_allocator_;
   VmaAllocator local_allocator_;
-  InstanceInfo& instance_info_;
   PFN_vkGetDeviceProcAddr nxt_gdpa_;
+  InstanceInfo& instance_info_;
   VkuDeviceDispatchTable dispatch_table_;
 };
 

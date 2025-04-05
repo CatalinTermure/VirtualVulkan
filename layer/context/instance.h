@@ -37,13 +37,13 @@ class InstanceInfo {
   InstanceInfo& operator=(const InstanceInfo&) = delete;
 
  private:
+  PFN_vkGetInstanceProcAddr nxt_gipa_;
   grpc::ClientContext client_context_;
   std::shared_ptr<grpc::Channel> channel_;
   vvk::server::VvkServer::Stub stub_;
   ClientBidiStream command_stream_;
   std::map<void*, void*> local_to_remote_handle_;
   VkuInstanceDispatchTable dispatch_table_;
-  PFN_vkGetInstanceProcAddr nxt_gipa_;
 };
 
 InstanceInfo& GetInstanceInfo(VkInstance instance);
