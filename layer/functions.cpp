@@ -25,14 +25,14 @@ struct VkSemaphore_T {
   VkSemaphore_T()
       : local_handle(VK_NULL_HANDLE),
         remote_handle(VK_NULL_HANDLE),
-        local_to_remote_fence(VK_NULL_HANDLE),
-        remote_to_local_semaphore(0),
+        presentation_fence(VK_NULL_HANDLE),
+        presentation_semaphore(0),
         state(SemaphoreState::kUnsignaled) {}
 
   VkSemaphore local_handle;
   VkSemaphore remote_handle;
-  VkFence local_to_remote_fence;
-  std::binary_semaphore remote_to_local_semaphore;
+  VkFence presentation_fence;
+  std::binary_semaphore presentation_semaphore;
   SemaphoreState state;
 };
 
@@ -200,7 +200,7 @@ VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(VkDevice device, VkSwapchainK
       throw std::runtime_error("Cannot use both semaphore and fence in AcquireNextImageKHR");
     }
     semaphore->state = SemaphoreState::kToBeSignaledLocal;
-    fence = semaphore->local_to_remote_fence;
+    fence = semaphore->presentation_fence;
   }
   if (fence != VK_NULL_HANDLE) {
     device_info.SetFenceLocal(fence);
@@ -268,7 +268,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueuePresentKHR(VkQueue queue, const VkPresentInf
       if (semaphore->state != SemaphoreState::kToBeSignaledRemote) {
         throw std::runtime_error("Invalid semaphore state in QueuePresentKHR");
       }
-      semaphore->remote_to_local_semaphore.acquire();
+      semaphore->presentation_semaphore.acquire();
       semaphore->state = SemaphoreState::kUnsignaled;
     }
 
@@ -574,7 +574,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphor
       .flags = 0,
   };
   result = device_info.dispatch_table().CreateFence(device, &fence_create_info, pAllocator,
-                                                    &(*pSemaphore)->local_to_remote_fence);
+                                                    &(*pSemaphore)->presentation_fence);
   if (result != VK_SUCCESS) {
     device_info.dispatch_table().DestroySemaphore(device, (*pSemaphore)->local_handle, pAllocator);
     return result;
@@ -585,7 +585,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphor
                                         &remote_semaphore);
   if (result != VK_SUCCESS) {
     device_info.dispatch_table().DestroySemaphore(device, (*pSemaphore)->local_handle, pAllocator);
-    device_info.dispatch_table().DestroyFence(device, (*pSemaphore)->local_to_remote_fence, pAllocator);
+    device_info.dispatch_table().DestroyFence(device, (*pSemaphore)->presentation_fence, pAllocator);
     return result;
   }
   (*pSemaphore)->remote_handle = remote_semaphore;
@@ -597,7 +597,7 @@ VKAPI_ATTR void VKAPI_CALL DestroySemaphore(VkDevice device, VkSemaphore semapho
                                             const VkAllocationCallbacks* pAllocator) {
   DeviceInfo& device_info = GetDeviceInfo(device);
   device_info.dispatch_table().DestroySemaphore(device, semaphore->local_handle, pAllocator);
-  device_info.dispatch_table().DestroyFence(device, semaphore->local_to_remote_fence, pAllocator);
+  device_info.dispatch_table().DestroyFence(device, semaphore->presentation_fence, pAllocator);
   PackAndCallVkDestroySemaphore(device_info.instance_info().command_stream(),
                                 device_info.instance_info().GetRemoteHandle(device), semaphore->remote_handle,
                                 pAllocator);
@@ -987,7 +987,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
 
   // We look for local semaphores and remove them from the list
   // then we send the queue submit command to the server only once the semaphores are signaled
-  // we check for the semaphores to be signaled using the local_to_remote_fence of the semaphore
+  // we check for the semaphores to be signaled using the presentation_fence of the semaphore
   // TODO: use timeline semaphores
   for (uint32_t submit_info_indx = 0; submit_info_indx < submitCount; submit_info_indx++) {
     VkSubmitInfo submit_info = pSubmits[submit_info_indx];
@@ -1025,7 +1025,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
   {
     std::vector<VkFence> fences_to_wait;
     for (VkSemaphore semaphore : semaphores_to_wait_local) {
-      fences_to_wait.push_back(semaphore->local_to_remote_fence);
+      fences_to_wait.push_back(semaphore->presentation_fence);
     }
     std::thread remote_caller(
         [&dispatch_table = device_info.dispatch_table(), &command_stream = device_info.instance_info().command_stream(),
@@ -1061,7 +1061,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
             if (semaphore->state != SemaphoreState::kToBeSignaledRemote) {
               throw std::runtime_error("Semaphore was not in the correct state");
             }
-            semaphore->remote_to_local_semaphore.release();
+            semaphore->presentation_semaphore.release();
           }
           spdlog::info("VkQueueSubmit: Finished signaling semaphores");
         });

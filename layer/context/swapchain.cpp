@@ -13,7 +13,7 @@ std::map<VkSwapchainKHR, SwapchainInfo> g_swapchain_infos;
 }  // namespace
 
 SwapchainInfo::SwapchainInfo(VkDevice device, VmaAllocator remote_allocator)
-    : device_(device), remote_allocator_(remote_allocator), instance_info_(GetInstanceInfo(device)) {}
+    : device_(device), instance_info_(GetInstanceInfo(device)), remote_allocator_(remote_allocator), remote_images_() {}
 
 SwapchainInfo::~SwapchainInfo() {
   for (auto [remote_image, remote_allocation] : remote_images_) {
