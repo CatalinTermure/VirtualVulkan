@@ -6,5 +6,7 @@
 
 void UnpackAndExecuteVkCreateInstanceManual(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
                                             vvk::server::VvkResponse* response);
+void UnpackAndExecuteVvkGetFrame(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
+                                 vvk::server::VvkResponse* response);
 
 #endif  // VVK_SERVER_MANUAL_IMPLEMENTATIONS_H

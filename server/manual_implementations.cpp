@@ -7,8 +7,30 @@
 
 #include "server/implementations.h"
 
-void UnpackAndExecuteVkCreateInstanceManual(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
-                                            vvk::server::VvkResponse* response) {
+using vvk::server::VvkRequest;
+using vvk::server::VvkResponse;
+
+namespace {
+VmaAllocator CreateVmaAllocator(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device) {
+  VmaVulkanFunctions vulkanFunctions = {};
+  vulkanFunctions.vkGetInstanceProcAddr = &vkGetInstanceProcAddr;
+  vulkanFunctions.vkGetDeviceProcAddr = &vkGetDeviceProcAddr;
+
+  VmaAllocatorCreateInfo allocator_info = {};
+  allocator_info.vulkanApiVersion = VK_API_VERSION_1_0;
+  allocator_info.physicalDevice = physical_device;
+  allocator_info.device = device;
+  allocator_info.instance = instance;
+  allocator_info.pVulkanFunctions = &vulkanFunctions;
+
+  VmaAllocator allocator;
+  vmaCreateAllocator(&allocator_info, &allocator);
+  return allocator;
+}
+}  // namespace
+
+void UnpackAndExecuteVkCreateInstanceManual(vvk::ExecutionContext& context, const VvkRequest& request,
+                                            VvkResponse* response) {
   UnpackAndExecuteVkCreateInstance(context, request, response);
 
   VkInstance instance = reinterpret_cast<VkInstance>(response->vkcreateinstance().pinstance());
@@ -26,5 +48,21 @@ void UnpackAndExecuteVkCreateInstanceManual(vvk::ExecutionContext& context, cons
       spdlog::info("Using discrete GPU {}", properties.deviceName);
       break;
     }
+  }
+}
+
+void UnpackAndExecuteVvkGetFrame(vvk::ExecutionContext& context, const VvkRequest& request, VvkResponse* response) {
+  assert(request.method() == "VvkGetFrame");
+  assert(request.has_vvkgetframe());
+
+  const auto& params = request.vvkgetframe();
+  VkImage image = reinterpret_cast<VkImage>(params.image());
+  VkInstance instance = reinterpret_cast<VkInstance>(params.instance());
+  VkDevice device = reinterpret_cast<VkDevice>(params.device());
+  VkCommandBuffer command_buffer = reinterpret_cast<VkCommandBuffer>(params.commandbuffer());
+
+  if (context.allocator() == VK_NULL_HANDLE) {
+    context.set_allocator(CreateVmaAllocator(instance, context.physical_device(), device));
+    return;
   }
 }

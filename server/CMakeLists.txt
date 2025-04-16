@@ -1,5 +1,6 @@
 find_package(spdlog CONFIG REQUIRED)
 find_package(Vulkan REQUIRED)
+find_package(VulkanMemoryAllocator CONFIG REQUIRED)
 
 add_executable(
   VirtualVulkanServer
@@ -9,8 +10,9 @@ add_executable(
     implementations.h implementations.cpp
     manual_implementations.h manual_implementations.cpp
     execution_context.h
+    vma_implementation.cpp
   )
 target_include_directories(VirtualVulkanServer PRIVATE ../)
 
-target_link_libraries(VirtualVulkanServer PRIVATE spdlog::spdlog vvkproto vulkan)
+target_link_libraries(VirtualVulkanServer PRIVATE spdlog::spdlog vvkproto vulkan GPUOpen::VulkanMemoryAllocator)
 target_include_directories(VirtualVulkanServer PRIVATE ${Vulkan_INCLUDE_DIRS})

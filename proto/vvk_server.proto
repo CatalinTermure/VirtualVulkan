@@ -12,97 +12,110 @@ service VvkServer {
   rpc CallMethods (stream VvkRequest) returns (stream VvkResponse) {}
 }
 
+message VvkGetFrameParams {
+  uint64 image = 1;
+  uint64 instance = 2;
+  uint64 device = 3;
+  uint64 commandBuffer = 4;
+}
+
+message VvkGetFrameResponse {
+  bytes encodedData = 1;
+}
+
 message VvkRequest {
   string method = 1;
   oneof params {
-    VkCreateInstanceParams vkCreateInstance = 2;
-    VkDestroyInstanceParams vkDestroyInstance = 3;
-    VkEnumeratePhysicalDevicesParams vkEnumeratePhysicalDevices = 4;
-    VkGetPhysicalDeviceFeaturesParams vkGetPhysicalDeviceFeatures = 5;
-    VkGetPhysicalDeviceFormatPropertiesParams vkGetPhysicalDeviceFormatProperties = 6;
-    VkGetPhysicalDevicePropertiesParams vkGetPhysicalDeviceProperties = 7;
-    VkGetPhysicalDeviceQueueFamilyPropertiesParams vkGetPhysicalDeviceQueueFamilyProperties = 8;
-    VkGetPhysicalDeviceMemoryPropertiesParams vkGetPhysicalDeviceMemoryProperties = 9;
-    VkCreateDeviceParams vkCreateDevice = 10;
-    VkDestroyDeviceParams vkDestroyDevice = 11;
-    VkEnumerateInstanceExtensionPropertiesParams vkEnumerateInstanceExtensionProperties = 12;
-    VkEnumerateDeviceExtensionPropertiesParams vkEnumerateDeviceExtensionProperties = 13;
-    VkGetDeviceQueueParams vkGetDeviceQueue = 14;
-    VkQueueSubmitParams vkQueueSubmit = 15;
-    VkQueueWaitIdleParams vkQueueWaitIdle = 16;
-    VkDeviceWaitIdleParams vkDeviceWaitIdle = 17;
-    VkAllocateMemoryParams vkAllocateMemory = 18;
-    VkFreeMemoryParams vkFreeMemory = 19;
-    VkBindImageMemoryParams vkBindImageMemory = 20;
-    VkGetImageMemoryRequirementsParams vkGetImageMemoryRequirements = 21;
-    VkCreateFenceParams vkCreateFence = 22;
-    VkDestroyFenceParams vkDestroyFence = 23;
-    VkResetFencesParams vkResetFences = 24;
-    VkWaitForFencesParams vkWaitForFences = 25;
-    VkCreateSemaphoreParams vkCreateSemaphore = 26;
-    VkDestroySemaphoreParams vkDestroySemaphore = 27;
-    VkCreateImageParams vkCreateImage = 28;
-    VkDestroyImageParams vkDestroyImage = 29;
-    VkGetImageSubresourceLayoutParams vkGetImageSubresourceLayout = 30;
-    VkCreateImageViewParams vkCreateImageView = 31;
-    VkDestroyImageViewParams vkDestroyImageView = 32;
-    VkCreateShaderModuleParams vkCreateShaderModule = 33;
-    VkDestroyShaderModuleParams vkDestroyShaderModule = 34;
-    VkCreateGraphicsPipelinesParams vkCreateGraphicsPipelines = 35;
-    VkDestroyPipelineParams vkDestroyPipeline = 36;
-    VkCreatePipelineLayoutParams vkCreatePipelineLayout = 37;
-    VkDestroyPipelineLayoutParams vkDestroyPipelineLayout = 38;
-    VkCreateFramebufferParams vkCreateFramebuffer = 39;
-    VkDestroyFramebufferParams vkDestroyFramebuffer = 40;
-    VkCreateRenderPassParams vkCreateRenderPass = 41;
-    VkDestroyRenderPassParams vkDestroyRenderPass = 42;
-    VkCreateCommandPoolParams vkCreateCommandPool = 43;
-    VkDestroyCommandPoolParams vkDestroyCommandPool = 44;
-    VkResetCommandPoolParams vkResetCommandPool = 45;
-    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 46;
-    VkFreeCommandBuffersParams vkFreeCommandBuffers = 47;
-    VkBeginCommandBufferParams vkBeginCommandBuffer = 48;
-    VkEndCommandBufferParams vkEndCommandBuffer = 49;
-    VkCmdBindPipelineParams vkCmdBindPipeline = 50;
-    VkCmdSetViewportParams vkCmdSetViewport = 51;
-    VkCmdSetScissorParams vkCmdSetScissor = 52;
-    VkCmdDrawParams vkCmdDraw = 53;
-    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 54;
-    VkCmdEndRenderPassParams vkCmdEndRenderPass = 55;
-    VkBindImageMemory2Params vkBindImageMemory2 = 56;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 57;
+    VvkGetFrameParams vvkGetFrame = 2;
+    VkCreateInstanceParams vkCreateInstance = 3;
+    VkDestroyInstanceParams vkDestroyInstance = 4;
+    VkEnumeratePhysicalDevicesParams vkEnumeratePhysicalDevices = 5;
+    VkGetPhysicalDeviceFeaturesParams vkGetPhysicalDeviceFeatures = 6;
+    VkGetPhysicalDeviceFormatPropertiesParams vkGetPhysicalDeviceFormatProperties = 7;
+    VkGetPhysicalDevicePropertiesParams vkGetPhysicalDeviceProperties = 8;
+    VkGetPhysicalDeviceQueueFamilyPropertiesParams vkGetPhysicalDeviceQueueFamilyProperties = 9;
+    VkGetPhysicalDeviceMemoryPropertiesParams vkGetPhysicalDeviceMemoryProperties = 10;
+    VkCreateDeviceParams vkCreateDevice = 11;
+    VkDestroyDeviceParams vkDestroyDevice = 12;
+    VkEnumerateInstanceExtensionPropertiesParams vkEnumerateInstanceExtensionProperties = 13;
+    VkEnumerateDeviceExtensionPropertiesParams vkEnumerateDeviceExtensionProperties = 14;
+    VkGetDeviceQueueParams vkGetDeviceQueue = 15;
+    VkQueueSubmitParams vkQueueSubmit = 16;
+    VkQueueWaitIdleParams vkQueueWaitIdle = 17;
+    VkDeviceWaitIdleParams vkDeviceWaitIdle = 18;
+    VkAllocateMemoryParams vkAllocateMemory = 19;
+    VkFreeMemoryParams vkFreeMemory = 20;
+    VkBindImageMemoryParams vkBindImageMemory = 21;
+    VkGetImageMemoryRequirementsParams vkGetImageMemoryRequirements = 22;
+    VkCreateFenceParams vkCreateFence = 23;
+    VkDestroyFenceParams vkDestroyFence = 24;
+    VkResetFencesParams vkResetFences = 25;
+    VkWaitForFencesParams vkWaitForFences = 26;
+    VkCreateSemaphoreParams vkCreateSemaphore = 27;
+    VkDestroySemaphoreParams vkDestroySemaphore = 28;
+    VkCreateImageParams vkCreateImage = 29;
+    VkDestroyImageParams vkDestroyImage = 30;
+    VkGetImageSubresourceLayoutParams vkGetImageSubresourceLayout = 31;
+    VkCreateImageViewParams vkCreateImageView = 32;
+    VkDestroyImageViewParams vkDestroyImageView = 33;
+    VkCreateShaderModuleParams vkCreateShaderModule = 34;
+    VkDestroyShaderModuleParams vkDestroyShaderModule = 35;
+    VkCreateGraphicsPipelinesParams vkCreateGraphicsPipelines = 36;
+    VkDestroyPipelineParams vkDestroyPipeline = 37;
+    VkCreatePipelineLayoutParams vkCreatePipelineLayout = 38;
+    VkDestroyPipelineLayoutParams vkDestroyPipelineLayout = 39;
+    VkCreateFramebufferParams vkCreateFramebuffer = 40;
+    VkDestroyFramebufferParams vkDestroyFramebuffer = 41;
+    VkCreateRenderPassParams vkCreateRenderPass = 42;
+    VkDestroyRenderPassParams vkDestroyRenderPass = 43;
+    VkCreateCommandPoolParams vkCreateCommandPool = 44;
+    VkDestroyCommandPoolParams vkDestroyCommandPool = 45;
+    VkResetCommandPoolParams vkResetCommandPool = 46;
+    VkAllocateCommandBuffersParams vkAllocateCommandBuffers = 47;
+    VkFreeCommandBuffersParams vkFreeCommandBuffers = 48;
+    VkBeginCommandBufferParams vkBeginCommandBuffer = 49;
+    VkEndCommandBufferParams vkEndCommandBuffer = 50;
+    VkCmdBindPipelineParams vkCmdBindPipeline = 51;
+    VkCmdSetViewportParams vkCmdSetViewport = 52;
+    VkCmdSetScissorParams vkCmdSetScissor = 53;
+    VkCmdDrawParams vkCmdDraw = 54;
+    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 55;
+    VkCmdEndRenderPassParams vkCmdEndRenderPass = 56;
+    VkBindImageMemory2Params vkBindImageMemory2 = 57;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 58;
   }
 }
 
 message VvkResponse {
   uint32 result = 1;
   oneof response {
-    VkCreateInstanceResponse vkCreateInstance = 2;
-    VkEnumeratePhysicalDevicesResponse vkEnumeratePhysicalDevices = 3;
-    VkGetPhysicalDeviceFeaturesResponse vkGetPhysicalDeviceFeatures = 4;
-    VkGetPhysicalDeviceFormatPropertiesResponse vkGetPhysicalDeviceFormatProperties = 5;
-    VkGetPhysicalDevicePropertiesResponse vkGetPhysicalDeviceProperties = 6;
-    VkGetPhysicalDeviceQueueFamilyPropertiesResponse vkGetPhysicalDeviceQueueFamilyProperties = 7;
-    VkGetPhysicalDeviceMemoryPropertiesResponse vkGetPhysicalDeviceMemoryProperties = 8;
-    VkCreateDeviceResponse vkCreateDevice = 9;
-    VkEnumerateInstanceExtensionPropertiesResponse vkEnumerateInstanceExtensionProperties = 10;
-    VkEnumerateDeviceExtensionPropertiesResponse vkEnumerateDeviceExtensionProperties = 11;
-    VkGetDeviceQueueResponse vkGetDeviceQueue = 12;
-    VkAllocateMemoryResponse vkAllocateMemory = 13;
-    VkGetImageMemoryRequirementsResponse vkGetImageMemoryRequirements = 14;
-    VkCreateFenceResponse vkCreateFence = 15;
-    VkCreateSemaphoreResponse vkCreateSemaphore = 16;
-    VkCreateImageResponse vkCreateImage = 17;
-    VkGetImageSubresourceLayoutResponse vkGetImageSubresourceLayout = 18;
-    VkCreateImageViewResponse vkCreateImageView = 19;
-    VkCreateShaderModuleResponse vkCreateShaderModule = 20;
-    VkCreateGraphicsPipelinesResponse vkCreateGraphicsPipelines = 21;
-    VkCreatePipelineLayoutResponse vkCreatePipelineLayout = 22;
-    VkCreateFramebufferResponse vkCreateFramebuffer = 23;
-    VkCreateRenderPassResponse vkCreateRenderPass = 24;
-    VkCreateCommandPoolResponse vkCreateCommandPool = 25;
-    VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 26;
-    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 27;
+    VvkGetFrameResponse vvkGetFrame = 2;
+    VkCreateInstanceResponse vkCreateInstance = 3;
+    VkEnumeratePhysicalDevicesResponse vkEnumeratePhysicalDevices = 4;
+    VkGetPhysicalDeviceFeaturesResponse vkGetPhysicalDeviceFeatures = 5;
+    VkGetPhysicalDeviceFormatPropertiesResponse vkGetPhysicalDeviceFormatProperties = 6;
+    VkGetPhysicalDevicePropertiesResponse vkGetPhysicalDeviceProperties = 7;
+    VkGetPhysicalDeviceQueueFamilyPropertiesResponse vkGetPhysicalDeviceQueueFamilyProperties = 8;
+    VkGetPhysicalDeviceMemoryPropertiesResponse vkGetPhysicalDeviceMemoryProperties = 9;
+    VkCreateDeviceResponse vkCreateDevice = 10;
+    VkEnumerateInstanceExtensionPropertiesResponse vkEnumerateInstanceExtensionProperties = 11;
+    VkEnumerateDeviceExtensionPropertiesResponse vkEnumerateDeviceExtensionProperties = 12;
+    VkGetDeviceQueueResponse vkGetDeviceQueue = 13;
+    VkAllocateMemoryResponse vkAllocateMemory = 14;
+    VkGetImageMemoryRequirementsResponse vkGetImageMemoryRequirements = 15;
+    VkCreateFenceResponse vkCreateFence = 16;
+    VkCreateSemaphoreResponse vkCreateSemaphore = 17;
+    VkCreateImageResponse vkCreateImage = 18;
+    VkGetImageSubresourceLayoutResponse vkGetImageSubresourceLayout = 19;
+    VkCreateImageViewResponse vkCreateImageView = 20;
+    VkCreateShaderModuleResponse vkCreateShaderModule = 21;
+    VkCreateGraphicsPipelinesResponse vkCreateGraphicsPipelines = 22;
+    VkCreatePipelineLayoutResponse vkCreatePipelineLayout = 23;
+    VkCreateFramebufferResponse vkCreateFramebuffer = 24;
+    VkCreateRenderPassResponse vkCreateRenderPass = 25;
+    VkCreateCommandPoolResponse vkCreateCommandPool = 26;
+    VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 27;
+    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 28;
   }
 }
 

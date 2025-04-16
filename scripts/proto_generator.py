@@ -76,8 +76,8 @@ class ServerProtoGenerator(BaseGenerator):
         params_types_oneof = []
         response_types_oneof = []
         out = []
-        params_index = 2
-        response_index = 2
+        params_index = 3
+        response_index = 3
         out.append("// GENERATED FILE - DO NOT EDIT\n")
         out.append("// clang-format off\n")
         out.append('''syntax = "proto3";
@@ -92,9 +92,21 @@ service VvkServer {
   rpc CallMethods (stream VvkRequest) returns (stream VvkResponse) {}
 }
 
+message VvkGetFrameParams {
+  uint64 image = 1;
+  uint64 instance = 2;
+  uint64 device = 3;
+  uint64 commandBuffer = 4;
+}
+
+message VvkGetFrameResponse {
+  bytes encodedData = 1;
+}
+
 message VvkRequest {
   string method = 1;
   oneof params {
+    VvkGetFrameParams vvkGetFrame = 2;
 ''')
         for command in self.vk.commands.values():
             if command.name not in COMMANDS_TO_GENERATE:
@@ -151,6 +163,7 @@ message VvkRequest {
 message VvkResponse {
   uint32 result = 1;
   oneof response {
+    VvkGetFrameResponse vvkGetFrame = 2;
 ''')
 
         out.extend(response_types_oneof)
