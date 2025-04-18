@@ -502,21 +502,21 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceMemoryProperties(VkPhysicalDevice ph
                                                              VkPhysicalDeviceMemoryProperties* pMemoryProperties) {
   // TODO: investigate additional steps needed for this function
   auto& command_stream = GetInstanceInfo(physicalDevice).command_stream();
-  return PackAndCallVkGetPhysicalDeviceMemoryProperties(command_stream, physicalDevice, pMemoryProperties);
+  PackAndCallVkGetPhysicalDeviceMemoryProperties(command_stream, physicalDevice, pMemoryProperties);
 }
 
 VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceFeatures(VkPhysicalDevice physicalDevice,
                                                      VkPhysicalDeviceFeatures* pFeatures) {
   auto& command_stream = GetInstanceInfo(physicalDevice).command_stream();
-  return PackAndCallVkGetPhysicalDeviceFeatures(command_stream, physicalDevice, pFeatures);
+  PackAndCallVkGetPhysicalDeviceFeatures(command_stream, physicalDevice, pFeatures);
 }
 
 VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice,
                                                                   uint32_t* pQueueFamilyPropertyCount,
                                                                   VkQueueFamilyProperties* pQueueFamilyProperties) {
   auto& command_stream = GetInstanceInfo(physicalDevice).command_stream();
-  return PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(command_stream, physicalDevice, pQueueFamilyPropertyCount,
-                                                             pQueueFamilyProperties);
+  PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(command_stream, physicalDevice, pQueueFamilyPropertyCount,
+                                                      pQueueFamilyProperties);
 }
 
 VKAPI_ATTR void VKAPI_CALL GetDeviceQueue(VkDevice device, uint32_t queueFamilyIndex, uint32_t queueIndex,
