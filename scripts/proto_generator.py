@@ -97,6 +97,10 @@ message VvkGetFrameParams {
   uint64 instance = 2;
   uint64 device = 3;
   uint64 commandBuffer = 4;
+  uint32 width = 5;
+  uint32 height = 6;
+  uint64 queue = 7;
+  uint32 queueFamilyIndex = 8;
 }
 
 message VvkGetFrameResponse {
