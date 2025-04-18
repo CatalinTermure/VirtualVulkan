@@ -9,6 +9,7 @@
 int main() {
   const VkApplicationInfo application_info = {
       .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+      .pNext = nullptr,
       .pApplicationName = "physical-device-listing",
       .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
       .pEngineName = "Test Engine",

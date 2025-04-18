@@ -10,6 +10,7 @@ int main() {
   // Create a vulkan instance
   const VkApplicationInfo application_info = {
       .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+      .pNext = nullptr,
       .pApplicationName = "device-creation",
       .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
       .pEngineName = "Test Engine",
