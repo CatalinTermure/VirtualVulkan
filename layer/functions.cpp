@@ -37,7 +37,6 @@ struct VkSemaphore_T {
 };
 
 namespace vvk {
-
 namespace {
 
 constexpr uint64_t kVkQueueSubmitTimeout = UINT64_MAX - 2;
@@ -159,6 +158,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
       RemoveSwapchainInfo(*pSwapchain);
       return VK_ERROR_INITIALIZATION_FAILED;
     }
+    device_info.swapchain_images.insert(server_image);
     device_info.SetRemoteHandle(client_image, server_image);
   }
 
@@ -664,15 +664,23 @@ VKAPI_ATTR void VKAPI_CALL GetImageMemoryRequirements2(VkDevice device, const Vk
 VKAPI_ATTR VkResult VKAPI_CALL CreateImageView(VkDevice device, const VkImageViewCreateInfo* pCreateInfo,
                                                const VkAllocationCallbacks* pAllocator, VkImageView* pView) {
   DeviceInfo& device_info = GetDeviceInfo(device);
-  return PackAndCallVkCreateImageView(device_info.instance_info().command_stream(),
-                                      device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator,
-                                      pView);
+  VkResult result =
+      PackAndCallVkCreateImageView(device_info.instance_info().command_stream(),
+                                   device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator, pView);
+  if (result != VK_SUCCESS) return result;
+
+  if (device_info.swapchain_images.contains(pCreateInfo->image)) {
+    device_info.swapchain_image_views.insert(*pView);
+  }
+
+  return result;
 }
 VKAPI_ATTR void VKAPI_CALL DestroyImageView(VkDevice device, VkImageView imageView,
                                             const VkAllocationCallbacks* pAllocator) {
   DeviceInfo& device_info = GetDeviceInfo(device);
   PackAndCallVkDestroyImageView(device_info.instance_info().command_stream(),
                                 device_info.instance_info().GetRemoteHandle(device), imageView, pAllocator);
+  device_info.swapchain_image_views.erase(imageView);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateCommandPool(VkDevice device, const VkCommandPoolCreateInfo* pCreateInfo,
@@ -813,15 +821,26 @@ VKAPI_ATTR void VKAPI_CALL DestroyPipeline(VkDevice device, VkPipeline pipeline,
 VKAPI_ATTR VkResult VKAPI_CALL CreateFramebuffer(VkDevice device, const VkFramebufferCreateInfo* pCreateInfo,
                                                  const VkAllocationCallbacks* pAllocator, VkFramebuffer* pFramebuffer) {
   DeviceInfo device_info = GetDeviceInfo(device);
-  return PackAndCallVkCreateFramebuffer(device_info.instance_info().command_stream(),
-                                        device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator,
-                                        pFramebuffer);
+  VkResult result = PackAndCallVkCreateFramebuffer(device_info.instance_info().command_stream(),
+                                                   device_info.instance_info().GetRemoteHandle(device), pCreateInfo,
+                                                   pAllocator, pFramebuffer);
+  if (result != VK_SUCCESS) return result;
+
+  for (uint32_t i = 0; i < pCreateInfo->attachmentCount; i++) {
+    if (device_info.swapchain_image_views.contains(pCreateInfo->pAttachments[i])) {
+      device_info.swapchain_framebuffers.insert(*pFramebuffer);
+      break;
+    }
+  }
+
+  return result;
 }
 VKAPI_ATTR void VKAPI_CALL DestroyFramebuffer(VkDevice device, VkFramebuffer framebuffer,
                                               const VkAllocationCallbacks* pAllocator) {
   DeviceInfo device_info = GetDeviceInfo(device);
   PackAndCallVkDestroyFramebuffer(device_info.instance_info().command_stream(),
                                   device_info.instance_info().GetRemoteHandle(device), framebuffer, pAllocator);
+  device_info.swapchain_framebuffers.erase(framebuffer);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL WaitForFences(VkDevice device, uint32_t fenceCount, const VkFence* pFences,
@@ -929,11 +948,15 @@ VKAPI_ATTR void VKAPI_CALL CmdBeginRenderPass(VkCommandBuffer commandBuffer,
   DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
   PackAndCallVkCmdBeginRenderPass(device_info.instance_info().command_stream(),
                                   device_info.GetRemoteHandle(commandBuffer), pRenderPassBegin, contents);
+  if (device_info.swapchain_framebuffers.contains(pRenderPassBegin->framebuffer)) {
+    device_info.swapchain_render_command_buffers.insert(commandBuffer);
+  }
 }
 VKAPI_ATTR void VKAPI_CALL CmdEndRenderPass(VkCommandBuffer commandBuffer) {
   DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
   PackAndCallVkCmdEndRenderPass(device_info.instance_info().command_stream(),
                                 device_info.GetRemoteHandle(commandBuffer));
+  device_info.swapchain_render_command_buffers.erase(commandBuffer);
 }
 
 VKAPI_ATTR void VKAPI_CALL CmdBindPipeline(VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint,

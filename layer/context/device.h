@@ -41,6 +41,11 @@ struct DeviceInfo {
   void ResetFenceLocal(VkFence fence) { local_synchronization_primitives_.erase(reinterpret_cast<void*>(fence)); }
   void SetFenceLocal(VkFence fence) { local_synchronization_primitives_.insert(reinterpret_cast<void*>(fence)); }
 
+  std::unordered_set<VkImage> swapchain_images;
+  std::unordered_set<VkImageView> swapchain_image_views;
+  std::unordered_set<VkFramebuffer> swapchain_framebuffers;
+  std::unordered_set<VkCommandBuffer> swapchain_render_command_buffers;
+
  private:
   std::map<void*, void*> local_to_remote_handle_;
   std::unordered_set<void*> local_synchronization_primitives_;

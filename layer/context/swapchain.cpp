@@ -4,6 +4,7 @@
 #include <mutex>
 
 #include "commons/remote_call.h"
+#include "layer/context/device.h"
 
 namespace vvk {
 
@@ -16,8 +17,10 @@ SwapchainInfo::SwapchainInfo(VkDevice device, VmaAllocator remote_allocator)
     : device_(device), instance_info_(GetInstanceInfo(device)), remote_allocator_(remote_allocator), remote_images_() {}
 
 SwapchainInfo::~SwapchainInfo() {
+  DeviceInfo& device_info = GetDeviceInfo(device_);
   for (auto [remote_image, remote_allocation] : remote_images_) {
     vmaDestroyImage(remote_allocator_, remote_image, remote_allocation);
+    device_info.swapchain_images.erase(remote_image);
   }
 }
 
