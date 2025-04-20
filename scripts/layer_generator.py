@@ -15,7 +15,8 @@ class ClientHeaderGenerator(BaseGenerator):
         out.append('''#ifndef VVK_LAYER_FUNCTIONS_H
 #define VVK_LAYER_FUNCTIONS_H
 
-#include <vulkan/vulkan_core.h>
+#include "layer/wsi_support.h"
+#include <vulkan/vulkan.h>
 
 #include <unordered_map>
 #include <string>
@@ -24,41 +25,16 @@ namespace vvk {
 PFN_vkVoidFunction DefaultGetInstanceProcAddr(VkInstance instance, const char* pName);
 PFN_vkVoidFunction DefaultGetDeviceProcAddr(VkDevice device, const char* pName);
 
-VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(
-    VkDevice                                    device,
-    const VkSwapchainCreateInfoKHR*             pCreateInfo,
-    const VkAllocationCallbacks*                pAllocator,
-    VkSwapchainKHR*                             pSwapchain);
-
-VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(
-    VkDevice                                    device,
-    VkSwapchainKHR                              swapchain,
-    const VkAllocationCallbacks*                pAllocator);
-
-VKAPI_ATTR VkResult VKAPI_CALL GetSwapchainImagesKHR(
-    VkDevice                                    device,
-    VkSwapchainKHR                              swapchain,
-    uint32_t*                                   pSwapchainImageCount,
-    VkImage*                                    pSwapchainImages);
-
-VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(
-    VkDevice                                    device,
-    VkSwapchainKHR                              swapchain,
-    uint64_t                                    timeout,
-    VkSemaphore                                 semaphore,
-    VkFence                                     fence,
-    uint32_t*                                   pImageIndex);
-
-VKAPI_ATTR VkResult VKAPI_CALL QueuePresentKHR(
-    VkQueue                                     queue,
-    const VkPresentInfoKHR*                     pPresentInfo);
-
 ''')
         name_to_func_ptr_map = [
             'inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = {\n'
         ]
 
-        for cmd_name in COMMANDS_TO_GENERATE:
+        PROTOTYPES_TO_GENERATE = ["vkCreateSwapchainKHR", "vkDestroySwapchainKHR",
+                                  "vkGetSwapchainImagesKHR", "vkAcquireNextImageKHR",
+                                  "vkQueuePresentKHR", "vkCreateWaylandSurfaceKHR"]
+
+        for cmd_name in COMMANDS_TO_GENERATE + PROTOTYPES_TO_GENERATE:
             name_to_func_ptr_map.append(
                 f'    {"{"}"{cmd_name}", reinterpret_cast<PFN_vkVoidFunction>({cmd_name[2:]}){"}"},\n')
             out.append(self.vk.commands[cmd_name].cPrototype.replace(

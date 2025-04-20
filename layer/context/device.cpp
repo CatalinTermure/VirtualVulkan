@@ -14,7 +14,8 @@ std::map<VkQueue, VkDevice> g_queue_to_device;
 }  // namespace
 
 DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
-                       const VmaAllocatorCreateInfo& remote_allocator_create_info)
+                       const VmaAllocatorCreateInfo& remote_allocator_create_info,
+                       std::optional<uint32_t> present_queue_family_index)
     : nxt_gdpa_(nxt_gdpa), instance_info_(GetInstanceInfo(physical_device)) {
   if (vmaCreateAllocator(&remote_allocator_create_info, &remote_allocator_) != VK_SUCCESS) {
     throw std::runtime_error("Failed to create remote VMA allocator");
@@ -66,6 +67,13 @@ DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhys
   if (vmaCreateAllocator(&local_allocator_create_info, &local_allocator_) != VK_SUCCESS) {
     throw std::runtime_error("Failed to create local VMA allocator");
   }
+
+  if (present_queue_family_index.has_value()) {
+    VkQueue present_queue;
+    dispatch_table_.GetDeviceQueue(device, *present_queue_family_index, 0, &present_queue);
+    present_queue_ = present_queue;
+    present_queue_family_index_ = present_queue_family_index;
+  }
 }
 
 DeviceInfo& GetDeviceInfo(VkDevice device) {
@@ -79,12 +87,14 @@ DeviceInfo& GetDeviceInfo(VkCommandBuffer command_buffer) {
 
 DeviceInfo& GetDeviceInfo(VkQueue queue) { return GetDeviceInfo(GetDeviceForQueue(queue)); }
 
-void SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
-                   const VmaAllocatorCreateInfo& remote_allocator_create_info) {
+DeviceInfo& SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
+                          const VmaAllocatorCreateInfo& remote_allocator_create_info,
+                          std::optional<uint32_t> present_queue_family_index) {
   std::lock_guard lock(device_info_lock);
-  auto [iter, inserted] =
-      g_device_infos.try_emplace(device, device, nxt_gdpa, physical_device, remote_allocator_create_info);
+  auto [iter, inserted] = g_device_infos.try_emplace(device, device, nxt_gdpa, physical_device,
+                                                     remote_allocator_create_info, present_queue_family_index);
   assert(inserted);
+  return iter->second;
 }
 
 void RemoveDeviceInfo(VkDevice device) {

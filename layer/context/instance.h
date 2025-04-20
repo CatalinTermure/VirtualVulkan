@@ -1,6 +1,10 @@
 #ifndef VVK_LAYER_CONTEXT_INSTANCE_H
 #define VVK_LAYER_CONTEXT_INSTANCE_H
 
+// clang-format off
+#include "layer/wsi_support.h"
+// clang-format on
+
 #include <grpcpp/grpcpp.h>
 #include <vulkan/utility/vk_dispatch_table.h>
 #include <vulkan/vulkan_core.h>
@@ -36,6 +40,9 @@ class InstanceInfo {
   InstanceInfo(const InstanceInfo&) = delete;
   InstanceInfo& operator=(const InstanceInfo&) = delete;
 
+  std::optional<VkSurfaceKHR> surface() const { return surface_; }
+  void set_surface(VkSurfaceKHR surface) { surface_ = surface; }
+
  private:
   PFN_vkGetInstanceProcAddr nxt_gipa_;
   grpc::ClientContext client_context_;
@@ -44,6 +51,7 @@ class InstanceInfo {
   ClientBidiStream command_stream_;
   std::map<void*, void*> local_to_remote_handle_;
   VkuInstanceDispatchTable dispatch_table_;
+  std::optional<VkSurfaceKHR> surface_;
 };
 
 InstanceInfo& GetInstanceInfo(VkInstance instance);

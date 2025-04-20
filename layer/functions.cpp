@@ -258,6 +258,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueuePresentKHR(VkQueue queue, const VkPresentInf
   present_info.pImageIndices = image_indices.data();
 
   DeviceInfo& device_info = GetDeviceInfo(queue);
+  queue = *device_info.present_queue();
   std::thread caller_thread([queue_present_fn = device_info.dispatch_table().QueuePresentKHR, queue,
                              present_info = std::move(present_info),
                              semaphores_to_wait = std::move(semaphores_to_wait_cpu),
@@ -276,6 +277,21 @@ VKAPI_ATTR VkResult VKAPI_CALL QueuePresentKHR(VkQueue queue, const VkPresentInf
   });
   caller_thread.detach();
   return VK_SUCCESS;
+}
+
+VKAPI_ATTR VkResult VKAPI_CALL CreateWaylandSurfaceKHR(VkInstance instance,
+                                                       const VkWaylandSurfaceCreateInfoKHR* pCreateInfo,
+                                                       const VkAllocationCallbacks* pAllocator,
+                                                       VkSurfaceKHR* pSurface) {
+  InstanceInfo& instance_info = GetInstanceInfo(instance);
+  VkResult result = instance_info.dispatch_table().CreateWaylandSurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
+  if (result != VK_SUCCESS) {
+    return result;
+  }
+
+  instance_info.set_surface(*pSurface);
+
+  return result;
 }
 
 PFN_vkVoidFunction DefaultGetInstanceProcAddr(VkInstance instance, const char* pName) {
@@ -398,7 +414,48 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 
   InstanceInfo& instance_info = GetInstanceInfo(physicalDevice);
 
-  VkResult result = instance_info.dispatch_table().CreateDevice(physicalDevice, pCreateInfo, pAllocator, pDevice);
+  VkResult result;
+  std::optional<uint32_t> present_queue_family_index = std::nullopt;
+  {
+    VkDeviceCreateInfo local_create_info = *pCreateInfo;
+    VkDeviceQueueCreateInfo queue_create_info = {
+        .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = 0,
+        // Even if we don't need any queue, we must still create a queue on the device as per
+        // VUID-VkDeviceCreateInfo-queueCreateInfoCount-arraylength
+        .queueFamilyIndex = 0,
+        .queueCount = 1,
+        .pQueuePriorities = nullptr,
+    };
+    local_create_info.queueCreateInfoCount = 1;
+    local_create_info.pQueueCreateInfos = &queue_create_info;
+
+    auto surface = instance_info.surface();
+    if (surface.has_value()) {
+      uint32_t queue_family_count = 0;
+      std::vector<VkQueueFamilyProperties> queue_family_properties;
+      GetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queue_family_count, nullptr);
+      queue_family_properties.resize(queue_family_count);
+      GetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queue_family_count, queue_family_properties.data());
+      for (uint32_t i = 0; i < queue_family_count; i++) {
+        VkBool32 supports_present = VK_FALSE;
+        instance_info.dispatch_table().GetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, *surface,
+                                                                          &supports_present);
+        if (supports_present) {
+          queue_create_info.queueFamilyIndex = i;
+          present_queue_family_index = i;
+          break;
+        }
+      }
+    }
+
+    result = instance_info.dispatch_table().CreateDevice(physicalDevice, &local_create_info, pAllocator, pDevice);
+  }
+
+  if (result != VK_SUCCESS) {
+    return result;
+  }
 
   VmaVulkanFunctions vma_vulkan_funcs = {
       .vkGetInstanceProcAddr = nullptr,
@@ -445,7 +502,12 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
       .pTypeExternalMemoryHandleTypes = nullptr,
   };
 
-  SetDeviceInfo(*pDevice, nxt_gdpa, physicalDevice, allocator_create_info);
+  DeviceInfo& device_info =
+      SetDeviceInfo(*pDevice, nxt_gdpa, physicalDevice, allocator_create_info, present_queue_family_index);
+
+  if (device_info.present_queue().has_value()) {
+    AssociateQueueWithDevice(device_info.present_queue().value(), *pDevice);
+  }
 
   {
     VkDeviceCreateInfo remote_create_info = *pCreateInfo;
@@ -523,13 +585,13 @@ VKAPI_ATTR void VKAPI_CALL GetDeviceQueue(VkDevice device, uint32_t queueFamilyI
                                           VkQueue* pQueue) {
   DeviceInfo& device_info = GetDeviceInfo(device);
 
-  device_info.dispatch_table().GetDeviceQueue(device, queueFamilyIndex, queueIndex, pQueue);
   VkQueue remote_queue = VK_NULL_HANDLE;
   PackAndCallVkGetDeviceQueue(device_info.instance_info().command_stream(),
                               device_info.instance_info().GetRemoteHandle(device), queueFamilyIndex, queueIndex,
                               &remote_queue);
+  *pQueue = remote_queue;
   device_info.SetRemoteHandle(*pQueue, remote_queue);
-  AssociateQueueWithDevice(*pQueue, device);
+  AssociateQueueWithDevice(remote_queue, device);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateFence(VkDevice device, const VkFenceCreateInfo* pCreateInfo,

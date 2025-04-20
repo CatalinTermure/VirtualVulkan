@@ -1,6 +1,10 @@
 #ifndef VVK_LAYER_FUNCTION_LOADING_H
 #define VVK_LAYER_FUNCTION_LOADING_H
 
+// clang-format off
+#include "layer/wsi_support.h"
+// clang-format on
+
 #include <vulkan/vk_layer.h>
 
 namespace vvk {

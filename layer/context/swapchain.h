@@ -1,6 +1,10 @@
 #ifndef VVK_LAYER_CONTEXT_SWAPCHAIN_H
 #define VVK_LAYER_CONTEXT_SWAPCHAIN_H
 
+// clang-format off
+#include "layer/wsi_support.h"
+// clang-format on
+
 #include <vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
 

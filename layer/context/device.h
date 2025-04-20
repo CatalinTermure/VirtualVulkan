@@ -1,6 +1,10 @@
 #ifndef VVK_LAYER_CONTEXT_DEVICE_H
 #define VVK_LAYER_CONTEXT_DEVICE_H
 
+// clang-format off
+#include "layer/wsi_support.h"
+// clang-format on
+
 #include <vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
 
@@ -13,7 +17,8 @@
 namespace vvk {
 struct DeviceInfo {
   DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
-             const VmaAllocatorCreateInfo& remote_allocator_create_info);
+             const VmaAllocatorCreateInfo& remote_allocator_create_info,
+             std::optional<uint32_t> present_queue_family_index);
 
   VmaAllocator remote_allocator() const { return remote_allocator_; }
   VmaAllocator local_allocator() const { return local_allocator_; }
@@ -41,6 +46,9 @@ struct DeviceInfo {
   void ResetFenceLocal(VkFence fence) { local_synchronization_primitives_.erase(reinterpret_cast<void*>(fence)); }
   void SetFenceLocal(VkFence fence) { local_synchronization_primitives_.insert(reinterpret_cast<void*>(fence)); }
 
+  std::optional<uint32_t> present_queue_family_index() const { return present_queue_family_index_; }
+  std::optional<VkQueue> present_queue() const { return present_queue_; }
+
   std::unordered_set<VkImage> swapchain_images;
   std::unordered_set<VkImageView> swapchain_image_views;
   std::unordered_set<VkFramebuffer> swapchain_framebuffers;
@@ -54,13 +62,16 @@ struct DeviceInfo {
   PFN_vkGetDeviceProcAddr nxt_gdpa_;
   InstanceInfo& instance_info_;
   VkuDeviceDispatchTable dispatch_table_;
+  std::optional<uint32_t> present_queue_family_index_ = std::nullopt;
+  std::optional<VkQueue> present_queue_ = std::nullopt;
 };
 
 DeviceInfo& GetDeviceInfo(VkDevice device);
 DeviceInfo& GetDeviceInfo(VkCommandBuffer command_buffer);
 DeviceInfo& GetDeviceInfo(VkQueue queue);
-void SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
-                   const VmaAllocatorCreateInfo& remote_allocator_create_info);
+DeviceInfo& SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
+                          const VmaAllocatorCreateInfo& remote_allocator_create_info,
+                          std::optional<uint32_t> present_queue_family_index);
 void RemoveDeviceInfo(VkDevice device);
 
 void AssociateCommandBufferWithDevice(VkCommandBuffer command_buffer, VkDevice device);
