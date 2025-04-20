@@ -505,6 +505,11 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
   DeviceInfo& device_info =
       SetDeviceInfo(*pDevice, nxt_gdpa, physicalDevice, allocator_create_info, present_queue_family_index);
 
+  for (uint32_t i = 0; i < pCreateInfo->queueCreateInfoCount; i++) {
+    const VkDeviceQueueCreateInfo& queue_create_info = pCreateInfo->pQueueCreateInfos[i];
+    device_info.CreateFakeQueueFamily(queue_create_info.queueFamilyIndex, queue_create_info.queueCount);
+  }
+
   if (device_info.present_queue().has_value()) {
     AssociateQueueWithDevice(device_info.present_queue().value(), *pDevice);
   }
@@ -585,13 +590,14 @@ VKAPI_ATTR void VKAPI_CALL GetDeviceQueue(VkDevice device, uint32_t queueFamilyI
                                           VkQueue* pQueue) {
   DeviceInfo& device_info = GetDeviceInfo(device);
 
+  *pQueue = device_info.GetFakeQueue(queueFamilyIndex, queueIndex);
+
   VkQueue remote_queue = VK_NULL_HANDLE;
   PackAndCallVkGetDeviceQueue(device_info.instance_info().command_stream(),
                               device_info.instance_info().GetRemoteHandle(device), queueFamilyIndex, queueIndex,
                               &remote_queue);
-  *pQueue = remote_queue;
   device_info.SetRemoteHandle(*pQueue, remote_queue);
-  AssociateQueueWithDevice(remote_queue, device);
+  AssociateQueueWithDevice(*pQueue, device);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateFence(VkDevice device, const VkFenceCreateInfo* pCreateInfo,

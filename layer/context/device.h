@@ -8,11 +8,14 @@
 #include <vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
 
+#include <list>
 #include <map>
 #include <memory>
+#include <unordered_map>
 #include <unordered_set>
 
 #include "layer/context/instance.h"
+#include "layer/dispatchable_object.h"
 
 namespace vvk {
 struct DeviceInfo {
@@ -49,6 +52,9 @@ struct DeviceInfo {
   std::optional<uint32_t> present_queue_family_index() const { return present_queue_family_index_; }
   std::optional<VkQueue> present_queue() const { return present_queue_; }
 
+  void CreateFakeQueueFamily(uint32_t queue_family_index, uint32_t queue_count);
+  VkQueue GetFakeQueue(uint32_t queue_family_index, uint32_t queue_index);
+
   std::unordered_set<VkImage> swapchain_images;
   std::unordered_set<VkImageView> swapchain_image_views;
   std::unordered_set<VkFramebuffer> swapchain_framebuffers;
@@ -64,6 +70,7 @@ struct DeviceInfo {
   VkuDeviceDispatchTable dispatch_table_;
   std::optional<uint32_t> present_queue_family_index_ = std::nullopt;
   std::optional<VkQueue> present_queue_ = std::nullopt;
+  std::unordered_map<uint32_t, std::list<DispatchableObject>> fake_queue_families_;
 };
 
 DeviceInfo& GetDeviceInfo(VkDevice device);

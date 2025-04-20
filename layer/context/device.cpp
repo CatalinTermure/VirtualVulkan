@@ -71,9 +71,41 @@ DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhys
   if (present_queue_family_index.has_value()) {
     VkQueue present_queue;
     dispatch_table_.GetDeviceQueue(device, *present_queue_family_index, 0, &present_queue);
+    // Workaround in order to work with Vulkan Validation Layers
+    // The VVK layer does not call the Loader's vkGetDeviceQueue function, which sets the queue's loader data.
+    // The Vulkan Validation Layers expect the loader data to be set, so we need to set it manually.
+    *reinterpret_cast<VK_LOADER_DATA*>(present_queue) = *reinterpret_cast<VK_LOADER_DATA*>(device);
     present_queue_ = present_queue;
     present_queue_family_index_ = present_queue_family_index;
   }
+}
+
+void DeviceInfo::CreateFakeQueueFamily(uint32_t queue_family_index, uint32_t queue_count) {
+  if (fake_queue_families_.find(queue_family_index) != fake_queue_families_.end()) {
+    throw std::runtime_error("Fake queue family already exists");
+  }
+  auto [it, inserted] = fake_queue_families_.emplace(queue_family_index, queue_count);
+  if (!inserted) {
+    throw std::runtime_error("Failed to create fake queue family");
+  }
+  auto& queue_family = it->second;
+  for (uint32_t i = 0; i < queue_count; ++i) {
+    queue_family.emplace_back();
+  }
+}
+
+VkQueue DeviceInfo::GetFakeQueue(uint32_t queue_family_index, uint32_t queue_index) {
+  auto map_iterator = fake_queue_families_.find(queue_family_index);
+  if (map_iterator == fake_queue_families_.end()) {
+    throw std::runtime_error("Fake queue family not found");
+  }
+  auto& queue_family = map_iterator->second;
+  if (queue_index >= queue_family.size()) {
+    throw std::runtime_error("Fake queue index out of range");
+  }
+  auto list_iterator = queue_family.begin();
+  std::advance(list_iterator, queue_index);
+  return reinterpret_cast<VkQueue>(&(*list_iterator));
 }
 
 DeviceInfo& GetDeviceInfo(VkDevice device) {
