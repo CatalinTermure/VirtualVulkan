@@ -9,6 +9,10 @@ class VvkServerImpl final : public VvkServer::Service {
   grpc::Status CallMethods(
       grpc::ServerContext* context,
       grpc::ServerReaderWriter<vvk::server::VvkResponse, vvk::server::VvkRequest>* stream) override;
+
+  grpc::Status RequestFrames(
+      grpc::ServerContext* context,
+      grpc::ServerReaderWriter<vvk::server::VvkGetFrameResponse, vvk::server::VvkPresentationRequest>* stream) override;
 };
 }  // namespace vvk::server
 

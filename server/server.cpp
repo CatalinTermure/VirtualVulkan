@@ -25,4 +25,11 @@ grpc::Status VvkServerImpl::CallMethods(grpc::ServerContext* context,
   spdlog::info("Connection closed {}", context->peer());
   return grpc::Status();
 }
+
+grpc::Status VvkServerImpl::RequestFrames(
+    grpc::ServerContext* context,
+    grpc::ServerReaderWriter<vvk::server::VvkGetFrameResponse, vvk::server::VvkPresentationRequest>* stream) {
+  return grpc::Status();
+}
+
 }  // namespace vvk::server
