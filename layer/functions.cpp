@@ -104,8 +104,11 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
                                                   const VkAllocationCallbacks* pAllocator, VkSwapchainKHR* pSwapchain) {
   spdlog::trace("CreateSwapchainKHR");
 
+  VkSwapchainCreateInfoKHR create_info = *pCreateInfo;
+  create_info.imageUsage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+
   DeviceInfo& device_info = GetDeviceInfo(device);
-  VkResult result = device_info.dispatch_table().CreateSwapchainKHR(device, pCreateInfo, pAllocator, pSwapchain);
+  VkResult result = device_info.dispatch_table().CreateSwapchainKHR(device, &create_info, pAllocator, pSwapchain);
   if (result != VK_SUCCESS) {
     return result;
   }
@@ -120,7 +123,8 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
     RemoveSwapchainInfo(pCreateInfo->oldSwapchain);
   }
 
-  SwapchainInfo& swapchain_info = SetSwapchainInfo(*pSwapchain, device, device_info.remote_allocator());
+  SwapchainInfo& swapchain_info = SetSwapchainInfo(*pSwapchain, device, device_info.remote_allocator(),
+                                                   *client_swapchain_images, pCreateInfo->imageExtent);
 
   // Create remote images for the swapchain
   VkImageCreateInfo image_create_info = {
@@ -134,7 +138,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
       .arrayLayers = pCreateInfo->imageArrayLayers,
       .samples = VK_SAMPLE_COUNT_1_BIT,
       .tiling = VK_IMAGE_TILING_OPTIMAL,
-      .usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | pCreateInfo->imageUsage,
+      .usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | pCreateInfo->imageUsage,
       .sharingMode = pCreateInfo->imageSharingMode,
       .queueFamilyIndexCount = pCreateInfo->queueFamilyIndexCount,
       .pQueueFamilyIndices = pCreateInfo->pQueueFamilyIndices,
@@ -417,6 +421,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
   VkResult result;
   std::optional<uint32_t> present_queue_family_index = std::nullopt;
   {
+    float queue_priorities[1] = {1.0f};
     VkDeviceCreateInfo local_create_info = *pCreateInfo;
     VkDeviceQueueCreateInfo queue_create_info = {
         .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
@@ -426,7 +431,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
         // VUID-VkDeviceCreateInfo-queueCreateInfoCount-arraylength
         .queueFamilyIndex = 0,
         .queueCount = 1,
-        .pQueuePriorities = nullptr,
+        .pQueuePriorities = queue_priorities,
     };
     local_create_info.queueCreateInfoCount = 1;
     local_create_info.pQueueCreateInfos = &queue_create_info;
@@ -1120,7 +1125,8 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
     }
     std::thread remote_caller(
         [&dispatch_table = device_info.dispatch_table(), &command_stream = device_info.instance_info().command_stream(),
-         remote_queue = device_info.GetRemoteHandle(queue), remote_fence = device_info.GetRemoteHandle(fence), device,
+         remote_queue = device_info.GetRemoteHandle(queue), remote_fence = device_info.GetRemoteHandle(fence), fence,
+         present_queue = device_info.present_queue(), device,
          remote_device = device_info.instance_info().GetRemoteHandle(device), submitCount,
          submits = std::move(submit_infos), fences = std::move(fences_to_wait),
          to_signal = std::move(semaphores_to_signal_from_remote),
