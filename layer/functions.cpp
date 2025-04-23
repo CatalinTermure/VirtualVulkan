@@ -942,19 +942,17 @@ VKAPI_ATTR VkResult VKAPI_CALL WaitForFences(VkDevice device, uint32_t fenceCoun
   std::thread remote_wait_thread;
 
   if (!local_fences.empty()) {
-    local_wait_thread =
-        std::thread([&device_info, &local_fences, &local_result, device, fenceCount, waitAll, timeout]() {
-          local_result = device_info.dispatch_table().WaitForFences(device, local_fences.size(), local_fences.data(),
-                                                                    waitAll, timeout);
-        });
+    local_wait_thread = std::thread([&device_info, &local_fences, &local_result, device, waitAll, timeout]() {
+      local_result = device_info.dispatch_table().WaitForFences(device, local_fences.size(), local_fences.data(),
+                                                                waitAll, timeout);
+    });
   }
   if (!remote_fences.empty()) {
-    remote_wait_thread =
-        std::thread([&device_info, &remote_fences, &remote_result, device, fenceCount, waitAll, timeout]() {
-          remote_result = PackAndCallVkWaitForFences(device_info.instance_info().command_stream(),
-                                                     device_info.instance_info().GetRemoteHandle(device), fenceCount,
-                                                     remote_fences.data(), waitAll, timeout);
-        });
+    remote_wait_thread = std::thread([&device_info, &remote_fences, &remote_result, device, waitAll, timeout]() {
+      remote_result = PackAndCallVkWaitForFences(device_info.instance_info().command_stream(),
+                                                 device_info.instance_info().GetRemoteHandle(device),
+                                                 remote_fences.size(), remote_fences.data(), waitAll, timeout);
+    });
   }
 
   if (local_wait_thread.joinable()) {
