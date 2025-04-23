@@ -13,7 +13,11 @@ std::map<VkPhysicalDevice, VkInstance> g_physical_device_to_instance;
 
 InstanceInfo::InstanceInfo(VkInstance instance, PFN_vkGetInstanceProcAddr nxt_gipa,
                            std::shared_ptr<grpc::Channel> channel)
-    : nxt_gipa_(nxt_gipa), channel_(channel), stub_(channel), command_stream_(stub_.CallMethods(&client_context_)) {
+    : nxt_gipa_(nxt_gipa),
+      channel_(channel),
+      stub_(channel),
+      command_stream_(stub_.CallMethods(&client_context_)),
+      presentation_stream_(stub_.RequestFrames(&client_context_)) {
   vkuInitInstanceDispatchTable(instance, &dispatch_table_, nxt_gipa);
   dispatch_table_.CreateDevice = reinterpret_cast<PFN_vkCreateDevice>(nxt_gipa(instance, "vkCreateDevice"));
 }

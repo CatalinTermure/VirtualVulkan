@@ -26,6 +26,7 @@ class InstanceInfo {
   const VkuInstanceDispatchTable& dispatch_table() const { return dispatch_table_; }
 
   VvkCommandClientBidiStream& command_stream() { return command_stream_; }
+  VvkPresentationClientBidiStream& presentation_stream() { return presentation_stream_; }
 
   template <typename T>
   T GetRemoteHandle(T local_handle) const {
@@ -49,6 +50,7 @@ class InstanceInfo {
   std::shared_ptr<grpc::Channel> channel_;
   vvk::server::VvkServer::Stub stub_;
   VvkCommandClientBidiStream command_stream_;
+  VvkPresentationClientBidiStream presentation_stream_;
   std::map<void*, void*> local_to_remote_handle_;
   VkuInstanceDispatchTable dispatch_table_;
   std::optional<VkSurfaceKHR> surface_;
