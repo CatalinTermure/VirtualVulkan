@@ -13,9 +13,13 @@ std::mutex swapchain_info_lock;
 std::map<VkSwapchainKHR, SwapchainInfo> g_swapchain_infos;
 }  // namespace
 
-SwapchainInfo::SwapchainInfo(VkDevice device, VmaAllocator remote_allocator,
+SwapchainInfo::SwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAllocator remote_allocator,
                              const std::vector<VkImage>& swapchain_images, const VkExtent2D& swapchain_image_extent)
-    : device_(device), instance_info_(GetInstanceInfo(device)), remote_allocator_(remote_allocator), remote_images_() {
+    : swapchain_handle_(swapchain),
+      device_(device),
+      instance_info_(GetInstanceInfo(device)),
+      remote_allocator_(remote_allocator),
+      remote_images_() {
   DeviceInfo device_info = GetDeviceInfo(device);
   uint32_t queue_family_index = *device_info.present_queue_family_index();
   VkCommandPoolCreateInfo command_pool_create_info = {
@@ -128,6 +132,38 @@ SwapchainInfo::SwapchainInfo(VkDevice device, VmaAllocator remote_allocator,
   }
 }  // namespace vvk
 
+VkResult SwapchainInfo::CopyMemoryToImage(uint32_t image_index, std::string_view data,
+                                          std::span<VkSemaphore> semaphores_to_wait,
+                                          std::span<VkPipelineStageFlags> wait_stages,
+                                          std::span<VkSemaphore> semaphores_to_signal, VkFence fence_to_signal) {
+  if (wait_stages.size() != semaphores_to_wait.size()) {
+    throw std::runtime_error("wait_stages and semaphores_to_wait must have the same size");
+  }
+
+  if (image_index >= command_buffers_.size()) {
+    throw std::runtime_error("image_index is out of bounds");
+  }
+
+  DeviceInfo& device_info = GetDeviceInfo(device_);
+  VkResult result = vmaCopyMemoryToAllocation(device_info.local_allocator(), data.data(),
+                                              buffer_allocations_[image_index], 0, data.size());
+  if (result != VK_SUCCESS) {
+    return result;
+  }
+  VkSubmitInfo submit_info = {
+      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+      .pNext = nullptr,
+      .waitSemaphoreCount = static_cast<uint32_t>(semaphores_to_wait.size()),
+      .pWaitSemaphores = semaphores_to_wait.data(),
+      .pWaitDstStageMask = wait_stages.data(),
+      .commandBufferCount = 1,
+      .pCommandBuffers = &command_buffers_[image_index],
+      .signalSemaphoreCount = static_cast<uint32_t>(semaphores_to_signal.size()),
+      .pSignalSemaphores = semaphores_to_signal.data(),
+  };
+  return device_info.dispatch_table().QueueSubmit(*device_info.present_queue(), 1, &submit_info, fence_to_signal);
+}
+
 SwapchainInfo::~SwapchainInfo() {
   DeviceInfo& device_info = GetDeviceInfo(device_);
   for (auto [remote_image, remote_allocation] : remote_images_) {
@@ -164,8 +200,8 @@ SwapchainInfo& SetSwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAl
                                 const std::vector<VkImage>& swapchain_images,
                                 const VkExtent2D& swapchain_image_extent) {
   std::lock_guard lock(swapchain_info_lock);
-  auto [iter, inserted] =
-      g_swapchain_infos.try_emplace(swapchain, device, remote_allocator, swapchain_images, swapchain_image_extent);
+  auto [iter, inserted] = g_swapchain_infos.try_emplace(swapchain, swapchain, device, remote_allocator,
+                                                        swapchain_images, swapchain_image_extent);
   assert(inserted);
   return iter->second;
 }

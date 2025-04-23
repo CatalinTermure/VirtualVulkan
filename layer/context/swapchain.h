@@ -8,6 +8,7 @@
 #include <vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
 
+#include <span>
 #include <vector>
 
 #include "layer/context/instance.h"
@@ -16,16 +17,23 @@ namespace vvk {
 
 class SwapchainInfo {
  public:
-  SwapchainInfo(VkDevice device, VmaAllocator remote_allocator, const std::vector<VkImage>& swapchain_images,
-                const VkExtent2D& swapchain_image_extent);
+  SwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAllocator remote_allocator,
+                const std::vector<VkImage>& swapchain_images, const VkExtent2D& swapchain_image_extent);
   SwapchainInfo(const SwapchainInfo&) = delete;
   SwapchainInfo& operator=(const SwapchainInfo&) = delete;
 
   VkImage CreateImageRemote(const VkImageCreateInfo& create_info, const VmaAllocationCreateInfo& alloc_info);
 
+  std::span<const std::pair<VkImage, VmaAllocation>> GetRemoteImages() const { return remote_images_; }
+
+  VkResult CopyMemoryToImage(uint32_t image_index, std::string_view data, std::span<VkSemaphore> semaphores_to_wait,
+                             std::span<VkPipelineStageFlags> wait_stages, std::span<VkSemaphore> semaphores_to_signal,
+                             VkFence fence_to_signal);
+
   ~SwapchainInfo();
 
  private:
+  VkSwapchainKHR swapchain_handle_;
   VkDevice device_;
   VmaAllocator remote_allocator_;
   InstanceInfo& instance_info_;
