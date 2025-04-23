@@ -176,7 +176,7 @@ class ClientSrcGenerator(BaseGenerator):
         out.append("// clang-format off\n")
         out.append('''#include "remote_call.h"
 
-#include "bidi_stream.h"
+#include "synchronized_bidi_stream.h"
 
 #include <vulkan/vulkan.h>
 #include <spdlog/spdlog.h>
@@ -189,7 +189,7 @@ namespace vvk {
         for cmd_name in COMMANDS_TO_GENERATE:
             after_call_code = []
             command = self.vk.commands[cmd_name]
-            params = ['ClientBidiStream& stream']
+            params = ['VvkCommandClientBidiStream& stream']
             params.extend([param.cDeclaration.strip()
                           for param in command.params])
             out.append(
@@ -251,7 +251,7 @@ class ClientHeaderGenerator(BaseGenerator):
         out.append("// clang-format off\n")
         out.append('''#ifndef VVK_COMMONS_REMOTE_CALL_H
 #define VVK_COMMONS_REMOTE_CALL_H
-#include "bidi_stream.h"
+#include "synchronized_bidi_stream.h"
 
 #include "vulkan/vulkan_core.h"
 
@@ -263,7 +263,7 @@ namespace vvk {
 
         for cmd_name in COMMANDS_TO_GENERATE:
             command = self.vk.commands[cmd_name]
-            params = ['ClientBidiStream& stream']
+            params = ['VvkCommandClientBidiStream& stream']
             params.extend([param.cDeclaration.strip()
                           for param in command.params])
             out.append(

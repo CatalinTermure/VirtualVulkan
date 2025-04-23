@@ -12,7 +12,7 @@
 #include <map>
 #include <memory>
 
-#include "commons/bidi_stream.h"
+#include "commons/synchronized_bidi_stream.h"
 #include "vvk_server.grpc.pb.h"
 #include "vvk_server.pb.h"
 
@@ -25,7 +25,7 @@ class InstanceInfo {
   // Dispatch table for calling down the chain
   const VkuInstanceDispatchTable& dispatch_table() const { return dispatch_table_; }
 
-  ClientBidiStream& command_stream() { return command_stream_; }
+  VvkCommandClientBidiStream& command_stream() { return command_stream_; }
 
   template <typename T>
   T GetRemoteHandle(T local_handle) const {
@@ -48,7 +48,7 @@ class InstanceInfo {
   grpc::ClientContext client_context_;
   std::shared_ptr<grpc::Channel> channel_;
   vvk::server::VvkServer::Stub stub_;
-  ClientBidiStream command_stream_;
+  VvkCommandClientBidiStream command_stream_;
   std::map<void*, void*> local_to_remote_handle_;
   VkuInstanceDispatchTable dispatch_table_;
   std::optional<VkSurfaceKHR> surface_;
