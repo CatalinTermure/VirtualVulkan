@@ -23,13 +23,22 @@ grpc::Status VvkServerImpl::CallMethods(grpc::ServerContext* context,
     stream->Write(response);
   }
   spdlog::info("Connection closed {}", context->peer());
-  return grpc::Status();
+  return grpc::Status::OK;
 }
 
 grpc::Status VvkServerImpl::RequestFrames(
     grpc::ServerContext* context,
-    grpc::ServerReaderWriter<vvk::server::VvkGetFrameResponse, vvk::server::VvkPresentationRequest>* stream) {
+    grpc::ServerReaderWriter<vvk::server::VvkGetFrameResponse, vvk::server::VvkGetFrameRequest>* stream) {
   return grpc::Status();
+}
+
+grpc::Status VvkServerImpl::GetFrameStreamingCapabilities(
+    grpc::ServerContext* context, const vvk::server::VvkGetFrameStreamingCapabilitiesRequest* request,
+    vvk::server::VvkGetFrameStreamingCapabilitiesResponse* response) {
+  response->set_supports_uncompressed_stream(true);
+  response->set_supports_h264_stream(false);
+  response->set_supports_h265_stream(false);
+  return grpc::Status::OK;
 }
 
 }  // namespace vvk::server

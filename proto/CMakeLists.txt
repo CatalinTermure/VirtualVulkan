@@ -1,7 +1,7 @@
 find_package(Protobuf CONFIG REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
 
-set(PROTO_FILES vvk_server.proto vvk_types.proto)
+set(PROTO_FILES vvk_server.proto vvk_types.proto vvk_presentation.proto)
 
 add_library(vvkproto ${PROTO_FILES})
 target_link_libraries(vvkproto

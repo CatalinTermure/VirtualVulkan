@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package vvk.server;
+
+message VvkGetFrameStreamingCapabilitiesRequest {}
+
+message VvkGetFrameStreamingCapabilitiesResponse {
+  bool supports_uncompressed_stream = 1;
+  bool supports_h264_stream = 2;
+  bool supports_h265_stream = 3;
+}
+
+message VvkUncrompressedStreamCreateInfo {
+}
+
+message VvkUncrompressedStreamInfo {
+  uint32 queue_family_index = 1;
+  repeated uint64 remote_buffers = 2;
+}
+
+message VvkSetupPresentationRequest {
+  uint64 instance = 1;
+  uint64 device = 2;
+  repeated uint64 remote_images = 3;
+  uint32 width = 4;
+  uint32 height = 5;
+  oneof stream_create_info {
+    VvkUncrompressedStreamCreateInfo uncrompressed_stream_create_info = 6;
+  }
+}
+
+message VvkSetupPresentationResponse {
+  oneof stream_info {
+    VvkUncrompressedStreamInfo uncrompressed_stream_info = 1;
+  }
+}
+
+message VvkGetFrameRequest {
+  uint32 frame_index = 1;
+}
+
+message VvkGetFrameResponse {
+  bytes frame_data = 1;
+}

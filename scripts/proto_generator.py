@@ -76,8 +76,8 @@ class ServerProtoGenerator(BaseGenerator):
         params_types_oneof = []
         response_types_oneof = []
         out = []
-        params_index = 2
-        response_index = 2
+        params_index = 3
+        response_index = 3
         out.append("// GENERATED FILE - DO NOT EDIT\n")
         out.append("// clang-format off\n")
         out.append('''syntax = "proto3";
@@ -85,43 +85,21 @@ class ServerProtoGenerator(BaseGenerator):
 package vvk.server;
 
 import "vvk_types.proto";
+import "vvk_presentation.proto";
 
 service VvkServer {
   // We will use a single bidirection streaming RPC to call all the Vulkan functions
   // This is because we must guarantee that the order of the calls is the same as the order of the calls in the Vulkan API
   rpc CallMethods (stream VvkRequest) returns (stream VvkResponse) {}
 
-  // For each VvkGetFrameRequest, we will return one VvkGetFrameResponse
-  rpc RequestFrames (stream VvkPresentationRequest) returns (stream VvkGetFrameResponse) {}
-}
-
-message VvkSetupPresentationRequest {
-  uint64 instance = 1;
-  uint64 device = 2;
-  repeated uint64 remote_images = 3;
-  uint32 width = 4;
-  uint32 height = 5;
-  uint32 queue_family_index = 6;
-}
-
-message VvkGetFrameRequest {
-  uint32 frame_index = 1;
-}
-
-message VvkGetFrameResponse {
-  bytes frame_data = 1;
-}
-
-message VvkPresentationRequest {
-  oneof request {
-    VvkSetupPresentationRequest setup_presentation = 1;
-    VvkGetFrameRequest get_frame = 2;
-  }
+  rpc GetFrameStreamingCapabilities(VvkGetFrameStreamingCapabilitiesRequest) returns (VvkGetFrameStreamingCapabilitiesResponse) {}
+  rpc RequestFrames (stream VvkGetFrameRequest) returns (stream VvkGetFrameResponse) {}
 }
 
 message VvkRequest {
   string method = 1;
   oneof params {
+    VvkSetupPresentationRequest setupPresentation = 2;
 ''')
         for command in self.vk.commands.values():
             if command.name not in COMMANDS_TO_GENERATE:
@@ -178,6 +156,7 @@ message VvkRequest {
 message VvkResponse {
   uint32 result = 1;
   oneof response {
+    VvkSetupPresentationResponse setupPresentation = 2;
 ''')
 
         out.extend(response_types_oneof)
