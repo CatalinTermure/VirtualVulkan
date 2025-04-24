@@ -298,6 +298,25 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateWaylandSurfaceKHR(VkInstance instance,
   return result;
 }
 
+VKAPI_ATTR VkResult VKAPI_CALL GetPhysicalDeviceSurfaceSupportKHR(VkPhysicalDevice physicalDevice,
+                                                                  uint32_t queueFamilyIndex, VkSurfaceKHR surface,
+                                                                  VkBool32* pSupported) {
+  InstanceInfo& instance_info = GetInstanceInfo(physicalDevice);
+  uint32_t queue_family_count;
+  PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(instance_info.command_stream(), physicalDevice,
+                                                      &queue_family_count, nullptr);
+  std::vector<VkQueueFamilyProperties> queue_family_properties(queue_family_count);
+  PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(instance_info.command_stream(), physicalDevice,
+                                                      &queue_family_count, queue_family_properties.data());
+  if (queueFamilyIndex >= queue_family_count) {
+    return VK_ERROR_UNKNOWN;
+  }
+
+  *pSupported = (queue_family_properties[queueFamilyIndex].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0;
+
+  return VK_SUCCESS;
+}
+
 PFN_vkVoidFunction DefaultGetInstanceProcAddr(VkInstance instance, const char* pName) {
   return GetInstanceInfo(instance).dispatch_table().GetInstanceProcAddr(instance, pName);
 }

@@ -32,7 +32,8 @@ PFN_vkVoidFunction DefaultGetDeviceProcAddr(VkDevice device, const char* pName);
 
         PROTOTYPES_TO_GENERATE = ["vkCreateSwapchainKHR", "vkDestroySwapchainKHR",
                                   "vkGetSwapchainImagesKHR", "vkAcquireNextImageKHR",
-                                  "vkQueuePresentKHR", "vkCreateWaylandSurfaceKHR"]
+                                  "vkQueuePresentKHR", "vkCreateWaylandSurfaceKHR",
+                                  "vkGetPhysicalDeviceSurfaceSupportKHR"]
 
         for cmd_name in COMMANDS_TO_GENERATE + PROTOTYPES_TO_GENERATE:
             name_to_func_ptr_map.append(
