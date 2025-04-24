@@ -440,9 +440,11 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     if (surface.has_value()) {
       uint32_t queue_family_count = 0;
       std::vector<VkQueueFamilyProperties> queue_family_properties;
-      GetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queue_family_count, nullptr);
+      instance_info.dispatch_table().GetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queue_family_count,
+                                                                            nullptr);
       queue_family_properties.resize(queue_family_count);
-      GetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queue_family_count, queue_family_properties.data());
+      instance_info.dispatch_table().GetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queue_family_count,
+                                                                            queue_family_properties.data());
       for (uint32_t i = 0; i < queue_family_count; i++) {
         VkBool32 supports_present = VK_FALSE;
         instance_info.dispatch_table().GetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, *surface,
