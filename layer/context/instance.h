@@ -46,7 +46,8 @@ class InstanceInfo {
 
  private:
   PFN_vkGetInstanceProcAddr nxt_gipa_;
-  grpc::ClientContext client_context_;
+  grpc::ClientContext command_stream_client_context_;
+  grpc::ClientContext presentation_stream_client_context_;
   std::shared_ptr<grpc::Channel> channel_;
   vvk::server::VvkServer::Stub stub_;
   VvkCommandClientBidiStream command_stream_;
