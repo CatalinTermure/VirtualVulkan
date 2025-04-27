@@ -16,6 +16,8 @@ message VvkUncompressedStreamCreateInfo {
 
 message VvkUncompressedStreamInfo {
   repeated uint64 remote_buffers = 1;
+  uint64 session_key = 2;
+  repeated uint64 frame_keys = 3;
 }
 
 message VvkSetupPresentationRequest {
@@ -36,7 +38,10 @@ message VvkSetupPresentationResponse {
 }
 
 message VvkGetFrameRequest {
-  uint32 frame_index = 1;
+  uint64 session_key = 1;
+  uint64 frame_key = 2;
+  uint32 width = 3;
+  uint32 height = 4;
 }
 
 message VvkGetFrameResponse {

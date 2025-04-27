@@ -103,6 +103,9 @@ void UnpackAndExecuteSetupPresentation(vvk::ExecutionContext& context, const vvk
           [allocator, buffer_allocation, buffer]() { vmaDestroyBuffer(allocator, buffer, buffer_allocation); });
 
       uncompressed_stream_info->add_remote_buffers(reinterpret_cast<uint64_t>(buffer));
+      uncompressed_stream_info->add_frame_keys(reinterpret_cast<uint64_t>(buffer_allocation));
     }
   }
+
+  uncompressed_stream_info->set_session_key(reinterpret_cast<uint64_t>(context.allocator()));
 }

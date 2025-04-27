@@ -26,18 +26,28 @@ grpc::Status VvkServerImpl::CallMethods(grpc::ServerContext* context,
   return grpc::Status::OK;
 }
 
-grpc::Status VvkServerImpl::RequestFrames(
-    grpc::ServerContext* context,
-    grpc::ServerReaderWriter<vvk::server::VvkGetFrameResponse, vvk::server::VvkGetFrameRequest>* stream) {
-  return grpc::Status();
-}
-
 grpc::Status VvkServerImpl::GetFrameStreamingCapabilities(
     grpc::ServerContext* context, const vvk::server::VvkGetFrameStreamingCapabilitiesRequest* request,
     vvk::server::VvkGetFrameStreamingCapabilitiesResponse* response) {
   response->set_supports_uncompressed_stream(true);
   response->set_supports_h264_stream(false);
   response->set_supports_h265_stream(false);
+  return grpc::Status::OK;
+}
+
+grpc::Status VvkServerImpl::RequestFrame(grpc::ServerContext* context, const vvk::server::VvkGetFrameRequest* request,
+                                         grpc::ServerWriter<vvk::server::VvkGetFrameResponse>* writer) {
+  VmaAllocator allocator = reinterpret_cast<VmaAllocator>(request->session_key());
+  VmaAllocation buffer_allocation = reinterpret_cast<VmaAllocation>(request->frame_key());
+  void* data = nullptr;
+  vmaMapMemory(allocator, buffer_allocation, &data);
+  uint32_t data_size = request->width() * request->height() * 4;
+  VvkGetFrameResponse response;
+  response.mutable_frame_data()->resize(data_size);
+  std::memcpy(response.mutable_frame_data()->data(), data, data_size);
+  writer->Write(response);
+
+  vmaUnmapMemory(allocator, buffer_allocation);
   return grpc::Status::OK;
 }
 

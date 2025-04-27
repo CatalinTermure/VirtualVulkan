@@ -92,8 +92,8 @@ service VvkServer {
   // This is because we must guarantee that the order of the calls is the same as the order of the calls in the Vulkan API
   rpc CallMethods (stream VvkRequest) returns (stream VvkResponse) {}
 
-  rpc GetFrameStreamingCapabilities(VvkGetFrameStreamingCapabilitiesRequest) returns (VvkGetFrameStreamingCapabilitiesResponse) {}
-  rpc RequestFrames (stream VvkGetFrameRequest) returns (stream VvkGetFrameResponse) {}
+  rpc GetFrameStreamingCapabilities (VvkGetFrameStreamingCapabilitiesRequest) returns (VvkGetFrameStreamingCapabilitiesResponse) {}
+  rpc RequestFrame (VvkGetFrameRequest) returns (stream VvkGetFrameResponse) {}
 }
 
 message VvkRequest {
