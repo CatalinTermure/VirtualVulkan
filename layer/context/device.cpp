@@ -11,6 +11,8 @@ std::mutex command_buffer_to_device_lock;
 std::map<VkCommandBuffer, VkDevice> g_command_buffer_to_device;
 std::mutex queue_to_device_lock;
 std::map<VkQueue, VkDevice> g_queue_to_device;
+std::mutex pool_to_command_buffers_lock;
+std::map<VkCommandPool, std::vector<VkCommandBuffer>> g_pool_to_command_buffers;
 }  // namespace
 
 DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
@@ -160,6 +162,20 @@ void AssociateCommandBufferWithDevice(VkCommandBuffer command_buffer, VkDevice d
 VkDevice GetDeviceForCommandBuffer(VkCommandBuffer command_buffer) {
   std::lock_guard lock(command_buffer_to_device_lock);
   return g_command_buffer_to_device.at(command_buffer);
+}
+
+void AssociateCommandBufferWithPool(VkCommandBuffer command_buffer, VkCommandPool command_pool) {
+  std::lock_guard lock(pool_to_command_buffers_lock);
+  g_pool_to_command_buffers[command_pool].push_back(command_buffer);
+}
+
+std::vector<VkCommandBuffer> GetCommandBuffersForPool(VkCommandPool command_pool) {
+  std::lock_guard lock(pool_to_command_buffers_lock);
+  auto it = g_pool_to_command_buffers.find(command_pool);
+  if (it != g_pool_to_command_buffers.end()) {
+    return it->second;
+  }
+  return {};
 }
 
 void RemoveCommandBuffer(VkCommandBuffer command_buffer) {

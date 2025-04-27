@@ -87,6 +87,8 @@ void RemoveDeviceInfo(VkDevice device);
 
 void AssociateCommandBufferWithDevice(VkCommandBuffer command_buffer, VkDevice device);
 VkDevice GetDeviceForCommandBuffer(VkCommandBuffer command_buffer);
+void AssociateCommandBufferWithPool(VkCommandBuffer command_buffer, VkCommandPool command_pool);
+std::vector<VkCommandBuffer> GetCommandBuffersForPool(VkCommandPool command_pool);
 void RemoveCommandBuffer(VkCommandBuffer command_buffer);
 
 void AssociateQueueWithDevice(VkQueue queue, VkDevice device);
