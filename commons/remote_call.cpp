@@ -2062,5 +2062,84 @@ VkResult PackAndCallVkQueueWaitIdle(VvkCommandClientBidiStream& stream, VkQueue 
   }
   return static_cast<VkResult>(response.result());
 }
+void PackAndCallVkCmdPipelineBarrier(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, VkDependencyFlags dependencyFlags, uint32_t memoryBarrierCount, const VkMemoryBarrier* pMemoryBarriers, uint32_t bufferMemoryBarrierCount, const VkBufferMemoryBarrier* pBufferMemoryBarriers, uint32_t imageMemoryBarrierCount, const VkImageMemoryBarrier* pImageMemoryBarriers) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdPipelineBarrier");
+  request.mutable_vkcmdpipelinebarrier()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  if (srcStageMask) {
+    request.mutable_vkcmdpipelinebarrier()->set_srcstagemask(srcStageMask);
+  }
+  if (dstStageMask) {
+    request.mutable_vkcmdpipelinebarrier()->set_dststagemask(dstStageMask);
+  }
+  if (dependencyFlags) {
+    request.mutable_vkcmdpipelinebarrier()->set_dependencyflags(dependencyFlags);
+  }
+  if (memoryBarrierCount) {
+    request.mutable_vkcmdpipelinebarrier()->set_memorybarriercount(memoryBarrierCount);
+  }
+  for (int pMemoryBarriers_indx = 0; pMemoryBarriers_indx < memoryBarrierCount; pMemoryBarriers_indx++) {
+    vvk::server::VkMemoryBarrier* pMemoryBarriers_proto = request.mutable_vkcmdpipelinebarrier()->add_pmemorybarriers();
+    const VkMemoryBarrier* pMemoryBarriers_i = &pMemoryBarriers[pMemoryBarriers_indx];
+    if (pMemoryBarriers_i->pNext) {
+      // pNext chains are currently not supported
+    }
+    if (pMemoryBarriers_i->srcAccessMask) {
+      pMemoryBarriers_proto->set_srcaccessmask(pMemoryBarriers_i->srcAccessMask);
+    }
+    if (pMemoryBarriers_i->dstAccessMask) {
+      pMemoryBarriers_proto->set_dstaccessmask(pMemoryBarriers_i->dstAccessMask);
+    }
+  }
+  if (bufferMemoryBarrierCount) {
+    request.mutable_vkcmdpipelinebarrier()->set_buffermemorybarriercount(bufferMemoryBarrierCount);
+  }
+  for (int pBufferMemoryBarriers_indx = 0; pBufferMemoryBarriers_indx < bufferMemoryBarrierCount; pBufferMemoryBarriers_indx++) {
+    vvk::server::VkBufferMemoryBarrier* pBufferMemoryBarriers_proto = request.mutable_vkcmdpipelinebarrier()->add_pbuffermemorybarriers();
+    const VkBufferMemoryBarrier* pBufferMemoryBarriers_i = &pBufferMemoryBarriers[pBufferMemoryBarriers_indx];
+    if (pBufferMemoryBarriers_i->pNext) {
+      // pNext chains are currently not supported
+    }
+    pBufferMemoryBarriers_proto->set_srcaccessmask(pBufferMemoryBarriers_i->srcAccessMask);
+    pBufferMemoryBarriers_proto->set_dstaccessmask(pBufferMemoryBarriers_i->dstAccessMask);
+    pBufferMemoryBarriers_proto->set_srcqueuefamilyindex(pBufferMemoryBarriers_i->srcQueueFamilyIndex);
+    pBufferMemoryBarriers_proto->set_dstqueuefamilyindex(pBufferMemoryBarriers_i->dstQueueFamilyIndex);
+    pBufferMemoryBarriers_proto->set_buffer(reinterpret_cast<uint64_t>(pBufferMemoryBarriers_i->buffer));
+    pBufferMemoryBarriers_proto->set_offset(static_cast<uint64_t>(pBufferMemoryBarriers_i->offset));
+    pBufferMemoryBarriers_proto->set_size(static_cast<uint64_t>(pBufferMemoryBarriers_i->size));
+  }
+  if (imageMemoryBarrierCount) {
+    request.mutable_vkcmdpipelinebarrier()->set_imagememorybarriercount(imageMemoryBarrierCount);
+  }
+  for (int pImageMemoryBarriers_indx = 0; pImageMemoryBarriers_indx < imageMemoryBarrierCount; pImageMemoryBarriers_indx++) {
+    vvk::server::VkImageMemoryBarrier* pImageMemoryBarriers_proto = request.mutable_vkcmdpipelinebarrier()->add_pimagememorybarriers();
+    const VkImageMemoryBarrier* pImageMemoryBarriers_i = &pImageMemoryBarriers[pImageMemoryBarriers_indx];
+    if (pImageMemoryBarriers_i->pNext) {
+      // pNext chains are currently not supported
+    }
+    pImageMemoryBarriers_proto->set_srcaccessmask(pImageMemoryBarriers_i->srcAccessMask);
+    pImageMemoryBarriers_proto->set_dstaccessmask(pImageMemoryBarriers_i->dstAccessMask);
+    pImageMemoryBarriers_proto->set_oldlayout(static_cast<vvk::server::VkImageLayout>(pImageMemoryBarriers_i->oldLayout));
+    pImageMemoryBarriers_proto->set_newlayout(static_cast<vvk::server::VkImageLayout>(pImageMemoryBarriers_i->newLayout));
+    pImageMemoryBarriers_proto->set_srcqueuefamilyindex(pImageMemoryBarriers_i->srcQueueFamilyIndex);
+    pImageMemoryBarriers_proto->set_dstqueuefamilyindex(pImageMemoryBarriers_i->dstQueueFamilyIndex);
+    pImageMemoryBarriers_proto->set_image(reinterpret_cast<uint64_t>(pImageMemoryBarriers_i->image));
+    vvk::server::VkImageSubresourceRange* pImageMemoryBarriers_proto_subresourceRange_proto = pImageMemoryBarriers_proto->mutable_subresourcerange();
+    pImageMemoryBarriers_proto_subresourceRange_proto->set_aspectmask((&pImageMemoryBarriers_i->subresourceRange)->aspectMask);
+    pImageMemoryBarriers_proto_subresourceRange_proto->set_basemiplevel((&pImageMemoryBarriers_i->subresourceRange)->baseMipLevel);
+    pImageMemoryBarriers_proto_subresourceRange_proto->set_levelcount((&pImageMemoryBarriers_i->subresourceRange)->levelCount);
+    pImageMemoryBarriers_proto_subresourceRange_proto->set_basearraylayer((&pImageMemoryBarriers_i->subresourceRange)->baseArrayLayer);
+    pImageMemoryBarriers_proto_subresourceRange_proto->set_layercount((&pImageMemoryBarriers_i->subresourceRange)->layerCount);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 

@@ -1134,8 +1134,6 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
   std::vector<std::vector<VkCommandBuffer>> command_buffers_remote;
   command_buffers_remote.resize(submitCount);
 
-  bool renders_to_swapchain = false;
-
   // We look for local semaphores and remove them from the list
   // then we send the queue submit command to the server only once the semaphores are signaled
   // we check for the semaphores to be signaled using the presentation_fence of the semaphore
@@ -1162,18 +1160,11 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
 
     for (uint32_t j = 0; j < submit_info.commandBufferCount; j++) {
       command_buffers_remote[submit_info_indx].push_back(device_info.GetRemoteHandle(submit_info.pCommandBuffers[j]));
-      if (device_info.swapchain_render_command_buffers.contains(submit_info.pCommandBuffers[j])) {
-        renders_to_swapchain = true;
-      }
     }
     submit_info.commandBufferCount = command_buffers_remote[submit_info_indx].size();
     submit_info.pCommandBuffers = command_buffers_remote[submit_info_indx].data();
 
     submit_infos.emplace_back(std::move(submit_info));
-  }
-
-  if (renders_to_swapchain) {
-    spdlog::warn("VkQueueSubmit call renders to swapchain");
   }
 
   {
@@ -1247,5 +1238,19 @@ VKAPI_ATTR VkResult VKAPI_CALL DeviceWaitIdle(VkDevice device) {
 VKAPI_ATTR VkResult VKAPI_CALL QueueWaitIdle(VkQueue queue) {
   DeviceInfo& device_info = GetDeviceInfo(queue);
   return PackAndCallVkQueueWaitIdle(device_info.instance_info().command_stream(), device_info.GetRemoteHandle(queue));
+}
+
+VKAPI_ATTR void VKAPI_CALL CmdPipelineBarrier(VkCommandBuffer commandBuffer, VkPipelineStageFlags srcStageMask,
+                                              VkPipelineStageFlags dstStageMask, VkDependencyFlags dependencyFlags,
+                                              uint32_t memoryBarrierCount, const VkMemoryBarrier* pMemoryBarriers,
+                                              uint32_t bufferMemoryBarrierCount,
+                                              const VkBufferMemoryBarrier* pBufferMemoryBarriers,
+                                              uint32_t imageMemoryBarrierCount,
+                                              const VkImageMemoryBarrier* pImageMemoryBarriers) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdPipelineBarrier(device_info.instance_info().command_stream(),
+                                  device_info.GetRemoteHandle(commandBuffer), srcStageMask, dstStageMask,
+                                  dependencyFlags, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount,
+                                  pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);
 }
 }  // namespace vvk

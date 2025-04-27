@@ -72,10 +72,11 @@ message VvkRequest {
     VkCmdSetViewportParams vkCmdSetViewport = 52;
     VkCmdSetScissorParams vkCmdSetScissor = 53;
     VkCmdDrawParams vkCmdDraw = 54;
-    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 55;
-    VkCmdEndRenderPassParams vkCmdEndRenderPass = 56;
-    VkBindImageMemory2Params vkBindImageMemory2 = 57;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 58;
+    VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 55;
+    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 56;
+    VkCmdEndRenderPassParams vkCmdEndRenderPass = 57;
+    VkBindImageMemory2Params vkBindImageMemory2 = 58;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 59;
   }
 }
 
@@ -540,6 +541,19 @@ message VkCmdDrawParams {
   uint32 instanceCount = 3; // uint32_t instanceCount
   uint32 firstVertex = 4; // uint32_t firstVertex
   uint32 firstInstance = 5; // uint32_t firstInstance
+}
+
+message VkCmdPipelineBarrierParams {
+  uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+  optional uint32 srcStageMask = 2; // VkPipelineStageFlags srcStageMask
+  optional uint32 dstStageMask = 3; // VkPipelineStageFlags dstStageMask
+  optional uint32 dependencyFlags = 4; // VkDependencyFlags dependencyFlags
+  optional uint32 memoryBarrierCount = 5; // uint32_t memoryBarrierCount
+  repeated VkMemoryBarrier pMemoryBarriers = 6; // const VkMemoryBarrier* pMemoryBarriers
+  optional uint32 bufferMemoryBarrierCount = 7; // uint32_t bufferMemoryBarrierCount
+  repeated VkBufferMemoryBarrier pBufferMemoryBarriers = 8; // const VkBufferMemoryBarrier* pBufferMemoryBarriers
+  optional uint32 imageMemoryBarrierCount = 9; // uint32_t imageMemoryBarrierCount
+  repeated VkImageMemoryBarrier pImageMemoryBarriers = 10; // const VkImageMemoryBarrier* pImageMemoryBarriers
 }
 
 message VkCmdBeginRenderPassParams {

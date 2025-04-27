@@ -1728,4 +1728,58 @@ void UnpackAndExecuteVkQueueWaitIdle(vvk::ExecutionContext& context, const vvk::
   VkResult result = vkQueueWaitIdle(reinterpret_cast<VkQueue>(request.vkqueuewaitidle().queue()));
   response->set_result(result);
 }
+void UnpackAndExecuteVkCmdPipelineBarrier(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCmdPipelineBarrier");
+
+  std::vector<VkMemoryBarrier> pMemoryBarriers(request.vkcmdpipelinebarrier().memorybarriercount());
+  for (int i = 0; i < pMemoryBarriers.size(); i++) {
+    VkMemoryBarrier& pMemoryBarriers_ref = pMemoryBarriers[i];
+    pMemoryBarriers_ref.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+    pMemoryBarriers_ref.pNext = nullptr; // pNext chains are currently unsupported
+    if (request.vkcmdpipelinebarrier().pmemorybarriers(i).has_srcaccessmask()) {
+      pMemoryBarriers_ref.srcAccessMask = static_cast<VkAccessFlags>(request.vkcmdpipelinebarrier().pmemorybarriers(i).srcaccessmask());
+    } else {
+      pMemoryBarriers_ref.srcAccessMask = VkAccessFlags{};
+    }
+    if (request.vkcmdpipelinebarrier().pmemorybarriers(i).has_dstaccessmask()) {
+      pMemoryBarriers_ref.dstAccessMask = static_cast<VkAccessFlags>(request.vkcmdpipelinebarrier().pmemorybarriers(i).dstaccessmask());
+    } else {
+      pMemoryBarriers_ref.dstAccessMask = VkAccessFlags{};
+    }
+  }
+  std::vector<VkBufferMemoryBarrier> pBufferMemoryBarriers(request.vkcmdpipelinebarrier().buffermemorybarriercount());
+  for (int i = 0; i < pBufferMemoryBarriers.size(); i++) {
+    VkBufferMemoryBarrier& pBufferMemoryBarriers_ref = pBufferMemoryBarriers[i];
+    pBufferMemoryBarriers_ref.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+    pBufferMemoryBarriers_ref.pNext = nullptr; // pNext chains are currently unsupported
+    pBufferMemoryBarriers_ref.srcAccessMask = static_cast<VkAccessFlags>(request.vkcmdpipelinebarrier().pbuffermemorybarriers(i).srcaccessmask());
+    pBufferMemoryBarriers_ref.dstAccessMask = static_cast<VkAccessFlags>(request.vkcmdpipelinebarrier().pbuffermemorybarriers(i).dstaccessmask());
+    pBufferMemoryBarriers_ref.srcQueueFamilyIndex = request.vkcmdpipelinebarrier().pbuffermemorybarriers(i).srcqueuefamilyindex();
+    pBufferMemoryBarriers_ref.dstQueueFamilyIndex = request.vkcmdpipelinebarrier().pbuffermemorybarriers(i).dstqueuefamilyindex();
+    pBufferMemoryBarriers_ref.buffer = reinterpret_cast<VkBuffer>(request.vkcmdpipelinebarrier().pbuffermemorybarriers(i).buffer());
+    pBufferMemoryBarriers_ref.offset = static_cast<VkDeviceSize>(request.vkcmdpipelinebarrier().pbuffermemorybarriers(i).offset());
+    pBufferMemoryBarriers_ref.size = static_cast<VkDeviceSize>(request.vkcmdpipelinebarrier().pbuffermemorybarriers(i).size());
+  }
+  std::vector<VkImageMemoryBarrier> pImageMemoryBarriers(request.vkcmdpipelinebarrier().imagememorybarriercount());
+  for (int i = 0; i < pImageMemoryBarriers.size(); i++) {
+    VkImageMemoryBarrier& pImageMemoryBarriers_ref = pImageMemoryBarriers[i];
+    pImageMemoryBarriers_ref.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    pImageMemoryBarriers_ref.pNext = nullptr; // pNext chains are currently unsupported
+    pImageMemoryBarriers_ref.srcAccessMask = static_cast<VkAccessFlags>(request.vkcmdpipelinebarrier().pimagememorybarriers(i).srcaccessmask());
+    pImageMemoryBarriers_ref.dstAccessMask = static_cast<VkAccessFlags>(request.vkcmdpipelinebarrier().pimagememorybarriers(i).dstaccessmask());
+    pImageMemoryBarriers_ref.oldLayout = static_cast<VkImageLayout>(request.vkcmdpipelinebarrier().pimagememorybarriers(i).oldlayout());
+    pImageMemoryBarriers_ref.newLayout = static_cast<VkImageLayout>(request.vkcmdpipelinebarrier().pimagememorybarriers(i).newlayout());
+    pImageMemoryBarriers_ref.srcQueueFamilyIndex = request.vkcmdpipelinebarrier().pimagememorybarriers(i).srcqueuefamilyindex();
+    pImageMemoryBarriers_ref.dstQueueFamilyIndex = request.vkcmdpipelinebarrier().pimagememorybarriers(i).dstqueuefamilyindex();
+    pImageMemoryBarriers_ref.image = reinterpret_cast<VkImage>(request.vkcmdpipelinebarrier().pimagememorybarriers(i).image());
+    VkImageSubresourceRange &pImageMemoryBarriers_ref_subresourceRange = pImageMemoryBarriers_ref.subresourceRange;
+    pImageMemoryBarriers_ref_subresourceRange.aspectMask = static_cast<VkImageAspectFlags>(request.vkcmdpipelinebarrier().pimagememorybarriers(i).subresourcerange().aspectmask());
+    pImageMemoryBarriers_ref_subresourceRange.baseMipLevel = request.vkcmdpipelinebarrier().pimagememorybarriers(i).subresourcerange().basemiplevel();
+    pImageMemoryBarriers_ref_subresourceRange.levelCount = request.vkcmdpipelinebarrier().pimagememorybarriers(i).subresourcerange().levelcount();
+    pImageMemoryBarriers_ref_subresourceRange.baseArrayLayer = request.vkcmdpipelinebarrier().pimagememorybarriers(i).subresourcerange().basearraylayer();
+    pImageMemoryBarriers_ref_subresourceRange.layerCount = request.vkcmdpipelinebarrier().pimagememorybarriers(i).subresourcerange().layercount();
+  }
+  vkCmdPipelineBarrier(reinterpret_cast<VkCommandBuffer>(request.vkcmdpipelinebarrier().commandbuffer()), static_cast<VkPipelineStageFlags>(request.vkcmdpipelinebarrier().srcstagemask()), static_cast<VkPipelineStageFlags>(request.vkcmdpipelinebarrier().dststagemask()), static_cast<VkDependencyFlags>(request.vkcmdpipelinebarrier().dependencyflags()), request.vkcmdpipelinebarrier().memorybarriercount(), pMemoryBarriers.data(), request.vkcmdpipelinebarrier().buffermemorybarriercount(), pBufferMemoryBarriers.data(), request.vkcmdpipelinebarrier().imagememorybarriercount(), pImageMemoryBarriers.data());
+  response->set_result(VK_SUCCESS);
+}
 

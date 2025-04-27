@@ -2641,12 +2641,38 @@ message VkRect2D {
   VkExtent2D extent = 2; // VkExtent2D extent
 }
 
+message VkBufferMemoryBarrier {
+  uint32 srcAccessMask = 1; // VkAccessFlags srcAccessMask
+  uint32 dstAccessMask = 2; // VkAccessFlags dstAccessMask
+  uint32 srcQueueFamilyIndex = 3; // uint32_t srcQueueFamilyIndex
+  uint32 dstQueueFamilyIndex = 4; // uint32_t dstQueueFamilyIndex
+  uint64 buffer = 5; // VkBuffer buffer
+  uint64 offset = 6; // VkDeviceSize offset
+  uint64 size = 7; // VkDeviceSize size
+}
+
 message VkImageSubresourceRange {
   uint32 aspectMask = 1; // VkImageAspectFlags aspectMask
   uint32 baseMipLevel = 2; // uint32_t baseMipLevel
   uint32 levelCount = 3; // uint32_t levelCount
   uint32 baseArrayLayer = 4; // uint32_t baseArrayLayer
   uint32 layerCount = 5; // uint32_t layerCount
+}
+
+message VkImageMemoryBarrier {
+  uint32 srcAccessMask = 1; // VkAccessFlags srcAccessMask
+  uint32 dstAccessMask = 2; // VkAccessFlags dstAccessMask
+  VkImageLayout oldLayout = 3; // VkImageLayout oldLayout
+  VkImageLayout newLayout = 4; // VkImageLayout newLayout
+  uint32 srcQueueFamilyIndex = 5; // uint32_t srcQueueFamilyIndex
+  uint32 dstQueueFamilyIndex = 6; // uint32_t dstQueueFamilyIndex
+  uint64 image = 7; // VkImage image
+  VkImageSubresourceRange subresourceRange = 8; // VkImageSubresourceRange subresourceRange
+}
+
+message VkMemoryBarrier {
+  optional uint32 srcAccessMask = 1; // VkAccessFlags srcAccessMask
+  optional uint32 dstAccessMask = 2; // VkAccessFlags dstAccessMask
 }
 
 message VkApplicationInfo {

@@ -82,6 +82,7 @@ COMMANDS_TO_GENERATE = [
     "vkQueueSubmit",
     "vkDeviceWaitIdle",
     "vkQueueWaitIdle",
+    "vkCmdPipelineBarrier",
 ]
 
 
