@@ -86,12 +86,16 @@ void PresentationThreadAssociateSwapchain(PresentationThread &presentation_threa
     throw std::runtime_error("Failed to read setup presentation response");
   }
   std::vector<uint64_t> remote_buffers;
+  std::vector<uint64_t> remote_frame_keys;
   remote_buffers.reserve(response.setuppresentation().uncompressed_stream_info().remote_buffers_size());
-  for (uint64_t remote_buffer : response.setuppresentation().uncompressed_stream_info().remote_buffers()) {
-    remote_buffers.push_back(remote_buffer);
+  remote_frame_keys.reserve(response.setuppresentation().uncompressed_stream_info().frame_keys_size());
+  for (uint32_t i = 0; i < response.setuppresentation().uncompressed_stream_info().remote_buffers_size(); i++) {
+    remote_buffers.push_back(response.setuppresentation().uncompressed_stream_info().remote_buffers(i));
+    remote_frame_keys.push_back(response.setuppresentation().uncompressed_stream_info().frame_keys(i));
   }
-  presentation_thread.swapchains.push_back(SwapchainPresentationInfo{swapchain, remote_buffers, swapchain_image_extent,
-                                                                     std::numeric_limits<uint32_t>::max()});
+  presentation_thread.swapchains.push_back(SwapchainPresentationInfo{
+      swapchain, response.setuppresentation().uncompressed_stream_info().session_key(), remote_buffers,
+      remote_frame_keys, swapchain_image_extent, std::numeric_limits<uint32_t>::max()});
 }
 
 void PresentationThreadSetupFrame(PresentationThread &presentation_thread, VkCommandBuffer remote_command_buffer) {

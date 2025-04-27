@@ -26,7 +26,6 @@ class InstanceInfo {
   const VkuInstanceDispatchTable& dispatch_table() const { return dispatch_table_; }
 
   VvkCommandClientBidiStream& command_stream() { return command_stream_; }
-  VvkPresentationClientBidiStream& presentation_stream() { return presentation_stream_; }
   server::VvkServer::Stub& stub() { return stub_; }
 
   template <typename T>
@@ -48,11 +47,9 @@ class InstanceInfo {
  private:
   PFN_vkGetInstanceProcAddr nxt_gipa_;
   grpc::ClientContext command_stream_client_context_;
-  grpc::ClientContext presentation_stream_client_context_;
   std::shared_ptr<grpc::Channel> channel_;
   server::VvkServer::Stub stub_;
   VvkCommandClientBidiStream command_stream_;
-  VvkPresentationClientBidiStream presentation_stream_;
   std::map<void*, void*> local_to_remote_handle_;
   VkuInstanceDispatchTable dispatch_table_;
   std::optional<VkSurfaceKHR> surface_;

@@ -16,8 +16,7 @@ InstanceInfo::InstanceInfo(VkInstance instance, PFN_vkGetInstanceProcAddr nxt_gi
     : nxt_gipa_(nxt_gipa),
       channel_(channel),
       stub_(channel),
-      command_stream_(stub_.CallMethods(&command_stream_client_context_)),
-      presentation_stream_(stub_.RequestFrames(&presentation_stream_client_context_)) {
+      command_stream_(stub_.CallMethods(&command_stream_client_context_)) {
   vkuInitInstanceDispatchTable(instance, &dispatch_table_, nxt_gipa);
   dispatch_table_.CreateDevice = reinterpret_cast<PFN_vkCreateDevice>(nxt_gipa(instance, "vkCreateDevice"));
 }
