@@ -260,6 +260,13 @@ VKAPI_ATTR void VKAPI_CALL CmdPipelineBarrier(
     const VkBufferMemoryBarrier*                pBufferMemoryBarriers,
     uint32_t                                    imageMemoryBarrierCount,
     const VkImageMemoryBarrier*                 pImageMemoryBarriers);
+VKAPI_ATTR void VKAPI_CALL CmdCopyImageToBuffer(
+    VkCommandBuffer                             commandBuffer,
+    VkImage                                     srcImage,
+    VkImageLayout                               srcImageLayout,
+    VkBuffer                                    dstBuffer,
+    uint32_t                                    regionCount,
+    const VkBufferImageCopy*                    pRegions);
 VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(
     VkDevice                                    device,
     const VkSwapchainCreateInfoKHR*             pCreateInfo,
@@ -353,6 +360,7 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkDeviceWaitIdle", reinterpret_cast<PFN_vkVoidFunction>(DeviceWaitIdle)},
     {"vkQueueWaitIdle", reinterpret_cast<PFN_vkVoidFunction>(QueueWaitIdle)},
     {"vkCmdPipelineBarrier", reinterpret_cast<PFN_vkVoidFunction>(CmdPipelineBarrier)},
+    {"vkCmdCopyImageToBuffer", reinterpret_cast<PFN_vkVoidFunction>(CmdCopyImageToBuffer)},
     {"vkCreateSwapchainKHR", reinterpret_cast<PFN_vkVoidFunction>(CreateSwapchainKHR)},
     {"vkDestroySwapchainKHR", reinterpret_cast<PFN_vkVoidFunction>(DestroySwapchainKHR)},
     {"vkGetSwapchainImagesKHR", reinterpret_cast<PFN_vkVoidFunction>(GetSwapchainImagesKHR)},

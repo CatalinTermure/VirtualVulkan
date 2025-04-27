@@ -72,11 +72,12 @@ message VvkRequest {
     VkCmdSetViewportParams vkCmdSetViewport = 52;
     VkCmdSetScissorParams vkCmdSetScissor = 53;
     VkCmdDrawParams vkCmdDraw = 54;
-    VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 55;
-    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 56;
-    VkCmdEndRenderPassParams vkCmdEndRenderPass = 57;
-    VkBindImageMemory2Params vkBindImageMemory2 = 58;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 59;
+    VkCmdCopyImageToBufferParams vkCmdCopyImageToBuffer = 55;
+    VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 56;
+    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 57;
+    VkCmdEndRenderPassParams vkCmdEndRenderPass = 58;
+    VkBindImageMemory2Params vkBindImageMemory2 = 59;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 60;
   }
 }
 
@@ -541,6 +542,15 @@ message VkCmdDrawParams {
   uint32 instanceCount = 3; // uint32_t instanceCount
   uint32 firstVertex = 4; // uint32_t firstVertex
   uint32 firstInstance = 5; // uint32_t firstInstance
+}
+
+message VkCmdCopyImageToBufferParams {
+  uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+  uint64 srcImage = 2; // VkImage srcImage
+  VkImageLayout srcImageLayout = 3; // VkImageLayout srcImageLayout
+  uint64 dstBuffer = 4; // VkBuffer dstBuffer
+  uint32 regionCount = 5; // uint32_t regionCount
+  repeated VkBufferImageCopy pRegions = 6; // const VkBufferImageCopy* pRegions
 }
 
 message VkCmdPipelineBarrierParams {

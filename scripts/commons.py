@@ -83,6 +83,7 @@ COMMANDS_TO_GENERATE = [
     "vkDeviceWaitIdle",
     "vkQueueWaitIdle",
     "vkCmdPipelineBarrier",
+    "vkCmdCopyImageToBuffer",
 ]
 
 

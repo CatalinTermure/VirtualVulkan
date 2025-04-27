@@ -1253,4 +1253,13 @@ VKAPI_ATTR void VKAPI_CALL CmdPipelineBarrier(VkCommandBuffer commandBuffer, VkP
                                   dependencyFlags, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount,
                                   pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);
 }
+
+VKAPI_ATTR void VKAPI_CALL CmdCopyImageToBuffer(VkCommandBuffer commandBuffer, VkImage srcImage,
+                                                VkImageLayout srcImageLayout, VkBuffer dstBuffer, uint32_t regionCount,
+                                                const VkBufferImageCopy* pRegions) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdCopyImageToBuffer(device_info.instance_info().command_stream(),
+                                    device_info.GetRemoteHandle(commandBuffer), srcImage, srcImageLayout, dstBuffer,
+                                    regionCount, pRegions);
+}
 }  // namespace vvk

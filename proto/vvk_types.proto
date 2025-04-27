@@ -2636,6 +2636,12 @@ message VkOffset2D {
   int32 y = 2; // int32_t y
 }
 
+message VkOffset3D {
+  int32 x = 1; // int32_t x
+  int32 y = 2; // int32_t y
+  int32 z = 3; // int32_t z
+}
+
 message VkRect2D {
   VkOffset2D offset = 1; // VkOffset2D offset
   VkExtent2D extent = 2; // VkExtent2D extent
@@ -3273,6 +3279,22 @@ message VkCommandBufferInheritanceInfo {
 message VkCommandBufferBeginInfo {
   optional uint32 flags = 1; // VkCommandBufferUsageFlags flags
   optional VkCommandBufferInheritanceInfo pInheritanceInfo = 2; // const VkCommandBufferInheritanceInfo* pInheritanceInfo
+}
+
+message VkImageSubresourceLayers {
+  uint32 aspectMask = 1; // VkImageAspectFlags aspectMask
+  uint32 mipLevel = 2; // uint32_t mipLevel
+  uint32 baseArrayLayer = 3; // uint32_t baseArrayLayer
+  uint32 layerCount = 4; // uint32_t layerCount
+}
+
+message VkBufferImageCopy {
+  uint64 bufferOffset = 1; // VkDeviceSize bufferOffset
+  uint32 bufferRowLength = 2; // uint32_t bufferRowLength
+  uint32 bufferImageHeight = 3; // uint32_t bufferImageHeight
+  VkImageSubresourceLayers imageSubresource = 4; // VkImageSubresourceLayers imageSubresource
+  VkOffset3D imageOffset = 5; // VkOffset3D imageOffset
+  VkExtent3D imageExtent = 6; // VkExtent3D imageExtent
 }
 
 message VkClearColorValue {

@@ -1782,4 +1782,30 @@ void UnpackAndExecuteVkCmdPipelineBarrier(vvk::ExecutionContext& context, const 
   vkCmdPipelineBarrier(reinterpret_cast<VkCommandBuffer>(request.vkcmdpipelinebarrier().commandbuffer()), static_cast<VkPipelineStageFlags>(request.vkcmdpipelinebarrier().srcstagemask()), static_cast<VkPipelineStageFlags>(request.vkcmdpipelinebarrier().dststagemask()), static_cast<VkDependencyFlags>(request.vkcmdpipelinebarrier().dependencyflags()), request.vkcmdpipelinebarrier().memorybarriercount(), pMemoryBarriers.data(), request.vkcmdpipelinebarrier().buffermemorybarriercount(), pBufferMemoryBarriers.data(), request.vkcmdpipelinebarrier().imagememorybarriercount(), pImageMemoryBarriers.data());
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkCmdCopyImageToBuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCmdCopyImageToBuffer");
+
+  std::vector<VkBufferImageCopy> pRegions(request.vkcmdcopyimagetobuffer().regioncount());
+  for (int i = 0; i < pRegions.size(); i++) {
+    VkBufferImageCopy& pRegions_ref = pRegions[i];
+    pRegions_ref.bufferOffset = static_cast<VkDeviceSize>(request.vkcmdcopyimagetobuffer().pregions(i).bufferoffset());
+    pRegions_ref.bufferRowLength = request.vkcmdcopyimagetobuffer().pregions(i).bufferrowlength();
+    pRegions_ref.bufferImageHeight = request.vkcmdcopyimagetobuffer().pregions(i).bufferimageheight();
+    VkImageSubresourceLayers &pRegions_ref_imageSubresource = pRegions_ref.imageSubresource;
+    pRegions_ref_imageSubresource.aspectMask = static_cast<VkImageAspectFlags>(request.vkcmdcopyimagetobuffer().pregions(i).imagesubresource().aspectmask());
+    pRegions_ref_imageSubresource.mipLevel = request.vkcmdcopyimagetobuffer().pregions(i).imagesubresource().miplevel();
+    pRegions_ref_imageSubresource.baseArrayLayer = request.vkcmdcopyimagetobuffer().pregions(i).imagesubresource().basearraylayer();
+    pRegions_ref_imageSubresource.layerCount = request.vkcmdcopyimagetobuffer().pregions(i).imagesubresource().layercount();
+    VkOffset3D &pRegions_ref_imageOffset = pRegions_ref.imageOffset;
+    pRegions_ref_imageOffset.x = request.vkcmdcopyimagetobuffer().pregions(i).imageoffset().x();
+    pRegions_ref_imageOffset.y = request.vkcmdcopyimagetobuffer().pregions(i).imageoffset().y();
+    pRegions_ref_imageOffset.z = request.vkcmdcopyimagetobuffer().pregions(i).imageoffset().z();
+    VkExtent3D &pRegions_ref_imageExtent = pRegions_ref.imageExtent;
+    pRegions_ref_imageExtent.width = request.vkcmdcopyimagetobuffer().pregions(i).imageextent().width();
+    pRegions_ref_imageExtent.height = request.vkcmdcopyimagetobuffer().pregions(i).imageextent().height();
+    pRegions_ref_imageExtent.depth = request.vkcmdcopyimagetobuffer().pregions(i).imageextent().depth();
+  }
+  vkCmdCopyImageToBuffer(reinterpret_cast<VkCommandBuffer>(request.vkcmdcopyimagetobuffer().commandbuffer()), reinterpret_cast<VkImage>(request.vkcmdcopyimagetobuffer().srcimage()), static_cast<VkImageLayout>(request.vkcmdcopyimagetobuffer().srcimagelayout()), reinterpret_cast<VkBuffer>(request.vkcmdcopyimagetobuffer().dstbuffer()), request.vkcmdcopyimagetobuffer().regioncount(), pRegions.data());
+  response->set_result(VK_SUCCESS);
+}
 

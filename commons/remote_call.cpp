@@ -2141,5 +2141,43 @@ void PackAndCallVkCmdPipelineBarrier(VvkCommandClientBidiStream& stream, VkComma
     spdlog::error("Failed to read response from server");
   }
 }
+void PackAndCallVkCmdCopyImageToBuffer(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout, VkBuffer dstBuffer, uint32_t regionCount, const VkBufferImageCopy* pRegions) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdCopyImageToBuffer");
+  request.mutable_vkcmdcopyimagetobuffer()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  request.mutable_vkcmdcopyimagetobuffer()->set_srcimage(reinterpret_cast<uint64_t>(srcImage));
+  request.mutable_vkcmdcopyimagetobuffer()->set_srcimagelayout(static_cast<vvk::server::VkImageLayout>(srcImageLayout));
+  request.mutable_vkcmdcopyimagetobuffer()->set_dstbuffer(reinterpret_cast<uint64_t>(dstBuffer));
+  request.mutable_vkcmdcopyimagetobuffer()->set_regioncount(regionCount);
+  for (int pRegions_indx = 0; pRegions_indx < regionCount; pRegions_indx++) {
+    vvk::server::VkBufferImageCopy* pRegions_proto = request.mutable_vkcmdcopyimagetobuffer()->add_pregions();
+    const VkBufferImageCopy* pRegions_i = &pRegions[pRegions_indx];
+    pRegions_proto->set_bufferoffset(static_cast<uint64_t>(pRegions_i->bufferOffset));
+    pRegions_proto->set_bufferrowlength(pRegions_i->bufferRowLength);
+    pRegions_proto->set_bufferimageheight(pRegions_i->bufferImageHeight);
+    vvk::server::VkImageSubresourceLayers* pRegions_proto_imageSubresource_proto = pRegions_proto->mutable_imagesubresource();
+    pRegions_proto_imageSubresource_proto->set_aspectmask((&pRegions_i->imageSubresource)->aspectMask);
+    pRegions_proto_imageSubresource_proto->set_miplevel((&pRegions_i->imageSubresource)->mipLevel);
+    pRegions_proto_imageSubresource_proto->set_basearraylayer((&pRegions_i->imageSubresource)->baseArrayLayer);
+    pRegions_proto_imageSubresource_proto->set_layercount((&pRegions_i->imageSubresource)->layerCount);
+    vvk::server::VkOffset3D* pRegions_proto_imageOffset_proto = pRegions_proto->mutable_imageoffset();
+    pRegions_proto_imageOffset_proto->set_x((&pRegions_i->imageOffset)->x);
+    pRegions_proto_imageOffset_proto->set_y((&pRegions_i->imageOffset)->y);
+    pRegions_proto_imageOffset_proto->set_z((&pRegions_i->imageOffset)->z);
+    vvk::server::VkExtent3D* pRegions_proto_imageExtent_proto = pRegions_proto->mutable_imageextent();
+    pRegions_proto_imageExtent_proto->set_width((&pRegions_i->imageExtent)->width);
+    pRegions_proto_imageExtent_proto->set_height((&pRegions_i->imageExtent)->height);
+    pRegions_proto_imageExtent_proto->set_depth((&pRegions_i->imageExtent)->depth);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 
