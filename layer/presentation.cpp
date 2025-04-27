@@ -5,6 +5,7 @@
 #include <queue>
 #include <thread>
 
+#include "commons/remote_call.h"
 #include "layer/context/device.h"
 #include "layer/context/instance.h"
 #include "layer/context/swapchain.h"
@@ -89,10 +90,64 @@ void PresentationThreadAssociateSwapchain(PresentationThread &presentation_threa
   for (uint64_t remote_buffer : response.setuppresentation().uncompressed_stream_info().remote_buffers()) {
     remote_buffers.push_back(remote_buffer);
   }
-  presentation_thread.swapchains.push_back(SwapchainPresentationInfo{swapchain, remote_buffers});
+  presentation_thread.swapchains.push_back(SwapchainPresentationInfo{swapchain, remote_buffers, swapchain_image_extent,
+                                                                     std::numeric_limits<uint32_t>::max()});
 }
 
-void PresentationThreadSetupFrame(PresentationThread &presentation_thread) {}
+void PresentationThreadSetupFrame(PresentationThread &presentation_thread, VkCommandBuffer remote_command_buffer) {
+  auto &command_stream = GetInstanceInfo(presentation_thread.local_instance).command_stream();
+
+  for (auto &swapchain_present_info : presentation_thread.swapchains) {
+    SwapchainInfo &swapchain_info = GetSwapchainInfo(swapchain_present_info.swapchain);
+    VkImage remote_image = swapchain_info.GetRemoteImages()[swapchain_present_info.swapchain_image_index].first;
+    VkImageMemoryBarrier image_memory_barrier = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+        .pNext = nullptr,
+        .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+        .dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT,
+        .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+        .srcQueueFamilyIndex = presentation_thread.remote_graphics_queue_family_index,
+        .dstQueueFamilyIndex = presentation_thread.remote_graphics_queue_family_index,
+        .image = remote_image,
+        .subresourceRange =
+            {
+                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                .baseMipLevel = 0,
+                .levelCount = 1,
+                .baseArrayLayer = 0,
+                .layerCount = 1,
+            },
+    };
+    PackAndCallVkCmdPipelineBarrier(command_stream, remote_command_buffer,
+                                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0,
+                                    nullptr, 0, nullptr, 1, &image_memory_barrier);
+
+    VkBufferImageCopy region = {
+        .bufferOffset = 0,
+        .bufferRowLength = 0,
+        .bufferImageHeight = 0,
+        .imageSubresource =
+            {
+                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                .mipLevel = 0,
+                .baseArrayLayer = 0,
+                .layerCount = 1,
+            },
+        .imageOffset = {0, 0, 0},
+        .imageExtent =
+            {
+                swapchain_present_info.image_extent.width,
+                swapchain_present_info.image_extent.height,
+                1,
+            },
+    };
+    PackAndCallVkCmdCopyImageToBuffer(
+        command_stream, remote_command_buffer, remote_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+        reinterpret_cast<VkBuffer>(swapchain_present_info.remote_buffers[swapchain_present_info.swapchain_image_index]),
+        1, &region);
+  }
+}
 
 void PresentationThreadPresentFrame(PresentationThread &presentation_thread, VkPresentInfoKHR *present_info) {}
 

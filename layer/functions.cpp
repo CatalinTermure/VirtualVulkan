@@ -211,6 +211,13 @@ VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(VkDevice device, VkSwapchainK
     semaphore->state = SemaphoreState::kUnsignaled;
     device_info.ResetFenceLocal(fence);
   }
+
+  for (auto& swapchain_present_info : device_info.presentation_thread()->swapchains) {
+    if (swapchain_present_info.swapchain != swapchain) continue;
+
+    swapchain_present_info.swapchain_image_index = *pImageIndex;
+  }
+
   return result;
 }
 
@@ -872,6 +879,12 @@ VKAPI_ATTR VkResult VKAPI_CALL BeginCommandBuffer(VkCommandBuffer commandBuffer,
 }
 VKAPI_ATTR VkResult VKAPI_CALL EndCommandBuffer(VkCommandBuffer commandBuffer) {
   DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+
+  if (device_info.swapchain_render_command_buffers.contains(commandBuffer)) {
+    PresentationThreadSetupFrame(*device_info.presentation_thread(), device_info.GetRemoteHandle(commandBuffer));
+    device_info.swapchain_render_command_buffers.erase(commandBuffer);
+  }
+
   return PackAndCallVkEndCommandBuffer(device_info.instance_info().command_stream(),
                                        device_info.GetRemoteHandle(commandBuffer));
 }
