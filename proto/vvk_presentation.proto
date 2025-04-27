@@ -10,12 +10,12 @@ message VvkGetFrameStreamingCapabilitiesResponse {
   bool supports_h265_stream = 3;
 }
 
-message VvkUncrompressedStreamCreateInfo {
+message VvkUncompressedStreamCreateInfo {
+  uint32 queue_family_index = 1;
 }
 
-message VvkUncrompressedStreamInfo {
-  uint32 queue_family_index = 1;
-  repeated uint64 remote_buffers = 2;
+message VvkUncompressedStreamInfo {
+  repeated uint64 remote_buffers = 1;
 }
 
 message VvkSetupPresentationRequest {
@@ -25,13 +25,13 @@ message VvkSetupPresentationRequest {
   uint32 width = 4;
   uint32 height = 5;
   oneof stream_create_info {
-    VvkUncrompressedStreamCreateInfo uncrompressed_stream_create_info = 6;
+    VvkUncompressedStreamCreateInfo uncompressed_stream_create_info = 6;
   }
 }
 
 message VvkSetupPresentationResponse {
   oneof stream_info {
-    VvkUncrompressedStreamInfo uncrompressed_stream_info = 1;
+    VvkUncompressedStreamInfo uncompressed_stream_info = 1;
   }
 }
 

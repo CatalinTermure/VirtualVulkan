@@ -50,3 +50,59 @@ void UnpackAndExecuteVkCreateInstanceManual(vvk::ExecutionContext& context, cons
     }
   }
 }
+
+void UnpackAndExecuteSetupPresentation(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
+                                       vvk::server::VvkResponse* response) {
+  assert(request.method() == "setupPresentation");
+  const auto& params = request.setuppresentation();
+
+  VkInstance instance = reinterpret_cast<VkInstance>(params.instance());
+  VkDevice device = reinterpret_cast<VkDevice>(params.device());
+  VkExtent2D swapchain_image_extent = {params.width(), params.height()};
+  uint32_t queue_family_index = params.uncompressed_stream_create_info().queue_family_index();
+
+  if (context.allocator() == VK_NULL_HANDLE) {
+    context.set_allocator(CreateVmaAllocator(instance, context.physical_device(), device));
+  }
+
+  VmaAllocator allocator = context.allocator();
+
+  const auto& uncompressed_stream_info = response->mutable_setuppresentation()->mutable_uncompressed_stream_info();
+
+  // Create a buffer to copy the image data to
+  for (uint64_t image_handle : params.remote_images()) {
+    VkImage image = reinterpret_cast<VkImage>(image_handle);
+    VkMemoryRequirements buffer_memory_requirements;
+    VkBuffer buffer;
+    VmaAllocation buffer_allocation;
+    {
+      VmaAllocationCreateInfo allocation_create_info = {};
+      allocation_create_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+      allocation_create_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT;
+
+      vkGetImageMemoryRequirements(device, image, &buffer_memory_requirements);
+
+      VkBufferCreateInfo buffer_create_info = {
+          .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+          .pNext = nullptr,
+          .flags = 0,
+          .size = buffer_memory_requirements.size,
+          .usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+          .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+          .queueFamilyIndexCount = 1,
+          .pQueueFamilyIndices = &queue_family_index,
+      };
+
+      if (vmaCreateBuffer(allocator, &buffer_create_info, &allocation_create_info, &buffer, &buffer_allocation,
+                          nullptr)) {
+        spdlog::error("Failed to create buffer");
+        return;
+      }
+
+      context.defer_deletion(
+          [allocator, buffer_allocation, buffer]() { vmaDestroyBuffer(allocator, buffer, buffer_allocation); });
+
+      uncompressed_stream_info->add_remote_buffers(reinterpret_cast<uint64_t>(buffer));
+    }
+  }
+}
