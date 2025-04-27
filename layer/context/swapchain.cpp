@@ -20,7 +20,7 @@ SwapchainInfo::SwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAlloc
       instance_info_(GetInstanceInfo(device)),
       remote_allocator_(remote_allocator),
       remote_images_() {
-  DeviceInfo device_info = GetDeviceInfo(device);
+  DeviceInfo& device_info = GetDeviceInfo(device);
   uint32_t queue_family_index = *device_info.present_queue_family_index();
   VkCommandPoolCreateInfo command_pool_create_info = {
       .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,

@@ -1,0 +1,99 @@
+#include "presentation.h"
+
+#include <functional>
+#include <mutex>
+#include <queue>
+#include <thread>
+
+#include "layer/context/device.h"
+#include "layer/context/instance.h"
+#include "layer/context/swapchain.h"
+#include "vvk_server.grpc.pb.h"
+
+namespace vvk {
+
+namespace {
+
+void PresentationThreadWorker(PresentationThread *presentation_thread) {
+  while (!presentation_thread->should_exit) {
+    presentation_thread->work_queue_semaphore.acquire();
+    if (presentation_thread->work_queue.empty()) {
+      throw std::runtime_error("Work queue is empty but semaphore was acquired");
+    }
+    auto work = std::move(presentation_thread->work_queue.front());
+    presentation_thread->work_queue.pop();
+    work();
+  }
+}
+}  // namespace
+
+PresentationThread::PresentationThread(VkInstance instance, VkDevice device, uint32_t queue_family_index)
+    : local_instance(instance),
+      local_device(device),
+      remote_graphics_queue_family_index(queue_family_index),
+      work_queue{},
+      work_queue_semaphore{0},
+      should_exit{false},
+      thread{std::bind(PresentationThreadWorker, this)} {}
+
+std::unique_ptr<PresentationThread> PresentationThreadCreate(VkInstance local_instance, VkDevice local_device,
+                                                             uint32_t remote_graphics_queue_family_index) {
+  InstanceInfo &instance_info = GetInstanceInfo(local_instance);
+
+  vvk::server::VvkGetFrameStreamingCapabilitiesResponse server_streaming_capabilities = [&]() {
+    vvk::server::VvkGetFrameStreamingCapabilitiesResponse response;
+    grpc::ClientContext client_context;
+    instance_info.stub().GetFrameStreamingCapabilities(
+        &client_context, vvk::server::VvkGetFrameStreamingCapabilitiesRequest{}, &response);
+    return response;
+  }();
+
+  if (!server_streaming_capabilities.supports_uncompressed_stream()) {
+    throw std::runtime_error("Uncompressed stream not supported");
+  }
+
+  std::unique_ptr<PresentationThread> presentation_thread =
+      std::make_unique<PresentationThread>(local_instance, local_device, remote_graphics_queue_family_index);
+
+  return presentation_thread;
+}
+
+void PresentationThreadAssociateSwapchain(PresentationThread &presentation_thread, VkSwapchainKHR swapchain,
+                                          const VkExtent2D &swapchain_image_extent) {
+  InstanceInfo &instance_info = GetInstanceInfo(presentation_thread.local_instance);
+  SwapchainInfo &swapchain_info = GetSwapchainInfo(swapchain);
+  vvk::server::VvkRequest request;
+  request.set_method("setupPresentation");
+  vvk::server::VvkSetupPresentationRequest &setup_presentation = *request.mutable_setuppresentation();
+  setup_presentation.set_instance(
+      reinterpret_cast<uint64_t>(instance_info.GetRemoteHandle(presentation_thread.local_instance)));
+  setup_presentation.set_device(
+      reinterpret_cast<uint64_t>(instance_info.GetRemoteHandle(presentation_thread.local_device)));
+  for (auto &[remote_image, _] : swapchain_info.GetRemoteImages()) {
+    setup_presentation.add_remote_images(reinterpret_cast<uint64_t>(remote_image));
+  }
+  setup_presentation.set_width(swapchain_image_extent.width);
+  setup_presentation.set_height(swapchain_image_extent.height);
+  setup_presentation.mutable_uncompressed_stream_create_info()->set_queue_family_index(
+      presentation_thread.remote_graphics_queue_family_index);
+  if (!instance_info.command_stream().Write(request)) {
+    throw std::runtime_error("Failed to send setup presentation request");
+  }
+
+  vvk::server::VvkResponse response;
+  if (!instance_info.command_stream().Read(&response)) {
+    throw std::runtime_error("Failed to read setup presentation response");
+  }
+  std::vector<uint64_t> remote_buffers;
+  remote_buffers.reserve(response.setuppresentation().uncompressed_stream_info().remote_buffers_size());
+  for (uint64_t remote_buffer : response.setuppresentation().uncompressed_stream_info().remote_buffers()) {
+    remote_buffers.push_back(remote_buffer);
+  }
+  presentation_thread.swapchains.push_back(SwapchainPresentationInfo{swapchain, remote_buffers});
+}
+
+void PresentationThreadSetupFrame(PresentationThread &presentation_thread) {}
+
+void PresentationThreadPresentFrame(PresentationThread &presentation_thread, VkPresentInfoKHR *present_info) {}
+
+}  // namespace vvk

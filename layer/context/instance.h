@@ -27,6 +27,7 @@ class InstanceInfo {
 
   VvkCommandClientBidiStream& command_stream() { return command_stream_; }
   VvkPresentationClientBidiStream& presentation_stream() { return presentation_stream_; }
+  server::VvkServer::Stub& stub() { return stub_; }
 
   template <typename T>
   T GetRemoteHandle(T local_handle) const {
@@ -49,7 +50,7 @@ class InstanceInfo {
   grpc::ClientContext command_stream_client_context_;
   grpc::ClientContext presentation_stream_client_context_;
   std::shared_ptr<grpc::Channel> channel_;
-  vvk::server::VvkServer::Stub stub_;
+  server::VvkServer::Stub stub_;
   VvkCommandClientBidiStream command_stream_;
   VvkPresentationClientBidiStream presentation_stream_;
   std::map<void*, void*> local_to_remote_handle_;

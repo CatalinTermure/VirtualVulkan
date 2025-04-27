@@ -15,8 +15,8 @@ std::map<VkQueue, VkDevice> g_queue_to_device;
 
 DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
                        const VmaAllocatorCreateInfo& remote_allocator_create_info,
-                       std::optional<uint32_t> present_queue_family_index)
-    : nxt_gdpa_(nxt_gdpa), instance_info_(GetInstanceInfo(physical_device)) {
+                       std::optional<uint32_t> present_queue_family_index, uint32_t remote_graphics_queue_family_index)
+    : nxt_gdpa_(nxt_gdpa), instance_info_(GetInstanceInfo(physical_device)), presentation_thread_(nullptr) {
   if (vmaCreateAllocator(&remote_allocator_create_info, &remote_allocator_) != VK_SUCCESS) {
     throw std::runtime_error("Failed to create remote VMA allocator");
   }
@@ -77,6 +77,8 @@ DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhys
     *reinterpret_cast<VK_LOADER_DATA*>(present_queue) = *reinterpret_cast<VK_LOADER_DATA*>(device);
     present_queue_ = present_queue;
     present_queue_family_index_ = present_queue_family_index;
+    presentation_thread_ = PresentationThreadCreate(GetInstanceForPhysicalDevice(physical_device), device,
+                                                    remote_graphics_queue_family_index);
   }
 }
 
@@ -121,10 +123,12 @@ DeviceInfo& GetDeviceInfo(VkQueue queue) { return GetDeviceInfo(GetDeviceForQueu
 
 DeviceInfo& SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
                           const VmaAllocatorCreateInfo& remote_allocator_create_info,
-                          std::optional<uint32_t> present_queue_family_index) {
+                          std::optional<uint32_t> present_queue_family_index,
+                          uint32_t remote_graphics_queue_family_index) {
   std::lock_guard lock(device_info_lock);
-  auto [iter, inserted] = g_device_infos.try_emplace(device, device, nxt_gdpa, physical_device,
-                                                     remote_allocator_create_info, present_queue_family_index);
+  auto [iter, inserted] =
+      g_device_infos.try_emplace(device, device, nxt_gdpa, physical_device, remote_allocator_create_info,
+                                 present_queue_family_index, remote_graphics_queue_family_index);
   assert(inserted);
   return iter->second;
 }

@@ -11,6 +11,7 @@ add_library(
     context/instance.h context/instance.cpp
     context/swapchain.h context/swapchain.cpp
     dispatchable_object.h
+    presentation.h presentation.cpp
 )
 target_include_directories(VirtualVulkanLayer PRIVATE ../)
 target_include_directories(VirtualVulkanLayer PRIVATE ../Vulkan-Utility-Libraries/include)

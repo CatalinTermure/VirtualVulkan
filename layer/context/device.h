@@ -16,12 +16,13 @@
 
 #include "layer/context/instance.h"
 #include "layer/dispatchable_object.h"
+#include "layer/presentation.h"
 
 namespace vvk {
 struct DeviceInfo {
   DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
              const VmaAllocatorCreateInfo& remote_allocator_create_info,
-             std::optional<uint32_t> present_queue_family_index);
+             std::optional<uint32_t> present_queue_family_index, uint32_t remote_graphics_queue_family_index);
 
   VmaAllocator remote_allocator() const { return remote_allocator_; }
   VmaAllocator local_allocator() const { return local_allocator_; }
@@ -51,6 +52,7 @@ struct DeviceInfo {
 
   std::optional<uint32_t> present_queue_family_index() const { return present_queue_family_index_; }
   std::optional<VkQueue> present_queue() const { return present_queue_; }
+  PresentationThread* presentation_thread() { return presentation_thread_.get(); }
 
   void CreateFakeQueueFamily(uint32_t queue_family_index, uint32_t queue_count);
   VkQueue GetFakeQueue(uint32_t queue_family_index, uint32_t queue_index);
@@ -71,6 +73,7 @@ struct DeviceInfo {
   std::optional<uint32_t> present_queue_family_index_ = std::nullopt;
   std::optional<VkQueue> present_queue_ = std::nullopt;
   std::unordered_map<uint32_t, std::list<DispatchableObject>> fake_queue_families_;
+  std::unique_ptr<PresentationThread> presentation_thread_;
 };
 
 DeviceInfo& GetDeviceInfo(VkDevice device);
@@ -78,7 +81,8 @@ DeviceInfo& GetDeviceInfo(VkCommandBuffer command_buffer);
 DeviceInfo& GetDeviceInfo(VkQueue queue);
 DeviceInfo& SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
                           const VmaAllocatorCreateInfo& remote_allocator_create_info,
-                          std::optional<uint32_t> present_queue_family_index);
+                          std::optional<uint32_t> present_queue_family_index,
+                          uint32_t remote_graphics_queue_family_index);
 void RemoveDeviceInfo(VkDevice device);
 
 void AssociateCommandBufferWithDevice(VkCommandBuffer command_buffer, VkDevice device);
