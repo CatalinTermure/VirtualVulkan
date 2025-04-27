@@ -28,13 +28,13 @@ class ExecutionContext {
   void defer_deletion(std::function<void()> func) { deferred_deletion_queue_.emplace(std::move(func)); }
 
   ~ExecutionContext() {
-    if (allocator_ != VK_NULL_HANDLE) {
-      vmaDestroyAllocator(allocator_);
-      allocator_ = VK_NULL_HANDLE;
-    }
     while (!deferred_deletion_queue_.empty()) {
       deferred_deletion_queue_.front()();
       deferred_deletion_queue_.pop();
+    }
+    if (allocator_ != VK_NULL_HANDLE) {
+      vmaDestroyAllocator(allocator_);
+      allocator_ = VK_NULL_HANDLE;
     }
   }
 
