@@ -71,6 +71,7 @@ const std::unordered_map<
         {"vkQueueWaitIdle", UnpackAndExecuteVkQueueWaitIdle},
         {"vkCmdPipelineBarrier", UnpackAndExecuteVkCmdPipelineBarrier},
         {"vkCmdCopyImageToBuffer", UnpackAndExecuteVkCmdCopyImageToBuffer},
+        {"vkGetPhysicalDeviceProperties2", UnpackAndExecuteVkGetPhysicalDeviceProperties2},
 };
 
 }  // namespace

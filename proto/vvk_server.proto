@@ -78,6 +78,7 @@ message VvkRequest {
     VkCmdEndRenderPassParams vkCmdEndRenderPass = 58;
     VkBindImageMemory2Params vkBindImageMemory2 = 59;
     VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 60;
+    VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 61;
   }
 }
 
@@ -111,6 +112,7 @@ message VvkResponse {
     VkCreateCommandPoolResponse vkCreateCommandPool = 26;
     VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 27;
     VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 28;
+    VkGetPhysicalDeviceProperties2Response vkGetPhysicalDeviceProperties2 = 29;
   }
 }
 
@@ -590,6 +592,15 @@ message VkGetImageMemoryRequirements2Params {
   uint64 device = 1; // VkDevice device
   VkImageMemoryRequirementsInfo2 pInfo = 2; // const VkImageMemoryRequirementsInfo2* pInfo
   VkMemoryRequirements2 pMemoryRequirements = 3; // VkMemoryRequirements2* pMemoryRequirements NON-CONST POINTER
+}
+
+message VkGetPhysicalDeviceProperties2Response {
+  VkPhysicalDeviceProperties2 pProperties = 1; // VkPhysicalDeviceProperties2* pProperties
+}
+
+message VkGetPhysicalDeviceProperties2Params {
+  uint64 physicalDevice = 1; // VkPhysicalDevice physicalDevice
+  VkPhysicalDeviceProperties2 pProperties = 2; // VkPhysicalDeviceProperties2* pProperties NON-CONST POINTER
 }
 
 

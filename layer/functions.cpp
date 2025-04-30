@@ -1314,4 +1314,11 @@ VKAPI_ATTR void VKAPI_CALL CmdCopyImageToBuffer(VkCommandBuffer commandBuffer, V
                                     device_info.GetRemoteHandle(commandBuffer), srcImage, srcImageLayout, dstBuffer,
                                     regionCount, pRegions);
 }
+
+VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceProperties2(VkPhysicalDevice physicalDevice,
+                                                        VkPhysicalDeviceProperties2* pProperties) {
+  InstanceInfo& instance_info = GetInstanceInfo(physicalDevice);
+  PackAndCallVkGetPhysicalDeviceProperties2(instance_info.command_stream(), physicalDevice, pProperties);
+}
+
 }  // namespace vvk

@@ -1808,4 +1808,176 @@ void UnpackAndExecuteVkCmdCopyImageToBuffer(vvk::ExecutionContext& context, cons
   vkCmdCopyImageToBuffer(reinterpret_cast<VkCommandBuffer>(request.vkcmdcopyimagetobuffer().commandbuffer()), reinterpret_cast<VkImage>(request.vkcmdcopyimagetobuffer().srcimage()), static_cast<VkImageLayout>(request.vkcmdcopyimagetobuffer().srcimagelayout()), reinterpret_cast<VkBuffer>(request.vkcmdcopyimagetobuffer().dstbuffer()), request.vkcmdcopyimagetobuffer().regioncount(), pRegions.data());
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkGetPhysicalDeviceProperties2(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkGetPhysicalDeviceProperties2");
+
+  VkPhysicalDeviceProperties2 pProperties = {};
+  pProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+  vkGetPhysicalDeviceProperties2(context.physical_device(), &pProperties);
+  vvk::server::VkPhysicalDeviceProperties2* pProperties_proto = response->mutable_vkgetphysicaldeviceproperties2()->mutable_pproperties();
+  if ((&pProperties)->pNext) {
+    // pNext chains are currently not supported
+  }
+  vvk::server::VkPhysicalDeviceProperties* pProperties_proto_properties_proto = pProperties_proto->mutable_properties();
+  pProperties_proto_properties_proto->set_apiversion((&(&pProperties)->properties)->apiVersion);
+  pProperties_proto_properties_proto->set_driverversion((&(&pProperties)->properties)->driverVersion);
+  pProperties_proto_properties_proto->set_vendorid((&(&pProperties)->properties)->vendorID);
+  pProperties_proto_properties_proto->set_deviceid((&(&pProperties)->properties)->deviceID);
+  pProperties_proto_properties_proto->set_devicetype(static_cast<vvk::server::VkPhysicalDeviceType>((&(&pProperties)->properties)->deviceType));
+  pProperties_proto_properties_proto->set_devicename((&(&pProperties)->properties)->deviceName);
+  const size_t pProperties_proto_properties_proto_pipelineCacheUUID_length = VK_UUID_SIZE;
+  for (int pipelineCacheUUID_indx = 0; pipelineCacheUUID_indx < pProperties_proto_properties_proto_pipelineCacheUUID_length; pipelineCacheUUID_indx++) {
+    pProperties_proto_properties_proto->add_pipelinecacheuuid(static_cast<uint32_t>((&(&pProperties)->properties)->pipelineCacheUUID[pipelineCacheUUID_indx]));
+  }
+  vvk::server::VkPhysicalDeviceLimits* pProperties_proto_properties_proto_limits_proto = pProperties_proto_properties_proto->mutable_limits();
+  pProperties_proto_properties_proto_limits_proto->set_maximagedimension1d((&(&(&pProperties)->properties)->limits)->maxImageDimension1D);
+  pProperties_proto_properties_proto_limits_proto->set_maximagedimension2d((&(&(&pProperties)->properties)->limits)->maxImageDimension2D);
+  pProperties_proto_properties_proto_limits_proto->set_maximagedimension3d((&(&(&pProperties)->properties)->limits)->maxImageDimension3D);
+  pProperties_proto_properties_proto_limits_proto->set_maximagedimensioncube((&(&(&pProperties)->properties)->limits)->maxImageDimensionCube);
+  pProperties_proto_properties_proto_limits_proto->set_maximagearraylayers((&(&(&pProperties)->properties)->limits)->maxImageArrayLayers);
+  pProperties_proto_properties_proto_limits_proto->set_maxtexelbufferelements((&(&(&pProperties)->properties)->limits)->maxTexelBufferElements);
+  pProperties_proto_properties_proto_limits_proto->set_maxuniformbufferrange((&(&(&pProperties)->properties)->limits)->maxUniformBufferRange);
+  pProperties_proto_properties_proto_limits_proto->set_maxstoragebufferrange((&(&(&pProperties)->properties)->limits)->maxStorageBufferRange);
+  pProperties_proto_properties_proto_limits_proto->set_maxpushconstantssize((&(&(&pProperties)->properties)->limits)->maxPushConstantsSize);
+  pProperties_proto_properties_proto_limits_proto->set_maxmemoryallocationcount((&(&(&pProperties)->properties)->limits)->maxMemoryAllocationCount);
+  pProperties_proto_properties_proto_limits_proto->set_maxsamplerallocationcount((&(&(&pProperties)->properties)->limits)->maxSamplerAllocationCount);
+  pProperties_proto_properties_proto_limits_proto->set_bufferimagegranularity(static_cast<uint64_t>((&(&(&pProperties)->properties)->limits)->bufferImageGranularity));
+  pProperties_proto_properties_proto_limits_proto->set_sparseaddressspacesize(static_cast<uint64_t>((&(&(&pProperties)->properties)->limits)->sparseAddressSpaceSize));
+  pProperties_proto_properties_proto_limits_proto->set_maxbounddescriptorsets((&(&(&pProperties)->properties)->limits)->maxBoundDescriptorSets);
+  pProperties_proto_properties_proto_limits_proto->set_maxperstagedescriptorsamplers((&(&(&pProperties)->properties)->limits)->maxPerStageDescriptorSamplers);
+  pProperties_proto_properties_proto_limits_proto->set_maxperstagedescriptoruniformbuffers((&(&(&pProperties)->properties)->limits)->maxPerStageDescriptorUniformBuffers);
+  pProperties_proto_properties_proto_limits_proto->set_maxperstagedescriptorstoragebuffers((&(&(&pProperties)->properties)->limits)->maxPerStageDescriptorStorageBuffers);
+  pProperties_proto_properties_proto_limits_proto->set_maxperstagedescriptorsampledimages((&(&(&pProperties)->properties)->limits)->maxPerStageDescriptorSampledImages);
+  pProperties_proto_properties_proto_limits_proto->set_maxperstagedescriptorstorageimages((&(&(&pProperties)->properties)->limits)->maxPerStageDescriptorStorageImages);
+  pProperties_proto_properties_proto_limits_proto->set_maxperstagedescriptorinputattachments((&(&(&pProperties)->properties)->limits)->maxPerStageDescriptorInputAttachments);
+  pProperties_proto_properties_proto_limits_proto->set_maxperstageresources((&(&(&pProperties)->properties)->limits)->maxPerStageResources);
+  pProperties_proto_properties_proto_limits_proto->set_maxdescriptorsetsamplers((&(&(&pProperties)->properties)->limits)->maxDescriptorSetSamplers);
+  pProperties_proto_properties_proto_limits_proto->set_maxdescriptorsetuniformbuffers((&(&(&pProperties)->properties)->limits)->maxDescriptorSetUniformBuffers);
+  pProperties_proto_properties_proto_limits_proto->set_maxdescriptorsetuniformbuffersdynamic((&(&(&pProperties)->properties)->limits)->maxDescriptorSetUniformBuffersDynamic);
+  pProperties_proto_properties_proto_limits_proto->set_maxdescriptorsetstoragebuffers((&(&(&pProperties)->properties)->limits)->maxDescriptorSetStorageBuffers);
+  pProperties_proto_properties_proto_limits_proto->set_maxdescriptorsetstoragebuffersdynamic((&(&(&pProperties)->properties)->limits)->maxDescriptorSetStorageBuffersDynamic);
+  pProperties_proto_properties_proto_limits_proto->set_maxdescriptorsetsampledimages((&(&(&pProperties)->properties)->limits)->maxDescriptorSetSampledImages);
+  pProperties_proto_properties_proto_limits_proto->set_maxdescriptorsetstorageimages((&(&(&pProperties)->properties)->limits)->maxDescriptorSetStorageImages);
+  pProperties_proto_properties_proto_limits_proto->set_maxdescriptorsetinputattachments((&(&(&pProperties)->properties)->limits)->maxDescriptorSetInputAttachments);
+  pProperties_proto_properties_proto_limits_proto->set_maxvertexinputattributes((&(&(&pProperties)->properties)->limits)->maxVertexInputAttributes);
+  pProperties_proto_properties_proto_limits_proto->set_maxvertexinputbindings((&(&(&pProperties)->properties)->limits)->maxVertexInputBindings);
+  pProperties_proto_properties_proto_limits_proto->set_maxvertexinputattributeoffset((&(&(&pProperties)->properties)->limits)->maxVertexInputAttributeOffset);
+  pProperties_proto_properties_proto_limits_proto->set_maxvertexinputbindingstride((&(&(&pProperties)->properties)->limits)->maxVertexInputBindingStride);
+  pProperties_proto_properties_proto_limits_proto->set_maxvertexoutputcomponents((&(&(&pProperties)->properties)->limits)->maxVertexOutputComponents);
+  pProperties_proto_properties_proto_limits_proto->set_maxtessellationgenerationlevel((&(&(&pProperties)->properties)->limits)->maxTessellationGenerationLevel);
+  pProperties_proto_properties_proto_limits_proto->set_maxtessellationpatchsize((&(&(&pProperties)->properties)->limits)->maxTessellationPatchSize);
+  pProperties_proto_properties_proto_limits_proto->set_maxtessellationcontrolpervertexinputcomponents((&(&(&pProperties)->properties)->limits)->maxTessellationControlPerVertexInputComponents);
+  pProperties_proto_properties_proto_limits_proto->set_maxtessellationcontrolpervertexoutputcomponents((&(&(&pProperties)->properties)->limits)->maxTessellationControlPerVertexOutputComponents);
+  pProperties_proto_properties_proto_limits_proto->set_maxtessellationcontrolperpatchoutputcomponents((&(&(&pProperties)->properties)->limits)->maxTessellationControlPerPatchOutputComponents);
+  pProperties_proto_properties_proto_limits_proto->set_maxtessellationcontroltotaloutputcomponents((&(&(&pProperties)->properties)->limits)->maxTessellationControlTotalOutputComponents);
+  pProperties_proto_properties_proto_limits_proto->set_maxtessellationevaluationinputcomponents((&(&(&pProperties)->properties)->limits)->maxTessellationEvaluationInputComponents);
+  pProperties_proto_properties_proto_limits_proto->set_maxtessellationevaluationoutputcomponents((&(&(&pProperties)->properties)->limits)->maxTessellationEvaluationOutputComponents);
+  pProperties_proto_properties_proto_limits_proto->set_maxgeometryshaderinvocations((&(&(&pProperties)->properties)->limits)->maxGeometryShaderInvocations);
+  pProperties_proto_properties_proto_limits_proto->set_maxgeometryinputcomponents((&(&(&pProperties)->properties)->limits)->maxGeometryInputComponents);
+  pProperties_proto_properties_proto_limits_proto->set_maxgeometryoutputcomponents((&(&(&pProperties)->properties)->limits)->maxGeometryOutputComponents);
+  pProperties_proto_properties_proto_limits_proto->set_maxgeometryoutputvertices((&(&(&pProperties)->properties)->limits)->maxGeometryOutputVertices);
+  pProperties_proto_properties_proto_limits_proto->set_maxgeometrytotaloutputcomponents((&(&(&pProperties)->properties)->limits)->maxGeometryTotalOutputComponents);
+  pProperties_proto_properties_proto_limits_proto->set_maxfragmentinputcomponents((&(&(&pProperties)->properties)->limits)->maxFragmentInputComponents);
+  pProperties_proto_properties_proto_limits_proto->set_maxfragmentoutputattachments((&(&(&pProperties)->properties)->limits)->maxFragmentOutputAttachments);
+  pProperties_proto_properties_proto_limits_proto->set_maxfragmentdualsrcattachments((&(&(&pProperties)->properties)->limits)->maxFragmentDualSrcAttachments);
+  pProperties_proto_properties_proto_limits_proto->set_maxfragmentcombinedoutputresources((&(&(&pProperties)->properties)->limits)->maxFragmentCombinedOutputResources);
+  pProperties_proto_properties_proto_limits_proto->set_maxcomputesharedmemorysize((&(&(&pProperties)->properties)->limits)->maxComputeSharedMemorySize);
+  const size_t pProperties_proto_properties_proto_limits_proto_maxComputeWorkGroupCount_length = 3;
+  for (int maxComputeWorkGroupCount_indx = 0; maxComputeWorkGroupCount_indx < pProperties_proto_properties_proto_limits_proto_maxComputeWorkGroupCount_length; maxComputeWorkGroupCount_indx++) {
+    pProperties_proto_properties_proto_limits_proto->add_maxcomputeworkgroupcount((&(&(&pProperties)->properties)->limits)->maxComputeWorkGroupCount[maxComputeWorkGroupCount_indx]);
+  }
+  pProperties_proto_properties_proto_limits_proto->set_maxcomputeworkgroupinvocations((&(&(&pProperties)->properties)->limits)->maxComputeWorkGroupInvocations);
+  const size_t pProperties_proto_properties_proto_limits_proto_maxComputeWorkGroupSize_length = 3;
+  for (int maxComputeWorkGroupSize_indx = 0; maxComputeWorkGroupSize_indx < pProperties_proto_properties_proto_limits_proto_maxComputeWorkGroupSize_length; maxComputeWorkGroupSize_indx++) {
+    pProperties_proto_properties_proto_limits_proto->add_maxcomputeworkgroupsize((&(&(&pProperties)->properties)->limits)->maxComputeWorkGroupSize[maxComputeWorkGroupSize_indx]);
+  }
+  pProperties_proto_properties_proto_limits_proto->set_subpixelprecisionbits((&(&(&pProperties)->properties)->limits)->subPixelPrecisionBits);
+  pProperties_proto_properties_proto_limits_proto->set_subtexelprecisionbits((&(&(&pProperties)->properties)->limits)->subTexelPrecisionBits);
+  pProperties_proto_properties_proto_limits_proto->set_mipmapprecisionbits((&(&(&pProperties)->properties)->limits)->mipmapPrecisionBits);
+  pProperties_proto_properties_proto_limits_proto->set_maxdrawindexedindexvalue((&(&(&pProperties)->properties)->limits)->maxDrawIndexedIndexValue);
+  pProperties_proto_properties_proto_limits_proto->set_maxdrawindirectcount((&(&(&pProperties)->properties)->limits)->maxDrawIndirectCount);
+  pProperties_proto_properties_proto_limits_proto->set_maxsamplerlodbias((&(&(&pProperties)->properties)->limits)->maxSamplerLodBias);
+  pProperties_proto_properties_proto_limits_proto->set_maxsampleranisotropy((&(&(&pProperties)->properties)->limits)->maxSamplerAnisotropy);
+  pProperties_proto_properties_proto_limits_proto->set_maxviewports((&(&(&pProperties)->properties)->limits)->maxViewports);
+  const size_t pProperties_proto_properties_proto_limits_proto_maxViewportDimensions_length = 2;
+  for (int maxViewportDimensions_indx = 0; maxViewportDimensions_indx < pProperties_proto_properties_proto_limits_proto_maxViewportDimensions_length; maxViewportDimensions_indx++) {
+    pProperties_proto_properties_proto_limits_proto->add_maxviewportdimensions((&(&(&pProperties)->properties)->limits)->maxViewportDimensions[maxViewportDimensions_indx]);
+  }
+  const size_t pProperties_proto_properties_proto_limits_proto_viewportBoundsRange_length = 2;
+  for (int viewportBoundsRange_indx = 0; viewportBoundsRange_indx < pProperties_proto_properties_proto_limits_proto_viewportBoundsRange_length; viewportBoundsRange_indx++) {
+    pProperties_proto_properties_proto_limits_proto->add_viewportboundsrange((&(&(&pProperties)->properties)->limits)->viewportBoundsRange[viewportBoundsRange_indx]);
+  }
+  pProperties_proto_properties_proto_limits_proto->set_viewportsubpixelbits((&(&(&pProperties)->properties)->limits)->viewportSubPixelBits);
+  pProperties_proto_properties_proto_limits_proto->set_minmemorymapalignment((&(&(&pProperties)->properties)->limits)->minMemoryMapAlignment);
+  pProperties_proto_properties_proto_limits_proto->set_mintexelbufferoffsetalignment(static_cast<uint64_t>((&(&(&pProperties)->properties)->limits)->minTexelBufferOffsetAlignment));
+  pProperties_proto_properties_proto_limits_proto->set_minuniformbufferoffsetalignment(static_cast<uint64_t>((&(&(&pProperties)->properties)->limits)->minUniformBufferOffsetAlignment));
+  pProperties_proto_properties_proto_limits_proto->set_minstoragebufferoffsetalignment(static_cast<uint64_t>((&(&(&pProperties)->properties)->limits)->minStorageBufferOffsetAlignment));
+  pProperties_proto_properties_proto_limits_proto->set_mintexeloffset((&(&(&pProperties)->properties)->limits)->minTexelOffset);
+  pProperties_proto_properties_proto_limits_proto->set_maxtexeloffset((&(&(&pProperties)->properties)->limits)->maxTexelOffset);
+  pProperties_proto_properties_proto_limits_proto->set_mintexelgatheroffset((&(&(&pProperties)->properties)->limits)->minTexelGatherOffset);
+  pProperties_proto_properties_proto_limits_proto->set_maxtexelgatheroffset((&(&(&pProperties)->properties)->limits)->maxTexelGatherOffset);
+  pProperties_proto_properties_proto_limits_proto->set_mininterpolationoffset((&(&(&pProperties)->properties)->limits)->minInterpolationOffset);
+  pProperties_proto_properties_proto_limits_proto->set_maxinterpolationoffset((&(&(&pProperties)->properties)->limits)->maxInterpolationOffset);
+  pProperties_proto_properties_proto_limits_proto->set_subpixelinterpolationoffsetbits((&(&(&pProperties)->properties)->limits)->subPixelInterpolationOffsetBits);
+  pProperties_proto_properties_proto_limits_proto->set_maxframebufferwidth((&(&(&pProperties)->properties)->limits)->maxFramebufferWidth);
+  pProperties_proto_properties_proto_limits_proto->set_maxframebufferheight((&(&(&pProperties)->properties)->limits)->maxFramebufferHeight);
+  pProperties_proto_properties_proto_limits_proto->set_maxframebufferlayers((&(&(&pProperties)->properties)->limits)->maxFramebufferLayers);
+  if ((&(&(&pProperties)->properties)->limits)->framebufferColorSampleCounts) {
+    pProperties_proto_properties_proto_limits_proto->set_framebuffercolorsamplecounts((&(&(&pProperties)->properties)->limits)->framebufferColorSampleCounts);
+  }
+  if ((&(&(&pProperties)->properties)->limits)->framebufferDepthSampleCounts) {
+    pProperties_proto_properties_proto_limits_proto->set_framebufferdepthsamplecounts((&(&(&pProperties)->properties)->limits)->framebufferDepthSampleCounts);
+  }
+  if ((&(&(&pProperties)->properties)->limits)->framebufferStencilSampleCounts) {
+    pProperties_proto_properties_proto_limits_proto->set_framebufferstencilsamplecounts((&(&(&pProperties)->properties)->limits)->framebufferStencilSampleCounts);
+  }
+  if ((&(&(&pProperties)->properties)->limits)->framebufferNoAttachmentsSampleCounts) {
+    pProperties_proto_properties_proto_limits_proto->set_framebuffernoattachmentssamplecounts((&(&(&pProperties)->properties)->limits)->framebufferNoAttachmentsSampleCounts);
+  }
+  pProperties_proto_properties_proto_limits_proto->set_maxcolorattachments((&(&(&pProperties)->properties)->limits)->maxColorAttachments);
+  if ((&(&(&pProperties)->properties)->limits)->sampledImageColorSampleCounts) {
+    pProperties_proto_properties_proto_limits_proto->set_sampledimagecolorsamplecounts((&(&(&pProperties)->properties)->limits)->sampledImageColorSampleCounts);
+  }
+  if ((&(&(&pProperties)->properties)->limits)->sampledImageIntegerSampleCounts) {
+    pProperties_proto_properties_proto_limits_proto->set_sampledimageintegersamplecounts((&(&(&pProperties)->properties)->limits)->sampledImageIntegerSampleCounts);
+  }
+  if ((&(&(&pProperties)->properties)->limits)->sampledImageDepthSampleCounts) {
+    pProperties_proto_properties_proto_limits_proto->set_sampledimagedepthsamplecounts((&(&(&pProperties)->properties)->limits)->sampledImageDepthSampleCounts);
+  }
+  if ((&(&(&pProperties)->properties)->limits)->sampledImageStencilSampleCounts) {
+    pProperties_proto_properties_proto_limits_proto->set_sampledimagestencilsamplecounts((&(&(&pProperties)->properties)->limits)->sampledImageStencilSampleCounts);
+  }
+  if ((&(&(&pProperties)->properties)->limits)->storageImageSampleCounts) {
+    pProperties_proto_properties_proto_limits_proto->set_storageimagesamplecounts((&(&(&pProperties)->properties)->limits)->storageImageSampleCounts);
+  }
+  pProperties_proto_properties_proto_limits_proto->set_maxsamplemaskwords((&(&(&pProperties)->properties)->limits)->maxSampleMaskWords);
+  pProperties_proto_properties_proto_limits_proto->set_timestampcomputeandgraphics((&(&(&pProperties)->properties)->limits)->timestampComputeAndGraphics);
+  pProperties_proto_properties_proto_limits_proto->set_timestampperiod((&(&(&pProperties)->properties)->limits)->timestampPeriod);
+  pProperties_proto_properties_proto_limits_proto->set_maxclipdistances((&(&(&pProperties)->properties)->limits)->maxClipDistances);
+  pProperties_proto_properties_proto_limits_proto->set_maxculldistances((&(&(&pProperties)->properties)->limits)->maxCullDistances);
+  pProperties_proto_properties_proto_limits_proto->set_maxcombinedclipandculldistances((&(&(&pProperties)->properties)->limits)->maxCombinedClipAndCullDistances);
+  pProperties_proto_properties_proto_limits_proto->set_discretequeuepriorities((&(&(&pProperties)->properties)->limits)->discreteQueuePriorities);
+  const size_t pProperties_proto_properties_proto_limits_proto_pointSizeRange_length = 2;
+  for (int pointSizeRange_indx = 0; pointSizeRange_indx < pProperties_proto_properties_proto_limits_proto_pointSizeRange_length; pointSizeRange_indx++) {
+    pProperties_proto_properties_proto_limits_proto->add_pointsizerange((&(&(&pProperties)->properties)->limits)->pointSizeRange[pointSizeRange_indx]);
+  }
+  const size_t pProperties_proto_properties_proto_limits_proto_lineWidthRange_length = 2;
+  for (int lineWidthRange_indx = 0; lineWidthRange_indx < pProperties_proto_properties_proto_limits_proto_lineWidthRange_length; lineWidthRange_indx++) {
+    pProperties_proto_properties_proto_limits_proto->add_linewidthrange((&(&(&pProperties)->properties)->limits)->lineWidthRange[lineWidthRange_indx]);
+  }
+  pProperties_proto_properties_proto_limits_proto->set_pointsizegranularity((&(&(&pProperties)->properties)->limits)->pointSizeGranularity);
+  pProperties_proto_properties_proto_limits_proto->set_linewidthgranularity((&(&(&pProperties)->properties)->limits)->lineWidthGranularity);
+  pProperties_proto_properties_proto_limits_proto->set_strictlines((&(&(&pProperties)->properties)->limits)->strictLines);
+  pProperties_proto_properties_proto_limits_proto->set_standardsamplelocations((&(&(&pProperties)->properties)->limits)->standardSampleLocations);
+  pProperties_proto_properties_proto_limits_proto->set_optimalbuffercopyoffsetalignment(static_cast<uint64_t>((&(&(&pProperties)->properties)->limits)->optimalBufferCopyOffsetAlignment));
+  pProperties_proto_properties_proto_limits_proto->set_optimalbuffercopyrowpitchalignment(static_cast<uint64_t>((&(&(&pProperties)->properties)->limits)->optimalBufferCopyRowPitchAlignment));
+  pProperties_proto_properties_proto_limits_proto->set_noncoherentatomsize(static_cast<uint64_t>((&(&(&pProperties)->properties)->limits)->nonCoherentAtomSize));
+  vvk::server::VkPhysicalDeviceSparseProperties* pProperties_proto_properties_proto_sparseProperties_proto = pProperties_proto_properties_proto->mutable_sparseproperties();
+  pProperties_proto_properties_proto_sparseProperties_proto->set_residencystandard2dblockshape((&(&(&pProperties)->properties)->sparseProperties)->residencyStandard2DBlockShape);
+  pProperties_proto_properties_proto_sparseProperties_proto->set_residencystandard2dmultisampleblockshape((&(&(&pProperties)->properties)->sparseProperties)->residencyStandard2DMultisampleBlockShape);
+  pProperties_proto_properties_proto_sparseProperties_proto->set_residencystandard3dblockshape((&(&(&pProperties)->properties)->sparseProperties)->residencyStandard3DBlockShape);
+  pProperties_proto_properties_proto_sparseProperties_proto->set_residencyalignedmipsize((&(&(&pProperties)->properties)->sparseProperties)->residencyAlignedMipSize);
+  pProperties_proto_properties_proto_sparseProperties_proto->set_residencynonresidentstrict((&(&(&pProperties)->properties)->sparseProperties)->residencyNonResidentStrict);
+  response->set_result(VK_SUCCESS);
+}
 
