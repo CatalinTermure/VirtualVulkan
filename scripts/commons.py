@@ -85,6 +85,7 @@ COMMANDS_TO_GENERATE = [
     "vkCmdPipelineBarrier",
     "vkCmdCopyImageToBuffer",
     "vkGetPhysicalDeviceProperties2",
+    "vkGetPhysicalDeviceFeatures2",
 ]
 
 

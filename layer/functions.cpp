@@ -1321,4 +1321,10 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceProperties2(VkPhysicalDevice physica
   PackAndCallVkGetPhysicalDeviceProperties2(instance_info.command_stream(), physicalDevice, pProperties);
 }
 
+VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceFeatures2(VkPhysicalDevice physicalDevice,
+                                                      VkPhysicalDeviceFeatures2* pFeatures) {
+  InstanceInfo& instance_info = GetInstanceInfo(physicalDevice);
+  PackAndCallVkGetPhysicalDeviceFeatures2(instance_info.command_stream(), physicalDevice, pFeatures);
+}
+
 }  // namespace vvk

@@ -2367,5 +2367,78 @@ void PackAndCallVkGetPhysicalDeviceProperties2(VvkCommandClientBidiStream& strea
   pProperties_ref_properties_sparseProperties.residencyAlignedMipSize = response.vkgetphysicaldeviceproperties2().pproperties().properties().sparseproperties().residencyalignedmipsize();
   pProperties_ref_properties_sparseProperties.residencyNonResidentStrict = response.vkgetphysicaldeviceproperties2().pproperties().properties().sparseproperties().residencynonresidentstrict();
 }
+void PackAndCallVkGetPhysicalDeviceFeatures2(VvkCommandClientBidiStream& stream, VkPhysicalDevice physicalDevice, VkPhysicalDeviceFeatures2* pFeatures) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkGetPhysicalDeviceFeatures2");
+  request.mutable_vkgetphysicaldevicefeatures2()->set_physicaldevice(reinterpret_cast<uint64_t>(physicalDevice));
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  VkPhysicalDeviceFeatures2& pFeatures_ref = *pFeatures;
+  pFeatures_ref.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+  pFeatures_ref.pNext = nullptr; // pNext chains are currently unsupported
+  VkPhysicalDeviceFeatures &pFeatures_ref_features = pFeatures_ref.features;
+  pFeatures_ref_features.robustBufferAccess = response.vkgetphysicaldevicefeatures2().pfeatures().features().robustbufferaccess();
+  pFeatures_ref_features.fullDrawIndexUint32 = response.vkgetphysicaldevicefeatures2().pfeatures().features().fulldrawindexuint32();
+  pFeatures_ref_features.imageCubeArray = response.vkgetphysicaldevicefeatures2().pfeatures().features().imagecubearray();
+  pFeatures_ref_features.independentBlend = response.vkgetphysicaldevicefeatures2().pfeatures().features().independentblend();
+  pFeatures_ref_features.geometryShader = response.vkgetphysicaldevicefeatures2().pfeatures().features().geometryshader();
+  pFeatures_ref_features.tessellationShader = response.vkgetphysicaldevicefeatures2().pfeatures().features().tessellationshader();
+  pFeatures_ref_features.sampleRateShading = response.vkgetphysicaldevicefeatures2().pfeatures().features().samplerateshading();
+  pFeatures_ref_features.dualSrcBlend = response.vkgetphysicaldevicefeatures2().pfeatures().features().dualsrcblend();
+  pFeatures_ref_features.logicOp = response.vkgetphysicaldevicefeatures2().pfeatures().features().logicop();
+  pFeatures_ref_features.multiDrawIndirect = response.vkgetphysicaldevicefeatures2().pfeatures().features().multidrawindirect();
+  pFeatures_ref_features.drawIndirectFirstInstance = response.vkgetphysicaldevicefeatures2().pfeatures().features().drawindirectfirstinstance();
+  pFeatures_ref_features.depthClamp = response.vkgetphysicaldevicefeatures2().pfeatures().features().depthclamp();
+  pFeatures_ref_features.depthBiasClamp = response.vkgetphysicaldevicefeatures2().pfeatures().features().depthbiasclamp();
+  pFeatures_ref_features.fillModeNonSolid = response.vkgetphysicaldevicefeatures2().pfeatures().features().fillmodenonsolid();
+  pFeatures_ref_features.depthBounds = response.vkgetphysicaldevicefeatures2().pfeatures().features().depthbounds();
+  pFeatures_ref_features.wideLines = response.vkgetphysicaldevicefeatures2().pfeatures().features().widelines();
+  pFeatures_ref_features.largePoints = response.vkgetphysicaldevicefeatures2().pfeatures().features().largepoints();
+  pFeatures_ref_features.alphaToOne = response.vkgetphysicaldevicefeatures2().pfeatures().features().alphatoone();
+  pFeatures_ref_features.multiViewport = response.vkgetphysicaldevicefeatures2().pfeatures().features().multiviewport();
+  pFeatures_ref_features.samplerAnisotropy = response.vkgetphysicaldevicefeatures2().pfeatures().features().sampleranisotropy();
+  pFeatures_ref_features.textureCompressionETC2 = response.vkgetphysicaldevicefeatures2().pfeatures().features().texturecompressionetc2();
+  pFeatures_ref_features.textureCompressionASTC_LDR = response.vkgetphysicaldevicefeatures2().pfeatures().features().texturecompressionastc_ldr();
+  pFeatures_ref_features.textureCompressionBC = response.vkgetphysicaldevicefeatures2().pfeatures().features().texturecompressionbc();
+  pFeatures_ref_features.occlusionQueryPrecise = response.vkgetphysicaldevicefeatures2().pfeatures().features().occlusionqueryprecise();
+  pFeatures_ref_features.pipelineStatisticsQuery = response.vkgetphysicaldevicefeatures2().pfeatures().features().pipelinestatisticsquery();
+  pFeatures_ref_features.vertexPipelineStoresAndAtomics = response.vkgetphysicaldevicefeatures2().pfeatures().features().vertexpipelinestoresandatomics();
+  pFeatures_ref_features.fragmentStoresAndAtomics = response.vkgetphysicaldevicefeatures2().pfeatures().features().fragmentstoresandatomics();
+  pFeatures_ref_features.shaderTessellationAndGeometryPointSize = response.vkgetphysicaldevicefeatures2().pfeatures().features().shadertessellationandgeometrypointsize();
+  pFeatures_ref_features.shaderImageGatherExtended = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderimagegatherextended();
+  pFeatures_ref_features.shaderStorageImageExtendedFormats = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderstorageimageextendedformats();
+  pFeatures_ref_features.shaderStorageImageMultisample = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderstorageimagemultisample();
+  pFeatures_ref_features.shaderStorageImageReadWithoutFormat = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderstorageimagereadwithoutformat();
+  pFeatures_ref_features.shaderStorageImageWriteWithoutFormat = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderstorageimagewritewithoutformat();
+  pFeatures_ref_features.shaderUniformBufferArrayDynamicIndexing = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderuniformbufferarraydynamicindexing();
+  pFeatures_ref_features.shaderSampledImageArrayDynamicIndexing = response.vkgetphysicaldevicefeatures2().pfeatures().features().shadersampledimagearraydynamicindexing();
+  pFeatures_ref_features.shaderStorageBufferArrayDynamicIndexing = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderstoragebufferarraydynamicindexing();
+  pFeatures_ref_features.shaderStorageImageArrayDynamicIndexing = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderstorageimagearraydynamicindexing();
+  pFeatures_ref_features.shaderClipDistance = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderclipdistance();
+  pFeatures_ref_features.shaderCullDistance = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderculldistance();
+  pFeatures_ref_features.shaderFloat64 = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderfloat64();
+  pFeatures_ref_features.shaderInt64 = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderint64();
+  pFeatures_ref_features.shaderInt16 = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderint16();
+  pFeatures_ref_features.shaderResourceResidency = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderresourceresidency();
+  pFeatures_ref_features.shaderResourceMinLod = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderresourceminlod();
+  pFeatures_ref_features.sparseBinding = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparsebinding();
+  pFeatures_ref_features.sparseResidencyBuffer = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidencybuffer();
+  pFeatures_ref_features.sparseResidencyImage2D = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidencyimage2d();
+  pFeatures_ref_features.sparseResidencyImage3D = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidencyimage3d();
+  pFeatures_ref_features.sparseResidency2Samples = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidency2samples();
+  pFeatures_ref_features.sparseResidency4Samples = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidency4samples();
+  pFeatures_ref_features.sparseResidency8Samples = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidency8samples();
+  pFeatures_ref_features.sparseResidency16Samples = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidency16samples();
+  pFeatures_ref_features.sparseResidencyAliased = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidencyaliased();
+  pFeatures_ref_features.variableMultisampleRate = response.vkgetphysicaldevicefeatures2().pfeatures().features().variablemultisamplerate();
+  pFeatures_ref_features.inheritedQueries = response.vkgetphysicaldevicefeatures2().pfeatures().features().inheritedqueries();
+}
 }  // namespace vvk
 

@@ -3335,6 +3335,10 @@ message VkMemoryRequirements2 {
   VkMemoryRequirements memoryRequirements = 1; // VkMemoryRequirements memoryRequirements
 }
 
+message VkPhysicalDeviceFeatures2 {
+  VkPhysicalDeviceFeatures features = 1; // VkPhysicalDeviceFeatures features
+}
+
 message VkPhysicalDeviceProperties2 {
   VkPhysicalDeviceProperties properties = 1; // VkPhysicalDeviceProperties properties
 }
