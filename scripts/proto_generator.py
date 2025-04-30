@@ -2,7 +2,7 @@ from xml.etree import ElementTree
 from reg import Registry
 from generators.base_generator import BaseGenerator, BaseGeneratorOptions, SetTargetApiName, SetMergedApiNames
 from generators.vulkan_object import Param, Member
-from .commons import first_letter_upper, is_output_command, COMMANDS_TO_GENERATE, RetVal
+from .commons import first_letter_upper, COMMANDS_TO_GENERATE, RetVal
 import copy
 import inflection
 
@@ -71,6 +71,27 @@ class ServerProtoGenerator(BaseGenerator):
     def __init__(self):
         BaseGenerator.__init__(self)
 
+    def get_output_params(self, command_name: str) -> list[Param | RetVal]:
+        output_params: list[Param | RetVal] = []
+        command = self.vk.commands[command_name]
+        if command.returnType != 'void' and command.returnType != 'VkResult':
+            output_params.append(
+                RetVal(name="result",
+                       type=command.returnType,
+                       const=False,
+                       pointer=False,
+                       fixedSizeArray=[],
+                       cDeclaration=f"{command.returnType} result"))
+        for param in command.params:
+            if param.pointer and not param.const:
+                if param.length:
+                    output_params.append(param)
+                else:
+                    param_not_pointer = copy.deepcopy(param)
+                    param_not_pointer.pointer = False
+                    output_params.append(param_not_pointer)
+        return output_params
+
     def generate(self):
         additional_messages = []
         params_types_oneof = []
@@ -105,25 +126,8 @@ message VvkRequest {
             if command.name not in COMMANDS_TO_GENERATE:
                 continue
             capitalized_name = first_letter_upper(command.name)
-            if is_output_command(self, command.name):
-                output_params: list[Param | RetVal] = []
-                if command.returnType != 'void' and command.returnType != 'VkResult':
-                    output_params.append(
-                        RetVal(name="result",
-                               type=command.returnType,
-                               const=False,
-                               pointer=False,
-                               fixedSizeArray=[],
-                               cDeclaration=f"{command.returnType} result"))
-                for param in command.params:
-                    if param.pointer and not param.const:
-                        if param.length:
-                            output_params.append(param)
-                        else:
-                            param_not_pointer = copy.deepcopy(param)
-                            param_not_pointer.pointer = False
-                            output_params.append(param_not_pointer)
-
+            output_params = self.get_output_params(command.name)
+            if len(output_params) > 0:
                 response_types_oneof.append(
                     f'    {capitalized_name}Response {command.name} = {response_index};\n')
                 response_index += 1
@@ -134,8 +138,6 @@ message VvkRequest {
                     additional_messages.append(
                         f"  {get_param_proto_declaration(self, param, index + 1)}\n")
                 additional_messages.append("}\n\n")
-            else:
-                pass
 
             params_types_oneof.append(
                 f'    {capitalized_name}Params {command.name} = {params_index};\n')

@@ -489,10 +489,3 @@ def fill_proto_from_struct(generator: BaseGenerator, struct_type: str, name: str
 
 def first_letter_upper(name: str) -> str:
     return name[0].upper() + name[1:]
-
-
-def is_output_command(generator: BaseGenerator, command: str) -> bool:
-    for param in generator.vk.commands[command].params:
-        if param.pointer and not param.const:
-            return True
-    return False
