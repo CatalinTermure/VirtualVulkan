@@ -1,4 +1,4 @@
-from generators.base_generator import BaseGenerator, Member
+from base_generator import BaseGenerator, Member
 from dataclasses import dataclass
 import re
 

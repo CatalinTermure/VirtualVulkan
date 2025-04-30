@@ -1,6 +1,6 @@
 from xml.etree import ElementTree
 from reg import Registry
-from generators.base_generator import BaseGenerator, BaseGeneratorOptions, SetTargetApiName, SetMergedApiNames
+from base_generator import BaseGenerator, BaseGeneratorOptions, SetTargetApiName, SetMergedApiNames
 from .commons import first_letter_upper, COMMANDS_TO_GENERATE
 
 
