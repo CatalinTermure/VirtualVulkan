@@ -201,7 +201,7 @@ class TypesProtoGenerator(BaseGenerator):
         self.vk = base_vk
 
     def generate(self):
-        input_messages = []
+        pnext_chain_elements = []
         out = []
         out.append("// GENERATED FILE - DO NOT EDIT\n")
         out.append("// clang-format off\n")
@@ -281,18 +281,34 @@ message VkAllocationCallbacks {
                 out.append(f"// {struct.name} is not supported\n\n")
                 continue
             out.append(f"message {struct.name} {{\n")
-            index = 0
+            index = 1
             for member in struct.members:
-                if member.name == "pNext":
-                    continue
                 if member.name == "sType":
                     continue
-                out.append(
-                    f"  {get_param_proto_declaration(self, member, index + 1)}\n")
-                index += 1
+                if member.name == "pNext":
+                    if struct.extendedBy:
+                        pnext_chain_index = 1
+                        pnext_chain_elements.append(
+                            f'message PNextChain_{struct.name} {{\n')
+                        pnext_chain_elements.append(
+                            '  oneof chain_element {\n')
+                        for extended_by in struct.extendedBy:
+                            pnext_chain_elements.append(
+                                f'    {extended_by} {extended_by}_chain_elem = {pnext_chain_index};\n')
+                            pnext_chain_index += 1
+                        pnext_chain_elements.append('  }\n')
+                        pnext_chain_elements.append('}\n')
+
+                        out.append(
+                            f'  repeated PNextChain_{struct.name} pNext = {index};\n')
+                        index += 1
+                else:
+                    out.append(
+                        f"  {get_param_proto_declaration(self, member, index)}\n")
+                    index += 1
             out.append("}\n\n")
 
-        out.extend(input_messages)
+        out.extend(pnext_chain_elements)
 
         self.write("".join(out))
 

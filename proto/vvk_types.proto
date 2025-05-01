@@ -3112,13 +3112,14 @@ message VkRect2D {
 }
 
 message VkBufferMemoryBarrier {
-  uint32 srcAccessMask = 1; // VkAccessFlags srcAccessMask
-  uint32 dstAccessMask = 2; // VkAccessFlags dstAccessMask
-  uint32 srcQueueFamilyIndex = 3; // uint32_t srcQueueFamilyIndex
-  uint32 dstQueueFamilyIndex = 4; // uint32_t dstQueueFamilyIndex
-  uint64 buffer = 5; // VkBuffer buffer
-  uint64 offset = 6; // VkDeviceSize offset
-  uint64 size = 7; // VkDeviceSize size
+  repeated PNextChain_VkBufferMemoryBarrier pNext = 1;
+  uint32 srcAccessMask = 2; // VkAccessFlags srcAccessMask
+  uint32 dstAccessMask = 3; // VkAccessFlags dstAccessMask
+  uint32 srcQueueFamilyIndex = 4; // uint32_t srcQueueFamilyIndex
+  uint32 dstQueueFamilyIndex = 5; // uint32_t dstQueueFamilyIndex
+  uint64 buffer = 6; // VkBuffer buffer
+  uint64 offset = 7; // VkDeviceSize offset
+  uint64 size = 8; // VkDeviceSize size
 }
 
 message VkImageSubresourceRange {
@@ -3130,14 +3131,15 @@ message VkImageSubresourceRange {
 }
 
 message VkImageMemoryBarrier {
-  uint32 srcAccessMask = 1; // VkAccessFlags srcAccessMask
-  uint32 dstAccessMask = 2; // VkAccessFlags dstAccessMask
-  VkImageLayout oldLayout = 3; // VkImageLayout oldLayout
-  VkImageLayout newLayout = 4; // VkImageLayout newLayout
-  uint32 srcQueueFamilyIndex = 5; // uint32_t srcQueueFamilyIndex
-  uint32 dstQueueFamilyIndex = 6; // uint32_t dstQueueFamilyIndex
-  uint64 image = 7; // VkImage image
-  VkImageSubresourceRange subresourceRange = 8; // VkImageSubresourceRange subresourceRange
+  repeated PNextChain_VkImageMemoryBarrier pNext = 1;
+  uint32 srcAccessMask = 2; // VkAccessFlags srcAccessMask
+  uint32 dstAccessMask = 3; // VkAccessFlags dstAccessMask
+  VkImageLayout oldLayout = 4; // VkImageLayout oldLayout
+  VkImageLayout newLayout = 5; // VkImageLayout newLayout
+  uint32 srcQueueFamilyIndex = 6; // uint32_t srcQueueFamilyIndex
+  uint32 dstQueueFamilyIndex = 7; // uint32_t dstQueueFamilyIndex
+  uint64 image = 8; // VkImage image
+  VkImageSubresourceRange subresourceRange = 9; // VkImageSubresourceRange subresourceRange
 }
 
 message VkMemoryBarrier {
@@ -3160,12 +3162,13 @@ message VkFormatProperties {
 }
 
 message VkInstanceCreateInfo {
-  optional uint32 flags = 1; // VkInstanceCreateFlags flags
-  optional VkApplicationInfo pApplicationInfo = 2; // const VkApplicationInfo* pApplicationInfo
-  optional uint32 enabledLayerCount = 3; // uint32_t enabledLayerCount
-  repeated string ppEnabledLayerNames = 4; // const char* const* ppEnabledLayerNames
-  optional uint32 enabledExtensionCount = 5; // uint32_t enabledExtensionCount
-  repeated string ppEnabledExtensionNames = 6; // const char* const* ppEnabledExtensionNames
+  repeated PNextChain_VkInstanceCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkInstanceCreateFlags flags
+  optional VkApplicationInfo pApplicationInfo = 3; // const VkApplicationInfo* pApplicationInfo
+  optional uint32 enabledLayerCount = 4; // uint32_t enabledLayerCount
+  repeated string ppEnabledLayerNames = 5; // const char* const* ppEnabledLayerNames
+  optional uint32 enabledExtensionCount = 6; // uint32_t enabledExtensionCount
+  repeated string ppEnabledExtensionNames = 7; // const char* const* ppEnabledExtensionNames
 }
 
 message VkMemoryHeap {
@@ -3380,21 +3383,23 @@ message VkQueueFamilyProperties {
 }
 
 message VkDeviceQueueCreateInfo {
-  optional uint32 flags = 1; // VkDeviceQueueCreateFlags flags
-  uint32 queueFamilyIndex = 2; // uint32_t queueFamilyIndex
-  uint32 queueCount = 3; // uint32_t queueCount
-  repeated float pQueuePriorities = 4; // const float* pQueuePriorities
+  repeated PNextChain_VkDeviceQueueCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkDeviceQueueCreateFlags flags
+  uint32 queueFamilyIndex = 3; // uint32_t queueFamilyIndex
+  uint32 queueCount = 4; // uint32_t queueCount
+  repeated float pQueuePriorities = 5; // const float* pQueuePriorities
 }
 
 message VkDeviceCreateInfo {
-  optional uint32 flags = 1; // VkDeviceCreateFlags flags
-  uint32 queueCreateInfoCount = 2; // uint32_t queueCreateInfoCount
-  repeated VkDeviceQueueCreateInfo pQueueCreateInfos = 3; // const VkDeviceQueueCreateInfo* pQueueCreateInfos
-  optional uint32 enabledLayerCount = 4; // uint32_t enabledLayerCount
-  repeated string ppEnabledLayerNames = 5; // const char* const* ppEnabledLayerNames
-  optional uint32 enabledExtensionCount = 6; // uint32_t enabledExtensionCount
-  repeated string ppEnabledExtensionNames = 7; // const char* const* ppEnabledExtensionNames
-  optional VkPhysicalDeviceFeatures pEnabledFeatures = 8; // const VkPhysicalDeviceFeatures* pEnabledFeatures
+  repeated PNextChain_VkDeviceCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkDeviceCreateFlags flags
+  uint32 queueCreateInfoCount = 3; // uint32_t queueCreateInfoCount
+  repeated VkDeviceQueueCreateInfo pQueueCreateInfos = 4; // const VkDeviceQueueCreateInfo* pQueueCreateInfos
+  optional uint32 enabledLayerCount = 5; // uint32_t enabledLayerCount
+  repeated string ppEnabledLayerNames = 6; // const char* const* ppEnabledLayerNames
+  optional uint32 enabledExtensionCount = 7; // uint32_t enabledExtensionCount
+  repeated string ppEnabledExtensionNames = 8; // const char* const* ppEnabledExtensionNames
+  optional VkPhysicalDeviceFeatures pEnabledFeatures = 9; // const VkPhysicalDeviceFeatures* pEnabledFeatures
 }
 
 message VkExtensionProperties {
@@ -3403,18 +3408,20 @@ message VkExtensionProperties {
 }
 
 message VkSubmitInfo {
-  optional uint32 waitSemaphoreCount = 1; // uint32_t waitSemaphoreCount
-  repeated uint64 pWaitSemaphores = 2; // const VkSemaphore* pWaitSemaphores
-  repeated uint32 pWaitDstStageMask = 3; // const VkPipelineStageFlags* pWaitDstStageMask
-  optional uint32 commandBufferCount = 4; // uint32_t commandBufferCount
-  repeated uint64 pCommandBuffers = 5; // const VkCommandBuffer* pCommandBuffers
-  optional uint32 signalSemaphoreCount = 6; // uint32_t signalSemaphoreCount
-  repeated uint64 pSignalSemaphores = 7; // const VkSemaphore* pSignalSemaphores
+  repeated PNextChain_VkSubmitInfo pNext = 1;
+  optional uint32 waitSemaphoreCount = 2; // uint32_t waitSemaphoreCount
+  repeated uint64 pWaitSemaphores = 3; // const VkSemaphore* pWaitSemaphores
+  repeated uint32 pWaitDstStageMask = 4; // const VkPipelineStageFlags* pWaitDstStageMask
+  optional uint32 commandBufferCount = 5; // uint32_t commandBufferCount
+  repeated uint64 pCommandBuffers = 6; // const VkCommandBuffer* pCommandBuffers
+  optional uint32 signalSemaphoreCount = 7; // uint32_t signalSemaphoreCount
+  repeated uint64 pSignalSemaphores = 8; // const VkSemaphore* pSignalSemaphores
 }
 
 message VkMemoryAllocateInfo {
-  uint64 allocationSize = 1; // VkDeviceSize allocationSize
-  uint32 memoryTypeIndex = 2; // uint32_t memoryTypeIndex
+  repeated PNextChain_VkMemoryAllocateInfo pNext = 1;
+  uint64 allocationSize = 2; // VkDeviceSize allocationSize
+  uint32 memoryTypeIndex = 3; // uint32_t memoryTypeIndex
 }
 
 message VkMemoryRequirements {
@@ -3430,27 +3437,30 @@ message VkImageSubresource {
 }
 
 message VkFenceCreateInfo {
-  optional uint32 flags = 1; // VkFenceCreateFlags flags
+  repeated PNextChain_VkFenceCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkFenceCreateFlags flags
 }
 
 message VkSemaphoreCreateInfo {
-  optional uint32 flags = 1; // VkSemaphoreCreateFlags flags
+  repeated PNextChain_VkSemaphoreCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkSemaphoreCreateFlags flags
 }
 
 message VkImageCreateInfo {
-  optional uint32 flags = 1; // VkImageCreateFlags flags
-  VkImageType imageType = 2; // VkImageType imageType
-  VkFormat format = 3; // VkFormat format
-  VkExtent3D extent = 4; // VkExtent3D extent
-  uint32 mipLevels = 5; // uint32_t mipLevels
-  uint32 arrayLayers = 6; // uint32_t arrayLayers
-  uint32 samples = 7; // VkSampleCountFlagBits samples
-  VkImageTiling tiling = 8; // VkImageTiling tiling
-  uint32 usage = 9; // VkImageUsageFlags usage
-  VkSharingMode sharingMode = 10; // VkSharingMode sharingMode
-  optional uint32 queueFamilyIndexCount = 11; // uint32_t queueFamilyIndexCount
-  repeated uint32 pQueueFamilyIndices = 12; // const uint32_t* pQueueFamilyIndices
-  VkImageLayout initialLayout = 13; // VkImageLayout initialLayout
+  repeated PNextChain_VkImageCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkImageCreateFlags flags
+  VkImageType imageType = 3; // VkImageType imageType
+  VkFormat format = 4; // VkFormat format
+  VkExtent3D extent = 5; // VkExtent3D extent
+  uint32 mipLevels = 6; // uint32_t mipLevels
+  uint32 arrayLayers = 7; // uint32_t arrayLayers
+  uint32 samples = 8; // VkSampleCountFlagBits samples
+  VkImageTiling tiling = 9; // VkImageTiling tiling
+  uint32 usage = 10; // VkImageUsageFlags usage
+  VkSharingMode sharingMode = 11; // VkSharingMode sharingMode
+  optional uint32 queueFamilyIndexCount = 12; // uint32_t queueFamilyIndexCount
+  repeated uint32 pQueueFamilyIndices = 13; // const uint32_t* pQueueFamilyIndices
+  VkImageLayout initialLayout = 14; // VkImageLayout initialLayout
 }
 
 message VkSubresourceLayout {
@@ -3469,18 +3479,20 @@ message VkComponentMapping {
 }
 
 message VkImageViewCreateInfo {
-  optional uint32 flags = 1; // VkImageViewCreateFlags flags
-  uint64 image = 2; // VkImage image
-  VkImageViewType viewType = 3; // VkImageViewType viewType
-  VkFormat format = 4; // VkFormat format
-  VkComponentMapping components = 5; // VkComponentMapping components
-  VkImageSubresourceRange subresourceRange = 6; // VkImageSubresourceRange subresourceRange
+  repeated PNextChain_VkImageViewCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkImageViewCreateFlags flags
+  uint64 image = 3; // VkImage image
+  VkImageViewType viewType = 4; // VkImageViewType viewType
+  VkFormat format = 5; // VkFormat format
+  VkComponentMapping components = 6; // VkComponentMapping components
+  VkImageSubresourceRange subresourceRange = 7; // VkImageSubresourceRange subresourceRange
 }
 
 message VkShaderModuleCreateInfo {
-  optional uint32 flags = 1; // VkShaderModuleCreateFlags flags
-  uint64 codeSize = 2; // size_t codeSize
-  repeated uint32 pCode = 3; // const uint32_t* pCode
+  repeated PNextChain_VkShaderModuleCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkShaderModuleCreateFlags flags
+  uint64 codeSize = 3; // size_t codeSize
+  repeated uint32 pCode = 4; // const uint32_t* pCode
 }
 
 message VkSpecializationMapEntry {
@@ -3497,11 +3509,12 @@ message VkSpecializationInfo {
 }
 
 message VkPipelineShaderStageCreateInfo {
-  optional uint32 flags = 1; // VkPipelineShaderStageCreateFlags flags
-  uint32 stage = 2; // VkShaderStageFlagBits stage
-  optional uint64 module = 3; // VkShaderModule module
-  string pName = 4; // const char* pName
-  optional VkSpecializationInfo pSpecializationInfo = 5; // const VkSpecializationInfo* pSpecializationInfo
+  repeated PNextChain_VkPipelineShaderStageCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkPipelineShaderStageCreateFlags flags
+  uint32 stage = 3; // VkShaderStageFlagBits stage
+  optional uint64 module = 4; // VkShaderModule module
+  string pName = 5; // const char* pName
+  optional VkSpecializationInfo pSpecializationInfo = 6; // const VkSpecializationInfo* pSpecializationInfo
 }
 
 message VkVertexInputBindingDescription {
@@ -3518,11 +3531,12 @@ message VkVertexInputAttributeDescription {
 }
 
 message VkPipelineVertexInputStateCreateInfo {
-  optional uint32 flags = 1; // VkPipelineVertexInputStateCreateFlags flags
-  optional uint32 vertexBindingDescriptionCount = 2; // uint32_t vertexBindingDescriptionCount
-  repeated VkVertexInputBindingDescription pVertexBindingDescriptions = 3; // const VkVertexInputBindingDescription* pVertexBindingDescriptions
-  optional uint32 vertexAttributeDescriptionCount = 4; // uint32_t vertexAttributeDescriptionCount
-  repeated VkVertexInputAttributeDescription pVertexAttributeDescriptions = 5; // const VkVertexInputAttributeDescription* pVertexAttributeDescriptions
+  repeated PNextChain_VkPipelineVertexInputStateCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkPipelineVertexInputStateCreateFlags flags
+  optional uint32 vertexBindingDescriptionCount = 3; // uint32_t vertexBindingDescriptionCount
+  repeated VkVertexInputBindingDescription pVertexBindingDescriptions = 4; // const VkVertexInputBindingDescription* pVertexBindingDescriptions
+  optional uint32 vertexAttributeDescriptionCount = 5; // uint32_t vertexAttributeDescriptionCount
+  repeated VkVertexInputAttributeDescription pVertexAttributeDescriptions = 6; // const VkVertexInputAttributeDescription* pVertexAttributeDescriptions
 }
 
 message VkPipelineInputAssemblyStateCreateInfo {
@@ -3532,8 +3546,9 @@ message VkPipelineInputAssemblyStateCreateInfo {
 }
 
 message VkPipelineTessellationStateCreateInfo {
-  optional uint32 flags = 1; // VkPipelineTessellationStateCreateFlags flags
-  uint32 patchControlPoints = 2; // uint32_t patchControlPoints
+  repeated PNextChain_VkPipelineTessellationStateCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkPipelineTessellationStateCreateFlags flags
+  uint32 patchControlPoints = 3; // uint32_t patchControlPoints
 }
 
 message VkViewport {
@@ -3546,35 +3561,38 @@ message VkViewport {
 }
 
 message VkPipelineViewportStateCreateInfo {
-  optional uint32 flags = 1; // VkPipelineViewportStateCreateFlags flags
-  optional uint32 viewportCount = 2; // uint32_t viewportCount
-  repeated VkViewport pViewports = 3; // const VkViewport* pViewports
-  optional uint32 scissorCount = 4; // uint32_t scissorCount
-  repeated VkRect2D pScissors = 5; // const VkRect2D* pScissors
+  repeated PNextChain_VkPipelineViewportStateCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkPipelineViewportStateCreateFlags flags
+  optional uint32 viewportCount = 3; // uint32_t viewportCount
+  repeated VkViewport pViewports = 4; // const VkViewport* pViewports
+  optional uint32 scissorCount = 5; // uint32_t scissorCount
+  repeated VkRect2D pScissors = 6; // const VkRect2D* pScissors
 }
 
 message VkPipelineRasterizationStateCreateInfo {
-  optional uint32 flags = 1; // VkPipelineRasterizationStateCreateFlags flags
-  bool depthClampEnable = 2; // VkBool32 depthClampEnable
-  bool rasterizerDiscardEnable = 3; // VkBool32 rasterizerDiscardEnable
-  VkPolygonMode polygonMode = 4; // VkPolygonMode polygonMode
-  optional uint32 cullMode = 5; // VkCullModeFlags cullMode
-  VkFrontFace frontFace = 6; // VkFrontFace frontFace
-  bool depthBiasEnable = 7; // VkBool32 depthBiasEnable
-  float depthBiasConstantFactor = 8; // float depthBiasConstantFactor
-  float depthBiasClamp = 9; // float depthBiasClamp
-  float depthBiasSlopeFactor = 10; // float depthBiasSlopeFactor
-  float lineWidth = 11; // float lineWidth
+  repeated PNextChain_VkPipelineRasterizationStateCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkPipelineRasterizationStateCreateFlags flags
+  bool depthClampEnable = 3; // VkBool32 depthClampEnable
+  bool rasterizerDiscardEnable = 4; // VkBool32 rasterizerDiscardEnable
+  VkPolygonMode polygonMode = 5; // VkPolygonMode polygonMode
+  optional uint32 cullMode = 6; // VkCullModeFlags cullMode
+  VkFrontFace frontFace = 7; // VkFrontFace frontFace
+  bool depthBiasEnable = 8; // VkBool32 depthBiasEnable
+  float depthBiasConstantFactor = 9; // float depthBiasConstantFactor
+  float depthBiasClamp = 10; // float depthBiasClamp
+  float depthBiasSlopeFactor = 11; // float depthBiasSlopeFactor
+  float lineWidth = 12; // float lineWidth
 }
 
 message VkPipelineMultisampleStateCreateInfo {
-  optional uint32 flags = 1; // VkPipelineMultisampleStateCreateFlags flags
-  uint32 rasterizationSamples = 2; // VkSampleCountFlagBits rasterizationSamples
-  bool sampleShadingEnable = 3; // VkBool32 sampleShadingEnable
-  float minSampleShading = 4; // float minSampleShading
-  repeated uint32 pSampleMask = 5; // const VkSampleMask* pSampleMask
-  bool alphaToCoverageEnable = 6; // VkBool32 alphaToCoverageEnable
-  bool alphaToOneEnable = 7; // VkBool32 alphaToOneEnable
+  repeated PNextChain_VkPipelineMultisampleStateCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkPipelineMultisampleStateCreateFlags flags
+  uint32 rasterizationSamples = 3; // VkSampleCountFlagBits rasterizationSamples
+  bool sampleShadingEnable = 4; // VkBool32 sampleShadingEnable
+  float minSampleShading = 5; // float minSampleShading
+  repeated uint32 pSampleMask = 6; // const VkSampleMask* pSampleMask
+  bool alphaToCoverageEnable = 7; // VkBool32 alphaToCoverageEnable
+  bool alphaToOneEnable = 8; // VkBool32 alphaToOneEnable
 }
 
 message VkStencilOpState {
@@ -3612,12 +3630,13 @@ message VkPipelineColorBlendAttachmentState {
 }
 
 message VkPipelineColorBlendStateCreateInfo {
-  optional uint32 flags = 1; // VkPipelineColorBlendStateCreateFlags flags
-  bool logicOpEnable = 2; // VkBool32 logicOpEnable
-  VkLogicOp logicOp = 3; // VkLogicOp logicOp
-  optional uint32 attachmentCount = 4; // uint32_t attachmentCount
-  repeated VkPipelineColorBlendAttachmentState pAttachments = 5; // const VkPipelineColorBlendAttachmentState* pAttachments
-  repeated float blendConstants = 6; // float blendConstants[4]
+  repeated PNextChain_VkPipelineColorBlendStateCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkPipelineColorBlendStateCreateFlags flags
+  bool logicOpEnable = 3; // VkBool32 logicOpEnable
+  VkLogicOp logicOp = 4; // VkLogicOp logicOp
+  optional uint32 attachmentCount = 5; // uint32_t attachmentCount
+  repeated VkPipelineColorBlendAttachmentState pAttachments = 6; // const VkPipelineColorBlendAttachmentState* pAttachments
+  repeated float blendConstants = 7; // float blendConstants[4]
 }
 
 message VkPipelineDynamicStateCreateInfo {
@@ -3627,23 +3646,24 @@ message VkPipelineDynamicStateCreateInfo {
 }
 
 message VkGraphicsPipelineCreateInfo {
-  optional uint32 flags = 1; // VkPipelineCreateFlags flags
-  optional uint32 stageCount = 2; // uint32_t stageCount
-  repeated VkPipelineShaderStageCreateInfo pStages = 3; // const VkPipelineShaderStageCreateInfo* pStages
-  optional VkPipelineVertexInputStateCreateInfo pVertexInputState = 4; // const VkPipelineVertexInputStateCreateInfo* pVertexInputState
-  optional VkPipelineInputAssemblyStateCreateInfo pInputAssemblyState = 5; // const VkPipelineInputAssemblyStateCreateInfo* pInputAssemblyState
-  optional VkPipelineTessellationStateCreateInfo pTessellationState = 6; // const VkPipelineTessellationStateCreateInfo* pTessellationState
-  optional VkPipelineViewportStateCreateInfo pViewportState = 7; // const VkPipelineViewportStateCreateInfo* pViewportState
-  optional VkPipelineRasterizationStateCreateInfo pRasterizationState = 8; // const VkPipelineRasterizationStateCreateInfo* pRasterizationState
-  optional VkPipelineMultisampleStateCreateInfo pMultisampleState = 9; // const VkPipelineMultisampleStateCreateInfo* pMultisampleState
-  optional VkPipelineDepthStencilStateCreateInfo pDepthStencilState = 10; // const VkPipelineDepthStencilStateCreateInfo* pDepthStencilState
-  optional VkPipelineColorBlendStateCreateInfo pColorBlendState = 11; // const VkPipelineColorBlendStateCreateInfo* pColorBlendState
-  optional VkPipelineDynamicStateCreateInfo pDynamicState = 12; // const VkPipelineDynamicStateCreateInfo* pDynamicState
-  optional uint64 layout = 13; // VkPipelineLayout layout
-  optional uint64 renderPass = 14; // VkRenderPass renderPass
-  uint32 subpass = 15; // uint32_t subpass
-  optional uint64 basePipelineHandle = 16; // VkPipeline basePipelineHandle
-  int32 basePipelineIndex = 17; // int32_t basePipelineIndex
+  repeated PNextChain_VkGraphicsPipelineCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkPipelineCreateFlags flags
+  optional uint32 stageCount = 3; // uint32_t stageCount
+  repeated VkPipelineShaderStageCreateInfo pStages = 4; // const VkPipelineShaderStageCreateInfo* pStages
+  optional VkPipelineVertexInputStateCreateInfo pVertexInputState = 5; // const VkPipelineVertexInputStateCreateInfo* pVertexInputState
+  optional VkPipelineInputAssemblyStateCreateInfo pInputAssemblyState = 6; // const VkPipelineInputAssemblyStateCreateInfo* pInputAssemblyState
+  optional VkPipelineTessellationStateCreateInfo pTessellationState = 7; // const VkPipelineTessellationStateCreateInfo* pTessellationState
+  optional VkPipelineViewportStateCreateInfo pViewportState = 8; // const VkPipelineViewportStateCreateInfo* pViewportState
+  optional VkPipelineRasterizationStateCreateInfo pRasterizationState = 9; // const VkPipelineRasterizationStateCreateInfo* pRasterizationState
+  optional VkPipelineMultisampleStateCreateInfo pMultisampleState = 10; // const VkPipelineMultisampleStateCreateInfo* pMultisampleState
+  optional VkPipelineDepthStencilStateCreateInfo pDepthStencilState = 11; // const VkPipelineDepthStencilStateCreateInfo* pDepthStencilState
+  optional VkPipelineColorBlendStateCreateInfo pColorBlendState = 12; // const VkPipelineColorBlendStateCreateInfo* pColorBlendState
+  optional VkPipelineDynamicStateCreateInfo pDynamicState = 13; // const VkPipelineDynamicStateCreateInfo* pDynamicState
+  optional uint64 layout = 14; // VkPipelineLayout layout
+  optional uint64 renderPass = 15; // VkRenderPass renderPass
+  uint32 subpass = 16; // uint32_t subpass
+  optional uint64 basePipelineHandle = 17; // VkPipeline basePipelineHandle
+  int32 basePipelineIndex = 18; // int32_t basePipelineIndex
 }
 
 message VkPushConstantRange {
@@ -3678,13 +3698,14 @@ message VkAttachmentReference {
 }
 
 message VkFramebufferCreateInfo {
-  optional uint32 flags = 1; // VkFramebufferCreateFlags flags
-  uint64 renderPass = 2; // VkRenderPass renderPass
-  optional uint32 attachmentCount = 3; // uint32_t attachmentCount
-  repeated uint64 pAttachments = 4; // const VkImageView* pAttachments
-  uint32 width = 5; // uint32_t width
-  uint32 height = 6; // uint32_t height
-  uint32 layers = 7; // uint32_t layers
+  repeated PNextChain_VkFramebufferCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkFramebufferCreateFlags flags
+  uint64 renderPass = 3; // VkRenderPass renderPass
+  optional uint32 attachmentCount = 4; // uint32_t attachmentCount
+  repeated uint64 pAttachments = 5; // const VkImageView* pAttachments
+  uint32 width = 6; // uint32_t width
+  uint32 height = 7; // uint32_t height
+  uint32 layers = 8; // uint32_t layers
 }
 
 message VkSubpassDescription {
@@ -3711,13 +3732,14 @@ message VkSubpassDependency {
 }
 
 message VkRenderPassCreateInfo {
-  optional uint32 flags = 1; // VkRenderPassCreateFlags flags
-  optional uint32 attachmentCount = 2; // uint32_t attachmentCount
-  repeated VkAttachmentDescription pAttachments = 3; // const VkAttachmentDescription* pAttachments
-  uint32 subpassCount = 4; // uint32_t subpassCount
-  repeated VkSubpassDescription pSubpasses = 5; // const VkSubpassDescription* pSubpasses
-  optional uint32 dependencyCount = 6; // uint32_t dependencyCount
-  repeated VkSubpassDependency pDependencies = 7; // const VkSubpassDependency* pDependencies
+  repeated PNextChain_VkRenderPassCreateInfo pNext = 1;
+  optional uint32 flags = 2; // VkRenderPassCreateFlags flags
+  optional uint32 attachmentCount = 3; // uint32_t attachmentCount
+  repeated VkAttachmentDescription pAttachments = 4; // const VkAttachmentDescription* pAttachments
+  uint32 subpassCount = 5; // uint32_t subpassCount
+  repeated VkSubpassDescription pSubpasses = 6; // const VkSubpassDescription* pSubpasses
+  optional uint32 dependencyCount = 7; // uint32_t dependencyCount
+  repeated VkSubpassDependency pDependencies = 8; // const VkSubpassDependency* pDependencies
 }
 
 message VkCommandPoolCreateInfo {
@@ -3732,17 +3754,19 @@ message VkCommandBufferAllocateInfo {
 }
 
 message VkCommandBufferInheritanceInfo {
-  optional uint64 renderPass = 1; // VkRenderPass renderPass
-  uint32 subpass = 2; // uint32_t subpass
-  optional uint64 framebuffer = 3; // VkFramebuffer framebuffer
-  bool occlusionQueryEnable = 4; // VkBool32 occlusionQueryEnable
-  optional uint32 queryFlags = 5; // VkQueryControlFlags queryFlags
-  optional uint32 pipelineStatistics = 6; // VkQueryPipelineStatisticFlags pipelineStatistics
+  repeated PNextChain_VkCommandBufferInheritanceInfo pNext = 1;
+  optional uint64 renderPass = 2; // VkRenderPass renderPass
+  uint32 subpass = 3; // uint32_t subpass
+  optional uint64 framebuffer = 4; // VkFramebuffer framebuffer
+  bool occlusionQueryEnable = 5; // VkBool32 occlusionQueryEnable
+  optional uint32 queryFlags = 6; // VkQueryControlFlags queryFlags
+  optional uint32 pipelineStatistics = 7; // VkQueryPipelineStatisticFlags pipelineStatistics
 }
 
 message VkCommandBufferBeginInfo {
-  optional uint32 flags = 1; // VkCommandBufferUsageFlags flags
-  optional VkCommandBufferInheritanceInfo pInheritanceInfo = 2; // const VkCommandBufferInheritanceInfo* pInheritanceInfo
+  repeated PNextChain_VkCommandBufferBeginInfo pNext = 1;
+  optional uint32 flags = 2; // VkCommandBufferUsageFlags flags
+  optional VkCommandBufferInheritanceInfo pInheritanceInfo = 3; // const VkCommandBufferInheritanceInfo* pInheritanceInfo
 }
 
 message VkImageSubresourceLayers {
@@ -3778,11 +3802,12 @@ message VkClearValue {
 }
 
 message VkRenderPassBeginInfo {
-  uint64 renderPass = 1; // VkRenderPass renderPass
-  uint64 framebuffer = 2; // VkFramebuffer framebuffer
-  VkRect2D renderArea = 3; // VkRect2D renderArea
-  optional uint32 clearValueCount = 4; // uint32_t clearValueCount
-  repeated VkClearValue pClearValues = 5; // const VkClearValue* pClearValues
+  repeated PNextChain_VkRenderPassBeginInfo pNext = 1;
+  uint64 renderPass = 2; // VkRenderPass renderPass
+  uint64 framebuffer = 3; // VkFramebuffer framebuffer
+  VkRect2D renderArea = 4; // VkRect2D renderArea
+  optional uint32 clearValueCount = 5; // uint32_t clearValueCount
+  repeated VkClearValue pClearValues = 6; // const VkClearValue* pClearValues
 }
 
 message VkPhysicalDeviceSubgroupProperties {
@@ -3793,9 +3818,10 @@ message VkPhysicalDeviceSubgroupProperties {
 }
 
 message VkBindImageMemoryInfo {
-  uint64 image = 1; // VkImage image
-  uint64 memory = 2; // VkDeviceMemory memory
-  uint64 memoryOffset = 3; // VkDeviceSize memoryOffset
+  repeated PNextChain_VkBindImageMemoryInfo pNext = 1;
+  uint64 image = 2; // VkImage image
+  uint64 memory = 3; // VkDeviceMemory memory
+  uint64 memoryOffset = 4; // VkDeviceSize memoryOffset
 }
 
 message VkPhysicalDevice16BitStorageFeatures {
@@ -3852,19 +3878,23 @@ message VkDeviceGroupDeviceCreateInfo {
 }
 
 message VkImageMemoryRequirementsInfo2 {
-  uint64 image = 1; // VkImage image
+  repeated PNextChain_VkImageMemoryRequirementsInfo2 pNext = 1;
+  uint64 image = 2; // VkImage image
 }
 
 message VkMemoryRequirements2 {
-  VkMemoryRequirements memoryRequirements = 1; // VkMemoryRequirements memoryRequirements
+  repeated PNextChain_VkMemoryRequirements2 pNext = 1;
+  VkMemoryRequirements memoryRequirements = 2; // VkMemoryRequirements memoryRequirements
 }
 
 message VkPhysicalDeviceFeatures2 {
-  VkPhysicalDeviceFeatures features = 1; // VkPhysicalDeviceFeatures features
+  repeated PNextChain_VkPhysicalDeviceFeatures2 pNext = 1;
+  VkPhysicalDeviceFeatures features = 2; // VkPhysicalDeviceFeatures features
 }
 
 message VkPhysicalDeviceProperties2 {
-  VkPhysicalDeviceProperties properties = 1; // VkPhysicalDeviceProperties properties
+  repeated PNextChain_VkPhysicalDeviceProperties2 pNext = 1;
+  VkPhysicalDeviceProperties properties = 2; // VkPhysicalDeviceProperties properties
 }
 
 message VkPhysicalDevicePointClippingProperties {
@@ -4743,10 +4773,11 @@ message VkBindImageMemorySwapchainInfoKHR {
 }
 
 message VkVideoProfileInfoKHR {
-  uint32 videoCodecOperation = 1; // VkVideoCodecOperationFlagBitsKHR videoCodecOperation
-  uint32 chromaSubsampling = 2; // VkVideoChromaSubsamplingFlagsKHR chromaSubsampling
-  uint32 lumaBitDepth = 3; // VkVideoComponentBitDepthFlagsKHR lumaBitDepth
-  optional uint32 chromaBitDepth = 4; // VkVideoComponentBitDepthFlagsKHR chromaBitDepth
+  repeated PNextChain_VkVideoProfileInfoKHR pNext = 1;
+  uint32 videoCodecOperation = 2; // VkVideoCodecOperationFlagBitsKHR videoCodecOperation
+  uint32 chromaSubsampling = 3; // VkVideoChromaSubsamplingFlagsKHR chromaSubsampling
+  uint32 lumaBitDepth = 4; // VkVideoComponentBitDepthFlagsKHR lumaBitDepth
+  optional uint32 chromaBitDepth = 5; // VkVideoComponentBitDepthFlagsKHR chromaBitDepth
 }
 
 message VkVideoProfileListInfoKHR {
@@ -5037,10 +5068,11 @@ message VkPhysicalDeviceMaintenance7PropertiesKHR {
 }
 
 message VkPhysicalDeviceLayeredApiPropertiesKHR {
-  uint32 vendorID = 1; // uint32_t vendorID
-  uint32 deviceID = 2; // uint32_t deviceID
-  VkPhysicalDeviceLayeredApiKHR layeredAPI = 3; // VkPhysicalDeviceLayeredApiKHR layeredAPI
-  string deviceName = 4; // char deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE]
+  repeated PNextChain_VkPhysicalDeviceLayeredApiPropertiesKHR pNext = 1;
+  uint32 vendorID = 2; // uint32_t vendorID
+  uint32 deviceID = 3; // uint32_t deviceID
+  VkPhysicalDeviceLayeredApiKHR layeredAPI = 4; // VkPhysicalDeviceLayeredApiKHR layeredAPI
+  string deviceName = 5; // char deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE]
 }
 
 message VkPhysicalDeviceLayeredApiPropertiesListKHR {
@@ -6145,8 +6177,9 @@ message VkPhysicalDeviceDisplacementMicromapPropertiesNV {
 }
 
 message VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI {
-  bool clustercullingShader = 1; // VkBool32 clustercullingShader
-  bool multiviewClusterCullingShader = 2; // VkBool32 multiviewClusterCullingShader
+  repeated PNextChain_VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI pNext = 1;
+  bool clustercullingShader = 2; // VkBool32 clustercullingShader
+  bool multiviewClusterCullingShader = 3; // VkBool32 multiviewClusterCullingShader
 }
 
 message VkPhysicalDeviceClusterCullingShaderPropertiesHUAWEI {
@@ -6800,4 +6833,846 @@ message VkPhysicalDeviceMeshShaderPropertiesEXT {
   bool prefersCompactPrimitiveOutput = 28; // VkBool32 prefersCompactPrimitiveOutput
 }
 
+message PNextChain_VkBufferMemoryBarrier {
+  oneof chain_element {
+    VkExternalMemoryAcquireUnmodifiedEXT VkExternalMemoryAcquireUnmodifiedEXT_chain_elem = 1;
+  }
+}
+message PNextChain_VkImageMemoryBarrier {
+  oneof chain_element {
+    VkExternalMemoryAcquireUnmodifiedEXT VkExternalMemoryAcquireUnmodifiedEXT_chain_elem = 1;
+    VkSampleLocationsInfoEXT VkSampleLocationsInfoEXT_chain_elem = 2;
+  }
+}
+message PNextChain_VkInstanceCreateInfo {
+  oneof chain_element {
+    VkDebugReportCallbackCreateInfoEXT VkDebugReportCallbackCreateInfoEXT_chain_elem = 1;
+    VkDebugUtilsMessengerCreateInfoEXT VkDebugUtilsMessengerCreateInfoEXT_chain_elem = 2;
+    VkDirectDriverLoadingListLUNARG VkDirectDriverLoadingListLUNARG_chain_elem = 3;
+    VkExportMetalObjectCreateInfoEXT VkExportMetalObjectCreateInfoEXT_chain_elem = 4;
+    VkLayerSettingsCreateInfoEXT VkLayerSettingsCreateInfoEXT_chain_elem = 5;
+    VkValidationFeaturesEXT VkValidationFeaturesEXT_chain_elem = 6;
+    VkValidationFlagsEXT VkValidationFlagsEXT_chain_elem = 7;
+  }
+}
+message PNextChain_VkDeviceQueueCreateInfo {
+  oneof chain_element {
+    VkDeviceQueueGlobalPriorityCreateInfo VkDeviceQueueGlobalPriorityCreateInfo_chain_elem = 1;
+    VkDeviceQueueShaderCoreControlCreateInfoARM VkDeviceQueueShaderCoreControlCreateInfoARM_chain_elem = 2;
+  }
+}
+message PNextChain_VkDeviceCreateInfo {
+  oneof chain_element {
+    VkDeviceDeviceMemoryReportCreateInfoEXT VkDeviceDeviceMemoryReportCreateInfoEXT_chain_elem = 1;
+    VkDeviceDiagnosticsConfigCreateInfoNV VkDeviceDiagnosticsConfigCreateInfoNV_chain_elem = 2;
+    VkDeviceGroupDeviceCreateInfo VkDeviceGroupDeviceCreateInfo_chain_elem = 3;
+    VkDeviceMemoryOverallocationCreateInfoAMD VkDeviceMemoryOverallocationCreateInfoAMD_chain_elem = 4;
+    VkDevicePipelineBinaryInternalCacheControlKHR VkDevicePipelineBinaryInternalCacheControlKHR_chain_elem = 5;
+    VkDevicePrivateDataCreateInfo VkDevicePrivateDataCreateInfo_chain_elem = 6;
+    VkDeviceQueueShaderCoreControlCreateInfoARM VkDeviceQueueShaderCoreControlCreateInfoARM_chain_elem = 7;
+    VkExternalComputeQueueDeviceCreateInfoNV VkExternalComputeQueueDeviceCreateInfoNV_chain_elem = 8;
+    VkPhysicalDevice16BitStorageFeatures VkPhysicalDevice16BitStorageFeatures_chain_elem = 9;
+    VkPhysicalDevice4444FormatsFeaturesEXT VkPhysicalDevice4444FormatsFeaturesEXT_chain_elem = 10;
+    VkPhysicalDevice8BitStorageFeatures VkPhysicalDevice8BitStorageFeatures_chain_elem = 11;
+    VkPhysicalDeviceASTCDecodeFeaturesEXT VkPhysicalDeviceASTCDecodeFeaturesEXT_chain_elem = 12;
+    VkPhysicalDeviceAccelerationStructureFeaturesKHR VkPhysicalDeviceAccelerationStructureFeaturesKHR_chain_elem = 13;
+    VkPhysicalDeviceAddressBindingReportFeaturesEXT VkPhysicalDeviceAddressBindingReportFeaturesEXT_chain_elem = 14;
+    VkPhysicalDeviceAmigoProfilingFeaturesSEC VkPhysicalDeviceAmigoProfilingFeaturesSEC_chain_elem = 15;
+    VkPhysicalDeviceAntiLagFeaturesAMD VkPhysicalDeviceAntiLagFeaturesAMD_chain_elem = 16;
+    VkPhysicalDeviceAttachmentFeedbackLoopDynamicStateFeaturesEXT VkPhysicalDeviceAttachmentFeedbackLoopDynamicStateFeaturesEXT_chain_elem = 17;
+    VkPhysicalDeviceAttachmentFeedbackLoopLayoutFeaturesEXT VkPhysicalDeviceAttachmentFeedbackLoopLayoutFeaturesEXT_chain_elem = 18;
+    VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT_chain_elem = 19;
+    VkPhysicalDeviceBorderColorSwizzleFeaturesEXT VkPhysicalDeviceBorderColorSwizzleFeaturesEXT_chain_elem = 20;
+    VkPhysicalDeviceBufferDeviceAddressFeatures VkPhysicalDeviceBufferDeviceAddressFeatures_chain_elem = 21;
+    VkPhysicalDeviceBufferDeviceAddressFeaturesEXT VkPhysicalDeviceBufferDeviceAddressFeaturesEXT_chain_elem = 22;
+    VkPhysicalDeviceClusterAccelerationStructureFeaturesNV VkPhysicalDeviceClusterAccelerationStructureFeaturesNV_chain_elem = 23;
+    VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI_chain_elem = 24;
+    VkPhysicalDeviceCoherentMemoryFeaturesAMD VkPhysicalDeviceCoherentMemoryFeaturesAMD_chain_elem = 25;
+    VkPhysicalDeviceColorWriteEnableFeaturesEXT VkPhysicalDeviceColorWriteEnableFeaturesEXT_chain_elem = 26;
+    VkPhysicalDeviceCommandBufferInheritanceFeaturesNV VkPhysicalDeviceCommandBufferInheritanceFeaturesNV_chain_elem = 27;
+    VkPhysicalDeviceComputeShaderDerivativesFeaturesKHR VkPhysicalDeviceComputeShaderDerivativesFeaturesKHR_chain_elem = 28;
+    VkPhysicalDeviceConditionalRenderingFeaturesEXT VkPhysicalDeviceConditionalRenderingFeaturesEXT_chain_elem = 29;
+    VkPhysicalDeviceCooperativeMatrix2FeaturesNV VkPhysicalDeviceCooperativeMatrix2FeaturesNV_chain_elem = 30;
+    VkPhysicalDeviceCooperativeMatrixFeaturesKHR VkPhysicalDeviceCooperativeMatrixFeaturesKHR_chain_elem = 31;
+    VkPhysicalDeviceCooperativeMatrixFeaturesNV VkPhysicalDeviceCooperativeMatrixFeaturesNV_chain_elem = 32;
+    VkPhysicalDeviceCooperativeVectorFeaturesNV VkPhysicalDeviceCooperativeVectorFeaturesNV_chain_elem = 33;
+    VkPhysicalDeviceCopyMemoryIndirectFeaturesNV VkPhysicalDeviceCopyMemoryIndirectFeaturesNV_chain_elem = 34;
+    VkPhysicalDeviceCornerSampledImageFeaturesNV VkPhysicalDeviceCornerSampledImageFeaturesNV_chain_elem = 35;
+    VkPhysicalDeviceCoverageReductionModeFeaturesNV VkPhysicalDeviceCoverageReductionModeFeaturesNV_chain_elem = 36;
+    VkPhysicalDeviceCubicClampFeaturesQCOM VkPhysicalDeviceCubicClampFeaturesQCOM_chain_elem = 37;
+    VkPhysicalDeviceCubicWeightsFeaturesQCOM VkPhysicalDeviceCubicWeightsFeaturesQCOM_chain_elem = 38;
+    VkPhysicalDeviceCudaKernelLaunchFeaturesNV VkPhysicalDeviceCudaKernelLaunchFeaturesNV_chain_elem = 39;
+    VkPhysicalDeviceCustomBorderColorFeaturesEXT VkPhysicalDeviceCustomBorderColorFeaturesEXT_chain_elem = 40;
+    VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV_chain_elem = 41;
+    VkPhysicalDeviceDepthBiasControlFeaturesEXT VkPhysicalDeviceDepthBiasControlFeaturesEXT_chain_elem = 42;
+    VkPhysicalDeviceDepthClampControlFeaturesEXT VkPhysicalDeviceDepthClampControlFeaturesEXT_chain_elem = 43;
+    VkPhysicalDeviceDepthClampZeroOneFeaturesKHR VkPhysicalDeviceDepthClampZeroOneFeaturesKHR_chain_elem = 44;
+    VkPhysicalDeviceDepthClipControlFeaturesEXT VkPhysicalDeviceDepthClipControlFeaturesEXT_chain_elem = 45;
+    VkPhysicalDeviceDepthClipEnableFeaturesEXT VkPhysicalDeviceDepthClipEnableFeaturesEXT_chain_elem = 46;
+    VkPhysicalDeviceDescriptorBufferFeaturesEXT VkPhysicalDeviceDescriptorBufferFeaturesEXT_chain_elem = 47;
+    VkPhysicalDeviceDescriptorIndexingFeatures VkPhysicalDeviceDescriptorIndexingFeatures_chain_elem = 48;
+    VkPhysicalDeviceDescriptorPoolOverallocationFeaturesNV VkPhysicalDeviceDescriptorPoolOverallocationFeaturesNV_chain_elem = 49;
+    VkPhysicalDeviceDescriptorSetHostMappingFeaturesVALVE VkPhysicalDeviceDescriptorSetHostMappingFeaturesVALVE_chain_elem = 50;
+    VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV_chain_elem = 51;
+    VkPhysicalDeviceDeviceGeneratedCommandsFeaturesEXT VkPhysicalDeviceDeviceGeneratedCommandsFeaturesEXT_chain_elem = 52;
+    VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV_chain_elem = 53;
+    VkPhysicalDeviceDeviceMemoryReportFeaturesEXT VkPhysicalDeviceDeviceMemoryReportFeaturesEXT_chain_elem = 54;
+    VkPhysicalDeviceDiagnosticsConfigFeaturesNV VkPhysicalDeviceDiagnosticsConfigFeaturesNV_chain_elem = 55;
+    VkPhysicalDeviceDisplacementMicromapFeaturesNV VkPhysicalDeviceDisplacementMicromapFeaturesNV_chain_elem = 56;
+    VkPhysicalDeviceDynamicRenderingFeatures VkPhysicalDeviceDynamicRenderingFeatures_chain_elem = 57;
+    VkPhysicalDeviceDynamicRenderingLocalReadFeatures VkPhysicalDeviceDynamicRenderingLocalReadFeatures_chain_elem = 58;
+    VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT_chain_elem = 59;
+    VkPhysicalDeviceExclusiveScissorFeaturesNV VkPhysicalDeviceExclusiveScissorFeaturesNV_chain_elem = 60;
+    VkPhysicalDeviceExtendedDynamicState2FeaturesEXT VkPhysicalDeviceExtendedDynamicState2FeaturesEXT_chain_elem = 61;
+    VkPhysicalDeviceExtendedDynamicState3FeaturesEXT VkPhysicalDeviceExtendedDynamicState3FeaturesEXT_chain_elem = 62;
+    VkPhysicalDeviceExtendedDynamicStateFeaturesEXT VkPhysicalDeviceExtendedDynamicStateFeaturesEXT_chain_elem = 63;
+    VkPhysicalDeviceExtendedSparseAddressSpaceFeaturesNV VkPhysicalDeviceExtendedSparseAddressSpaceFeaturesNV_chain_elem = 64;
+    VkPhysicalDeviceExternalFormatResolveFeaturesANDROID VkPhysicalDeviceExternalFormatResolveFeaturesANDROID_chain_elem = 65;
+    VkPhysicalDeviceExternalMemoryRDMAFeaturesNV VkPhysicalDeviceExternalMemoryRDMAFeaturesNV_chain_elem = 66;
+    VkPhysicalDeviceExternalMemoryScreenBufferFeaturesQNX VkPhysicalDeviceExternalMemoryScreenBufferFeaturesQNX_chain_elem = 67;
+    VkPhysicalDeviceFaultFeaturesEXT VkPhysicalDeviceFaultFeaturesEXT_chain_elem = 68;
+    VkPhysicalDeviceFeatures2 VkPhysicalDeviceFeatures2_chain_elem = 69;
+    VkPhysicalDeviceFragmentDensityMap2FeaturesEXT VkPhysicalDeviceFragmentDensityMap2FeaturesEXT_chain_elem = 70;
+    VkPhysicalDeviceFragmentDensityMapFeaturesEXT VkPhysicalDeviceFragmentDensityMapFeaturesEXT_chain_elem = 71;
+    VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT_chain_elem = 72;
+    VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR_chain_elem = 73;
+    VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT_chain_elem = 74;
+    VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNV VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNV_chain_elem = 75;
+    VkPhysicalDeviceFragmentShadingRateFeaturesKHR VkPhysicalDeviceFragmentShadingRateFeaturesKHR_chain_elem = 76;
+    VkPhysicalDeviceFrameBoundaryFeaturesEXT VkPhysicalDeviceFrameBoundaryFeaturesEXT_chain_elem = 77;
+    VkPhysicalDeviceGlobalPriorityQueryFeatures VkPhysicalDeviceGlobalPriorityQueryFeatures_chain_elem = 78;
+    VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT_chain_elem = 79;
+    VkPhysicalDeviceHdrVividFeaturesHUAWEI VkPhysicalDeviceHdrVividFeaturesHUAWEI_chain_elem = 80;
+    VkPhysicalDeviceHostImageCopyFeatures VkPhysicalDeviceHostImageCopyFeatures_chain_elem = 81;
+    VkPhysicalDeviceHostQueryResetFeatures VkPhysicalDeviceHostQueryResetFeatures_chain_elem = 82;
+    VkPhysicalDeviceImage2DViewOf3DFeaturesEXT VkPhysicalDeviceImage2DViewOf3DFeaturesEXT_chain_elem = 83;
+    VkPhysicalDeviceImageAlignmentControlFeaturesMESA VkPhysicalDeviceImageAlignmentControlFeaturesMESA_chain_elem = 84;
+    VkPhysicalDeviceImageCompressionControlFeaturesEXT VkPhysicalDeviceImageCompressionControlFeaturesEXT_chain_elem = 85;
+    VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT_chain_elem = 86;
+    VkPhysicalDeviceImageProcessing2FeaturesQCOM VkPhysicalDeviceImageProcessing2FeaturesQCOM_chain_elem = 87;
+    VkPhysicalDeviceImageProcessingFeaturesQCOM VkPhysicalDeviceImageProcessingFeaturesQCOM_chain_elem = 88;
+    VkPhysicalDeviceImageRobustnessFeatures VkPhysicalDeviceImageRobustnessFeatures_chain_elem = 89;
+    VkPhysicalDeviceImageSlicedViewOf3DFeaturesEXT VkPhysicalDeviceImageSlicedViewOf3DFeaturesEXT_chain_elem = 90;
+    VkPhysicalDeviceImageViewMinLodFeaturesEXT VkPhysicalDeviceImageViewMinLodFeaturesEXT_chain_elem = 91;
+    VkPhysicalDeviceImagelessFramebufferFeatures VkPhysicalDeviceImagelessFramebufferFeatures_chain_elem = 92;
+    VkPhysicalDeviceIndexTypeUint8Features VkPhysicalDeviceIndexTypeUint8Features_chain_elem = 93;
+    VkPhysicalDeviceInheritedViewportScissorFeaturesNV VkPhysicalDeviceInheritedViewportScissorFeaturesNV_chain_elem = 94;
+    VkPhysicalDeviceInlineUniformBlockFeatures VkPhysicalDeviceInlineUniformBlockFeatures_chain_elem = 95;
+    VkPhysicalDeviceInvocationMaskFeaturesHUAWEI VkPhysicalDeviceInvocationMaskFeaturesHUAWEI_chain_elem = 96;
+    VkPhysicalDeviceLegacyDitheringFeaturesEXT VkPhysicalDeviceLegacyDitheringFeaturesEXT_chain_elem = 97;
+    VkPhysicalDeviceLegacyVertexAttributesFeaturesEXT VkPhysicalDeviceLegacyVertexAttributesFeaturesEXT_chain_elem = 98;
+    VkPhysicalDeviceLineRasterizationFeatures VkPhysicalDeviceLineRasterizationFeatures_chain_elem = 99;
+    VkPhysicalDeviceLinearColorAttachmentFeaturesNV VkPhysicalDeviceLinearColorAttachmentFeaturesNV_chain_elem = 100;
+    VkPhysicalDeviceMaintenance4Features VkPhysicalDeviceMaintenance4Features_chain_elem = 101;
+    VkPhysicalDeviceMaintenance5Features VkPhysicalDeviceMaintenance5Features_chain_elem = 102;
+    VkPhysicalDeviceMaintenance6Features VkPhysicalDeviceMaintenance6Features_chain_elem = 103;
+    VkPhysicalDeviceMaintenance7FeaturesKHR VkPhysicalDeviceMaintenance7FeaturesKHR_chain_elem = 104;
+    VkPhysicalDeviceMaintenance8FeaturesKHR VkPhysicalDeviceMaintenance8FeaturesKHR_chain_elem = 105;
+    VkPhysicalDeviceMapMemoryPlacedFeaturesEXT VkPhysicalDeviceMapMemoryPlacedFeaturesEXT_chain_elem = 106;
+    VkPhysicalDeviceMemoryDecompressionFeaturesNV VkPhysicalDeviceMemoryDecompressionFeaturesNV_chain_elem = 107;
+    VkPhysicalDeviceMemoryPriorityFeaturesEXT VkPhysicalDeviceMemoryPriorityFeaturesEXT_chain_elem = 108;
+    VkPhysicalDeviceMeshShaderFeaturesEXT VkPhysicalDeviceMeshShaderFeaturesEXT_chain_elem = 109;
+    VkPhysicalDeviceMeshShaderFeaturesNV VkPhysicalDeviceMeshShaderFeaturesNV_chain_elem = 110;
+    VkPhysicalDeviceMultiDrawFeaturesEXT VkPhysicalDeviceMultiDrawFeaturesEXT_chain_elem = 111;
+    VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT_chain_elem = 112;
+    VkPhysicalDeviceMultiviewFeatures VkPhysicalDeviceMultiviewFeatures_chain_elem = 113;
+    VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQCOM VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQCOM_chain_elem = 114;
+    VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQCOM VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQCOM_chain_elem = 115;
+    VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT_chain_elem = 116;
+    VkPhysicalDeviceNestedCommandBufferFeaturesEXT VkPhysicalDeviceNestedCommandBufferFeaturesEXT_chain_elem = 117;
+    VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT_chain_elem = 118;
+    VkPhysicalDeviceOpacityMicromapFeaturesEXT VkPhysicalDeviceOpacityMicromapFeaturesEXT_chain_elem = 119;
+    VkPhysicalDeviceOpticalFlowFeaturesNV VkPhysicalDeviceOpticalFlowFeaturesNV_chain_elem = 120;
+    VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT_chain_elem = 121;
+    VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV_chain_elem = 122;
+    VkPhysicalDevicePerStageDescriptorSetFeaturesNV VkPhysicalDevicePerStageDescriptorSetFeaturesNV_chain_elem = 123;
+    VkPhysicalDevicePerformanceQueryFeaturesKHR VkPhysicalDevicePerformanceQueryFeaturesKHR_chain_elem = 124;
+    VkPhysicalDevicePipelineBinaryFeaturesKHR VkPhysicalDevicePipelineBinaryFeaturesKHR_chain_elem = 125;
+    VkPhysicalDevicePipelineCreationCacheControlFeatures VkPhysicalDevicePipelineCreationCacheControlFeatures_chain_elem = 126;
+    VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR_chain_elem = 127;
+    VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT_chain_elem = 128;
+    VkPhysicalDevicePipelineOpacityMicromapFeaturesARM VkPhysicalDevicePipelineOpacityMicromapFeaturesARM_chain_elem = 129;
+    VkPhysicalDevicePipelinePropertiesFeaturesEXT VkPhysicalDevicePipelinePropertiesFeaturesEXT_chain_elem = 130;
+    VkPhysicalDevicePipelineProtectedAccessFeatures VkPhysicalDevicePipelineProtectedAccessFeatures_chain_elem = 131;
+    VkPhysicalDevicePipelineRobustnessFeatures VkPhysicalDevicePipelineRobustnessFeatures_chain_elem = 132;
+    VkPhysicalDevicePortabilitySubsetFeaturesKHR VkPhysicalDevicePortabilitySubsetFeaturesKHR_chain_elem = 133;
+    VkPhysicalDevicePresentBarrierFeaturesNV VkPhysicalDevicePresentBarrierFeaturesNV_chain_elem = 134;
+    VkPhysicalDevicePresentIdFeaturesKHR VkPhysicalDevicePresentIdFeaturesKHR_chain_elem = 135;
+    VkPhysicalDevicePresentMeteringFeaturesNV VkPhysicalDevicePresentMeteringFeaturesNV_chain_elem = 136;
+    VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT_chain_elem = 137;
+    VkPhysicalDevicePresentWaitFeaturesKHR VkPhysicalDevicePresentWaitFeaturesKHR_chain_elem = 138;
+    VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT_chain_elem = 139;
+    VkPhysicalDevicePrimitivesGeneratedQueryFeaturesEXT VkPhysicalDevicePrimitivesGeneratedQueryFeaturesEXT_chain_elem = 140;
+    VkPhysicalDevicePrivateDataFeatures VkPhysicalDevicePrivateDataFeatures_chain_elem = 141;
+    VkPhysicalDeviceProtectedMemoryFeatures VkPhysicalDeviceProtectedMemoryFeatures_chain_elem = 142;
+    VkPhysicalDeviceProvokingVertexFeaturesEXT VkPhysicalDeviceProvokingVertexFeaturesEXT_chain_elem = 143;
+    VkPhysicalDeviceRGBA10X6FormatsFeaturesEXT VkPhysicalDeviceRGBA10X6FormatsFeaturesEXT_chain_elem = 144;
+    VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT_chain_elem = 145;
+    VkPhysicalDeviceRawAccessChainsFeaturesNV VkPhysicalDeviceRawAccessChainsFeaturesNV_chain_elem = 146;
+    VkPhysicalDeviceRayQueryFeaturesKHR VkPhysicalDeviceRayQueryFeaturesKHR_chain_elem = 147;
+    VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV_chain_elem = 148;
+    VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV_chain_elem = 149;
+    VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR_chain_elem = 150;
+    VkPhysicalDeviceRayTracingMotionBlurFeaturesNV VkPhysicalDeviceRayTracingMotionBlurFeaturesNV_chain_elem = 151;
+    VkPhysicalDeviceRayTracingPipelineFeaturesKHR VkPhysicalDeviceRayTracingPipelineFeaturesKHR_chain_elem = 152;
+    VkPhysicalDeviceRayTracingPositionFetchFeaturesKHR VkPhysicalDeviceRayTracingPositionFetchFeaturesKHR_chain_elem = 153;
+    VkPhysicalDeviceRayTracingValidationFeaturesNV VkPhysicalDeviceRayTracingValidationFeaturesNV_chain_elem = 154;
+    VkPhysicalDeviceRelaxedLineRasterizationFeaturesIMG VkPhysicalDeviceRelaxedLineRasterizationFeaturesIMG_chain_elem = 155;
+    VkPhysicalDeviceRenderPassStripedFeaturesARM VkPhysicalDeviceRenderPassStripedFeaturesARM_chain_elem = 156;
+    VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV_chain_elem = 157;
+    VkPhysicalDeviceRobustness2FeaturesEXT VkPhysicalDeviceRobustness2FeaturesEXT_chain_elem = 158;
+    VkPhysicalDeviceSamplerYcbcrConversionFeatures VkPhysicalDeviceSamplerYcbcrConversionFeatures_chain_elem = 159;
+    VkPhysicalDeviceScalarBlockLayoutFeatures VkPhysicalDeviceScalarBlockLayoutFeatures_chain_elem = 160;
+    VkPhysicalDeviceSchedulingControlsFeaturesARM VkPhysicalDeviceSchedulingControlsFeaturesARM_chain_elem = 161;
+    VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures_chain_elem = 162;
+    VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV_chain_elem = 163;
+    VkPhysicalDeviceShaderAtomicFloat2FeaturesEXT VkPhysicalDeviceShaderAtomicFloat2FeaturesEXT_chain_elem = 164;
+    VkPhysicalDeviceShaderAtomicFloatFeaturesEXT VkPhysicalDeviceShaderAtomicFloatFeaturesEXT_chain_elem = 165;
+    VkPhysicalDeviceShaderAtomicInt64Features VkPhysicalDeviceShaderAtomicInt64Features_chain_elem = 166;
+    VkPhysicalDeviceShaderBfloat16FeaturesKHR VkPhysicalDeviceShaderBfloat16FeaturesKHR_chain_elem = 167;
+    VkPhysicalDeviceShaderClockFeaturesKHR VkPhysicalDeviceShaderClockFeaturesKHR_chain_elem = 168;
+    VkPhysicalDeviceShaderCoreBuiltinsFeaturesARM VkPhysicalDeviceShaderCoreBuiltinsFeaturesARM_chain_elem = 169;
+    VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures_chain_elem = 170;
+    VkPhysicalDeviceShaderDrawParametersFeatures VkPhysicalDeviceShaderDrawParametersFeatures_chain_elem = 171;
+    VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD_chain_elem = 172;
+    VkPhysicalDeviceShaderEnqueueFeaturesAMDX VkPhysicalDeviceShaderEnqueueFeaturesAMDX_chain_elem = 173;
+    VkPhysicalDeviceShaderExpectAssumeFeatures VkPhysicalDeviceShaderExpectAssumeFeatures_chain_elem = 174;
+    VkPhysicalDeviceShaderFloat16Int8Features VkPhysicalDeviceShaderFloat16Int8Features_chain_elem = 175;
+    VkPhysicalDeviceShaderFloatControls2Features VkPhysicalDeviceShaderFloatControls2Features_chain_elem = 176;
+    VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT_chain_elem = 177;
+    VkPhysicalDeviceShaderImageFootprintFeaturesNV VkPhysicalDeviceShaderImageFootprintFeaturesNV_chain_elem = 178;
+    VkPhysicalDeviceShaderIntegerDotProductFeatures VkPhysicalDeviceShaderIntegerDotProductFeatures_chain_elem = 179;
+    VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL_chain_elem = 180;
+    VkPhysicalDeviceShaderMaximalReconvergenceFeaturesKHR VkPhysicalDeviceShaderMaximalReconvergenceFeaturesKHR_chain_elem = 181;
+    VkPhysicalDeviceShaderModuleIdentifierFeaturesEXT VkPhysicalDeviceShaderModuleIdentifierFeaturesEXT_chain_elem = 182;
+    VkPhysicalDeviceShaderObjectFeaturesEXT VkPhysicalDeviceShaderObjectFeaturesEXT_chain_elem = 183;
+    VkPhysicalDeviceShaderQuadControlFeaturesKHR VkPhysicalDeviceShaderQuadControlFeaturesKHR_chain_elem = 184;
+    VkPhysicalDeviceShaderRelaxedExtendedInstructionFeaturesKHR VkPhysicalDeviceShaderRelaxedExtendedInstructionFeaturesKHR_chain_elem = 185;
+    VkPhysicalDeviceShaderReplicatedCompositesFeaturesEXT VkPhysicalDeviceShaderReplicatedCompositesFeaturesEXT_chain_elem = 186;
+    VkPhysicalDeviceShaderSMBuiltinsFeaturesNV VkPhysicalDeviceShaderSMBuiltinsFeaturesNV_chain_elem = 187;
+    VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures_chain_elem = 188;
+    VkPhysicalDeviceShaderSubgroupRotateFeatures VkPhysicalDeviceShaderSubgroupRotateFeatures_chain_elem = 189;
+    VkPhysicalDeviceShaderSubgroupUniformControlFlowFeaturesKHR VkPhysicalDeviceShaderSubgroupUniformControlFlowFeaturesKHR_chain_elem = 190;
+    VkPhysicalDeviceShaderTerminateInvocationFeatures VkPhysicalDeviceShaderTerminateInvocationFeatures_chain_elem = 191;
+    VkPhysicalDeviceShaderTileImageFeaturesEXT VkPhysicalDeviceShaderTileImageFeaturesEXT_chain_elem = 192;
+    VkPhysicalDeviceShadingRateImageFeaturesNV VkPhysicalDeviceShadingRateImageFeaturesNV_chain_elem = 193;
+    VkPhysicalDeviceSubgroupSizeControlFeatures VkPhysicalDeviceSubgroupSizeControlFeatures_chain_elem = 194;
+    VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT_chain_elem = 195;
+    VkPhysicalDeviceSubpassShadingFeaturesHUAWEI VkPhysicalDeviceSubpassShadingFeaturesHUAWEI_chain_elem = 196;
+    VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT_chain_elem = 197;
+    VkPhysicalDeviceSynchronization2Features VkPhysicalDeviceSynchronization2Features_chain_elem = 198;
+    VkPhysicalDeviceTexelBufferAlignmentFeaturesEXT VkPhysicalDeviceTexelBufferAlignmentFeaturesEXT_chain_elem = 199;
+    VkPhysicalDeviceTextureCompressionASTCHDRFeatures VkPhysicalDeviceTextureCompressionASTCHDRFeatures_chain_elem = 200;
+    VkPhysicalDeviceTileMemoryHeapFeaturesQCOM VkPhysicalDeviceTileMemoryHeapFeaturesQCOM_chain_elem = 201;
+    VkPhysicalDeviceTilePropertiesFeaturesQCOM VkPhysicalDeviceTilePropertiesFeaturesQCOM_chain_elem = 202;
+    VkPhysicalDeviceTileShadingFeaturesQCOM VkPhysicalDeviceTileShadingFeaturesQCOM_chain_elem = 203;
+    VkPhysicalDeviceTimelineSemaphoreFeatures VkPhysicalDeviceTimelineSemaphoreFeatures_chain_elem = 204;
+    VkPhysicalDeviceTransformFeedbackFeaturesEXT VkPhysicalDeviceTransformFeedbackFeaturesEXT_chain_elem = 205;
+    VkPhysicalDeviceUniformBufferStandardLayoutFeatures VkPhysicalDeviceUniformBufferStandardLayoutFeatures_chain_elem = 206;
+    VkPhysicalDeviceVariablePointersFeatures VkPhysicalDeviceVariablePointersFeatures_chain_elem = 207;
+    VkPhysicalDeviceVertexAttributeDivisorFeatures VkPhysicalDeviceVertexAttributeDivisorFeatures_chain_elem = 208;
+    VkPhysicalDeviceVertexAttributeRobustnessFeaturesEXT VkPhysicalDeviceVertexAttributeRobustnessFeaturesEXT_chain_elem = 209;
+    VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT_chain_elem = 210;
+    VkPhysicalDeviceVideoEncodeAV1FeaturesKHR VkPhysicalDeviceVideoEncodeAV1FeaturesKHR_chain_elem = 211;
+    VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR_chain_elem = 212;
+    VkPhysicalDeviceVideoMaintenance1FeaturesKHR VkPhysicalDeviceVideoMaintenance1FeaturesKHR_chain_elem = 213;
+    VkPhysicalDeviceVideoMaintenance2FeaturesKHR VkPhysicalDeviceVideoMaintenance2FeaturesKHR_chain_elem = 214;
+    VkPhysicalDeviceVulkan11Features VkPhysicalDeviceVulkan11Features_chain_elem = 215;
+    VkPhysicalDeviceVulkan12Features VkPhysicalDeviceVulkan12Features_chain_elem = 216;
+    VkPhysicalDeviceVulkan13Features VkPhysicalDeviceVulkan13Features_chain_elem = 217;
+    VkPhysicalDeviceVulkan14Features VkPhysicalDeviceVulkan14Features_chain_elem = 218;
+    VkPhysicalDeviceVulkanMemoryModelFeatures VkPhysicalDeviceVulkanMemoryModelFeatures_chain_elem = 219;
+    VkPhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR VkPhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR_chain_elem = 220;
+    VkPhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT VkPhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT_chain_elem = 221;
+    VkPhysicalDeviceYcbcrDegammaFeaturesQCOM VkPhysicalDeviceYcbcrDegammaFeaturesQCOM_chain_elem = 222;
+    VkPhysicalDeviceYcbcrImageArraysFeaturesEXT VkPhysicalDeviceYcbcrImageArraysFeaturesEXT_chain_elem = 223;
+    VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeatures VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeatures_chain_elem = 224;
+  }
+}
+message PNextChain_VkSubmitInfo {
+  oneof chain_element {
+    VkAmigoProfilingSubmitInfoSEC VkAmigoProfilingSubmitInfoSEC_chain_elem = 1;
+    VkD3D12FenceSubmitInfoKHR VkD3D12FenceSubmitInfoKHR_chain_elem = 2;
+    VkDeviceGroupSubmitInfo VkDeviceGroupSubmitInfo_chain_elem = 3;
+    VkFrameBoundaryEXT VkFrameBoundaryEXT_chain_elem = 4;
+    VkLatencySubmissionPresentIdNV VkLatencySubmissionPresentIdNV_chain_elem = 5;
+    VkPerformanceQuerySubmitInfoKHR VkPerformanceQuerySubmitInfoKHR_chain_elem = 6;
+    VkProtectedSubmitInfo VkProtectedSubmitInfo_chain_elem = 7;
+    VkTimelineSemaphoreSubmitInfo VkTimelineSemaphoreSubmitInfo_chain_elem = 8;
+    VkWin32KeyedMutexAcquireReleaseInfoKHR VkWin32KeyedMutexAcquireReleaseInfoKHR_chain_elem = 9;
+    VkWin32KeyedMutexAcquireReleaseInfoNV VkWin32KeyedMutexAcquireReleaseInfoNV_chain_elem = 10;
+  }
+}
+message PNextChain_VkMemoryAllocateInfo {
+  oneof chain_element {
+    VkDedicatedAllocationMemoryAllocateInfoNV VkDedicatedAllocationMemoryAllocateInfoNV_chain_elem = 1;
+    VkExportMemoryAllocateInfo VkExportMemoryAllocateInfo_chain_elem = 2;
+    VkExportMemoryAllocateInfoNV VkExportMemoryAllocateInfoNV_chain_elem = 3;
+    VkExportMemoryWin32HandleInfoKHR VkExportMemoryWin32HandleInfoKHR_chain_elem = 4;
+    VkExportMemoryWin32HandleInfoNV VkExportMemoryWin32HandleInfoNV_chain_elem = 5;
+    VkExportMetalObjectCreateInfoEXT VkExportMetalObjectCreateInfoEXT_chain_elem = 6;
+    VkImportAndroidHardwareBufferInfoANDROID VkImportAndroidHardwareBufferInfoANDROID_chain_elem = 7;
+    VkImportMemoryBufferCollectionFUCHSIA VkImportMemoryBufferCollectionFUCHSIA_chain_elem = 8;
+    VkImportMemoryFdInfoKHR VkImportMemoryFdInfoKHR_chain_elem = 9;
+    VkImportMemoryHostPointerInfoEXT VkImportMemoryHostPointerInfoEXT_chain_elem = 10;
+    VkImportMemoryMetalHandleInfoEXT VkImportMemoryMetalHandleInfoEXT_chain_elem = 11;
+    VkImportMemoryWin32HandleInfoKHR VkImportMemoryWin32HandleInfoKHR_chain_elem = 12;
+    VkImportMemoryWin32HandleInfoNV VkImportMemoryWin32HandleInfoNV_chain_elem = 13;
+    VkImportMemoryZirconHandleInfoFUCHSIA VkImportMemoryZirconHandleInfoFUCHSIA_chain_elem = 14;
+    VkImportMetalBufferInfoEXT VkImportMetalBufferInfoEXT_chain_elem = 15;
+    VkImportScreenBufferInfoQNX VkImportScreenBufferInfoQNX_chain_elem = 16;
+    VkMemoryAllocateFlagsInfo VkMemoryAllocateFlagsInfo_chain_elem = 17;
+    VkMemoryDedicatedAllocateInfo VkMemoryDedicatedAllocateInfo_chain_elem = 18;
+    VkMemoryOpaqueCaptureAddressAllocateInfo VkMemoryOpaqueCaptureAddressAllocateInfo_chain_elem = 19;
+    VkMemoryPriorityAllocateInfoEXT VkMemoryPriorityAllocateInfoEXT_chain_elem = 20;
+  }
+}
+message PNextChain_VkFenceCreateInfo {
+  oneof chain_element {
+    VkExportFenceCreateInfo VkExportFenceCreateInfo_chain_elem = 1;
+    VkExportFenceWin32HandleInfoKHR VkExportFenceWin32HandleInfoKHR_chain_elem = 2;
+  }
+}
+message PNextChain_VkSemaphoreCreateInfo {
+  oneof chain_element {
+    VkExportMetalObjectCreateInfoEXT VkExportMetalObjectCreateInfoEXT_chain_elem = 1;
+    VkExportSemaphoreCreateInfo VkExportSemaphoreCreateInfo_chain_elem = 2;
+    VkExportSemaphoreWin32HandleInfoKHR VkExportSemaphoreWin32HandleInfoKHR_chain_elem = 3;
+    VkImportMetalSharedEventInfoEXT VkImportMetalSharedEventInfoEXT_chain_elem = 4;
+    VkQueryLowLatencySupportNV VkQueryLowLatencySupportNV_chain_elem = 5;
+    VkSemaphoreTypeCreateInfo VkSemaphoreTypeCreateInfo_chain_elem = 6;
+  }
+}
+message PNextChain_VkImageCreateInfo {
+  oneof chain_element {
+    VkBufferCollectionImageCreateInfoFUCHSIA VkBufferCollectionImageCreateInfoFUCHSIA_chain_elem = 1;
+    VkDedicatedAllocationImageCreateInfoNV VkDedicatedAllocationImageCreateInfoNV_chain_elem = 2;
+    VkExportMetalObjectCreateInfoEXT VkExportMetalObjectCreateInfoEXT_chain_elem = 3;
+    VkExternalFormatANDROID VkExternalFormatANDROID_chain_elem = 4;
+    VkExternalFormatQNX VkExternalFormatQNX_chain_elem = 5;
+    VkExternalMemoryImageCreateInfo VkExternalMemoryImageCreateInfo_chain_elem = 6;
+    VkExternalMemoryImageCreateInfoNV VkExternalMemoryImageCreateInfoNV_chain_elem = 7;
+    VkImageAlignmentControlCreateInfoMESA VkImageAlignmentControlCreateInfoMESA_chain_elem = 8;
+    VkImageCompressionControlEXT VkImageCompressionControlEXT_chain_elem = 9;
+    VkImageDrmFormatModifierExplicitCreateInfoEXT VkImageDrmFormatModifierExplicitCreateInfoEXT_chain_elem = 10;
+    VkImageDrmFormatModifierListCreateInfoEXT VkImageDrmFormatModifierListCreateInfoEXT_chain_elem = 11;
+    VkImageFormatListCreateInfo VkImageFormatListCreateInfo_chain_elem = 12;
+    VkImageStencilUsageCreateInfo VkImageStencilUsageCreateInfo_chain_elem = 13;
+    VkImageSwapchainCreateInfoKHR VkImageSwapchainCreateInfoKHR_chain_elem = 14;
+    VkImportMetalIOSurfaceInfoEXT VkImportMetalIOSurfaceInfoEXT_chain_elem = 15;
+    VkImportMetalTextureInfoEXT VkImportMetalTextureInfoEXT_chain_elem = 16;
+    VkOpaqueCaptureDescriptorDataCreateInfoEXT VkOpaqueCaptureDescriptorDataCreateInfoEXT_chain_elem = 17;
+    VkOpticalFlowImageFormatInfoNV VkOpticalFlowImageFormatInfoNV_chain_elem = 18;
+    VkVideoProfileListInfoKHR VkVideoProfileListInfoKHR_chain_elem = 19;
+  }
+}
+message PNextChain_VkImageViewCreateInfo {
+  oneof chain_element {
+    VkExportMetalObjectCreateInfoEXT VkExportMetalObjectCreateInfoEXT_chain_elem = 1;
+    VkImageViewASTCDecodeModeEXT VkImageViewASTCDecodeModeEXT_chain_elem = 2;
+    VkImageViewMinLodCreateInfoEXT VkImageViewMinLodCreateInfoEXT_chain_elem = 3;
+    VkImageViewSampleWeightCreateInfoQCOM VkImageViewSampleWeightCreateInfoQCOM_chain_elem = 4;
+    VkImageViewSlicedCreateInfoEXT VkImageViewSlicedCreateInfoEXT_chain_elem = 5;
+    VkImageViewUsageCreateInfo VkImageViewUsageCreateInfo_chain_elem = 6;
+    VkOpaqueCaptureDescriptorDataCreateInfoEXT VkOpaqueCaptureDescriptorDataCreateInfoEXT_chain_elem = 7;
+    VkSamplerYcbcrConversionInfo VkSamplerYcbcrConversionInfo_chain_elem = 8;
+  }
+}
+message PNextChain_VkShaderModuleCreateInfo {
+  oneof chain_element {
+    VkShaderModuleValidationCacheCreateInfoEXT VkShaderModuleValidationCacheCreateInfoEXT_chain_elem = 1;
+    VkValidationFeaturesEXT VkValidationFeaturesEXT_chain_elem = 2;
+  }
+}
+message PNextChain_VkPipelineShaderStageCreateInfo {
+  oneof chain_element {
+    VkDebugUtilsObjectNameInfoEXT VkDebugUtilsObjectNameInfoEXT_chain_elem = 1;
+    VkPipelineRobustnessCreateInfo VkPipelineRobustnessCreateInfo_chain_elem = 2;
+    VkPipelineShaderStageModuleIdentifierCreateInfoEXT VkPipelineShaderStageModuleIdentifierCreateInfoEXT_chain_elem = 3;
+    VkPipelineShaderStageNodeCreateInfoAMDX VkPipelineShaderStageNodeCreateInfoAMDX_chain_elem = 4;
+    VkPipelineShaderStageRequiredSubgroupSizeCreateInfo VkPipelineShaderStageRequiredSubgroupSizeCreateInfo_chain_elem = 5;
+    VkShaderModuleCreateInfo VkShaderModuleCreateInfo_chain_elem = 6;
+    VkShaderModuleValidationCacheCreateInfoEXT VkShaderModuleValidationCacheCreateInfoEXT_chain_elem = 7;
+  }
+}
+message PNextChain_VkPipelineVertexInputStateCreateInfo {
+  oneof chain_element {
+    VkPipelineVertexInputDivisorStateCreateInfo VkPipelineVertexInputDivisorStateCreateInfo_chain_elem = 1;
+  }
+}
+message PNextChain_VkPipelineTessellationStateCreateInfo {
+  oneof chain_element {
+    VkPipelineTessellationDomainOriginStateCreateInfo VkPipelineTessellationDomainOriginStateCreateInfo_chain_elem = 1;
+  }
+}
+message PNextChain_VkPipelineViewportStateCreateInfo {
+  oneof chain_element {
+    VkPipelineViewportCoarseSampleOrderStateCreateInfoNV VkPipelineViewportCoarseSampleOrderStateCreateInfoNV_chain_elem = 1;
+    VkPipelineViewportDepthClampControlCreateInfoEXT VkPipelineViewportDepthClampControlCreateInfoEXT_chain_elem = 2;
+    VkPipelineViewportDepthClipControlCreateInfoEXT VkPipelineViewportDepthClipControlCreateInfoEXT_chain_elem = 3;
+    VkPipelineViewportExclusiveScissorStateCreateInfoNV VkPipelineViewportExclusiveScissorStateCreateInfoNV_chain_elem = 4;
+    VkPipelineViewportShadingRateImageStateCreateInfoNV VkPipelineViewportShadingRateImageStateCreateInfoNV_chain_elem = 5;
+    VkPipelineViewportSwizzleStateCreateInfoNV VkPipelineViewportSwizzleStateCreateInfoNV_chain_elem = 6;
+    VkPipelineViewportWScalingStateCreateInfoNV VkPipelineViewportWScalingStateCreateInfoNV_chain_elem = 7;
+  }
+}
+message PNextChain_VkPipelineRasterizationStateCreateInfo {
+  oneof chain_element {
+    VkDepthBiasRepresentationInfoEXT VkDepthBiasRepresentationInfoEXT_chain_elem = 1;
+    VkPipelineRasterizationConservativeStateCreateInfoEXT VkPipelineRasterizationConservativeStateCreateInfoEXT_chain_elem = 2;
+    VkPipelineRasterizationDepthClipStateCreateInfoEXT VkPipelineRasterizationDepthClipStateCreateInfoEXT_chain_elem = 3;
+    VkPipelineRasterizationLineStateCreateInfo VkPipelineRasterizationLineStateCreateInfo_chain_elem = 4;
+    VkPipelineRasterizationProvokingVertexStateCreateInfoEXT VkPipelineRasterizationProvokingVertexStateCreateInfoEXT_chain_elem = 5;
+    VkPipelineRasterizationStateRasterizationOrderAMD VkPipelineRasterizationStateRasterizationOrderAMD_chain_elem = 6;
+    VkPipelineRasterizationStateStreamCreateInfoEXT VkPipelineRasterizationStateStreamCreateInfoEXT_chain_elem = 7;
+  }
+}
+message PNextChain_VkPipelineMultisampleStateCreateInfo {
+  oneof chain_element {
+    VkPipelineCoverageModulationStateCreateInfoNV VkPipelineCoverageModulationStateCreateInfoNV_chain_elem = 1;
+    VkPipelineCoverageReductionStateCreateInfoNV VkPipelineCoverageReductionStateCreateInfoNV_chain_elem = 2;
+    VkPipelineCoverageToColorStateCreateInfoNV VkPipelineCoverageToColorStateCreateInfoNV_chain_elem = 3;
+    VkPipelineSampleLocationsStateCreateInfoEXT VkPipelineSampleLocationsStateCreateInfoEXT_chain_elem = 4;
+  }
+}
+message PNextChain_VkPipelineColorBlendStateCreateInfo {
+  oneof chain_element {
+    VkPipelineColorBlendAdvancedStateCreateInfoEXT VkPipelineColorBlendAdvancedStateCreateInfoEXT_chain_elem = 1;
+    VkPipelineColorWriteCreateInfoEXT VkPipelineColorWriteCreateInfoEXT_chain_elem = 2;
+  }
+}
+message PNextChain_VkGraphicsPipelineCreateInfo {
+  oneof chain_element {
+    VkAttachmentSampleCountInfoAMD VkAttachmentSampleCountInfoAMD_chain_elem = 1;
+    VkExternalFormatANDROID VkExternalFormatANDROID_chain_elem = 2;
+    VkGraphicsPipelineLibraryCreateInfoEXT VkGraphicsPipelineLibraryCreateInfoEXT_chain_elem = 3;
+    VkGraphicsPipelineShaderGroupsCreateInfoNV VkGraphicsPipelineShaderGroupsCreateInfoNV_chain_elem = 4;
+    VkMultiviewPerViewAttributesInfoNVX VkMultiviewPerViewAttributesInfoNVX_chain_elem = 5;
+    VkPipelineBinaryInfoKHR VkPipelineBinaryInfoKHR_chain_elem = 6;
+    VkPipelineCompilerControlCreateInfoAMD VkPipelineCompilerControlCreateInfoAMD_chain_elem = 7;
+    VkPipelineCreateFlags2CreateInfo VkPipelineCreateFlags2CreateInfo_chain_elem = 8;
+    VkPipelineCreationFeedbackCreateInfo VkPipelineCreationFeedbackCreateInfo_chain_elem = 9;
+    VkPipelineDiscardRectangleStateCreateInfoEXT VkPipelineDiscardRectangleStateCreateInfoEXT_chain_elem = 10;
+    VkPipelineFragmentShadingRateEnumStateCreateInfoNV VkPipelineFragmentShadingRateEnumStateCreateInfoNV_chain_elem = 11;
+    VkPipelineFragmentShadingRateStateCreateInfoKHR VkPipelineFragmentShadingRateStateCreateInfoKHR_chain_elem = 12;
+    VkPipelineLibraryCreateInfoKHR VkPipelineLibraryCreateInfoKHR_chain_elem = 13;
+    VkPipelineRenderingCreateInfo VkPipelineRenderingCreateInfo_chain_elem = 14;
+    VkPipelineRepresentativeFragmentTestStateCreateInfoNV VkPipelineRepresentativeFragmentTestStateCreateInfoNV_chain_elem = 15;
+    VkPipelineRobustnessCreateInfo VkPipelineRobustnessCreateInfo_chain_elem = 16;
+    VkRenderingAttachmentLocationInfo VkRenderingAttachmentLocationInfo_chain_elem = 17;
+    VkRenderingInputAttachmentIndexInfo VkRenderingInputAttachmentIndexInfo_chain_elem = 18;
+  }
+}
+message PNextChain_VkFramebufferCreateInfo {
+  oneof chain_element {
+    VkFramebufferAttachmentsCreateInfo VkFramebufferAttachmentsCreateInfo_chain_elem = 1;
+  }
+}
+message PNextChain_VkRenderPassCreateInfo {
+  oneof chain_element {
+    VkRenderPassFragmentDensityMapCreateInfoEXT VkRenderPassFragmentDensityMapCreateInfoEXT_chain_elem = 1;
+    VkRenderPassInputAttachmentAspectCreateInfo VkRenderPassInputAttachmentAspectCreateInfo_chain_elem = 2;
+    VkRenderPassMultiviewCreateInfo VkRenderPassMultiviewCreateInfo_chain_elem = 3;
+    VkRenderPassTileShadingCreateInfoQCOM VkRenderPassTileShadingCreateInfoQCOM_chain_elem = 4;
+    VkTileMemorySizeInfoQCOM VkTileMemorySizeInfoQCOM_chain_elem = 5;
+  }
+}
+message PNextChain_VkCommandBufferInheritanceInfo {
+  oneof chain_element {
+    VkAttachmentSampleCountInfoAMD VkAttachmentSampleCountInfoAMD_chain_elem = 1;
+    VkCommandBufferInheritanceConditionalRenderingInfoEXT VkCommandBufferInheritanceConditionalRenderingInfoEXT_chain_elem = 2;
+    VkCommandBufferInheritanceRenderPassTransformInfoQCOM VkCommandBufferInheritanceRenderPassTransformInfoQCOM_chain_elem = 3;
+    VkCommandBufferInheritanceRenderingInfo VkCommandBufferInheritanceRenderingInfo_chain_elem = 4;
+    VkCommandBufferInheritanceViewportScissorInfoNV VkCommandBufferInheritanceViewportScissorInfoNV_chain_elem = 5;
+    VkExternalFormatANDROID VkExternalFormatANDROID_chain_elem = 6;
+    VkMultiviewPerViewAttributesInfoNVX VkMultiviewPerViewAttributesInfoNVX_chain_elem = 7;
+    VkRenderPassTileShadingCreateInfoQCOM VkRenderPassTileShadingCreateInfoQCOM_chain_elem = 8;
+    VkRenderingAttachmentLocationInfo VkRenderingAttachmentLocationInfo_chain_elem = 9;
+    VkRenderingInputAttachmentIndexInfo VkRenderingInputAttachmentIndexInfo_chain_elem = 10;
+    VkTileMemoryBindInfoQCOM VkTileMemoryBindInfoQCOM_chain_elem = 11;
+  }
+}
+message PNextChain_VkCommandBufferBeginInfo {
+  oneof chain_element {
+    VkDeviceGroupCommandBufferBeginInfo VkDeviceGroupCommandBufferBeginInfo_chain_elem = 1;
+  }
+}
+message PNextChain_VkRenderPassBeginInfo {
+  oneof chain_element {
+    VkDeviceGroupRenderPassBeginInfo VkDeviceGroupRenderPassBeginInfo_chain_elem = 1;
+    VkMultiviewPerViewRenderAreasRenderPassBeginInfoQCOM VkMultiviewPerViewRenderAreasRenderPassBeginInfoQCOM_chain_elem = 2;
+    VkRenderPassAttachmentBeginInfo VkRenderPassAttachmentBeginInfo_chain_elem = 3;
+    VkRenderPassSampleLocationsBeginInfoEXT VkRenderPassSampleLocationsBeginInfoEXT_chain_elem = 4;
+    VkRenderPassStripeBeginInfoARM VkRenderPassStripeBeginInfoARM_chain_elem = 5;
+    VkRenderPassTransformBeginInfoQCOM VkRenderPassTransformBeginInfoQCOM_chain_elem = 6;
+  }
+}
+message PNextChain_VkBindImageMemoryInfo {
+  oneof chain_element {
+    VkBindImageMemoryDeviceGroupInfo VkBindImageMemoryDeviceGroupInfo_chain_elem = 1;
+    VkBindImageMemorySwapchainInfoKHR VkBindImageMemorySwapchainInfoKHR_chain_elem = 2;
+    VkBindImagePlaneMemoryInfo VkBindImagePlaneMemoryInfo_chain_elem = 3;
+    VkBindMemoryStatus VkBindMemoryStatus_chain_elem = 4;
+  }
+}
+message PNextChain_VkImageMemoryRequirementsInfo2 {
+  oneof chain_element {
+    VkImagePlaneMemoryRequirementsInfo VkImagePlaneMemoryRequirementsInfo_chain_elem = 1;
+  }
+}
+message PNextChain_VkMemoryRequirements2 {
+  oneof chain_element {
+    VkMemoryDedicatedRequirements VkMemoryDedicatedRequirements_chain_elem = 1;
+    VkTileMemoryRequirementsQCOM VkTileMemoryRequirementsQCOM_chain_elem = 2;
+  }
+}
+message PNextChain_VkPhysicalDeviceFeatures2 {
+  oneof chain_element {
+    VkPhysicalDevice16BitStorageFeatures VkPhysicalDevice16BitStorageFeatures_chain_elem = 1;
+    VkPhysicalDevice4444FormatsFeaturesEXT VkPhysicalDevice4444FormatsFeaturesEXT_chain_elem = 2;
+    VkPhysicalDevice8BitStorageFeatures VkPhysicalDevice8BitStorageFeatures_chain_elem = 3;
+    VkPhysicalDeviceASTCDecodeFeaturesEXT VkPhysicalDeviceASTCDecodeFeaturesEXT_chain_elem = 4;
+    VkPhysicalDeviceAccelerationStructureFeaturesKHR VkPhysicalDeviceAccelerationStructureFeaturesKHR_chain_elem = 5;
+    VkPhysicalDeviceAddressBindingReportFeaturesEXT VkPhysicalDeviceAddressBindingReportFeaturesEXT_chain_elem = 6;
+    VkPhysicalDeviceAmigoProfilingFeaturesSEC VkPhysicalDeviceAmigoProfilingFeaturesSEC_chain_elem = 7;
+    VkPhysicalDeviceAntiLagFeaturesAMD VkPhysicalDeviceAntiLagFeaturesAMD_chain_elem = 8;
+    VkPhysicalDeviceAttachmentFeedbackLoopDynamicStateFeaturesEXT VkPhysicalDeviceAttachmentFeedbackLoopDynamicStateFeaturesEXT_chain_elem = 9;
+    VkPhysicalDeviceAttachmentFeedbackLoopLayoutFeaturesEXT VkPhysicalDeviceAttachmentFeedbackLoopLayoutFeaturesEXT_chain_elem = 10;
+    VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT_chain_elem = 11;
+    VkPhysicalDeviceBorderColorSwizzleFeaturesEXT VkPhysicalDeviceBorderColorSwizzleFeaturesEXT_chain_elem = 12;
+    VkPhysicalDeviceBufferDeviceAddressFeatures VkPhysicalDeviceBufferDeviceAddressFeatures_chain_elem = 13;
+    VkPhysicalDeviceBufferDeviceAddressFeaturesEXT VkPhysicalDeviceBufferDeviceAddressFeaturesEXT_chain_elem = 14;
+    VkPhysicalDeviceClusterAccelerationStructureFeaturesNV VkPhysicalDeviceClusterAccelerationStructureFeaturesNV_chain_elem = 15;
+    VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI_chain_elem = 16;
+    VkPhysicalDeviceCoherentMemoryFeaturesAMD VkPhysicalDeviceCoherentMemoryFeaturesAMD_chain_elem = 17;
+    VkPhysicalDeviceColorWriteEnableFeaturesEXT VkPhysicalDeviceColorWriteEnableFeaturesEXT_chain_elem = 18;
+    VkPhysicalDeviceCommandBufferInheritanceFeaturesNV VkPhysicalDeviceCommandBufferInheritanceFeaturesNV_chain_elem = 19;
+    VkPhysicalDeviceComputeShaderDerivativesFeaturesKHR VkPhysicalDeviceComputeShaderDerivativesFeaturesKHR_chain_elem = 20;
+    VkPhysicalDeviceConditionalRenderingFeaturesEXT VkPhysicalDeviceConditionalRenderingFeaturesEXT_chain_elem = 21;
+    VkPhysicalDeviceCooperativeMatrix2FeaturesNV VkPhysicalDeviceCooperativeMatrix2FeaturesNV_chain_elem = 22;
+    VkPhysicalDeviceCooperativeMatrixFeaturesKHR VkPhysicalDeviceCooperativeMatrixFeaturesKHR_chain_elem = 23;
+    VkPhysicalDeviceCooperativeMatrixFeaturesNV VkPhysicalDeviceCooperativeMatrixFeaturesNV_chain_elem = 24;
+    VkPhysicalDeviceCooperativeVectorFeaturesNV VkPhysicalDeviceCooperativeVectorFeaturesNV_chain_elem = 25;
+    VkPhysicalDeviceCopyMemoryIndirectFeaturesNV VkPhysicalDeviceCopyMemoryIndirectFeaturesNV_chain_elem = 26;
+    VkPhysicalDeviceCornerSampledImageFeaturesNV VkPhysicalDeviceCornerSampledImageFeaturesNV_chain_elem = 27;
+    VkPhysicalDeviceCoverageReductionModeFeaturesNV VkPhysicalDeviceCoverageReductionModeFeaturesNV_chain_elem = 28;
+    VkPhysicalDeviceCubicClampFeaturesQCOM VkPhysicalDeviceCubicClampFeaturesQCOM_chain_elem = 29;
+    VkPhysicalDeviceCubicWeightsFeaturesQCOM VkPhysicalDeviceCubicWeightsFeaturesQCOM_chain_elem = 30;
+    VkPhysicalDeviceCudaKernelLaunchFeaturesNV VkPhysicalDeviceCudaKernelLaunchFeaturesNV_chain_elem = 31;
+    VkPhysicalDeviceCustomBorderColorFeaturesEXT VkPhysicalDeviceCustomBorderColorFeaturesEXT_chain_elem = 32;
+    VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV_chain_elem = 33;
+    VkPhysicalDeviceDepthBiasControlFeaturesEXT VkPhysicalDeviceDepthBiasControlFeaturesEXT_chain_elem = 34;
+    VkPhysicalDeviceDepthClampControlFeaturesEXT VkPhysicalDeviceDepthClampControlFeaturesEXT_chain_elem = 35;
+    VkPhysicalDeviceDepthClampZeroOneFeaturesKHR VkPhysicalDeviceDepthClampZeroOneFeaturesKHR_chain_elem = 36;
+    VkPhysicalDeviceDepthClipControlFeaturesEXT VkPhysicalDeviceDepthClipControlFeaturesEXT_chain_elem = 37;
+    VkPhysicalDeviceDepthClipEnableFeaturesEXT VkPhysicalDeviceDepthClipEnableFeaturesEXT_chain_elem = 38;
+    VkPhysicalDeviceDescriptorBufferFeaturesEXT VkPhysicalDeviceDescriptorBufferFeaturesEXT_chain_elem = 39;
+    VkPhysicalDeviceDescriptorIndexingFeatures VkPhysicalDeviceDescriptorIndexingFeatures_chain_elem = 40;
+    VkPhysicalDeviceDescriptorPoolOverallocationFeaturesNV VkPhysicalDeviceDescriptorPoolOverallocationFeaturesNV_chain_elem = 41;
+    VkPhysicalDeviceDescriptorSetHostMappingFeaturesVALVE VkPhysicalDeviceDescriptorSetHostMappingFeaturesVALVE_chain_elem = 42;
+    VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV_chain_elem = 43;
+    VkPhysicalDeviceDeviceGeneratedCommandsFeaturesEXT VkPhysicalDeviceDeviceGeneratedCommandsFeaturesEXT_chain_elem = 44;
+    VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV_chain_elem = 45;
+    VkPhysicalDeviceDeviceMemoryReportFeaturesEXT VkPhysicalDeviceDeviceMemoryReportFeaturesEXT_chain_elem = 46;
+    VkPhysicalDeviceDiagnosticsConfigFeaturesNV VkPhysicalDeviceDiagnosticsConfigFeaturesNV_chain_elem = 47;
+    VkPhysicalDeviceDisplacementMicromapFeaturesNV VkPhysicalDeviceDisplacementMicromapFeaturesNV_chain_elem = 48;
+    VkPhysicalDeviceDynamicRenderingFeatures VkPhysicalDeviceDynamicRenderingFeatures_chain_elem = 49;
+    VkPhysicalDeviceDynamicRenderingLocalReadFeatures VkPhysicalDeviceDynamicRenderingLocalReadFeatures_chain_elem = 50;
+    VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT_chain_elem = 51;
+    VkPhysicalDeviceExclusiveScissorFeaturesNV VkPhysicalDeviceExclusiveScissorFeaturesNV_chain_elem = 52;
+    VkPhysicalDeviceExtendedDynamicState2FeaturesEXT VkPhysicalDeviceExtendedDynamicState2FeaturesEXT_chain_elem = 53;
+    VkPhysicalDeviceExtendedDynamicState3FeaturesEXT VkPhysicalDeviceExtendedDynamicState3FeaturesEXT_chain_elem = 54;
+    VkPhysicalDeviceExtendedDynamicStateFeaturesEXT VkPhysicalDeviceExtendedDynamicStateFeaturesEXT_chain_elem = 55;
+    VkPhysicalDeviceExtendedSparseAddressSpaceFeaturesNV VkPhysicalDeviceExtendedSparseAddressSpaceFeaturesNV_chain_elem = 56;
+    VkPhysicalDeviceExternalFormatResolveFeaturesANDROID VkPhysicalDeviceExternalFormatResolveFeaturesANDROID_chain_elem = 57;
+    VkPhysicalDeviceExternalMemoryRDMAFeaturesNV VkPhysicalDeviceExternalMemoryRDMAFeaturesNV_chain_elem = 58;
+    VkPhysicalDeviceExternalMemoryScreenBufferFeaturesQNX VkPhysicalDeviceExternalMemoryScreenBufferFeaturesQNX_chain_elem = 59;
+    VkPhysicalDeviceFaultFeaturesEXT VkPhysicalDeviceFaultFeaturesEXT_chain_elem = 60;
+    VkPhysicalDeviceFragmentDensityMap2FeaturesEXT VkPhysicalDeviceFragmentDensityMap2FeaturesEXT_chain_elem = 61;
+    VkPhysicalDeviceFragmentDensityMapFeaturesEXT VkPhysicalDeviceFragmentDensityMapFeaturesEXT_chain_elem = 62;
+    VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT_chain_elem = 63;
+    VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR_chain_elem = 64;
+    VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT_chain_elem = 65;
+    VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNV VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNV_chain_elem = 66;
+    VkPhysicalDeviceFragmentShadingRateFeaturesKHR VkPhysicalDeviceFragmentShadingRateFeaturesKHR_chain_elem = 67;
+    VkPhysicalDeviceFrameBoundaryFeaturesEXT VkPhysicalDeviceFrameBoundaryFeaturesEXT_chain_elem = 68;
+    VkPhysicalDeviceGlobalPriorityQueryFeatures VkPhysicalDeviceGlobalPriorityQueryFeatures_chain_elem = 69;
+    VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT_chain_elem = 70;
+    VkPhysicalDeviceHdrVividFeaturesHUAWEI VkPhysicalDeviceHdrVividFeaturesHUAWEI_chain_elem = 71;
+    VkPhysicalDeviceHostImageCopyFeatures VkPhysicalDeviceHostImageCopyFeatures_chain_elem = 72;
+    VkPhysicalDeviceHostQueryResetFeatures VkPhysicalDeviceHostQueryResetFeatures_chain_elem = 73;
+    VkPhysicalDeviceImage2DViewOf3DFeaturesEXT VkPhysicalDeviceImage2DViewOf3DFeaturesEXT_chain_elem = 74;
+    VkPhysicalDeviceImageAlignmentControlFeaturesMESA VkPhysicalDeviceImageAlignmentControlFeaturesMESA_chain_elem = 75;
+    VkPhysicalDeviceImageCompressionControlFeaturesEXT VkPhysicalDeviceImageCompressionControlFeaturesEXT_chain_elem = 76;
+    VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT_chain_elem = 77;
+    VkPhysicalDeviceImageProcessing2FeaturesQCOM VkPhysicalDeviceImageProcessing2FeaturesQCOM_chain_elem = 78;
+    VkPhysicalDeviceImageProcessingFeaturesQCOM VkPhysicalDeviceImageProcessingFeaturesQCOM_chain_elem = 79;
+    VkPhysicalDeviceImageRobustnessFeatures VkPhysicalDeviceImageRobustnessFeatures_chain_elem = 80;
+    VkPhysicalDeviceImageSlicedViewOf3DFeaturesEXT VkPhysicalDeviceImageSlicedViewOf3DFeaturesEXT_chain_elem = 81;
+    VkPhysicalDeviceImageViewMinLodFeaturesEXT VkPhysicalDeviceImageViewMinLodFeaturesEXT_chain_elem = 82;
+    VkPhysicalDeviceImagelessFramebufferFeatures VkPhysicalDeviceImagelessFramebufferFeatures_chain_elem = 83;
+    VkPhysicalDeviceIndexTypeUint8Features VkPhysicalDeviceIndexTypeUint8Features_chain_elem = 84;
+    VkPhysicalDeviceInheritedViewportScissorFeaturesNV VkPhysicalDeviceInheritedViewportScissorFeaturesNV_chain_elem = 85;
+    VkPhysicalDeviceInlineUniformBlockFeatures VkPhysicalDeviceInlineUniformBlockFeatures_chain_elem = 86;
+    VkPhysicalDeviceInvocationMaskFeaturesHUAWEI VkPhysicalDeviceInvocationMaskFeaturesHUAWEI_chain_elem = 87;
+    VkPhysicalDeviceLegacyDitheringFeaturesEXT VkPhysicalDeviceLegacyDitheringFeaturesEXT_chain_elem = 88;
+    VkPhysicalDeviceLegacyVertexAttributesFeaturesEXT VkPhysicalDeviceLegacyVertexAttributesFeaturesEXT_chain_elem = 89;
+    VkPhysicalDeviceLineRasterizationFeatures VkPhysicalDeviceLineRasterizationFeatures_chain_elem = 90;
+    VkPhysicalDeviceLinearColorAttachmentFeaturesNV VkPhysicalDeviceLinearColorAttachmentFeaturesNV_chain_elem = 91;
+    VkPhysicalDeviceMaintenance4Features VkPhysicalDeviceMaintenance4Features_chain_elem = 92;
+    VkPhysicalDeviceMaintenance5Features VkPhysicalDeviceMaintenance5Features_chain_elem = 93;
+    VkPhysicalDeviceMaintenance6Features VkPhysicalDeviceMaintenance6Features_chain_elem = 94;
+    VkPhysicalDeviceMaintenance7FeaturesKHR VkPhysicalDeviceMaintenance7FeaturesKHR_chain_elem = 95;
+    VkPhysicalDeviceMaintenance8FeaturesKHR VkPhysicalDeviceMaintenance8FeaturesKHR_chain_elem = 96;
+    VkPhysicalDeviceMapMemoryPlacedFeaturesEXT VkPhysicalDeviceMapMemoryPlacedFeaturesEXT_chain_elem = 97;
+    VkPhysicalDeviceMemoryDecompressionFeaturesNV VkPhysicalDeviceMemoryDecompressionFeaturesNV_chain_elem = 98;
+    VkPhysicalDeviceMemoryPriorityFeaturesEXT VkPhysicalDeviceMemoryPriorityFeaturesEXT_chain_elem = 99;
+    VkPhysicalDeviceMeshShaderFeaturesEXT VkPhysicalDeviceMeshShaderFeaturesEXT_chain_elem = 100;
+    VkPhysicalDeviceMeshShaderFeaturesNV VkPhysicalDeviceMeshShaderFeaturesNV_chain_elem = 101;
+    VkPhysicalDeviceMultiDrawFeaturesEXT VkPhysicalDeviceMultiDrawFeaturesEXT_chain_elem = 102;
+    VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT_chain_elem = 103;
+    VkPhysicalDeviceMultiviewFeatures VkPhysicalDeviceMultiviewFeatures_chain_elem = 104;
+    VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQCOM VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQCOM_chain_elem = 105;
+    VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQCOM VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQCOM_chain_elem = 106;
+    VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT_chain_elem = 107;
+    VkPhysicalDeviceNestedCommandBufferFeaturesEXT VkPhysicalDeviceNestedCommandBufferFeaturesEXT_chain_elem = 108;
+    VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT_chain_elem = 109;
+    VkPhysicalDeviceOpacityMicromapFeaturesEXT VkPhysicalDeviceOpacityMicromapFeaturesEXT_chain_elem = 110;
+    VkPhysicalDeviceOpticalFlowFeaturesNV VkPhysicalDeviceOpticalFlowFeaturesNV_chain_elem = 111;
+    VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT_chain_elem = 112;
+    VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV_chain_elem = 113;
+    VkPhysicalDevicePerStageDescriptorSetFeaturesNV VkPhysicalDevicePerStageDescriptorSetFeaturesNV_chain_elem = 114;
+    VkPhysicalDevicePerformanceQueryFeaturesKHR VkPhysicalDevicePerformanceQueryFeaturesKHR_chain_elem = 115;
+    VkPhysicalDevicePipelineBinaryFeaturesKHR VkPhysicalDevicePipelineBinaryFeaturesKHR_chain_elem = 116;
+    VkPhysicalDevicePipelineCreationCacheControlFeatures VkPhysicalDevicePipelineCreationCacheControlFeatures_chain_elem = 117;
+    VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR_chain_elem = 118;
+    VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT_chain_elem = 119;
+    VkPhysicalDevicePipelineOpacityMicromapFeaturesARM VkPhysicalDevicePipelineOpacityMicromapFeaturesARM_chain_elem = 120;
+    VkPhysicalDevicePipelinePropertiesFeaturesEXT VkPhysicalDevicePipelinePropertiesFeaturesEXT_chain_elem = 121;
+    VkPhysicalDevicePipelineProtectedAccessFeatures VkPhysicalDevicePipelineProtectedAccessFeatures_chain_elem = 122;
+    VkPhysicalDevicePipelineRobustnessFeatures VkPhysicalDevicePipelineRobustnessFeatures_chain_elem = 123;
+    VkPhysicalDevicePortabilitySubsetFeaturesKHR VkPhysicalDevicePortabilitySubsetFeaturesKHR_chain_elem = 124;
+    VkPhysicalDevicePresentBarrierFeaturesNV VkPhysicalDevicePresentBarrierFeaturesNV_chain_elem = 125;
+    VkPhysicalDevicePresentIdFeaturesKHR VkPhysicalDevicePresentIdFeaturesKHR_chain_elem = 126;
+    VkPhysicalDevicePresentMeteringFeaturesNV VkPhysicalDevicePresentMeteringFeaturesNV_chain_elem = 127;
+    VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT_chain_elem = 128;
+    VkPhysicalDevicePresentWaitFeaturesKHR VkPhysicalDevicePresentWaitFeaturesKHR_chain_elem = 129;
+    VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT_chain_elem = 130;
+    VkPhysicalDevicePrimitivesGeneratedQueryFeaturesEXT VkPhysicalDevicePrimitivesGeneratedQueryFeaturesEXT_chain_elem = 131;
+    VkPhysicalDevicePrivateDataFeatures VkPhysicalDevicePrivateDataFeatures_chain_elem = 132;
+    VkPhysicalDeviceProtectedMemoryFeatures VkPhysicalDeviceProtectedMemoryFeatures_chain_elem = 133;
+    VkPhysicalDeviceProvokingVertexFeaturesEXT VkPhysicalDeviceProvokingVertexFeaturesEXT_chain_elem = 134;
+    VkPhysicalDeviceRGBA10X6FormatsFeaturesEXT VkPhysicalDeviceRGBA10X6FormatsFeaturesEXT_chain_elem = 135;
+    VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT_chain_elem = 136;
+    VkPhysicalDeviceRawAccessChainsFeaturesNV VkPhysicalDeviceRawAccessChainsFeaturesNV_chain_elem = 137;
+    VkPhysicalDeviceRayQueryFeaturesKHR VkPhysicalDeviceRayQueryFeaturesKHR_chain_elem = 138;
+    VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV_chain_elem = 139;
+    VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV_chain_elem = 140;
+    VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR_chain_elem = 141;
+    VkPhysicalDeviceRayTracingMotionBlurFeaturesNV VkPhysicalDeviceRayTracingMotionBlurFeaturesNV_chain_elem = 142;
+    VkPhysicalDeviceRayTracingPipelineFeaturesKHR VkPhysicalDeviceRayTracingPipelineFeaturesKHR_chain_elem = 143;
+    VkPhysicalDeviceRayTracingPositionFetchFeaturesKHR VkPhysicalDeviceRayTracingPositionFetchFeaturesKHR_chain_elem = 144;
+    VkPhysicalDeviceRayTracingValidationFeaturesNV VkPhysicalDeviceRayTracingValidationFeaturesNV_chain_elem = 145;
+    VkPhysicalDeviceRelaxedLineRasterizationFeaturesIMG VkPhysicalDeviceRelaxedLineRasterizationFeaturesIMG_chain_elem = 146;
+    VkPhysicalDeviceRenderPassStripedFeaturesARM VkPhysicalDeviceRenderPassStripedFeaturesARM_chain_elem = 147;
+    VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV_chain_elem = 148;
+    VkPhysicalDeviceRobustness2FeaturesEXT VkPhysicalDeviceRobustness2FeaturesEXT_chain_elem = 149;
+    VkPhysicalDeviceSamplerYcbcrConversionFeatures VkPhysicalDeviceSamplerYcbcrConversionFeatures_chain_elem = 150;
+    VkPhysicalDeviceScalarBlockLayoutFeatures VkPhysicalDeviceScalarBlockLayoutFeatures_chain_elem = 151;
+    VkPhysicalDeviceSchedulingControlsFeaturesARM VkPhysicalDeviceSchedulingControlsFeaturesARM_chain_elem = 152;
+    VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures_chain_elem = 153;
+    VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV_chain_elem = 154;
+    VkPhysicalDeviceShaderAtomicFloat2FeaturesEXT VkPhysicalDeviceShaderAtomicFloat2FeaturesEXT_chain_elem = 155;
+    VkPhysicalDeviceShaderAtomicFloatFeaturesEXT VkPhysicalDeviceShaderAtomicFloatFeaturesEXT_chain_elem = 156;
+    VkPhysicalDeviceShaderAtomicInt64Features VkPhysicalDeviceShaderAtomicInt64Features_chain_elem = 157;
+    VkPhysicalDeviceShaderBfloat16FeaturesKHR VkPhysicalDeviceShaderBfloat16FeaturesKHR_chain_elem = 158;
+    VkPhysicalDeviceShaderClockFeaturesKHR VkPhysicalDeviceShaderClockFeaturesKHR_chain_elem = 159;
+    VkPhysicalDeviceShaderCoreBuiltinsFeaturesARM VkPhysicalDeviceShaderCoreBuiltinsFeaturesARM_chain_elem = 160;
+    VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures_chain_elem = 161;
+    VkPhysicalDeviceShaderDrawParametersFeatures VkPhysicalDeviceShaderDrawParametersFeatures_chain_elem = 162;
+    VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD_chain_elem = 163;
+    VkPhysicalDeviceShaderEnqueueFeaturesAMDX VkPhysicalDeviceShaderEnqueueFeaturesAMDX_chain_elem = 164;
+    VkPhysicalDeviceShaderExpectAssumeFeatures VkPhysicalDeviceShaderExpectAssumeFeatures_chain_elem = 165;
+    VkPhysicalDeviceShaderFloat16Int8Features VkPhysicalDeviceShaderFloat16Int8Features_chain_elem = 166;
+    VkPhysicalDeviceShaderFloatControls2Features VkPhysicalDeviceShaderFloatControls2Features_chain_elem = 167;
+    VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT_chain_elem = 168;
+    VkPhysicalDeviceShaderImageFootprintFeaturesNV VkPhysicalDeviceShaderImageFootprintFeaturesNV_chain_elem = 169;
+    VkPhysicalDeviceShaderIntegerDotProductFeatures VkPhysicalDeviceShaderIntegerDotProductFeatures_chain_elem = 170;
+    VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL_chain_elem = 171;
+    VkPhysicalDeviceShaderMaximalReconvergenceFeaturesKHR VkPhysicalDeviceShaderMaximalReconvergenceFeaturesKHR_chain_elem = 172;
+    VkPhysicalDeviceShaderModuleIdentifierFeaturesEXT VkPhysicalDeviceShaderModuleIdentifierFeaturesEXT_chain_elem = 173;
+    VkPhysicalDeviceShaderObjectFeaturesEXT VkPhysicalDeviceShaderObjectFeaturesEXT_chain_elem = 174;
+    VkPhysicalDeviceShaderQuadControlFeaturesKHR VkPhysicalDeviceShaderQuadControlFeaturesKHR_chain_elem = 175;
+    VkPhysicalDeviceShaderRelaxedExtendedInstructionFeaturesKHR VkPhysicalDeviceShaderRelaxedExtendedInstructionFeaturesKHR_chain_elem = 176;
+    VkPhysicalDeviceShaderReplicatedCompositesFeaturesEXT VkPhysicalDeviceShaderReplicatedCompositesFeaturesEXT_chain_elem = 177;
+    VkPhysicalDeviceShaderSMBuiltinsFeaturesNV VkPhysicalDeviceShaderSMBuiltinsFeaturesNV_chain_elem = 178;
+    VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures_chain_elem = 179;
+    VkPhysicalDeviceShaderSubgroupRotateFeatures VkPhysicalDeviceShaderSubgroupRotateFeatures_chain_elem = 180;
+    VkPhysicalDeviceShaderSubgroupUniformControlFlowFeaturesKHR VkPhysicalDeviceShaderSubgroupUniformControlFlowFeaturesKHR_chain_elem = 181;
+    VkPhysicalDeviceShaderTerminateInvocationFeatures VkPhysicalDeviceShaderTerminateInvocationFeatures_chain_elem = 182;
+    VkPhysicalDeviceShaderTileImageFeaturesEXT VkPhysicalDeviceShaderTileImageFeaturesEXT_chain_elem = 183;
+    VkPhysicalDeviceShadingRateImageFeaturesNV VkPhysicalDeviceShadingRateImageFeaturesNV_chain_elem = 184;
+    VkPhysicalDeviceSubgroupSizeControlFeatures VkPhysicalDeviceSubgroupSizeControlFeatures_chain_elem = 185;
+    VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT_chain_elem = 186;
+    VkPhysicalDeviceSubpassShadingFeaturesHUAWEI VkPhysicalDeviceSubpassShadingFeaturesHUAWEI_chain_elem = 187;
+    VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT_chain_elem = 188;
+    VkPhysicalDeviceSynchronization2Features VkPhysicalDeviceSynchronization2Features_chain_elem = 189;
+    VkPhysicalDeviceTexelBufferAlignmentFeaturesEXT VkPhysicalDeviceTexelBufferAlignmentFeaturesEXT_chain_elem = 190;
+    VkPhysicalDeviceTextureCompressionASTCHDRFeatures VkPhysicalDeviceTextureCompressionASTCHDRFeatures_chain_elem = 191;
+    VkPhysicalDeviceTileMemoryHeapFeaturesQCOM VkPhysicalDeviceTileMemoryHeapFeaturesQCOM_chain_elem = 192;
+    VkPhysicalDeviceTilePropertiesFeaturesQCOM VkPhysicalDeviceTilePropertiesFeaturesQCOM_chain_elem = 193;
+    VkPhysicalDeviceTileShadingFeaturesQCOM VkPhysicalDeviceTileShadingFeaturesQCOM_chain_elem = 194;
+    VkPhysicalDeviceTimelineSemaphoreFeatures VkPhysicalDeviceTimelineSemaphoreFeatures_chain_elem = 195;
+    VkPhysicalDeviceTransformFeedbackFeaturesEXT VkPhysicalDeviceTransformFeedbackFeaturesEXT_chain_elem = 196;
+    VkPhysicalDeviceUniformBufferStandardLayoutFeatures VkPhysicalDeviceUniformBufferStandardLayoutFeatures_chain_elem = 197;
+    VkPhysicalDeviceVariablePointersFeatures VkPhysicalDeviceVariablePointersFeatures_chain_elem = 198;
+    VkPhysicalDeviceVertexAttributeDivisorFeatures VkPhysicalDeviceVertexAttributeDivisorFeatures_chain_elem = 199;
+    VkPhysicalDeviceVertexAttributeRobustnessFeaturesEXT VkPhysicalDeviceVertexAttributeRobustnessFeaturesEXT_chain_elem = 200;
+    VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT_chain_elem = 201;
+    VkPhysicalDeviceVideoEncodeAV1FeaturesKHR VkPhysicalDeviceVideoEncodeAV1FeaturesKHR_chain_elem = 202;
+    VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR_chain_elem = 203;
+    VkPhysicalDeviceVideoMaintenance1FeaturesKHR VkPhysicalDeviceVideoMaintenance1FeaturesKHR_chain_elem = 204;
+    VkPhysicalDeviceVideoMaintenance2FeaturesKHR VkPhysicalDeviceVideoMaintenance2FeaturesKHR_chain_elem = 205;
+    VkPhysicalDeviceVulkan11Features VkPhysicalDeviceVulkan11Features_chain_elem = 206;
+    VkPhysicalDeviceVulkan12Features VkPhysicalDeviceVulkan12Features_chain_elem = 207;
+    VkPhysicalDeviceVulkan13Features VkPhysicalDeviceVulkan13Features_chain_elem = 208;
+    VkPhysicalDeviceVulkan14Features VkPhysicalDeviceVulkan14Features_chain_elem = 209;
+    VkPhysicalDeviceVulkanMemoryModelFeatures VkPhysicalDeviceVulkanMemoryModelFeatures_chain_elem = 210;
+    VkPhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR VkPhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR_chain_elem = 211;
+    VkPhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT VkPhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT_chain_elem = 212;
+    VkPhysicalDeviceYcbcrDegammaFeaturesQCOM VkPhysicalDeviceYcbcrDegammaFeaturesQCOM_chain_elem = 213;
+    VkPhysicalDeviceYcbcrImageArraysFeaturesEXT VkPhysicalDeviceYcbcrImageArraysFeaturesEXT_chain_elem = 214;
+    VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeatures VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeatures_chain_elem = 215;
+  }
+}
+message PNextChain_VkPhysicalDeviceProperties2 {
+  oneof chain_element {
+    VkPhysicalDeviceAccelerationStructurePropertiesKHR VkPhysicalDeviceAccelerationStructurePropertiesKHR_chain_elem = 1;
+    VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT_chain_elem = 2;
+    VkPhysicalDeviceClusterAccelerationStructurePropertiesNV VkPhysicalDeviceClusterAccelerationStructurePropertiesNV_chain_elem = 3;
+    VkPhysicalDeviceClusterCullingShaderPropertiesHUAWEI VkPhysicalDeviceClusterCullingShaderPropertiesHUAWEI_chain_elem = 4;
+    VkPhysicalDeviceComputeShaderDerivativesPropertiesKHR VkPhysicalDeviceComputeShaderDerivativesPropertiesKHR_chain_elem = 5;
+    VkPhysicalDeviceConservativeRasterizationPropertiesEXT VkPhysicalDeviceConservativeRasterizationPropertiesEXT_chain_elem = 6;
+    VkPhysicalDeviceCooperativeMatrix2PropertiesNV VkPhysicalDeviceCooperativeMatrix2PropertiesNV_chain_elem = 7;
+    VkPhysicalDeviceCooperativeMatrixPropertiesKHR VkPhysicalDeviceCooperativeMatrixPropertiesKHR_chain_elem = 8;
+    VkPhysicalDeviceCooperativeMatrixPropertiesNV VkPhysicalDeviceCooperativeMatrixPropertiesNV_chain_elem = 9;
+    VkPhysicalDeviceCooperativeVectorPropertiesNV VkPhysicalDeviceCooperativeVectorPropertiesNV_chain_elem = 10;
+    VkPhysicalDeviceCopyMemoryIndirectPropertiesNV VkPhysicalDeviceCopyMemoryIndirectPropertiesNV_chain_elem = 11;
+    VkPhysicalDeviceCudaKernelLaunchPropertiesNV VkPhysicalDeviceCudaKernelLaunchPropertiesNV_chain_elem = 12;
+    VkPhysicalDeviceCustomBorderColorPropertiesEXT VkPhysicalDeviceCustomBorderColorPropertiesEXT_chain_elem = 13;
+    VkPhysicalDeviceDepthStencilResolveProperties VkPhysicalDeviceDepthStencilResolveProperties_chain_elem = 14;
+    VkPhysicalDeviceDescriptorBufferDensityMapPropertiesEXT VkPhysicalDeviceDescriptorBufferDensityMapPropertiesEXT_chain_elem = 15;
+    VkPhysicalDeviceDescriptorBufferPropertiesEXT VkPhysicalDeviceDescriptorBufferPropertiesEXT_chain_elem = 16;
+    VkPhysicalDeviceDescriptorIndexingProperties VkPhysicalDeviceDescriptorIndexingProperties_chain_elem = 17;
+    VkPhysicalDeviceDeviceGeneratedCommandsPropertiesEXT VkPhysicalDeviceDeviceGeneratedCommandsPropertiesEXT_chain_elem = 18;
+    VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV_chain_elem = 19;
+    VkPhysicalDeviceDiscardRectanglePropertiesEXT VkPhysicalDeviceDiscardRectanglePropertiesEXT_chain_elem = 20;
+    VkPhysicalDeviceDisplacementMicromapPropertiesNV VkPhysicalDeviceDisplacementMicromapPropertiesNV_chain_elem = 21;
+    VkPhysicalDeviceDriverProperties VkPhysicalDeviceDriverProperties_chain_elem = 22;
+    VkPhysicalDeviceDrmPropertiesEXT VkPhysicalDeviceDrmPropertiesEXT_chain_elem = 23;
+    VkPhysicalDeviceExtendedDynamicState3PropertiesEXT VkPhysicalDeviceExtendedDynamicState3PropertiesEXT_chain_elem = 24;
+    VkPhysicalDeviceExtendedSparseAddressSpacePropertiesNV VkPhysicalDeviceExtendedSparseAddressSpacePropertiesNV_chain_elem = 25;
+    VkPhysicalDeviceExternalComputeQueuePropertiesNV VkPhysicalDeviceExternalComputeQueuePropertiesNV_chain_elem = 26;
+    VkPhysicalDeviceExternalFormatResolvePropertiesANDROID VkPhysicalDeviceExternalFormatResolvePropertiesANDROID_chain_elem = 27;
+    VkPhysicalDeviceExternalMemoryHostPropertiesEXT VkPhysicalDeviceExternalMemoryHostPropertiesEXT_chain_elem = 28;
+    VkPhysicalDeviceFloatControlsProperties VkPhysicalDeviceFloatControlsProperties_chain_elem = 29;
+    VkPhysicalDeviceFragmentDensityMap2PropertiesEXT VkPhysicalDeviceFragmentDensityMap2PropertiesEXT_chain_elem = 30;
+    VkPhysicalDeviceFragmentDensityMapOffsetPropertiesEXT VkPhysicalDeviceFragmentDensityMapOffsetPropertiesEXT_chain_elem = 31;
+    VkPhysicalDeviceFragmentDensityMapPropertiesEXT VkPhysicalDeviceFragmentDensityMapPropertiesEXT_chain_elem = 32;
+    VkPhysicalDeviceFragmentShaderBarycentricPropertiesKHR VkPhysicalDeviceFragmentShaderBarycentricPropertiesKHR_chain_elem = 33;
+    VkPhysicalDeviceFragmentShadingRateEnumsPropertiesNV VkPhysicalDeviceFragmentShadingRateEnumsPropertiesNV_chain_elem = 34;
+    VkPhysicalDeviceFragmentShadingRatePropertiesKHR VkPhysicalDeviceFragmentShadingRatePropertiesKHR_chain_elem = 35;
+    VkPhysicalDeviceGraphicsPipelineLibraryPropertiesEXT VkPhysicalDeviceGraphicsPipelineLibraryPropertiesEXT_chain_elem = 36;
+    VkPhysicalDeviceHostImageCopyProperties VkPhysicalDeviceHostImageCopyProperties_chain_elem = 37;
+    VkPhysicalDeviceIDProperties VkPhysicalDeviceIDProperties_chain_elem = 38;
+    VkPhysicalDeviceImageAlignmentControlPropertiesMESA VkPhysicalDeviceImageAlignmentControlPropertiesMESA_chain_elem = 39;
+    VkPhysicalDeviceImageProcessing2PropertiesQCOM VkPhysicalDeviceImageProcessing2PropertiesQCOM_chain_elem = 40;
+    VkPhysicalDeviceImageProcessingPropertiesQCOM VkPhysicalDeviceImageProcessingPropertiesQCOM_chain_elem = 41;
+    VkPhysicalDeviceInlineUniformBlockProperties VkPhysicalDeviceInlineUniformBlockProperties_chain_elem = 42;
+    VkPhysicalDeviceLayeredApiPropertiesListKHR VkPhysicalDeviceLayeredApiPropertiesListKHR_chain_elem = 43;
+    VkPhysicalDeviceLayeredDriverPropertiesMSFT VkPhysicalDeviceLayeredDriverPropertiesMSFT_chain_elem = 44;
+    VkPhysicalDeviceLegacyVertexAttributesPropertiesEXT VkPhysicalDeviceLegacyVertexAttributesPropertiesEXT_chain_elem = 45;
+    VkPhysicalDeviceLineRasterizationProperties VkPhysicalDeviceLineRasterizationProperties_chain_elem = 46;
+    VkPhysicalDeviceMaintenance3Properties VkPhysicalDeviceMaintenance3Properties_chain_elem = 47;
+    VkPhysicalDeviceMaintenance4Properties VkPhysicalDeviceMaintenance4Properties_chain_elem = 48;
+    VkPhysicalDeviceMaintenance5Properties VkPhysicalDeviceMaintenance5Properties_chain_elem = 49;
+    VkPhysicalDeviceMaintenance6Properties VkPhysicalDeviceMaintenance6Properties_chain_elem = 50;
+    VkPhysicalDeviceMaintenance7PropertiesKHR VkPhysicalDeviceMaintenance7PropertiesKHR_chain_elem = 51;
+    VkPhysicalDeviceMapMemoryPlacedPropertiesEXT VkPhysicalDeviceMapMemoryPlacedPropertiesEXT_chain_elem = 52;
+    VkPhysicalDeviceMemoryDecompressionPropertiesNV VkPhysicalDeviceMemoryDecompressionPropertiesNV_chain_elem = 53;
+    VkPhysicalDeviceMeshShaderPropertiesEXT VkPhysicalDeviceMeshShaderPropertiesEXT_chain_elem = 54;
+    VkPhysicalDeviceMeshShaderPropertiesNV VkPhysicalDeviceMeshShaderPropertiesNV_chain_elem = 55;
+    VkPhysicalDeviceMultiDrawPropertiesEXT VkPhysicalDeviceMultiDrawPropertiesEXT_chain_elem = 56;
+    VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX_chain_elem = 57;
+    VkPhysicalDeviceMultiviewProperties VkPhysicalDeviceMultiviewProperties_chain_elem = 58;
+    VkPhysicalDeviceNestedCommandBufferPropertiesEXT VkPhysicalDeviceNestedCommandBufferPropertiesEXT_chain_elem = 59;
+    VkPhysicalDeviceOpacityMicromapPropertiesEXT VkPhysicalDeviceOpacityMicromapPropertiesEXT_chain_elem = 60;
+    VkPhysicalDeviceOpticalFlowPropertiesNV VkPhysicalDeviceOpticalFlowPropertiesNV_chain_elem = 61;
+    VkPhysicalDevicePCIBusInfoPropertiesEXT VkPhysicalDevicePCIBusInfoPropertiesEXT_chain_elem = 62;
+    VkPhysicalDevicePartitionedAccelerationStructurePropertiesNV VkPhysicalDevicePartitionedAccelerationStructurePropertiesNV_chain_elem = 63;
+    VkPhysicalDevicePerformanceQueryPropertiesKHR VkPhysicalDevicePerformanceQueryPropertiesKHR_chain_elem = 64;
+    VkPhysicalDevicePipelineBinaryPropertiesKHR VkPhysicalDevicePipelineBinaryPropertiesKHR_chain_elem = 65;
+    VkPhysicalDevicePipelineRobustnessProperties VkPhysicalDevicePipelineRobustnessProperties_chain_elem = 66;
+    VkPhysicalDevicePointClippingProperties VkPhysicalDevicePointClippingProperties_chain_elem = 67;
+    VkPhysicalDevicePortabilitySubsetPropertiesKHR VkPhysicalDevicePortabilitySubsetPropertiesKHR_chain_elem = 68;
+    VkPhysicalDeviceProtectedMemoryProperties VkPhysicalDeviceProtectedMemoryProperties_chain_elem = 69;
+    VkPhysicalDeviceProvokingVertexPropertiesEXT VkPhysicalDeviceProvokingVertexPropertiesEXT_chain_elem = 70;
+    VkPhysicalDevicePushDescriptorProperties VkPhysicalDevicePushDescriptorProperties_chain_elem = 71;
+    VkPhysicalDeviceRayTracingInvocationReorderPropertiesNV VkPhysicalDeviceRayTracingInvocationReorderPropertiesNV_chain_elem = 72;
+    VkPhysicalDeviceRayTracingPipelinePropertiesKHR VkPhysicalDeviceRayTracingPipelinePropertiesKHR_chain_elem = 73;
+    VkPhysicalDeviceRayTracingPropertiesNV VkPhysicalDeviceRayTracingPropertiesNV_chain_elem = 74;
+    VkPhysicalDeviceRenderPassStripedPropertiesARM VkPhysicalDeviceRenderPassStripedPropertiesARM_chain_elem = 75;
+    VkPhysicalDeviceRobustness2PropertiesEXT VkPhysicalDeviceRobustness2PropertiesEXT_chain_elem = 76;
+    VkPhysicalDeviceSampleLocationsPropertiesEXT VkPhysicalDeviceSampleLocationsPropertiesEXT_chain_elem = 77;
+    VkPhysicalDeviceSamplerFilterMinmaxProperties VkPhysicalDeviceSamplerFilterMinmaxProperties_chain_elem = 78;
+    VkPhysicalDeviceSchedulingControlsPropertiesARM VkPhysicalDeviceSchedulingControlsPropertiesARM_chain_elem = 79;
+    VkPhysicalDeviceShaderCoreBuiltinsPropertiesARM VkPhysicalDeviceShaderCoreBuiltinsPropertiesARM_chain_elem = 80;
+    VkPhysicalDeviceShaderCoreProperties2AMD VkPhysicalDeviceShaderCoreProperties2AMD_chain_elem = 81;
+    VkPhysicalDeviceShaderCorePropertiesAMD VkPhysicalDeviceShaderCorePropertiesAMD_chain_elem = 82;
+    VkPhysicalDeviceShaderCorePropertiesARM VkPhysicalDeviceShaderCorePropertiesARM_chain_elem = 83;
+    VkPhysicalDeviceShaderEnqueuePropertiesAMDX VkPhysicalDeviceShaderEnqueuePropertiesAMDX_chain_elem = 84;
+    VkPhysicalDeviceShaderIntegerDotProductProperties VkPhysicalDeviceShaderIntegerDotProductProperties_chain_elem = 85;
+    VkPhysicalDeviceShaderModuleIdentifierPropertiesEXT VkPhysicalDeviceShaderModuleIdentifierPropertiesEXT_chain_elem = 86;
+    VkPhysicalDeviceShaderObjectPropertiesEXT VkPhysicalDeviceShaderObjectPropertiesEXT_chain_elem = 87;
+    VkPhysicalDeviceShaderSMBuiltinsPropertiesNV VkPhysicalDeviceShaderSMBuiltinsPropertiesNV_chain_elem = 88;
+    VkPhysicalDeviceShaderTileImagePropertiesEXT VkPhysicalDeviceShaderTileImagePropertiesEXT_chain_elem = 89;
+    VkPhysicalDeviceShadingRateImagePropertiesNV VkPhysicalDeviceShadingRateImagePropertiesNV_chain_elem = 90;
+    VkPhysicalDeviceSubgroupProperties VkPhysicalDeviceSubgroupProperties_chain_elem = 91;
+    VkPhysicalDeviceSubgroupSizeControlProperties VkPhysicalDeviceSubgroupSizeControlProperties_chain_elem = 92;
+    VkPhysicalDeviceSubpassShadingPropertiesHUAWEI VkPhysicalDeviceSubpassShadingPropertiesHUAWEI_chain_elem = 93;
+    VkPhysicalDeviceTexelBufferAlignmentProperties VkPhysicalDeviceTexelBufferAlignmentProperties_chain_elem = 94;
+    VkPhysicalDeviceTileMemoryHeapPropertiesQCOM VkPhysicalDeviceTileMemoryHeapPropertiesQCOM_chain_elem = 95;
+    VkPhysicalDeviceTileShadingPropertiesQCOM VkPhysicalDeviceTileShadingPropertiesQCOM_chain_elem = 96;
+    VkPhysicalDeviceTimelineSemaphoreProperties VkPhysicalDeviceTimelineSemaphoreProperties_chain_elem = 97;
+    VkPhysicalDeviceTransformFeedbackPropertiesEXT VkPhysicalDeviceTransformFeedbackPropertiesEXT_chain_elem = 98;
+    VkPhysicalDeviceVertexAttributeDivisorProperties VkPhysicalDeviceVertexAttributeDivisorProperties_chain_elem = 99;
+    VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT_chain_elem = 100;
+    VkPhysicalDeviceVulkan11Properties VkPhysicalDeviceVulkan11Properties_chain_elem = 101;
+    VkPhysicalDeviceVulkan12Properties VkPhysicalDeviceVulkan12Properties_chain_elem = 102;
+    VkPhysicalDeviceVulkan13Properties VkPhysicalDeviceVulkan13Properties_chain_elem = 103;
+    VkPhysicalDeviceVulkan14Properties VkPhysicalDeviceVulkan14Properties_chain_elem = 104;
+  }
+}
+message PNextChain_VkVideoProfileInfoKHR {
+  oneof chain_element {
+    VkVideoDecodeAV1ProfileInfoKHR VkVideoDecodeAV1ProfileInfoKHR_chain_elem = 1;
+    VkVideoDecodeH264ProfileInfoKHR VkVideoDecodeH264ProfileInfoKHR_chain_elem = 2;
+    VkVideoDecodeH265ProfileInfoKHR VkVideoDecodeH265ProfileInfoKHR_chain_elem = 3;
+    VkVideoDecodeUsageInfoKHR VkVideoDecodeUsageInfoKHR_chain_elem = 4;
+    VkVideoEncodeAV1ProfileInfoKHR VkVideoEncodeAV1ProfileInfoKHR_chain_elem = 5;
+    VkVideoEncodeH264ProfileInfoKHR VkVideoEncodeH264ProfileInfoKHR_chain_elem = 6;
+    VkVideoEncodeH265ProfileInfoKHR VkVideoEncodeH265ProfileInfoKHR_chain_elem = 7;
+    VkVideoEncodeUsageInfoKHR VkVideoEncodeUsageInfoKHR_chain_elem = 8;
+  }
+}
+message PNextChain_VkPhysicalDeviceLayeredApiPropertiesKHR {
+  oneof chain_element {
+    VkPhysicalDeviceLayeredApiVulkanPropertiesKHR VkPhysicalDeviceLayeredApiVulkanPropertiesKHR_chain_elem = 1;
+  }
+}
+message PNextChain_VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI {
+  oneof chain_element {
+    VkPhysicalDeviceClusterCullingShaderVrsFeaturesHUAWEI VkPhysicalDeviceClusterCullingShaderVrsFeaturesHUAWEI_chain_elem = 1;
+  }
+}
 
