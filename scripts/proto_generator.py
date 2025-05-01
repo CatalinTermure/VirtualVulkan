@@ -12,6 +12,7 @@ import inflection
 C_TYPE_TO_PROTO_TYPE = {
     "uint32_t": "uint32",
     "uint64_t": "uint64",
+    'int64_t': "int64",
     "char*": "string",
     "char**": "repeated string",
     "VkDeviceSize": "uint64",
@@ -20,8 +21,27 @@ C_TYPE_TO_PROTO_TYPE = {
     "size_t": "uint64",
     "int32_t": "int32",
     "uint8_t": "uint32",
+    'uint16_t': "uint32",
+    'int': 'int32',
     "void*": "bytes",
     "VkSampleMask": "uint32",
+
+    "HANDLE": "uint64",
+    "DWORD": "uint32",
+    "LPCWSTR": "string",
+    # TODO: if this ever is needed, we need to add a new proto type
+    "SECURITY_ATTRIBUTES*": "uint64",
+
+    "AHardwareBuffer*": "uint64",
+
+    "MTLBuffer_id": "uint64",
+    "MTLTexture_id": "uint64",
+    "IOSurfaceRef": "uint64",
+    "MTLSharedEvent_id": "uint64",
+
+    "zx_handle_t": "uint64",
+
+    "_screen_buffer*": "uint64",
 }
 
 required_structs: set[str] = set()
@@ -29,6 +49,8 @@ required_structs: set[str] = set()
 
 def get_proto_type(generator: BaseGenerator, param: Param | Member | RetVal) -> str:
     param_type = param.type + ("*" if param.pointer else "")
+    if param_type.startswith("PFN_"):
+        return "uint64"
     if "const char* const*" in param.cDeclaration:
         param_type = "char**"
     if param.fixedSizeArray:
@@ -241,6 +263,9 @@ message VkAllocationCallbacks {
             for struct in self.vk.structs.values():
                 if struct.name not in required_structs:
                     continue
+                if struct.extendedBy:
+                    for extended_by in struct.extendedBy:
+                        required_structs.add(extended_by)
                 for member in struct.members:
                     if member.name == "pNext" or member.name == "sType":
                         continue

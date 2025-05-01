@@ -3785,10 +3785,70 @@ message VkRenderPassBeginInfo {
   repeated VkClearValue pClearValues = 5; // const VkClearValue* pClearValues
 }
 
+message VkPhysicalDeviceSubgroupProperties {
+  uint32 subgroupSize = 1; // uint32_t subgroupSize
+  uint32 supportedStages = 2; // VkShaderStageFlags supportedStages
+  uint32 supportedOperations = 3; // VkSubgroupFeatureFlags supportedOperations
+  bool quadOperationsInAllStages = 4; // VkBool32 quadOperationsInAllStages
+}
+
 message VkBindImageMemoryInfo {
   uint64 image = 1; // VkImage image
   uint64 memory = 2; // VkDeviceMemory memory
   uint64 memoryOffset = 3; // VkDeviceSize memoryOffset
+}
+
+message VkPhysicalDevice16BitStorageFeatures {
+  bool storageBuffer16BitAccess = 1; // VkBool32 storageBuffer16BitAccess
+  bool uniformAndStorageBuffer16BitAccess = 2; // VkBool32 uniformAndStorageBuffer16BitAccess
+  bool storagePushConstant16 = 3; // VkBool32 storagePushConstant16
+  bool storageInputOutput16 = 4; // VkBool32 storageInputOutput16
+}
+
+message VkMemoryDedicatedRequirements {
+  bool prefersDedicatedAllocation = 1; // VkBool32 prefersDedicatedAllocation
+  bool requiresDedicatedAllocation = 2; // VkBool32 requiresDedicatedAllocation
+}
+
+message VkMemoryDedicatedAllocateInfo {
+  optional uint64 image = 1; // VkImage image
+  optional uint64 buffer = 2; // VkBuffer buffer
+}
+
+message VkMemoryAllocateFlagsInfo {
+  optional uint32 flags = 1; // VkMemoryAllocateFlags flags
+  uint32 deviceMask = 2; // uint32_t deviceMask
+}
+
+message VkDeviceGroupRenderPassBeginInfo {
+  uint32 deviceMask = 1; // uint32_t deviceMask
+  optional uint32 deviceRenderAreaCount = 2; // uint32_t deviceRenderAreaCount
+  repeated VkRect2D pDeviceRenderAreas = 3; // const VkRect2D* pDeviceRenderAreas
+}
+
+message VkDeviceGroupCommandBufferBeginInfo {
+  uint32 deviceMask = 1; // uint32_t deviceMask
+}
+
+message VkDeviceGroupSubmitInfo {
+  optional uint32 waitSemaphoreCount = 1; // uint32_t waitSemaphoreCount
+  repeated uint32 pWaitSemaphoreDeviceIndices = 2; // const uint32_t* pWaitSemaphoreDeviceIndices
+  optional uint32 commandBufferCount = 3; // uint32_t commandBufferCount
+  repeated uint32 pCommandBufferDeviceMasks = 4; // const uint32_t* pCommandBufferDeviceMasks
+  optional uint32 signalSemaphoreCount = 5; // uint32_t signalSemaphoreCount
+  repeated uint32 pSignalSemaphoreDeviceIndices = 6; // const uint32_t* pSignalSemaphoreDeviceIndices
+}
+
+message VkBindImageMemoryDeviceGroupInfo {
+  optional uint32 deviceIndexCount = 1; // uint32_t deviceIndexCount
+  repeated uint32 pDeviceIndices = 2; // const uint32_t* pDeviceIndices
+  optional uint32 splitInstanceBindRegionCount = 3; // uint32_t splitInstanceBindRegionCount
+  repeated VkRect2D pSplitInstanceBindRegions = 4; // const VkRect2D* pSplitInstanceBindRegions
+}
+
+message VkDeviceGroupDeviceCreateInfo {
+  optional uint32 physicalDeviceCount = 1; // uint32_t physicalDeviceCount
+  repeated uint64 pPhysicalDevices = 2; // const VkPhysicalDevice* pPhysicalDevices
 }
 
 message VkImageMemoryRequirementsInfo2 {
@@ -3805,6 +3865,2939 @@ message VkPhysicalDeviceFeatures2 {
 
 message VkPhysicalDeviceProperties2 {
   VkPhysicalDeviceProperties properties = 1; // VkPhysicalDeviceProperties properties
+}
+
+message VkPhysicalDevicePointClippingProperties {
+  VkPointClippingBehavior pointClippingBehavior = 1; // VkPointClippingBehavior pointClippingBehavior
+}
+
+message VkInputAttachmentAspectReference {
+  uint32 subpass = 1; // uint32_t subpass
+  uint32 inputAttachmentIndex = 2; // uint32_t inputAttachmentIndex
+  uint32 aspectMask = 3; // VkImageAspectFlags aspectMask
+}
+
+message VkRenderPassInputAttachmentAspectCreateInfo {
+  uint32 aspectReferenceCount = 1; // uint32_t aspectReferenceCount
+  repeated VkInputAttachmentAspectReference pAspectReferences = 2; // const VkInputAttachmentAspectReference* pAspectReferences
+}
+
+message VkImageViewUsageCreateInfo {
+  uint32 usage = 1; // VkImageUsageFlags usage
+}
+
+message VkPipelineTessellationDomainOriginStateCreateInfo {
+  VkTessellationDomainOrigin domainOrigin = 1; // VkTessellationDomainOrigin domainOrigin
+}
+
+message VkRenderPassMultiviewCreateInfo {
+  optional uint32 subpassCount = 1; // uint32_t subpassCount
+  repeated uint32 pViewMasks = 2; // const uint32_t* pViewMasks
+  optional uint32 dependencyCount = 3; // uint32_t dependencyCount
+  repeated int32 pViewOffsets = 4; // const int32_t* pViewOffsets
+  optional uint32 correlationMaskCount = 5; // uint32_t correlationMaskCount
+  repeated uint32 pCorrelationMasks = 6; // const uint32_t* pCorrelationMasks
+}
+
+message VkPhysicalDeviceMultiviewFeatures {
+  bool multiview = 1; // VkBool32 multiview
+  bool multiviewGeometryShader = 2; // VkBool32 multiviewGeometryShader
+  bool multiviewTessellationShader = 3; // VkBool32 multiviewTessellationShader
+}
+
+message VkPhysicalDeviceMultiviewProperties {
+  uint32 maxMultiviewViewCount = 1; // uint32_t maxMultiviewViewCount
+  uint32 maxMultiviewInstanceIndex = 2; // uint32_t maxMultiviewInstanceIndex
+}
+
+message VkPhysicalDeviceVariablePointersFeatures {
+  bool variablePointersStorageBuffer = 1; // VkBool32 variablePointersStorageBuffer
+  bool variablePointers = 2; // VkBool32 variablePointers
+}
+
+message VkPhysicalDeviceProtectedMemoryFeatures {
+  bool protectedMemory = 1; // VkBool32 protectedMemory
+}
+
+message VkPhysicalDeviceProtectedMemoryProperties {
+  bool protectedNoFault = 1; // VkBool32 protectedNoFault
+}
+
+message VkProtectedSubmitInfo {
+  bool protectedSubmit = 1; // VkBool32 protectedSubmit
+}
+
+message VkSamplerYcbcrConversionInfo {
+  uint64 conversion = 1; // VkSamplerYcbcrConversion conversion
+}
+
+message VkBindImagePlaneMemoryInfo {
+  uint32 planeAspect = 1; // VkImageAspectFlagBits planeAspect
+}
+
+message VkImagePlaneMemoryRequirementsInfo {
+  uint32 planeAspect = 1; // VkImageAspectFlagBits planeAspect
+}
+
+message VkPhysicalDeviceSamplerYcbcrConversionFeatures {
+  bool samplerYcbcrConversion = 1; // VkBool32 samplerYcbcrConversion
+}
+
+message VkPhysicalDeviceIDProperties {
+  repeated uint32 deviceUUID = 1; // uint8_t deviceUUID[VK_UUID_SIZE]
+  repeated uint32 driverUUID = 2; // uint8_t driverUUID[VK_UUID_SIZE]
+  repeated uint32 deviceLUID = 3; // uint8_t deviceLUID[VK_LUID_SIZE]
+  uint32 deviceNodeMask = 4; // uint32_t deviceNodeMask
+  bool deviceLUIDValid = 5; // VkBool32 deviceLUIDValid
+}
+
+message VkExternalMemoryImageCreateInfo {
+  optional uint32 handleTypes = 1; // VkExternalMemoryHandleTypeFlags handleTypes
+}
+
+message VkExportMemoryAllocateInfo {
+  optional uint32 handleTypes = 1; // VkExternalMemoryHandleTypeFlags handleTypes
+}
+
+message VkExportFenceCreateInfo {
+  optional uint32 handleTypes = 1; // VkExternalFenceHandleTypeFlags handleTypes
+}
+
+message VkExportSemaphoreCreateInfo {
+  optional uint32 handleTypes = 1; // VkExternalSemaphoreHandleTypeFlags handleTypes
+}
+
+message VkPhysicalDeviceMaintenance3Properties {
+  uint32 maxPerSetDescriptors = 1; // uint32_t maxPerSetDescriptors
+  uint64 maxMemoryAllocationSize = 2; // VkDeviceSize maxMemoryAllocationSize
+}
+
+message VkPhysicalDeviceShaderDrawParametersFeatures {
+  bool shaderDrawParameters = 1; // VkBool32 shaderDrawParameters
+}
+
+message VkPhysicalDeviceVulkan11Features {
+  bool storageBuffer16BitAccess = 1; // VkBool32 storageBuffer16BitAccess
+  bool uniformAndStorageBuffer16BitAccess = 2; // VkBool32 uniformAndStorageBuffer16BitAccess
+  bool storagePushConstant16 = 3; // VkBool32 storagePushConstant16
+  bool storageInputOutput16 = 4; // VkBool32 storageInputOutput16
+  bool multiview = 5; // VkBool32 multiview
+  bool multiviewGeometryShader = 6; // VkBool32 multiviewGeometryShader
+  bool multiviewTessellationShader = 7; // VkBool32 multiviewTessellationShader
+  bool variablePointersStorageBuffer = 8; // VkBool32 variablePointersStorageBuffer
+  bool variablePointers = 9; // VkBool32 variablePointers
+  bool protectedMemory = 10; // VkBool32 protectedMemory
+  bool samplerYcbcrConversion = 11; // VkBool32 samplerYcbcrConversion
+  bool shaderDrawParameters = 12; // VkBool32 shaderDrawParameters
+}
+
+message VkPhysicalDeviceVulkan11Properties {
+  repeated uint32 deviceUUID = 1; // uint8_t deviceUUID[VK_UUID_SIZE]
+  repeated uint32 driverUUID = 2; // uint8_t driverUUID[VK_UUID_SIZE]
+  repeated uint32 deviceLUID = 3; // uint8_t deviceLUID[VK_LUID_SIZE]
+  uint32 deviceNodeMask = 4; // uint32_t deviceNodeMask
+  bool deviceLUIDValid = 5; // VkBool32 deviceLUIDValid
+  uint32 subgroupSize = 6; // uint32_t subgroupSize
+  uint32 subgroupSupportedStages = 7; // VkShaderStageFlags subgroupSupportedStages
+  uint32 subgroupSupportedOperations = 8; // VkSubgroupFeatureFlags subgroupSupportedOperations
+  bool subgroupQuadOperationsInAllStages = 9; // VkBool32 subgroupQuadOperationsInAllStages
+  VkPointClippingBehavior pointClippingBehavior = 10; // VkPointClippingBehavior pointClippingBehavior
+  uint32 maxMultiviewViewCount = 11; // uint32_t maxMultiviewViewCount
+  uint32 maxMultiviewInstanceIndex = 12; // uint32_t maxMultiviewInstanceIndex
+  bool protectedNoFault = 13; // VkBool32 protectedNoFault
+  uint32 maxPerSetDescriptors = 14; // uint32_t maxPerSetDescriptors
+  uint64 maxMemoryAllocationSize = 15; // VkDeviceSize maxMemoryAllocationSize
+}
+
+message VkPhysicalDeviceVulkan12Features {
+  bool samplerMirrorClampToEdge = 1; // VkBool32 samplerMirrorClampToEdge
+  bool drawIndirectCount = 2; // VkBool32 drawIndirectCount
+  bool storageBuffer8BitAccess = 3; // VkBool32 storageBuffer8BitAccess
+  bool uniformAndStorageBuffer8BitAccess = 4; // VkBool32 uniformAndStorageBuffer8BitAccess
+  bool storagePushConstant8 = 5; // VkBool32 storagePushConstant8
+  bool shaderBufferInt64Atomics = 6; // VkBool32 shaderBufferInt64Atomics
+  bool shaderSharedInt64Atomics = 7; // VkBool32 shaderSharedInt64Atomics
+  bool shaderFloat16 = 8; // VkBool32 shaderFloat16
+  bool shaderInt8 = 9; // VkBool32 shaderInt8
+  bool descriptorIndexing = 10; // VkBool32 descriptorIndexing
+  bool shaderInputAttachmentArrayDynamicIndexing = 11; // VkBool32 shaderInputAttachmentArrayDynamicIndexing
+  bool shaderUniformTexelBufferArrayDynamicIndexing = 12; // VkBool32 shaderUniformTexelBufferArrayDynamicIndexing
+  bool shaderStorageTexelBufferArrayDynamicIndexing = 13; // VkBool32 shaderStorageTexelBufferArrayDynamicIndexing
+  bool shaderUniformBufferArrayNonUniformIndexing = 14; // VkBool32 shaderUniformBufferArrayNonUniformIndexing
+  bool shaderSampledImageArrayNonUniformIndexing = 15; // VkBool32 shaderSampledImageArrayNonUniformIndexing
+  bool shaderStorageBufferArrayNonUniformIndexing = 16; // VkBool32 shaderStorageBufferArrayNonUniformIndexing
+  bool shaderStorageImageArrayNonUniformIndexing = 17; // VkBool32 shaderStorageImageArrayNonUniformIndexing
+  bool shaderInputAttachmentArrayNonUniformIndexing = 18; // VkBool32 shaderInputAttachmentArrayNonUniformIndexing
+  bool shaderUniformTexelBufferArrayNonUniformIndexing = 19; // VkBool32 shaderUniformTexelBufferArrayNonUniformIndexing
+  bool shaderStorageTexelBufferArrayNonUniformIndexing = 20; // VkBool32 shaderStorageTexelBufferArrayNonUniformIndexing
+  bool descriptorBindingUniformBufferUpdateAfterBind = 21; // VkBool32 descriptorBindingUniformBufferUpdateAfterBind
+  bool descriptorBindingSampledImageUpdateAfterBind = 22; // VkBool32 descriptorBindingSampledImageUpdateAfterBind
+  bool descriptorBindingStorageImageUpdateAfterBind = 23; // VkBool32 descriptorBindingStorageImageUpdateAfterBind
+  bool descriptorBindingStorageBufferUpdateAfterBind = 24; // VkBool32 descriptorBindingStorageBufferUpdateAfterBind
+  bool descriptorBindingUniformTexelBufferUpdateAfterBind = 25; // VkBool32 descriptorBindingUniformTexelBufferUpdateAfterBind
+  bool descriptorBindingStorageTexelBufferUpdateAfterBind = 26; // VkBool32 descriptorBindingStorageTexelBufferUpdateAfterBind
+  bool descriptorBindingUpdateUnusedWhilePending = 27; // VkBool32 descriptorBindingUpdateUnusedWhilePending
+  bool descriptorBindingPartiallyBound = 28; // VkBool32 descriptorBindingPartiallyBound
+  bool descriptorBindingVariableDescriptorCount = 29; // VkBool32 descriptorBindingVariableDescriptorCount
+  bool runtimeDescriptorArray = 30; // VkBool32 runtimeDescriptorArray
+  bool samplerFilterMinmax = 31; // VkBool32 samplerFilterMinmax
+  bool scalarBlockLayout = 32; // VkBool32 scalarBlockLayout
+  bool imagelessFramebuffer = 33; // VkBool32 imagelessFramebuffer
+  bool uniformBufferStandardLayout = 34; // VkBool32 uniformBufferStandardLayout
+  bool shaderSubgroupExtendedTypes = 35; // VkBool32 shaderSubgroupExtendedTypes
+  bool separateDepthStencilLayouts = 36; // VkBool32 separateDepthStencilLayouts
+  bool hostQueryReset = 37; // VkBool32 hostQueryReset
+  bool timelineSemaphore = 38; // VkBool32 timelineSemaphore
+  bool bufferDeviceAddress = 39; // VkBool32 bufferDeviceAddress
+  bool bufferDeviceAddressCaptureReplay = 40; // VkBool32 bufferDeviceAddressCaptureReplay
+  bool bufferDeviceAddressMultiDevice = 41; // VkBool32 bufferDeviceAddressMultiDevice
+  bool vulkanMemoryModel = 42; // VkBool32 vulkanMemoryModel
+  bool vulkanMemoryModelDeviceScope = 43; // VkBool32 vulkanMemoryModelDeviceScope
+  bool vulkanMemoryModelAvailabilityVisibilityChains = 44; // VkBool32 vulkanMemoryModelAvailabilityVisibilityChains
+  bool shaderOutputViewportIndex = 45; // VkBool32 shaderOutputViewportIndex
+  bool shaderOutputLayer = 46; // VkBool32 shaderOutputLayer
+  bool subgroupBroadcastDynamicId = 47; // VkBool32 subgroupBroadcastDynamicId
+}
+
+message VkConformanceVersion {
+  uint32 major = 1; // uint8_t major
+  uint32 minor = 2; // uint8_t minor
+  uint32 subminor = 3; // uint8_t subminor
+  uint32 patch = 4; // uint8_t patch
+}
+
+message VkPhysicalDeviceVulkan12Properties {
+  VkDriverId driverID = 1; // VkDriverId driverID
+  string driverName = 2; // char driverName[VK_MAX_DRIVER_NAME_SIZE]
+  string driverInfo = 3; // char driverInfo[VK_MAX_DRIVER_INFO_SIZE]
+  VkConformanceVersion conformanceVersion = 4; // VkConformanceVersion conformanceVersion
+  VkShaderFloatControlsIndependence denormBehaviorIndependence = 5; // VkShaderFloatControlsIndependence denormBehaviorIndependence
+  VkShaderFloatControlsIndependence roundingModeIndependence = 6; // VkShaderFloatControlsIndependence roundingModeIndependence
+  bool shaderSignedZeroInfNanPreserveFloat16 = 7; // VkBool32 shaderSignedZeroInfNanPreserveFloat16
+  bool shaderSignedZeroInfNanPreserveFloat32 = 8; // VkBool32 shaderSignedZeroInfNanPreserveFloat32
+  bool shaderSignedZeroInfNanPreserveFloat64 = 9; // VkBool32 shaderSignedZeroInfNanPreserveFloat64
+  bool shaderDenormPreserveFloat16 = 10; // VkBool32 shaderDenormPreserveFloat16
+  bool shaderDenormPreserveFloat32 = 11; // VkBool32 shaderDenormPreserveFloat32
+  bool shaderDenormPreserveFloat64 = 12; // VkBool32 shaderDenormPreserveFloat64
+  bool shaderDenormFlushToZeroFloat16 = 13; // VkBool32 shaderDenormFlushToZeroFloat16
+  bool shaderDenormFlushToZeroFloat32 = 14; // VkBool32 shaderDenormFlushToZeroFloat32
+  bool shaderDenormFlushToZeroFloat64 = 15; // VkBool32 shaderDenormFlushToZeroFloat64
+  bool shaderRoundingModeRTEFloat16 = 16; // VkBool32 shaderRoundingModeRTEFloat16
+  bool shaderRoundingModeRTEFloat32 = 17; // VkBool32 shaderRoundingModeRTEFloat32
+  bool shaderRoundingModeRTEFloat64 = 18; // VkBool32 shaderRoundingModeRTEFloat64
+  bool shaderRoundingModeRTZFloat16 = 19; // VkBool32 shaderRoundingModeRTZFloat16
+  bool shaderRoundingModeRTZFloat32 = 20; // VkBool32 shaderRoundingModeRTZFloat32
+  bool shaderRoundingModeRTZFloat64 = 21; // VkBool32 shaderRoundingModeRTZFloat64
+  uint32 maxUpdateAfterBindDescriptorsInAllPools = 22; // uint32_t maxUpdateAfterBindDescriptorsInAllPools
+  bool shaderUniformBufferArrayNonUniformIndexingNative = 23; // VkBool32 shaderUniformBufferArrayNonUniformIndexingNative
+  bool shaderSampledImageArrayNonUniformIndexingNative = 24; // VkBool32 shaderSampledImageArrayNonUniformIndexingNative
+  bool shaderStorageBufferArrayNonUniformIndexingNative = 25; // VkBool32 shaderStorageBufferArrayNonUniformIndexingNative
+  bool shaderStorageImageArrayNonUniformIndexingNative = 26; // VkBool32 shaderStorageImageArrayNonUniformIndexingNative
+  bool shaderInputAttachmentArrayNonUniformIndexingNative = 27; // VkBool32 shaderInputAttachmentArrayNonUniformIndexingNative
+  bool robustBufferAccessUpdateAfterBind = 28; // VkBool32 robustBufferAccessUpdateAfterBind
+  bool quadDivergentImplicitLod = 29; // VkBool32 quadDivergentImplicitLod
+  uint32 maxPerStageDescriptorUpdateAfterBindSamplers = 30; // uint32_t maxPerStageDescriptorUpdateAfterBindSamplers
+  uint32 maxPerStageDescriptorUpdateAfterBindUniformBuffers = 31; // uint32_t maxPerStageDescriptorUpdateAfterBindUniformBuffers
+  uint32 maxPerStageDescriptorUpdateAfterBindStorageBuffers = 32; // uint32_t maxPerStageDescriptorUpdateAfterBindStorageBuffers
+  uint32 maxPerStageDescriptorUpdateAfterBindSampledImages = 33; // uint32_t maxPerStageDescriptorUpdateAfterBindSampledImages
+  uint32 maxPerStageDescriptorUpdateAfterBindStorageImages = 34; // uint32_t maxPerStageDescriptorUpdateAfterBindStorageImages
+  uint32 maxPerStageDescriptorUpdateAfterBindInputAttachments = 35; // uint32_t maxPerStageDescriptorUpdateAfterBindInputAttachments
+  uint32 maxPerStageUpdateAfterBindResources = 36; // uint32_t maxPerStageUpdateAfterBindResources
+  uint32 maxDescriptorSetUpdateAfterBindSamplers = 37; // uint32_t maxDescriptorSetUpdateAfterBindSamplers
+  uint32 maxDescriptorSetUpdateAfterBindUniformBuffers = 38; // uint32_t maxDescriptorSetUpdateAfterBindUniformBuffers
+  uint32 maxDescriptorSetUpdateAfterBindUniformBuffersDynamic = 39; // uint32_t maxDescriptorSetUpdateAfterBindUniformBuffersDynamic
+  uint32 maxDescriptorSetUpdateAfterBindStorageBuffers = 40; // uint32_t maxDescriptorSetUpdateAfterBindStorageBuffers
+  uint32 maxDescriptorSetUpdateAfterBindStorageBuffersDynamic = 41; // uint32_t maxDescriptorSetUpdateAfterBindStorageBuffersDynamic
+  uint32 maxDescriptorSetUpdateAfterBindSampledImages = 42; // uint32_t maxDescriptorSetUpdateAfterBindSampledImages
+  uint32 maxDescriptorSetUpdateAfterBindStorageImages = 43; // uint32_t maxDescriptorSetUpdateAfterBindStorageImages
+  uint32 maxDescriptorSetUpdateAfterBindInputAttachments = 44; // uint32_t maxDescriptorSetUpdateAfterBindInputAttachments
+  uint32 supportedDepthResolveModes = 45; // VkResolveModeFlags supportedDepthResolveModes
+  uint32 supportedStencilResolveModes = 46; // VkResolveModeFlags supportedStencilResolveModes
+  bool independentResolveNone = 47; // VkBool32 independentResolveNone
+  bool independentResolve = 48; // VkBool32 independentResolve
+  bool filterMinmaxSingleComponentFormats = 49; // VkBool32 filterMinmaxSingleComponentFormats
+  bool filterMinmaxImageComponentMapping = 50; // VkBool32 filterMinmaxImageComponentMapping
+  uint64 maxTimelineSemaphoreValueDifference = 51; // uint64_t maxTimelineSemaphoreValueDifference
+  optional uint32 framebufferIntegerColorSampleCounts = 52; // VkSampleCountFlags framebufferIntegerColorSampleCounts
+}
+
+message VkImageFormatListCreateInfo {
+  optional uint32 viewFormatCount = 1; // uint32_t viewFormatCount
+  repeated VkFormat pViewFormats = 2; // const VkFormat* pViewFormats
+}
+
+message VkPhysicalDevice8BitStorageFeatures {
+  bool storageBuffer8BitAccess = 1; // VkBool32 storageBuffer8BitAccess
+  bool uniformAndStorageBuffer8BitAccess = 2; // VkBool32 uniformAndStorageBuffer8BitAccess
+  bool storagePushConstant8 = 3; // VkBool32 storagePushConstant8
+}
+
+message VkPhysicalDeviceDriverProperties {
+  VkDriverId driverID = 1; // VkDriverId driverID
+  string driverName = 2; // char driverName[VK_MAX_DRIVER_NAME_SIZE]
+  string driverInfo = 3; // char driverInfo[VK_MAX_DRIVER_INFO_SIZE]
+  VkConformanceVersion conformanceVersion = 4; // VkConformanceVersion conformanceVersion
+}
+
+message VkPhysicalDeviceShaderAtomicInt64Features {
+  bool shaderBufferInt64Atomics = 1; // VkBool32 shaderBufferInt64Atomics
+  bool shaderSharedInt64Atomics = 2; // VkBool32 shaderSharedInt64Atomics
+}
+
+message VkPhysicalDeviceShaderFloat16Int8Features {
+  bool shaderFloat16 = 1; // VkBool32 shaderFloat16
+  bool shaderInt8 = 2; // VkBool32 shaderInt8
+}
+
+message VkPhysicalDeviceFloatControlsProperties {
+  VkShaderFloatControlsIndependence denormBehaviorIndependence = 1; // VkShaderFloatControlsIndependence denormBehaviorIndependence
+  VkShaderFloatControlsIndependence roundingModeIndependence = 2; // VkShaderFloatControlsIndependence roundingModeIndependence
+  bool shaderSignedZeroInfNanPreserveFloat16 = 3; // VkBool32 shaderSignedZeroInfNanPreserveFloat16
+  bool shaderSignedZeroInfNanPreserveFloat32 = 4; // VkBool32 shaderSignedZeroInfNanPreserveFloat32
+  bool shaderSignedZeroInfNanPreserveFloat64 = 5; // VkBool32 shaderSignedZeroInfNanPreserveFloat64
+  bool shaderDenormPreserveFloat16 = 6; // VkBool32 shaderDenormPreserveFloat16
+  bool shaderDenormPreserveFloat32 = 7; // VkBool32 shaderDenormPreserveFloat32
+  bool shaderDenormPreserveFloat64 = 8; // VkBool32 shaderDenormPreserveFloat64
+  bool shaderDenormFlushToZeroFloat16 = 9; // VkBool32 shaderDenormFlushToZeroFloat16
+  bool shaderDenormFlushToZeroFloat32 = 10; // VkBool32 shaderDenormFlushToZeroFloat32
+  bool shaderDenormFlushToZeroFloat64 = 11; // VkBool32 shaderDenormFlushToZeroFloat64
+  bool shaderRoundingModeRTEFloat16 = 12; // VkBool32 shaderRoundingModeRTEFloat16
+  bool shaderRoundingModeRTEFloat32 = 13; // VkBool32 shaderRoundingModeRTEFloat32
+  bool shaderRoundingModeRTEFloat64 = 14; // VkBool32 shaderRoundingModeRTEFloat64
+  bool shaderRoundingModeRTZFloat16 = 15; // VkBool32 shaderRoundingModeRTZFloat16
+  bool shaderRoundingModeRTZFloat32 = 16; // VkBool32 shaderRoundingModeRTZFloat32
+  bool shaderRoundingModeRTZFloat64 = 17; // VkBool32 shaderRoundingModeRTZFloat64
+}
+
+message VkPhysicalDeviceDescriptorIndexingFeatures {
+  bool shaderInputAttachmentArrayDynamicIndexing = 1; // VkBool32 shaderInputAttachmentArrayDynamicIndexing
+  bool shaderUniformTexelBufferArrayDynamicIndexing = 2; // VkBool32 shaderUniformTexelBufferArrayDynamicIndexing
+  bool shaderStorageTexelBufferArrayDynamicIndexing = 3; // VkBool32 shaderStorageTexelBufferArrayDynamicIndexing
+  bool shaderUniformBufferArrayNonUniformIndexing = 4; // VkBool32 shaderUniformBufferArrayNonUniformIndexing
+  bool shaderSampledImageArrayNonUniformIndexing = 5; // VkBool32 shaderSampledImageArrayNonUniformIndexing
+  bool shaderStorageBufferArrayNonUniformIndexing = 6; // VkBool32 shaderStorageBufferArrayNonUniformIndexing
+  bool shaderStorageImageArrayNonUniformIndexing = 7; // VkBool32 shaderStorageImageArrayNonUniformIndexing
+  bool shaderInputAttachmentArrayNonUniformIndexing = 8; // VkBool32 shaderInputAttachmentArrayNonUniformIndexing
+  bool shaderUniformTexelBufferArrayNonUniformIndexing = 9; // VkBool32 shaderUniformTexelBufferArrayNonUniformIndexing
+  bool shaderStorageTexelBufferArrayNonUniformIndexing = 10; // VkBool32 shaderStorageTexelBufferArrayNonUniformIndexing
+  bool descriptorBindingUniformBufferUpdateAfterBind = 11; // VkBool32 descriptorBindingUniformBufferUpdateAfterBind
+  bool descriptorBindingSampledImageUpdateAfterBind = 12; // VkBool32 descriptorBindingSampledImageUpdateAfterBind
+  bool descriptorBindingStorageImageUpdateAfterBind = 13; // VkBool32 descriptorBindingStorageImageUpdateAfterBind
+  bool descriptorBindingStorageBufferUpdateAfterBind = 14; // VkBool32 descriptorBindingStorageBufferUpdateAfterBind
+  bool descriptorBindingUniformTexelBufferUpdateAfterBind = 15; // VkBool32 descriptorBindingUniformTexelBufferUpdateAfterBind
+  bool descriptorBindingStorageTexelBufferUpdateAfterBind = 16; // VkBool32 descriptorBindingStorageTexelBufferUpdateAfterBind
+  bool descriptorBindingUpdateUnusedWhilePending = 17; // VkBool32 descriptorBindingUpdateUnusedWhilePending
+  bool descriptorBindingPartiallyBound = 18; // VkBool32 descriptorBindingPartiallyBound
+  bool descriptorBindingVariableDescriptorCount = 19; // VkBool32 descriptorBindingVariableDescriptorCount
+  bool runtimeDescriptorArray = 20; // VkBool32 runtimeDescriptorArray
+}
+
+message VkPhysicalDeviceDescriptorIndexingProperties {
+  uint32 maxUpdateAfterBindDescriptorsInAllPools = 1; // uint32_t maxUpdateAfterBindDescriptorsInAllPools
+  bool shaderUniformBufferArrayNonUniformIndexingNative = 2; // VkBool32 shaderUniformBufferArrayNonUniformIndexingNative
+  bool shaderSampledImageArrayNonUniformIndexingNative = 3; // VkBool32 shaderSampledImageArrayNonUniformIndexingNative
+  bool shaderStorageBufferArrayNonUniformIndexingNative = 4; // VkBool32 shaderStorageBufferArrayNonUniformIndexingNative
+  bool shaderStorageImageArrayNonUniformIndexingNative = 5; // VkBool32 shaderStorageImageArrayNonUniformIndexingNative
+  bool shaderInputAttachmentArrayNonUniformIndexingNative = 6; // VkBool32 shaderInputAttachmentArrayNonUniformIndexingNative
+  bool robustBufferAccessUpdateAfterBind = 7; // VkBool32 robustBufferAccessUpdateAfterBind
+  bool quadDivergentImplicitLod = 8; // VkBool32 quadDivergentImplicitLod
+  uint32 maxPerStageDescriptorUpdateAfterBindSamplers = 9; // uint32_t maxPerStageDescriptorUpdateAfterBindSamplers
+  uint32 maxPerStageDescriptorUpdateAfterBindUniformBuffers = 10; // uint32_t maxPerStageDescriptorUpdateAfterBindUniformBuffers
+  uint32 maxPerStageDescriptorUpdateAfterBindStorageBuffers = 11; // uint32_t maxPerStageDescriptorUpdateAfterBindStorageBuffers
+  uint32 maxPerStageDescriptorUpdateAfterBindSampledImages = 12; // uint32_t maxPerStageDescriptorUpdateAfterBindSampledImages
+  uint32 maxPerStageDescriptorUpdateAfterBindStorageImages = 13; // uint32_t maxPerStageDescriptorUpdateAfterBindStorageImages
+  uint32 maxPerStageDescriptorUpdateAfterBindInputAttachments = 14; // uint32_t maxPerStageDescriptorUpdateAfterBindInputAttachments
+  uint32 maxPerStageUpdateAfterBindResources = 15; // uint32_t maxPerStageUpdateAfterBindResources
+  uint32 maxDescriptorSetUpdateAfterBindSamplers = 16; // uint32_t maxDescriptorSetUpdateAfterBindSamplers
+  uint32 maxDescriptorSetUpdateAfterBindUniformBuffers = 17; // uint32_t maxDescriptorSetUpdateAfterBindUniformBuffers
+  uint32 maxDescriptorSetUpdateAfterBindUniformBuffersDynamic = 18; // uint32_t maxDescriptorSetUpdateAfterBindUniformBuffersDynamic
+  uint32 maxDescriptorSetUpdateAfterBindStorageBuffers = 19; // uint32_t maxDescriptorSetUpdateAfterBindStorageBuffers
+  uint32 maxDescriptorSetUpdateAfterBindStorageBuffersDynamic = 20; // uint32_t maxDescriptorSetUpdateAfterBindStorageBuffersDynamic
+  uint32 maxDescriptorSetUpdateAfterBindSampledImages = 21; // uint32_t maxDescriptorSetUpdateAfterBindSampledImages
+  uint32 maxDescriptorSetUpdateAfterBindStorageImages = 22; // uint32_t maxDescriptorSetUpdateAfterBindStorageImages
+  uint32 maxDescriptorSetUpdateAfterBindInputAttachments = 23; // uint32_t maxDescriptorSetUpdateAfterBindInputAttachments
+}
+
+message VkPhysicalDeviceDepthStencilResolveProperties {
+  uint32 supportedDepthResolveModes = 1; // VkResolveModeFlags supportedDepthResolveModes
+  uint32 supportedStencilResolveModes = 2; // VkResolveModeFlags supportedStencilResolveModes
+  bool independentResolveNone = 3; // VkBool32 independentResolveNone
+  bool independentResolve = 4; // VkBool32 independentResolve
+}
+
+message VkPhysicalDeviceScalarBlockLayoutFeatures {
+  bool scalarBlockLayout = 1; // VkBool32 scalarBlockLayout
+}
+
+message VkImageStencilUsageCreateInfo {
+  uint32 stencilUsage = 1; // VkImageUsageFlags stencilUsage
+}
+
+message VkPhysicalDeviceSamplerFilterMinmaxProperties {
+  bool filterMinmaxSingleComponentFormats = 1; // VkBool32 filterMinmaxSingleComponentFormats
+  bool filterMinmaxImageComponentMapping = 2; // VkBool32 filterMinmaxImageComponentMapping
+}
+
+message VkPhysicalDeviceVulkanMemoryModelFeatures {
+  bool vulkanMemoryModel = 1; // VkBool32 vulkanMemoryModel
+  bool vulkanMemoryModelDeviceScope = 2; // VkBool32 vulkanMemoryModelDeviceScope
+  bool vulkanMemoryModelAvailabilityVisibilityChains = 3; // VkBool32 vulkanMemoryModelAvailabilityVisibilityChains
+}
+
+message VkPhysicalDeviceImagelessFramebufferFeatures {
+  bool imagelessFramebuffer = 1; // VkBool32 imagelessFramebuffer
+}
+
+message VkFramebufferAttachmentImageInfo {
+  optional uint32 flags = 1; // VkImageCreateFlags flags
+  uint32 usage = 2; // VkImageUsageFlags usage
+  uint32 width = 3; // uint32_t width
+  uint32 height = 4; // uint32_t height
+  uint32 layerCount = 5; // uint32_t layerCount
+  optional uint32 viewFormatCount = 6; // uint32_t viewFormatCount
+  repeated VkFormat pViewFormats = 7; // const VkFormat* pViewFormats
+}
+
+message VkFramebufferAttachmentsCreateInfo {
+  optional uint32 attachmentImageInfoCount = 1; // uint32_t attachmentImageInfoCount
+  repeated VkFramebufferAttachmentImageInfo pAttachmentImageInfos = 2; // const VkFramebufferAttachmentImageInfo* pAttachmentImageInfos
+}
+
+message VkRenderPassAttachmentBeginInfo {
+  optional uint32 attachmentCount = 1; // uint32_t attachmentCount
+  repeated uint64 pAttachments = 2; // const VkImageView* pAttachments
+}
+
+message VkPhysicalDeviceUniformBufferStandardLayoutFeatures {
+  bool uniformBufferStandardLayout = 1; // VkBool32 uniformBufferStandardLayout
+}
+
+message VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures {
+  bool shaderSubgroupExtendedTypes = 1; // VkBool32 shaderSubgroupExtendedTypes
+}
+
+message VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures {
+  bool separateDepthStencilLayouts = 1; // VkBool32 separateDepthStencilLayouts
+}
+
+message VkPhysicalDeviceHostQueryResetFeatures {
+  bool hostQueryReset = 1; // VkBool32 hostQueryReset
+}
+
+message VkPhysicalDeviceTimelineSemaphoreFeatures {
+  bool timelineSemaphore = 1; // VkBool32 timelineSemaphore
+}
+
+message VkPhysicalDeviceTimelineSemaphoreProperties {
+  uint64 maxTimelineSemaphoreValueDifference = 1; // uint64_t maxTimelineSemaphoreValueDifference
+}
+
+message VkSemaphoreTypeCreateInfo {
+  VkSemaphoreType semaphoreType = 1; // VkSemaphoreType semaphoreType
+  uint64 initialValue = 2; // uint64_t initialValue
+}
+
+message VkTimelineSemaphoreSubmitInfo {
+  optional uint32 waitSemaphoreValueCount = 1; // uint32_t waitSemaphoreValueCount
+  repeated uint64 pWaitSemaphoreValues = 2; // const uint64_t* pWaitSemaphoreValues
+  optional uint32 signalSemaphoreValueCount = 3; // uint32_t signalSemaphoreValueCount
+  repeated uint64 pSignalSemaphoreValues = 4; // const uint64_t* pSignalSemaphoreValues
+}
+
+message VkPhysicalDeviceBufferDeviceAddressFeatures {
+  bool bufferDeviceAddress = 1; // VkBool32 bufferDeviceAddress
+  bool bufferDeviceAddressCaptureReplay = 2; // VkBool32 bufferDeviceAddressCaptureReplay
+  bool bufferDeviceAddressMultiDevice = 3; // VkBool32 bufferDeviceAddressMultiDevice
+}
+
+message VkMemoryOpaqueCaptureAddressAllocateInfo {
+  uint64 opaqueCaptureAddress = 1; // uint64_t opaqueCaptureAddress
+}
+
+message VkPhysicalDeviceVulkan13Features {
+  bool robustImageAccess = 1; // VkBool32 robustImageAccess
+  bool inlineUniformBlock = 2; // VkBool32 inlineUniformBlock
+  bool descriptorBindingInlineUniformBlockUpdateAfterBind = 3; // VkBool32 descriptorBindingInlineUniformBlockUpdateAfterBind
+  bool pipelineCreationCacheControl = 4; // VkBool32 pipelineCreationCacheControl
+  bool privateData = 5; // VkBool32 privateData
+  bool shaderDemoteToHelperInvocation = 6; // VkBool32 shaderDemoteToHelperInvocation
+  bool shaderTerminateInvocation = 7; // VkBool32 shaderTerminateInvocation
+  bool subgroupSizeControl = 8; // VkBool32 subgroupSizeControl
+  bool computeFullSubgroups = 9; // VkBool32 computeFullSubgroups
+  bool synchronization2 = 10; // VkBool32 synchronization2
+  bool textureCompressionASTC_HDR = 11; // VkBool32 textureCompressionASTC_HDR
+  bool shaderZeroInitializeWorkgroupMemory = 12; // VkBool32 shaderZeroInitializeWorkgroupMemory
+  bool dynamicRendering = 13; // VkBool32 dynamicRendering
+  bool shaderIntegerDotProduct = 14; // VkBool32 shaderIntegerDotProduct
+  bool maintenance4 = 15; // VkBool32 maintenance4
+}
+
+message VkPhysicalDeviceVulkan13Properties {
+  uint32 minSubgroupSize = 1; // uint32_t minSubgroupSize
+  uint32 maxSubgroupSize = 2; // uint32_t maxSubgroupSize
+  uint32 maxComputeWorkgroupSubgroups = 3; // uint32_t maxComputeWorkgroupSubgroups
+  uint32 requiredSubgroupSizeStages = 4; // VkShaderStageFlags requiredSubgroupSizeStages
+  uint32 maxInlineUniformBlockSize = 5; // uint32_t maxInlineUniformBlockSize
+  uint32 maxPerStageDescriptorInlineUniformBlocks = 6; // uint32_t maxPerStageDescriptorInlineUniformBlocks
+  uint32 maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks = 7; // uint32_t maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks
+  uint32 maxDescriptorSetInlineUniformBlocks = 8; // uint32_t maxDescriptorSetInlineUniformBlocks
+  uint32 maxDescriptorSetUpdateAfterBindInlineUniformBlocks = 9; // uint32_t maxDescriptorSetUpdateAfterBindInlineUniformBlocks
+  uint32 maxInlineUniformTotalSize = 10; // uint32_t maxInlineUniformTotalSize
+  bool integerDotProduct8BitUnsignedAccelerated = 11; // VkBool32 integerDotProduct8BitUnsignedAccelerated
+  bool integerDotProduct8BitSignedAccelerated = 12; // VkBool32 integerDotProduct8BitSignedAccelerated
+  bool integerDotProduct8BitMixedSignednessAccelerated = 13; // VkBool32 integerDotProduct8BitMixedSignednessAccelerated
+  bool integerDotProduct4x8BitPackedUnsignedAccelerated = 14; // VkBool32 integerDotProduct4x8BitPackedUnsignedAccelerated
+  bool integerDotProduct4x8BitPackedSignedAccelerated = 15; // VkBool32 integerDotProduct4x8BitPackedSignedAccelerated
+  bool integerDotProduct4x8BitPackedMixedSignednessAccelerated = 16; // VkBool32 integerDotProduct4x8BitPackedMixedSignednessAccelerated
+  bool integerDotProduct16BitUnsignedAccelerated = 17; // VkBool32 integerDotProduct16BitUnsignedAccelerated
+  bool integerDotProduct16BitSignedAccelerated = 18; // VkBool32 integerDotProduct16BitSignedAccelerated
+  bool integerDotProduct16BitMixedSignednessAccelerated = 19; // VkBool32 integerDotProduct16BitMixedSignednessAccelerated
+  bool integerDotProduct32BitUnsignedAccelerated = 20; // VkBool32 integerDotProduct32BitUnsignedAccelerated
+  bool integerDotProduct32BitSignedAccelerated = 21; // VkBool32 integerDotProduct32BitSignedAccelerated
+  bool integerDotProduct32BitMixedSignednessAccelerated = 22; // VkBool32 integerDotProduct32BitMixedSignednessAccelerated
+  bool integerDotProduct64BitUnsignedAccelerated = 23; // VkBool32 integerDotProduct64BitUnsignedAccelerated
+  bool integerDotProduct64BitSignedAccelerated = 24; // VkBool32 integerDotProduct64BitSignedAccelerated
+  bool integerDotProduct64BitMixedSignednessAccelerated = 25; // VkBool32 integerDotProduct64BitMixedSignednessAccelerated
+  bool integerDotProductAccumulatingSaturating8BitUnsignedAccelerated = 26; // VkBool32 integerDotProductAccumulatingSaturating8BitUnsignedAccelerated
+  bool integerDotProductAccumulatingSaturating8BitSignedAccelerated = 27; // VkBool32 integerDotProductAccumulatingSaturating8BitSignedAccelerated
+  bool integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated = 28; // VkBool32 integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated
+  bool integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated = 29; // VkBool32 integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated
+  bool integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated = 30; // VkBool32 integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated
+  bool integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated = 31; // VkBool32 integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated
+  bool integerDotProductAccumulatingSaturating16BitUnsignedAccelerated = 32; // VkBool32 integerDotProductAccumulatingSaturating16BitUnsignedAccelerated
+  bool integerDotProductAccumulatingSaturating16BitSignedAccelerated = 33; // VkBool32 integerDotProductAccumulatingSaturating16BitSignedAccelerated
+  bool integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated = 34; // VkBool32 integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated
+  bool integerDotProductAccumulatingSaturating32BitUnsignedAccelerated = 35; // VkBool32 integerDotProductAccumulatingSaturating32BitUnsignedAccelerated
+  bool integerDotProductAccumulatingSaturating32BitSignedAccelerated = 36; // VkBool32 integerDotProductAccumulatingSaturating32BitSignedAccelerated
+  bool integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated = 37; // VkBool32 integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated
+  bool integerDotProductAccumulatingSaturating64BitUnsignedAccelerated = 38; // VkBool32 integerDotProductAccumulatingSaturating64BitUnsignedAccelerated
+  bool integerDotProductAccumulatingSaturating64BitSignedAccelerated = 39; // VkBool32 integerDotProductAccumulatingSaturating64BitSignedAccelerated
+  bool integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated = 40; // VkBool32 integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated
+  uint64 storageTexelBufferOffsetAlignmentBytes = 41; // VkDeviceSize storageTexelBufferOffsetAlignmentBytes
+  bool storageTexelBufferOffsetSingleTexelAlignment = 42; // VkBool32 storageTexelBufferOffsetSingleTexelAlignment
+  uint64 uniformTexelBufferOffsetAlignmentBytes = 43; // VkDeviceSize uniformTexelBufferOffsetAlignmentBytes
+  bool uniformTexelBufferOffsetSingleTexelAlignment = 44; // VkBool32 uniformTexelBufferOffsetSingleTexelAlignment
+  uint64 maxBufferSize = 45; // VkDeviceSize maxBufferSize
+}
+
+message VkPipelineCreationFeedback {
+  uint32 flags = 1; // VkPipelineCreationFeedbackFlags flags
+  uint64 duration = 2; // uint64_t duration
+}
+
+message VkPipelineCreationFeedbackCreateInfo {
+  VkPipelineCreationFeedback pPipelineCreationFeedback = 1; // VkPipelineCreationFeedback* pPipelineCreationFeedback NON-CONST POINTER
+  optional uint32 pipelineStageCreationFeedbackCount = 2; // uint32_t pipelineStageCreationFeedbackCount
+  repeated VkPipelineCreationFeedback pPipelineStageCreationFeedbacks = 3; // VkPipelineCreationFeedback* pPipelineStageCreationFeedbacks NON-CONST POINTER
+}
+
+message VkPhysicalDeviceShaderTerminateInvocationFeatures {
+  bool shaderTerminateInvocation = 1; // VkBool32 shaderTerminateInvocation
+}
+
+message VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures {
+  bool shaderDemoteToHelperInvocation = 1; // VkBool32 shaderDemoteToHelperInvocation
+}
+
+message VkPhysicalDevicePrivateDataFeatures {
+  bool privateData = 1; // VkBool32 privateData
+}
+
+message VkDevicePrivateDataCreateInfo {
+  uint32 privateDataSlotRequestCount = 1; // uint32_t privateDataSlotRequestCount
+}
+
+message VkPhysicalDevicePipelineCreationCacheControlFeatures {
+  bool pipelineCreationCacheControl = 1; // VkBool32 pipelineCreationCacheControl
+}
+
+message VkPhysicalDeviceSynchronization2Features {
+  bool synchronization2 = 1; // VkBool32 synchronization2
+}
+
+message VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeatures {
+  bool shaderZeroInitializeWorkgroupMemory = 1; // VkBool32 shaderZeroInitializeWorkgroupMemory
+}
+
+message VkPhysicalDeviceImageRobustnessFeatures {
+  bool robustImageAccess = 1; // VkBool32 robustImageAccess
+}
+
+message VkPhysicalDeviceSubgroupSizeControlFeatures {
+  bool subgroupSizeControl = 1; // VkBool32 subgroupSizeControl
+  bool computeFullSubgroups = 2; // VkBool32 computeFullSubgroups
+}
+
+message VkPhysicalDeviceSubgroupSizeControlProperties {
+  uint32 minSubgroupSize = 1; // uint32_t minSubgroupSize
+  uint32 maxSubgroupSize = 2; // uint32_t maxSubgroupSize
+  uint32 maxComputeWorkgroupSubgroups = 3; // uint32_t maxComputeWorkgroupSubgroups
+  uint32 requiredSubgroupSizeStages = 4; // VkShaderStageFlags requiredSubgroupSizeStages
+}
+
+message VkPipelineShaderStageRequiredSubgroupSizeCreateInfo {
+  uint32 requiredSubgroupSize = 1; // uint32_t requiredSubgroupSize
+}
+
+message VkPhysicalDeviceInlineUniformBlockFeatures {
+  bool inlineUniformBlock = 1; // VkBool32 inlineUniformBlock
+  bool descriptorBindingInlineUniformBlockUpdateAfterBind = 2; // VkBool32 descriptorBindingInlineUniformBlockUpdateAfterBind
+}
+
+message VkPhysicalDeviceInlineUniformBlockProperties {
+  uint32 maxInlineUniformBlockSize = 1; // uint32_t maxInlineUniformBlockSize
+  uint32 maxPerStageDescriptorInlineUniformBlocks = 2; // uint32_t maxPerStageDescriptorInlineUniformBlocks
+  uint32 maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks = 3; // uint32_t maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks
+  uint32 maxDescriptorSetInlineUniformBlocks = 4; // uint32_t maxDescriptorSetInlineUniformBlocks
+  uint32 maxDescriptorSetUpdateAfterBindInlineUniformBlocks = 5; // uint32_t maxDescriptorSetUpdateAfterBindInlineUniformBlocks
+}
+
+message VkPhysicalDeviceTextureCompressionASTCHDRFeatures {
+  bool textureCompressionASTC_HDR = 1; // VkBool32 textureCompressionASTC_HDR
+}
+
+message VkPipelineRenderingCreateInfo {
+  uint32 viewMask = 1; // uint32_t viewMask
+  optional uint32 colorAttachmentCount = 2; // uint32_t colorAttachmentCount
+  repeated VkFormat pColorAttachmentFormats = 3; // const VkFormat* pColorAttachmentFormats
+  VkFormat depthAttachmentFormat = 4; // VkFormat depthAttachmentFormat
+  VkFormat stencilAttachmentFormat = 5; // VkFormat stencilAttachmentFormat
+}
+
+message VkPhysicalDeviceDynamicRenderingFeatures {
+  bool dynamicRendering = 1; // VkBool32 dynamicRendering
+}
+
+message VkCommandBufferInheritanceRenderingInfo {
+  optional uint32 flags = 1; // VkRenderingFlags flags
+  uint32 viewMask = 2; // uint32_t viewMask
+  optional uint32 colorAttachmentCount = 3; // uint32_t colorAttachmentCount
+  repeated VkFormat pColorAttachmentFormats = 4; // const VkFormat* pColorAttachmentFormats
+  VkFormat depthAttachmentFormat = 5; // VkFormat depthAttachmentFormat
+  VkFormat stencilAttachmentFormat = 6; // VkFormat stencilAttachmentFormat
+  optional uint32 rasterizationSamples = 7; // VkSampleCountFlagBits rasterizationSamples
+}
+
+message VkPhysicalDeviceShaderIntegerDotProductFeatures {
+  bool shaderIntegerDotProduct = 1; // VkBool32 shaderIntegerDotProduct
+}
+
+message VkPhysicalDeviceShaderIntegerDotProductProperties {
+  bool integerDotProduct8BitUnsignedAccelerated = 1; // VkBool32 integerDotProduct8BitUnsignedAccelerated
+  bool integerDotProduct8BitSignedAccelerated = 2; // VkBool32 integerDotProduct8BitSignedAccelerated
+  bool integerDotProduct8BitMixedSignednessAccelerated = 3; // VkBool32 integerDotProduct8BitMixedSignednessAccelerated
+  bool integerDotProduct4x8BitPackedUnsignedAccelerated = 4; // VkBool32 integerDotProduct4x8BitPackedUnsignedAccelerated
+  bool integerDotProduct4x8BitPackedSignedAccelerated = 5; // VkBool32 integerDotProduct4x8BitPackedSignedAccelerated
+  bool integerDotProduct4x8BitPackedMixedSignednessAccelerated = 6; // VkBool32 integerDotProduct4x8BitPackedMixedSignednessAccelerated
+  bool integerDotProduct16BitUnsignedAccelerated = 7; // VkBool32 integerDotProduct16BitUnsignedAccelerated
+  bool integerDotProduct16BitSignedAccelerated = 8; // VkBool32 integerDotProduct16BitSignedAccelerated
+  bool integerDotProduct16BitMixedSignednessAccelerated = 9; // VkBool32 integerDotProduct16BitMixedSignednessAccelerated
+  bool integerDotProduct32BitUnsignedAccelerated = 10; // VkBool32 integerDotProduct32BitUnsignedAccelerated
+  bool integerDotProduct32BitSignedAccelerated = 11; // VkBool32 integerDotProduct32BitSignedAccelerated
+  bool integerDotProduct32BitMixedSignednessAccelerated = 12; // VkBool32 integerDotProduct32BitMixedSignednessAccelerated
+  bool integerDotProduct64BitUnsignedAccelerated = 13; // VkBool32 integerDotProduct64BitUnsignedAccelerated
+  bool integerDotProduct64BitSignedAccelerated = 14; // VkBool32 integerDotProduct64BitSignedAccelerated
+  bool integerDotProduct64BitMixedSignednessAccelerated = 15; // VkBool32 integerDotProduct64BitMixedSignednessAccelerated
+  bool integerDotProductAccumulatingSaturating8BitUnsignedAccelerated = 16; // VkBool32 integerDotProductAccumulatingSaturating8BitUnsignedAccelerated
+  bool integerDotProductAccumulatingSaturating8BitSignedAccelerated = 17; // VkBool32 integerDotProductAccumulatingSaturating8BitSignedAccelerated
+  bool integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated = 18; // VkBool32 integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated
+  bool integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated = 19; // VkBool32 integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated
+  bool integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated = 20; // VkBool32 integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated
+  bool integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated = 21; // VkBool32 integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated
+  bool integerDotProductAccumulatingSaturating16BitUnsignedAccelerated = 22; // VkBool32 integerDotProductAccumulatingSaturating16BitUnsignedAccelerated
+  bool integerDotProductAccumulatingSaturating16BitSignedAccelerated = 23; // VkBool32 integerDotProductAccumulatingSaturating16BitSignedAccelerated
+  bool integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated = 24; // VkBool32 integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated
+  bool integerDotProductAccumulatingSaturating32BitUnsignedAccelerated = 25; // VkBool32 integerDotProductAccumulatingSaturating32BitUnsignedAccelerated
+  bool integerDotProductAccumulatingSaturating32BitSignedAccelerated = 26; // VkBool32 integerDotProductAccumulatingSaturating32BitSignedAccelerated
+  bool integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated = 27; // VkBool32 integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated
+  bool integerDotProductAccumulatingSaturating64BitUnsignedAccelerated = 28; // VkBool32 integerDotProductAccumulatingSaturating64BitUnsignedAccelerated
+  bool integerDotProductAccumulatingSaturating64BitSignedAccelerated = 29; // VkBool32 integerDotProductAccumulatingSaturating64BitSignedAccelerated
+  bool integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated = 30; // VkBool32 integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated
+}
+
+message VkPhysicalDeviceTexelBufferAlignmentProperties {
+  uint64 storageTexelBufferOffsetAlignmentBytes = 1; // VkDeviceSize storageTexelBufferOffsetAlignmentBytes
+  bool storageTexelBufferOffsetSingleTexelAlignment = 2; // VkBool32 storageTexelBufferOffsetSingleTexelAlignment
+  uint64 uniformTexelBufferOffsetAlignmentBytes = 3; // VkDeviceSize uniformTexelBufferOffsetAlignmentBytes
+  bool uniformTexelBufferOffsetSingleTexelAlignment = 4; // VkBool32 uniformTexelBufferOffsetSingleTexelAlignment
+}
+
+message VkPhysicalDeviceMaintenance4Features {
+  bool maintenance4 = 1; // VkBool32 maintenance4
+}
+
+message VkPhysicalDeviceMaintenance4Properties {
+  uint64 maxBufferSize = 1; // VkDeviceSize maxBufferSize
+}
+
+message VkPhysicalDeviceVulkan14Features {
+  bool globalPriorityQuery = 1; // VkBool32 globalPriorityQuery
+  bool shaderSubgroupRotate = 2; // VkBool32 shaderSubgroupRotate
+  bool shaderSubgroupRotateClustered = 3; // VkBool32 shaderSubgroupRotateClustered
+  bool shaderFloatControls2 = 4; // VkBool32 shaderFloatControls2
+  bool shaderExpectAssume = 5; // VkBool32 shaderExpectAssume
+  bool rectangularLines = 6; // VkBool32 rectangularLines
+  bool bresenhamLines = 7; // VkBool32 bresenhamLines
+  bool smoothLines = 8; // VkBool32 smoothLines
+  bool stippledRectangularLines = 9; // VkBool32 stippledRectangularLines
+  bool stippledBresenhamLines = 10; // VkBool32 stippledBresenhamLines
+  bool stippledSmoothLines = 11; // VkBool32 stippledSmoothLines
+  bool vertexAttributeInstanceRateDivisor = 12; // VkBool32 vertexAttributeInstanceRateDivisor
+  bool vertexAttributeInstanceRateZeroDivisor = 13; // VkBool32 vertexAttributeInstanceRateZeroDivisor
+  bool indexTypeUint8 = 14; // VkBool32 indexTypeUint8
+  bool dynamicRenderingLocalRead = 15; // VkBool32 dynamicRenderingLocalRead
+  bool maintenance5 = 16; // VkBool32 maintenance5
+  bool maintenance6 = 17; // VkBool32 maintenance6
+  bool pipelineProtectedAccess = 18; // VkBool32 pipelineProtectedAccess
+  bool pipelineRobustness = 19; // VkBool32 pipelineRobustness
+  bool hostImageCopy = 20; // VkBool32 hostImageCopy
+  bool pushDescriptor = 21; // VkBool32 pushDescriptor
+}
+
+message VkPhysicalDeviceVulkan14Properties {
+  uint32 lineSubPixelPrecisionBits = 1; // uint32_t lineSubPixelPrecisionBits
+  uint32 maxVertexAttribDivisor = 2; // uint32_t maxVertexAttribDivisor
+  bool supportsNonZeroFirstInstance = 3; // VkBool32 supportsNonZeroFirstInstance
+  uint32 maxPushDescriptors = 4; // uint32_t maxPushDescriptors
+  bool dynamicRenderingLocalReadDepthStencilAttachments = 5; // VkBool32 dynamicRenderingLocalReadDepthStencilAttachments
+  bool dynamicRenderingLocalReadMultisampledAttachments = 6; // VkBool32 dynamicRenderingLocalReadMultisampledAttachments
+  bool earlyFragmentMultisampleCoverageAfterSampleCounting = 7; // VkBool32 earlyFragmentMultisampleCoverageAfterSampleCounting
+  bool earlyFragmentSampleMaskTestBeforeSampleCounting = 8; // VkBool32 earlyFragmentSampleMaskTestBeforeSampleCounting
+  bool depthStencilSwizzleOneSupport = 9; // VkBool32 depthStencilSwizzleOneSupport
+  bool polygonModePointSize = 10; // VkBool32 polygonModePointSize
+  bool nonStrictSinglePixelWideLinesUseParallelogram = 11; // VkBool32 nonStrictSinglePixelWideLinesUseParallelogram
+  bool nonStrictWideLinesUseParallelogram = 12; // VkBool32 nonStrictWideLinesUseParallelogram
+  bool blockTexelViewCompatibleMultipleLayers = 13; // VkBool32 blockTexelViewCompatibleMultipleLayers
+  uint32 maxCombinedImageSamplerDescriptorCount = 14; // uint32_t maxCombinedImageSamplerDescriptorCount
+  bool fragmentShadingRateClampCombinerInputs = 15; // VkBool32 fragmentShadingRateClampCombinerInputs
+  VkPipelineRobustnessBufferBehavior defaultRobustnessStorageBuffers = 16; // VkPipelineRobustnessBufferBehavior defaultRobustnessStorageBuffers
+  VkPipelineRobustnessBufferBehavior defaultRobustnessUniformBuffers = 17; // VkPipelineRobustnessBufferBehavior defaultRobustnessUniformBuffers
+  VkPipelineRobustnessBufferBehavior defaultRobustnessVertexInputs = 18; // VkPipelineRobustnessBufferBehavior defaultRobustnessVertexInputs
+  VkPipelineRobustnessImageBehavior defaultRobustnessImages = 19; // VkPipelineRobustnessImageBehavior defaultRobustnessImages
+  optional uint32 copySrcLayoutCount = 20; // uint32_t copySrcLayoutCount
+  repeated VkImageLayout pCopySrcLayouts = 21; // VkImageLayout* pCopySrcLayouts NON-CONST POINTER
+  optional uint32 copyDstLayoutCount = 22; // uint32_t copyDstLayoutCount
+  repeated VkImageLayout pCopyDstLayouts = 23; // VkImageLayout* pCopyDstLayouts NON-CONST POINTER
+  repeated uint32 optimalTilingLayoutUUID = 24; // uint8_t optimalTilingLayoutUUID[VK_UUID_SIZE]
+  bool identicalMemoryTypeRequirements = 25; // VkBool32 identicalMemoryTypeRequirements
+}
+
+message VkDeviceQueueGlobalPriorityCreateInfo {
+  VkQueueGlobalPriority globalPriority = 1; // VkQueueGlobalPriority globalPriority
+}
+
+message VkPhysicalDeviceGlobalPriorityQueryFeatures {
+  bool globalPriorityQuery = 1; // VkBool32 globalPriorityQuery
+}
+
+message VkPhysicalDeviceShaderSubgroupRotateFeatures {
+  bool shaderSubgroupRotate = 1; // VkBool32 shaderSubgroupRotate
+  bool shaderSubgroupRotateClustered = 2; // VkBool32 shaderSubgroupRotateClustered
+}
+
+message VkPhysicalDeviceShaderFloatControls2Features {
+  bool shaderFloatControls2 = 1; // VkBool32 shaderFloatControls2
+}
+
+message VkPhysicalDeviceShaderExpectAssumeFeatures {
+  bool shaderExpectAssume = 1; // VkBool32 shaderExpectAssume
+}
+
+message VkPhysicalDeviceLineRasterizationFeatures {
+  bool rectangularLines = 1; // VkBool32 rectangularLines
+  bool bresenhamLines = 2; // VkBool32 bresenhamLines
+  bool smoothLines = 3; // VkBool32 smoothLines
+  bool stippledRectangularLines = 4; // VkBool32 stippledRectangularLines
+  bool stippledBresenhamLines = 5; // VkBool32 stippledBresenhamLines
+  bool stippledSmoothLines = 6; // VkBool32 stippledSmoothLines
+}
+
+message VkPhysicalDeviceLineRasterizationProperties {
+  uint32 lineSubPixelPrecisionBits = 1; // uint32_t lineSubPixelPrecisionBits
+}
+
+message VkPipelineRasterizationLineStateCreateInfo {
+  VkLineRasterizationMode lineRasterizationMode = 1; // VkLineRasterizationMode lineRasterizationMode
+  bool stippledLineEnable = 2; // VkBool32 stippledLineEnable
+  uint32 lineStippleFactor = 3; // uint32_t lineStippleFactor
+  uint32 lineStipplePattern = 4; // uint16_t lineStipplePattern
+}
+
+message VkPhysicalDeviceVertexAttributeDivisorProperties {
+  uint32 maxVertexAttribDivisor = 1; // uint32_t maxVertexAttribDivisor
+  bool supportsNonZeroFirstInstance = 2; // VkBool32 supportsNonZeroFirstInstance
+}
+
+message VkVertexInputBindingDivisorDescription {
+  uint32 binding = 1; // uint32_t binding
+  uint32 divisor = 2; // uint32_t divisor
+}
+
+message VkPipelineVertexInputDivisorStateCreateInfo {
+  uint32 vertexBindingDivisorCount = 1; // uint32_t vertexBindingDivisorCount
+  repeated VkVertexInputBindingDivisorDescription pVertexBindingDivisors = 2; // const VkVertexInputBindingDivisorDescription* pVertexBindingDivisors
+}
+
+message VkPhysicalDeviceVertexAttributeDivisorFeatures {
+  bool vertexAttributeInstanceRateDivisor = 1; // VkBool32 vertexAttributeInstanceRateDivisor
+  bool vertexAttributeInstanceRateZeroDivisor = 2; // VkBool32 vertexAttributeInstanceRateZeroDivisor
+}
+
+message VkPhysicalDeviceIndexTypeUint8Features {
+  bool indexTypeUint8 = 1; // VkBool32 indexTypeUint8
+}
+
+message VkPhysicalDeviceMaintenance5Features {
+  bool maintenance5 = 1; // VkBool32 maintenance5
+}
+
+message VkPhysicalDeviceMaintenance5Properties {
+  bool earlyFragmentMultisampleCoverageAfterSampleCounting = 1; // VkBool32 earlyFragmentMultisampleCoverageAfterSampleCounting
+  bool earlyFragmentSampleMaskTestBeforeSampleCounting = 2; // VkBool32 earlyFragmentSampleMaskTestBeforeSampleCounting
+  bool depthStencilSwizzleOneSupport = 3; // VkBool32 depthStencilSwizzleOneSupport
+  bool polygonModePointSize = 4; // VkBool32 polygonModePointSize
+  bool nonStrictSinglePixelWideLinesUseParallelogram = 5; // VkBool32 nonStrictSinglePixelWideLinesUseParallelogram
+  bool nonStrictWideLinesUseParallelogram = 6; // VkBool32 nonStrictWideLinesUseParallelogram
+}
+
+message VkPipelineCreateFlags2CreateInfo {
+  uint32 flags = 1; // VkPipelineCreateFlags2 flags
+}
+
+message VkPhysicalDevicePushDescriptorProperties {
+  uint32 maxPushDescriptors = 1; // uint32_t maxPushDescriptors
+}
+
+message VkPhysicalDeviceDynamicRenderingLocalReadFeatures {
+  bool dynamicRenderingLocalRead = 1; // VkBool32 dynamicRenderingLocalRead
+}
+
+message VkRenderingAttachmentLocationInfo {
+  optional uint32 colorAttachmentCount = 1; // uint32_t colorAttachmentCount
+  repeated uint32 pColorAttachmentLocations = 2; // const uint32_t* pColorAttachmentLocations
+}
+
+message VkRenderingInputAttachmentIndexInfo {
+  optional uint32 colorAttachmentCount = 1; // uint32_t colorAttachmentCount
+  repeated uint32 pColorAttachmentInputIndices = 2; // const uint32_t* pColorAttachmentInputIndices
+  optional uint32 pDepthInputAttachmentIndex = 3; // const uint32_t* pDepthInputAttachmentIndex
+  optional uint32 pStencilInputAttachmentIndex = 4; // const uint32_t* pStencilInputAttachmentIndex
+}
+
+message VkPhysicalDeviceMaintenance6Features {
+  bool maintenance6 = 1; // VkBool32 maintenance6
+}
+
+message VkPhysicalDeviceMaintenance6Properties {
+  bool blockTexelViewCompatibleMultipleLayers = 1; // VkBool32 blockTexelViewCompatibleMultipleLayers
+  uint32 maxCombinedImageSamplerDescriptorCount = 2; // uint32_t maxCombinedImageSamplerDescriptorCount
+  bool fragmentShadingRateClampCombinerInputs = 3; // VkBool32 fragmentShadingRateClampCombinerInputs
+}
+
+message VkBindMemoryStatus {
+  VkResult pResult = 1; // VkResult* pResult NON-CONST POINTER
+}
+
+message VkPhysicalDevicePipelineProtectedAccessFeatures {
+  bool pipelineProtectedAccess = 1; // VkBool32 pipelineProtectedAccess
+}
+
+message VkPhysicalDevicePipelineRobustnessFeatures {
+  bool pipelineRobustness = 1; // VkBool32 pipelineRobustness
+}
+
+message VkPhysicalDevicePipelineRobustnessProperties {
+  VkPipelineRobustnessBufferBehavior defaultRobustnessStorageBuffers = 1; // VkPipelineRobustnessBufferBehavior defaultRobustnessStorageBuffers
+  VkPipelineRobustnessBufferBehavior defaultRobustnessUniformBuffers = 2; // VkPipelineRobustnessBufferBehavior defaultRobustnessUniformBuffers
+  VkPipelineRobustnessBufferBehavior defaultRobustnessVertexInputs = 3; // VkPipelineRobustnessBufferBehavior defaultRobustnessVertexInputs
+  VkPipelineRobustnessImageBehavior defaultRobustnessImages = 4; // VkPipelineRobustnessImageBehavior defaultRobustnessImages
+}
+
+message VkPipelineRobustnessCreateInfo {
+  VkPipelineRobustnessBufferBehavior storageBuffers = 1; // VkPipelineRobustnessBufferBehavior storageBuffers
+  VkPipelineRobustnessBufferBehavior uniformBuffers = 2; // VkPipelineRobustnessBufferBehavior uniformBuffers
+  VkPipelineRobustnessBufferBehavior vertexInputs = 3; // VkPipelineRobustnessBufferBehavior vertexInputs
+  VkPipelineRobustnessImageBehavior images = 4; // VkPipelineRobustnessImageBehavior images
+}
+
+message VkPhysicalDeviceHostImageCopyFeatures {
+  bool hostImageCopy = 1; // VkBool32 hostImageCopy
+}
+
+message VkPhysicalDeviceHostImageCopyProperties {
+  optional uint32 copySrcLayoutCount = 1; // uint32_t copySrcLayoutCount
+  repeated VkImageLayout pCopySrcLayouts = 2; // VkImageLayout* pCopySrcLayouts NON-CONST POINTER
+  optional uint32 copyDstLayoutCount = 3; // uint32_t copyDstLayoutCount
+  repeated VkImageLayout pCopyDstLayouts = 4; // VkImageLayout* pCopyDstLayouts NON-CONST POINTER
+  repeated uint32 optimalTilingLayoutUUID = 5; // uint8_t optimalTilingLayoutUUID[VK_UUID_SIZE]
+  bool identicalMemoryTypeRequirements = 6; // VkBool32 identicalMemoryTypeRequirements
+}
+
+message VkImageSwapchainCreateInfoKHR {
+  optional uint64 swapchain = 1; // VkSwapchainKHR swapchain
+}
+
+message VkBindImageMemorySwapchainInfoKHR {
+  uint64 swapchain = 1; // VkSwapchainKHR swapchain
+  uint32 imageIndex = 2; // uint32_t imageIndex
+}
+
+message VkVideoProfileInfoKHR {
+  uint32 videoCodecOperation = 1; // VkVideoCodecOperationFlagBitsKHR videoCodecOperation
+  uint32 chromaSubsampling = 2; // VkVideoChromaSubsamplingFlagsKHR chromaSubsampling
+  uint32 lumaBitDepth = 3; // VkVideoComponentBitDepthFlagsKHR lumaBitDepth
+  optional uint32 chromaBitDepth = 4; // VkVideoComponentBitDepthFlagsKHR chromaBitDepth
+}
+
+message VkVideoProfileListInfoKHR {
+  optional uint32 profileCount = 1; // uint32_t profileCount
+  repeated VkVideoProfileInfoKHR pProfiles = 2; // const VkVideoProfileInfoKHR* pProfiles
+}
+
+message VkVideoDecodeUsageInfoKHR {
+  optional uint32 videoUsageHints = 1; // VkVideoDecodeUsageFlagsKHR videoUsageHints
+}
+
+message VkVideoEncodeH264ProfileInfoKHR {
+  StdVideoH264ProfileIdc stdProfileIdc = 1; // StdVideoH264ProfileIdc stdProfileIdc
+}
+
+message VkVideoEncodeH265ProfileInfoKHR {
+  StdVideoH265ProfileIdc stdProfileIdc = 1; // StdVideoH265ProfileIdc stdProfileIdc
+}
+
+message VkVideoDecodeH264ProfileInfoKHR {
+  StdVideoH264ProfileIdc stdProfileIdc = 1; // StdVideoH264ProfileIdc stdProfileIdc
+  optional uint32 pictureLayout = 2; // VkVideoDecodeH264PictureLayoutFlagBitsKHR pictureLayout
+}
+
+message VkImportMemoryWin32HandleInfoKHR {
+  optional uint32 handleType = 1; // VkExternalMemoryHandleTypeFlagBits handleType
+  optional uint64 handle = 2; // HANDLE handle
+  optional string name = 3; // LPCWSTR name
+}
+
+message VkExportMemoryWin32HandleInfoKHR {
+  optional uint64 pAttributes = 1; // const SECURITY_ATTRIBUTES* pAttributes
+  uint32 dwAccess = 2; // DWORD dwAccess
+  string name = 3; // LPCWSTR name
+}
+
+message VkImportMemoryFdInfoKHR {
+  optional uint32 handleType = 1; // VkExternalMemoryHandleTypeFlagBits handleType
+  int32 fd = 2; // int fd
+}
+
+message VkWin32KeyedMutexAcquireReleaseInfoKHR {
+  optional uint32 acquireCount = 1; // uint32_t acquireCount
+  repeated uint64 pAcquireSyncs = 2; // const VkDeviceMemory* pAcquireSyncs
+  repeated uint64 pAcquireKeys = 3; // const uint64_t* pAcquireKeys
+  repeated uint32 pAcquireTimeouts = 4; // const uint32_t* pAcquireTimeouts
+  optional uint32 releaseCount = 5; // uint32_t releaseCount
+  repeated uint64 pReleaseSyncs = 6; // const VkDeviceMemory* pReleaseSyncs
+  repeated uint64 pReleaseKeys = 7; // const uint64_t* pReleaseKeys
+}
+
+message VkExportSemaphoreWin32HandleInfoKHR {
+  optional uint64 pAttributes = 1; // const SECURITY_ATTRIBUTES* pAttributes
+  uint32 dwAccess = 2; // DWORD dwAccess
+  string name = 3; // LPCWSTR name
+}
+
+message VkD3D12FenceSubmitInfoKHR {
+  optional uint32 waitSemaphoreValuesCount = 1; // uint32_t waitSemaphoreValuesCount
+  repeated uint64 pWaitSemaphoreValues = 2; // const uint64_t* pWaitSemaphoreValues
+  optional uint32 signalSemaphoreValuesCount = 3; // uint32_t signalSemaphoreValuesCount
+  repeated uint64 pSignalSemaphoreValues = 4; // const uint64_t* pSignalSemaphoreValues
+}
+
+message VkExportFenceWin32HandleInfoKHR {
+  optional uint64 pAttributes = 1; // const SECURITY_ATTRIBUTES* pAttributes
+  uint32 dwAccess = 2; // DWORD dwAccess
+  string name = 3; // LPCWSTR name
+}
+
+message VkPhysicalDevicePerformanceQueryFeaturesKHR {
+  bool performanceCounterQueryPools = 1; // VkBool32 performanceCounterQueryPools
+  bool performanceCounterMultipleQueryPools = 2; // VkBool32 performanceCounterMultipleQueryPools
+}
+
+message VkPhysicalDevicePerformanceQueryPropertiesKHR {
+  bool allowCommandBufferQueryCopies = 1; // VkBool32 allowCommandBufferQueryCopies
+}
+
+message VkPerformanceQuerySubmitInfoKHR {
+  uint32 counterPassIndex = 1; // uint32_t counterPassIndex
+}
+
+message VkPhysicalDeviceShaderBfloat16FeaturesKHR {
+  bool shaderBFloat16Type = 1; // VkBool32 shaderBFloat16Type
+  bool shaderBFloat16DotProduct = 2; // VkBool32 shaderBFloat16DotProduct
+  bool shaderBFloat16CooperativeMatrix = 3; // VkBool32 shaderBFloat16CooperativeMatrix
+}
+
+message VkPhysicalDevicePortabilitySubsetFeaturesKHR {
+  bool constantAlphaColorBlendFactors = 1; // VkBool32 constantAlphaColorBlendFactors
+  bool events = 2; // VkBool32 events
+  bool imageViewFormatReinterpretation = 3; // VkBool32 imageViewFormatReinterpretation
+  bool imageViewFormatSwizzle = 4; // VkBool32 imageViewFormatSwizzle
+  bool imageView2DOn3DImage = 5; // VkBool32 imageView2DOn3DImage
+  bool multisampleArrayImage = 6; // VkBool32 multisampleArrayImage
+  bool mutableComparisonSamplers = 7; // VkBool32 mutableComparisonSamplers
+  bool pointPolygons = 8; // VkBool32 pointPolygons
+  bool samplerMipLodBias = 9; // VkBool32 samplerMipLodBias
+  bool separateStencilMaskRef = 10; // VkBool32 separateStencilMaskRef
+  bool shaderSampleRateInterpolationFunctions = 11; // VkBool32 shaderSampleRateInterpolationFunctions
+  bool tessellationIsolines = 12; // VkBool32 tessellationIsolines
+  bool tessellationPointMode = 13; // VkBool32 tessellationPointMode
+  bool triangleFans = 14; // VkBool32 triangleFans
+  bool vertexAttributeAccessBeyondStride = 15; // VkBool32 vertexAttributeAccessBeyondStride
+}
+
+message VkPhysicalDevicePortabilitySubsetPropertiesKHR {
+  uint32 minVertexInputBindingStrideAlignment = 1; // uint32_t minVertexInputBindingStrideAlignment
+}
+
+message VkPhysicalDeviceShaderClockFeaturesKHR {
+  bool shaderSubgroupClock = 1; // VkBool32 shaderSubgroupClock
+  bool shaderDeviceClock = 2; // VkBool32 shaderDeviceClock
+}
+
+message VkVideoDecodeH265ProfileInfoKHR {
+  StdVideoH265ProfileIdc stdProfileIdc = 1; // StdVideoH265ProfileIdc stdProfileIdc
+}
+
+message VkPipelineFragmentShadingRateStateCreateInfoKHR {
+  VkExtent2D fragmentSize = 1; // VkExtent2D fragmentSize
+  repeated VkFragmentShadingRateCombinerOpKHR combinerOps = 2; // VkFragmentShadingRateCombinerOpKHR combinerOps[2]
+}
+
+message VkPhysicalDeviceFragmentShadingRateFeaturesKHR {
+  bool pipelineFragmentShadingRate = 1; // VkBool32 pipelineFragmentShadingRate
+  bool primitiveFragmentShadingRate = 2; // VkBool32 primitiveFragmentShadingRate
+  bool attachmentFragmentShadingRate = 3; // VkBool32 attachmentFragmentShadingRate
+}
+
+message VkPhysicalDeviceFragmentShadingRatePropertiesKHR {
+  VkExtent2D minFragmentShadingRateAttachmentTexelSize = 1; // VkExtent2D minFragmentShadingRateAttachmentTexelSize
+  VkExtent2D maxFragmentShadingRateAttachmentTexelSize = 2; // VkExtent2D maxFragmentShadingRateAttachmentTexelSize
+  uint32 maxFragmentShadingRateAttachmentTexelSizeAspectRatio = 3; // uint32_t maxFragmentShadingRateAttachmentTexelSizeAspectRatio
+  bool primitiveFragmentShadingRateWithMultipleViewports = 4; // VkBool32 primitiveFragmentShadingRateWithMultipleViewports
+  bool layeredShadingRateAttachments = 5; // VkBool32 layeredShadingRateAttachments
+  bool fragmentShadingRateNonTrivialCombinerOps = 6; // VkBool32 fragmentShadingRateNonTrivialCombinerOps
+  VkExtent2D maxFragmentSize = 7; // VkExtent2D maxFragmentSize
+  uint32 maxFragmentSizeAspectRatio = 8; // uint32_t maxFragmentSizeAspectRatio
+  uint32 maxFragmentShadingRateCoverageSamples = 9; // uint32_t maxFragmentShadingRateCoverageSamples
+  uint32 maxFragmentShadingRateRasterizationSamples = 10; // VkSampleCountFlagBits maxFragmentShadingRateRasterizationSamples
+  bool fragmentShadingRateWithShaderDepthStencilWrites = 11; // VkBool32 fragmentShadingRateWithShaderDepthStencilWrites
+  bool fragmentShadingRateWithSampleMask = 12; // VkBool32 fragmentShadingRateWithSampleMask
+  bool fragmentShadingRateWithShaderSampleMask = 13; // VkBool32 fragmentShadingRateWithShaderSampleMask
+  bool fragmentShadingRateWithConservativeRasterization = 14; // VkBool32 fragmentShadingRateWithConservativeRasterization
+  bool fragmentShadingRateWithFragmentShaderInterlock = 15; // VkBool32 fragmentShadingRateWithFragmentShaderInterlock
+  bool fragmentShadingRateWithCustomSampleLocations = 16; // VkBool32 fragmentShadingRateWithCustomSampleLocations
+  bool fragmentShadingRateStrictMultiplyCombiner = 17; // VkBool32 fragmentShadingRateStrictMultiplyCombiner
+}
+
+message VkPhysicalDeviceShaderQuadControlFeaturesKHR {
+  bool shaderQuadControl = 1; // VkBool32 shaderQuadControl
+}
+
+message VkPhysicalDevicePresentWaitFeaturesKHR {
+  bool presentWait = 1; // VkBool32 presentWait
+}
+
+message VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR {
+  bool pipelineExecutableInfo = 1; // VkBool32 pipelineExecutableInfo
+}
+
+message VkPipelineLibraryCreateInfoKHR {
+  optional uint32 libraryCount = 1; // uint32_t libraryCount
+  repeated uint64 pLibraries = 2; // const VkPipeline* pLibraries
+}
+
+message VkPhysicalDevicePresentIdFeaturesKHR {
+  bool presentId = 1; // VkBool32 presentId
+}
+
+message VkVideoEncodeUsageInfoKHR {
+  optional uint32 videoUsageHints = 1; // VkVideoEncodeUsageFlagsKHR videoUsageHints
+  optional uint32 videoContentHints = 2; // VkVideoEncodeContentFlagsKHR videoContentHints
+  optional VkVideoEncodeTuningModeKHR tuningMode = 3; // VkVideoEncodeTuningModeKHR tuningMode
+}
+
+message VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR {
+  bool fragmentShaderBarycentric = 1; // VkBool32 fragmentShaderBarycentric
+}
+
+message VkPhysicalDeviceFragmentShaderBarycentricPropertiesKHR {
+  bool triStripVertexOrderIndependentOfProvokingVertex = 1; // VkBool32 triStripVertexOrderIndependentOfProvokingVertex
+}
+
+message VkPhysicalDeviceShaderSubgroupUniformControlFlowFeaturesKHR {
+  bool shaderSubgroupUniformControlFlow = 1; // VkBool32 shaderSubgroupUniformControlFlow
+}
+
+message VkPhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR {
+  bool workgroupMemoryExplicitLayout = 1; // VkBool32 workgroupMemoryExplicitLayout
+  bool workgroupMemoryExplicitLayoutScalarBlockLayout = 2; // VkBool32 workgroupMemoryExplicitLayoutScalarBlockLayout
+  bool workgroupMemoryExplicitLayout8BitAccess = 3; // VkBool32 workgroupMemoryExplicitLayout8BitAccess
+  bool workgroupMemoryExplicitLayout16BitAccess = 4; // VkBool32 workgroupMemoryExplicitLayout16BitAccess
+}
+
+message VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR {
+  bool rayTracingMaintenance1 = 1; // VkBool32 rayTracingMaintenance1
+  bool rayTracingPipelineTraceRaysIndirect2 = 2; // VkBool32 rayTracingPipelineTraceRaysIndirect2
+}
+
+message VkPhysicalDeviceShaderMaximalReconvergenceFeaturesKHR {
+  bool shaderMaximalReconvergence = 1; // VkBool32 shaderMaximalReconvergence
+}
+
+message VkPhysicalDeviceRayTracingPositionFetchFeaturesKHR {
+  bool rayTracingPositionFetch = 1; // VkBool32 rayTracingPositionFetch
+}
+
+message VkPhysicalDevicePipelineBinaryFeaturesKHR {
+  bool pipelineBinaries = 1; // VkBool32 pipelineBinaries
+}
+
+message VkPhysicalDevicePipelineBinaryPropertiesKHR {
+  bool pipelineBinaryInternalCache = 1; // VkBool32 pipelineBinaryInternalCache
+  bool pipelineBinaryInternalCacheControl = 2; // VkBool32 pipelineBinaryInternalCacheControl
+  bool pipelineBinaryPrefersInternalCache = 3; // VkBool32 pipelineBinaryPrefersInternalCache
+  bool pipelineBinaryPrecompiledInternalCache = 4; // VkBool32 pipelineBinaryPrecompiledInternalCache
+  bool pipelineBinaryCompressedData = 5; // VkBool32 pipelineBinaryCompressedData
+}
+
+message VkDevicePipelineBinaryInternalCacheControlKHR {
+  bool disableInternalCache = 1; // VkBool32 disableInternalCache
+}
+
+message VkPipelineBinaryInfoKHR {
+  optional uint32 binaryCount = 1; // uint32_t binaryCount
+  repeated uint64 pPipelineBinaries = 2; // const VkPipelineBinaryKHR* pPipelineBinaries
+}
+
+message VkPhysicalDeviceCooperativeMatrixFeaturesKHR {
+  bool cooperativeMatrix = 1; // VkBool32 cooperativeMatrix
+  bool cooperativeMatrixRobustBufferAccess = 2; // VkBool32 cooperativeMatrixRobustBufferAccess
+}
+
+message VkPhysicalDeviceCooperativeMatrixPropertiesKHR {
+  uint32 cooperativeMatrixSupportedStages = 1; // VkShaderStageFlags cooperativeMatrixSupportedStages
+}
+
+message VkPhysicalDeviceComputeShaderDerivativesFeaturesKHR {
+  bool computeDerivativeGroupQuads = 1; // VkBool32 computeDerivativeGroupQuads
+  bool computeDerivativeGroupLinear = 2; // VkBool32 computeDerivativeGroupLinear
+}
+
+message VkPhysicalDeviceComputeShaderDerivativesPropertiesKHR {
+  bool meshAndTaskShaderDerivatives = 1; // VkBool32 meshAndTaskShaderDerivatives
+}
+
+message VkVideoDecodeAV1ProfileInfoKHR {
+  StdVideoAV1Profile stdProfile = 1; // StdVideoAV1Profile stdProfile
+  bool filmGrainSupport = 2; // VkBool32 filmGrainSupport
+}
+
+message VkPhysicalDeviceVideoEncodeAV1FeaturesKHR {
+  bool videoEncodeAV1 = 1; // VkBool32 videoEncodeAV1
+}
+
+message VkVideoEncodeAV1ProfileInfoKHR {
+  StdVideoAV1Profile stdProfile = 1; // StdVideoAV1Profile stdProfile
+}
+
+message VkPhysicalDeviceVideoMaintenance1FeaturesKHR {
+  bool videoMaintenance1 = 1; // VkBool32 videoMaintenance1
+}
+
+message VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR {
+  bool videoEncodeQuantizationMap = 1; // VkBool32 videoEncodeQuantizationMap
+}
+
+message VkPhysicalDeviceShaderRelaxedExtendedInstructionFeaturesKHR {
+  bool shaderRelaxedExtendedInstruction = 1; // VkBool32 shaderRelaxedExtendedInstruction
+}
+
+message VkPhysicalDeviceMaintenance7FeaturesKHR {
+  bool maintenance7 = 1; // VkBool32 maintenance7
+}
+
+message VkPhysicalDeviceMaintenance7PropertiesKHR {
+  bool robustFragmentShadingRateAttachmentAccess = 1; // VkBool32 robustFragmentShadingRateAttachmentAccess
+  bool separateDepthStencilAttachmentAccess = 2; // VkBool32 separateDepthStencilAttachmentAccess
+  uint32 maxDescriptorSetTotalUniformBuffersDynamic = 3; // uint32_t maxDescriptorSetTotalUniformBuffersDynamic
+  uint32 maxDescriptorSetTotalStorageBuffersDynamic = 4; // uint32_t maxDescriptorSetTotalStorageBuffersDynamic
+  uint32 maxDescriptorSetTotalBuffersDynamic = 5; // uint32_t maxDescriptorSetTotalBuffersDynamic
+  uint32 maxDescriptorSetUpdateAfterBindTotalUniformBuffersDynamic = 6; // uint32_t maxDescriptorSetUpdateAfterBindTotalUniformBuffersDynamic
+  uint32 maxDescriptorSetUpdateAfterBindTotalStorageBuffersDynamic = 7; // uint32_t maxDescriptorSetUpdateAfterBindTotalStorageBuffersDynamic
+  uint32 maxDescriptorSetUpdateAfterBindTotalBuffersDynamic = 8; // uint32_t maxDescriptorSetUpdateAfterBindTotalBuffersDynamic
+}
+
+message VkPhysicalDeviceLayeredApiPropertiesKHR {
+  uint32 vendorID = 1; // uint32_t vendorID
+  uint32 deviceID = 2; // uint32_t deviceID
+  VkPhysicalDeviceLayeredApiKHR layeredAPI = 3; // VkPhysicalDeviceLayeredApiKHR layeredAPI
+  string deviceName = 4; // char deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE]
+}
+
+message VkPhysicalDeviceLayeredApiPropertiesListKHR {
+  optional uint32 layeredApiCount = 1; // uint32_t layeredApiCount
+  repeated VkPhysicalDeviceLayeredApiPropertiesKHR pLayeredApis = 2; // VkPhysicalDeviceLayeredApiPropertiesKHR* pLayeredApis NON-CONST POINTER
+}
+
+message VkPhysicalDeviceLayeredApiVulkanPropertiesKHR {
+  VkPhysicalDeviceProperties2 properties = 1; // VkPhysicalDeviceProperties2 properties
+}
+
+message VkPhysicalDeviceMaintenance8FeaturesKHR {
+  bool maintenance8 = 1; // VkBool32 maintenance8
+}
+
+message VkPhysicalDeviceVideoMaintenance2FeaturesKHR {
+  bool videoMaintenance2 = 1; // VkBool32 videoMaintenance2
+}
+
+message VkPhysicalDeviceDepthClampZeroOneFeaturesKHR {
+  bool depthClampZeroOne = 1; // VkBool32 depthClampZeroOne
+}
+
+message VkDebugReportCallbackCreateInfoEXT {
+  optional uint32 flags = 1; // VkDebugReportFlagsEXT flags
+  uint64 pfnCallback = 2; // PFN_vkDebugReportCallbackEXT pfnCallback NON-CONST POINTER
+  optional bytes pUserData = 3; // void* pUserData NON-CONST POINTER
+}
+
+message VkPipelineRasterizationStateRasterizationOrderAMD {
+  VkRasterizationOrderAMD rasterizationOrder = 1; // VkRasterizationOrderAMD rasterizationOrder
+}
+
+message VkDedicatedAllocationImageCreateInfoNV {
+  bool dedicatedAllocation = 1; // VkBool32 dedicatedAllocation
+}
+
+message VkDedicatedAllocationMemoryAllocateInfoNV {
+  optional uint64 image = 1; // VkImage image
+  optional uint64 buffer = 2; // VkBuffer buffer
+}
+
+message VkPhysicalDeviceTransformFeedbackFeaturesEXT {
+  bool transformFeedback = 1; // VkBool32 transformFeedback
+  bool geometryStreams = 2; // VkBool32 geometryStreams
+}
+
+message VkPhysicalDeviceTransformFeedbackPropertiesEXT {
+  uint32 maxTransformFeedbackStreams = 1; // uint32_t maxTransformFeedbackStreams
+  uint32 maxTransformFeedbackBuffers = 2; // uint32_t maxTransformFeedbackBuffers
+  uint64 maxTransformFeedbackBufferSize = 3; // VkDeviceSize maxTransformFeedbackBufferSize
+  uint32 maxTransformFeedbackStreamDataSize = 4; // uint32_t maxTransformFeedbackStreamDataSize
+  uint32 maxTransformFeedbackBufferDataSize = 5; // uint32_t maxTransformFeedbackBufferDataSize
+  uint32 maxTransformFeedbackBufferDataStride = 6; // uint32_t maxTransformFeedbackBufferDataStride
+  bool transformFeedbackQueries = 7; // VkBool32 transformFeedbackQueries
+  bool transformFeedbackStreamsLinesTriangles = 8; // VkBool32 transformFeedbackStreamsLinesTriangles
+  bool transformFeedbackRasterizationStreamSelect = 9; // VkBool32 transformFeedbackRasterizationStreamSelect
+  bool transformFeedbackDraw = 10; // VkBool32 transformFeedbackDraw
+}
+
+message VkPipelineRasterizationStateStreamCreateInfoEXT {
+  optional uint32 flags = 1; // VkPipelineRasterizationStateStreamCreateFlagsEXT flags
+  uint32 rasterizationStream = 2; // uint32_t rasterizationStream
+}
+
+message VkPhysicalDeviceCornerSampledImageFeaturesNV {
+  bool cornerSampledImage = 1; // VkBool32 cornerSampledImage
+}
+
+message VkExternalMemoryImageCreateInfoNV {
+  optional uint32 handleTypes = 1; // VkExternalMemoryHandleTypeFlagsNV handleTypes
+}
+
+message VkExportMemoryAllocateInfoNV {
+  optional uint32 handleTypes = 1; // VkExternalMemoryHandleTypeFlagsNV handleTypes
+}
+
+message VkImportMemoryWin32HandleInfoNV {
+  optional uint32 handleType = 1; // VkExternalMemoryHandleTypeFlagsNV handleType
+  optional uint64 handle = 2; // HANDLE handle
+}
+
+message VkExportMemoryWin32HandleInfoNV {
+  optional uint64 pAttributes = 1; // const SECURITY_ATTRIBUTES* pAttributes
+  optional uint32 dwAccess = 2; // DWORD dwAccess
+}
+
+message VkWin32KeyedMutexAcquireReleaseInfoNV {
+  optional uint32 acquireCount = 1; // uint32_t acquireCount
+  repeated uint64 pAcquireSyncs = 2; // const VkDeviceMemory* pAcquireSyncs
+  repeated uint64 pAcquireKeys = 3; // const uint64_t* pAcquireKeys
+  repeated uint32 pAcquireTimeoutMilliseconds = 4; // const uint32_t* pAcquireTimeoutMilliseconds
+  optional uint32 releaseCount = 5; // uint32_t releaseCount
+  repeated uint64 pReleaseSyncs = 6; // const VkDeviceMemory* pReleaseSyncs
+  repeated uint64 pReleaseKeys = 7; // const uint64_t* pReleaseKeys
+}
+
+message VkValidationFlagsEXT {
+  uint32 disabledValidationCheckCount = 1; // uint32_t disabledValidationCheckCount
+  repeated VkValidationCheckEXT pDisabledValidationChecks = 2; // const VkValidationCheckEXT* pDisabledValidationChecks
+}
+
+message VkImageViewASTCDecodeModeEXT {
+  VkFormat decodeMode = 1; // VkFormat decodeMode
+}
+
+message VkPhysicalDeviceASTCDecodeFeaturesEXT {
+  bool decodeModeSharedExponent = 1; // VkBool32 decodeModeSharedExponent
+}
+
+message VkPhysicalDeviceConditionalRenderingFeaturesEXT {
+  bool conditionalRendering = 1; // VkBool32 conditionalRendering
+  bool inheritedConditionalRendering = 2; // VkBool32 inheritedConditionalRendering
+}
+
+message VkCommandBufferInheritanceConditionalRenderingInfoEXT {
+  bool conditionalRenderingEnable = 1; // VkBool32 conditionalRenderingEnable
+}
+
+message VkViewportWScalingNV {
+  float xcoeff = 1; // float xcoeff
+  float ycoeff = 2; // float ycoeff
+}
+
+message VkPipelineViewportWScalingStateCreateInfoNV {
+  bool viewportWScalingEnable = 1; // VkBool32 viewportWScalingEnable
+  uint32 viewportCount = 2; // uint32_t viewportCount
+  repeated VkViewportWScalingNV pViewportWScalings = 3; // const VkViewportWScalingNV* pViewportWScalings
+}
+
+message VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX {
+  bool perViewPositionAllComponents = 1; // VkBool32 perViewPositionAllComponents
+}
+
+message VkMultiviewPerViewAttributesInfoNVX {
+  bool perViewAttributes = 1; // VkBool32 perViewAttributes
+  bool perViewAttributesPositionXOnly = 2; // VkBool32 perViewAttributesPositionXOnly
+}
+
+message VkViewportSwizzleNV {
+  VkViewportCoordinateSwizzleNV x = 1; // VkViewportCoordinateSwizzleNV x
+  VkViewportCoordinateSwizzleNV y = 2; // VkViewportCoordinateSwizzleNV y
+  VkViewportCoordinateSwizzleNV z = 3; // VkViewportCoordinateSwizzleNV z
+  VkViewportCoordinateSwizzleNV w = 4; // VkViewportCoordinateSwizzleNV w
+}
+
+message VkPipelineViewportSwizzleStateCreateInfoNV {
+  optional uint32 flags = 1; // VkPipelineViewportSwizzleStateCreateFlagsNV flags
+  uint32 viewportCount = 2; // uint32_t viewportCount
+  repeated VkViewportSwizzleNV pViewportSwizzles = 3; // const VkViewportSwizzleNV* pViewportSwizzles
+}
+
+message VkPhysicalDeviceDiscardRectanglePropertiesEXT {
+  uint32 maxDiscardRectangles = 1; // uint32_t maxDiscardRectangles
+}
+
+message VkPipelineDiscardRectangleStateCreateInfoEXT {
+  optional uint32 flags = 1; // VkPipelineDiscardRectangleStateCreateFlagsEXT flags
+  VkDiscardRectangleModeEXT discardRectangleMode = 2; // VkDiscardRectangleModeEXT discardRectangleMode
+  optional uint32 discardRectangleCount = 3; // uint32_t discardRectangleCount
+  repeated VkRect2D pDiscardRectangles = 4; // const VkRect2D* pDiscardRectangles
+}
+
+message VkPhysicalDeviceConservativeRasterizationPropertiesEXT {
+  float primitiveOverestimationSize = 1; // float primitiveOverestimationSize
+  float maxExtraPrimitiveOverestimationSize = 2; // float maxExtraPrimitiveOverestimationSize
+  float extraPrimitiveOverestimationSizeGranularity = 3; // float extraPrimitiveOverestimationSizeGranularity
+  bool primitiveUnderestimation = 4; // VkBool32 primitiveUnderestimation
+  bool conservativePointAndLineRasterization = 5; // VkBool32 conservativePointAndLineRasterization
+  bool degenerateTrianglesRasterized = 6; // VkBool32 degenerateTrianglesRasterized
+  bool degenerateLinesRasterized = 7; // VkBool32 degenerateLinesRasterized
+  bool fullyCoveredFragmentShaderInputVariable = 8; // VkBool32 fullyCoveredFragmentShaderInputVariable
+  bool conservativeRasterizationPostDepthCoverage = 9; // VkBool32 conservativeRasterizationPostDepthCoverage
+}
+
+message VkPipelineRasterizationConservativeStateCreateInfoEXT {
+  optional uint32 flags = 1; // VkPipelineRasterizationConservativeStateCreateFlagsEXT flags
+  VkConservativeRasterizationModeEXT conservativeRasterizationMode = 2; // VkConservativeRasterizationModeEXT conservativeRasterizationMode
+  float extraPrimitiveOverestimationSize = 3; // float extraPrimitiveOverestimationSize
+}
+
+message VkPhysicalDeviceDepthClipEnableFeaturesEXT {
+  bool depthClipEnable = 1; // VkBool32 depthClipEnable
+}
+
+message VkPipelineRasterizationDepthClipStateCreateInfoEXT {
+  optional uint32 flags = 1; // VkPipelineRasterizationDepthClipStateCreateFlagsEXT flags
+  bool depthClipEnable = 2; // VkBool32 depthClipEnable
+}
+
+message VkPhysicalDeviceRelaxedLineRasterizationFeaturesIMG {
+  bool relaxedLineRasterization = 1; // VkBool32 relaxedLineRasterization
+}
+
+message VkDebugUtilsObjectNameInfoEXT {
+  VkObjectType objectType = 1; // VkObjectType objectType
+  uint64 objectHandle = 2; // uint64_t objectHandle
+  optional string pObjectName = 3; // const char* pObjectName
+}
+
+message VkDebugUtilsMessengerCreateInfoEXT {
+  optional uint32 flags = 1; // VkDebugUtilsMessengerCreateFlagsEXT flags
+  uint32 messageSeverity = 2; // VkDebugUtilsMessageSeverityFlagsEXT messageSeverity
+  uint32 messageType = 3; // VkDebugUtilsMessageTypeFlagsEXT messageType
+  uint64 pfnUserCallback = 4; // PFN_vkDebugUtilsMessengerCallbackEXT pfnUserCallback NON-CONST POINTER
+  optional bytes pUserData = 5; // void* pUserData NON-CONST POINTER
+}
+
+message VkImportAndroidHardwareBufferInfoANDROID {
+  uint64 buffer = 1; // struct AHardwareBuffer* buffer NON-CONST POINTER
+}
+
+message VkExternalFormatANDROID {
+  uint64 externalFormat = 1; // uint64_t externalFormat
+}
+
+message VkPhysicalDeviceShaderEnqueueFeaturesAMDX {
+  bool shaderEnqueue = 1; // VkBool32 shaderEnqueue
+  bool shaderMeshEnqueue = 2; // VkBool32 shaderMeshEnqueue
+}
+
+message VkPhysicalDeviceShaderEnqueuePropertiesAMDX {
+  uint32 maxExecutionGraphDepth = 1; // uint32_t maxExecutionGraphDepth
+  uint32 maxExecutionGraphShaderOutputNodes = 2; // uint32_t maxExecutionGraphShaderOutputNodes
+  uint32 maxExecutionGraphShaderPayloadSize = 3; // uint32_t maxExecutionGraphShaderPayloadSize
+  uint32 maxExecutionGraphShaderPayloadCount = 4; // uint32_t maxExecutionGraphShaderPayloadCount
+  uint32 executionGraphDispatchAddressAlignment = 5; // uint32_t executionGraphDispatchAddressAlignment
+  repeated uint32 maxExecutionGraphWorkgroupCount = 6; // uint32_t maxExecutionGraphWorkgroupCount[3]
+  uint32 maxExecutionGraphWorkgroups = 7; // uint32_t maxExecutionGraphWorkgroups
+}
+
+message VkPipelineShaderStageNodeCreateInfoAMDX {
+  optional string pName = 1; // const char* pName
+  uint32 index = 2; // uint32_t index
+}
+
+message VkAttachmentSampleCountInfoAMD {
+  optional uint32 colorAttachmentCount = 1; // uint32_t colorAttachmentCount
+  repeated uint32 pColorAttachmentSamples = 2; // const VkSampleCountFlagBits* pColorAttachmentSamples
+  optional uint32 depthStencilAttachmentSamples = 3; // VkSampleCountFlagBits depthStencilAttachmentSamples
+}
+
+message VkSampleLocationEXT {
+  float x = 1; // float x
+  float y = 2; // float y
+}
+
+message VkSampleLocationsInfoEXT {
+  uint32 sampleLocationsPerPixel = 1; // VkSampleCountFlagBits sampleLocationsPerPixel
+  VkExtent2D sampleLocationGridSize = 2; // VkExtent2D sampleLocationGridSize
+  optional uint32 sampleLocationsCount = 3; // uint32_t sampleLocationsCount
+  repeated VkSampleLocationEXT pSampleLocations = 4; // const VkSampleLocationEXT* pSampleLocations
+}
+
+message VkAttachmentSampleLocationsEXT {
+  uint32 attachmentIndex = 1; // uint32_t attachmentIndex
+  VkSampleLocationsInfoEXT sampleLocationsInfo = 2; // VkSampleLocationsInfoEXT sampleLocationsInfo
+}
+
+message VkSubpassSampleLocationsEXT {
+  uint32 subpassIndex = 1; // uint32_t subpassIndex
+  VkSampleLocationsInfoEXT sampleLocationsInfo = 2; // VkSampleLocationsInfoEXT sampleLocationsInfo
+}
+
+message VkRenderPassSampleLocationsBeginInfoEXT {
+  optional uint32 attachmentInitialSampleLocationsCount = 1; // uint32_t attachmentInitialSampleLocationsCount
+  repeated VkAttachmentSampleLocationsEXT pAttachmentInitialSampleLocations = 2; // const VkAttachmentSampleLocationsEXT* pAttachmentInitialSampleLocations
+  optional uint32 postSubpassSampleLocationsCount = 3; // uint32_t postSubpassSampleLocationsCount
+  repeated VkSubpassSampleLocationsEXT pPostSubpassSampleLocations = 4; // const VkSubpassSampleLocationsEXT* pPostSubpassSampleLocations
+}
+
+message VkPipelineSampleLocationsStateCreateInfoEXT {
+  bool sampleLocationsEnable = 1; // VkBool32 sampleLocationsEnable
+  VkSampleLocationsInfoEXT sampleLocationsInfo = 2; // VkSampleLocationsInfoEXT sampleLocationsInfo
+}
+
+message VkPhysicalDeviceSampleLocationsPropertiesEXT {
+  uint32 sampleLocationSampleCounts = 1; // VkSampleCountFlags sampleLocationSampleCounts
+  VkExtent2D maxSampleLocationGridSize = 2; // VkExtent2D maxSampleLocationGridSize
+  repeated float sampleLocationCoordinateRange = 3; // float sampleLocationCoordinateRange[2]
+  uint32 sampleLocationSubPixelBits = 4; // uint32_t sampleLocationSubPixelBits
+  bool variableSampleLocations = 5; // VkBool32 variableSampleLocations
+}
+
+message VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT {
+  bool advancedBlendCoherentOperations = 1; // VkBool32 advancedBlendCoherentOperations
+}
+
+message VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT {
+  uint32 advancedBlendMaxColorAttachments = 1; // uint32_t advancedBlendMaxColorAttachments
+  bool advancedBlendIndependentBlend = 2; // VkBool32 advancedBlendIndependentBlend
+  bool advancedBlendNonPremultipliedSrcColor = 3; // VkBool32 advancedBlendNonPremultipliedSrcColor
+  bool advancedBlendNonPremultipliedDstColor = 4; // VkBool32 advancedBlendNonPremultipliedDstColor
+  bool advancedBlendCorrelatedOverlap = 5; // VkBool32 advancedBlendCorrelatedOverlap
+  bool advancedBlendAllOperations = 6; // VkBool32 advancedBlendAllOperations
+}
+
+message VkPipelineColorBlendAdvancedStateCreateInfoEXT {
+  bool srcPremultiplied = 1; // VkBool32 srcPremultiplied
+  bool dstPremultiplied = 2; // VkBool32 dstPremultiplied
+  VkBlendOverlapEXT blendOverlap = 3; // VkBlendOverlapEXT blendOverlap
+}
+
+message VkPipelineCoverageToColorStateCreateInfoNV {
+  optional uint32 flags = 1; // VkPipelineCoverageToColorStateCreateFlagsNV flags
+  bool coverageToColorEnable = 2; // VkBool32 coverageToColorEnable
+  optional uint32 coverageToColorLocation = 3; // uint32_t coverageToColorLocation
+}
+
+message VkPipelineCoverageModulationStateCreateInfoNV {
+  optional uint32 flags = 1; // VkPipelineCoverageModulationStateCreateFlagsNV flags
+  VkCoverageModulationModeNV coverageModulationMode = 2; // VkCoverageModulationModeNV coverageModulationMode
+  bool coverageModulationTableEnable = 3; // VkBool32 coverageModulationTableEnable
+  optional uint32 coverageModulationTableCount = 4; // uint32_t coverageModulationTableCount
+  repeated float pCoverageModulationTable = 5; // const float* pCoverageModulationTable
+}
+
+message VkPhysicalDeviceShaderSMBuiltinsPropertiesNV {
+  uint32 shaderSMCount = 1; // uint32_t shaderSMCount
+  uint32 shaderWarpsPerSM = 2; // uint32_t shaderWarpsPerSM
+}
+
+message VkPhysicalDeviceShaderSMBuiltinsFeaturesNV {
+  bool shaderSMBuiltins = 1; // VkBool32 shaderSMBuiltins
+}
+
+message VkImageDrmFormatModifierListCreateInfoEXT {
+  uint32 drmFormatModifierCount = 1; // uint32_t drmFormatModifierCount
+  repeated uint64 pDrmFormatModifiers = 2; // const uint64_t* pDrmFormatModifiers
+}
+
+message VkImageDrmFormatModifierExplicitCreateInfoEXT {
+  uint64 drmFormatModifier = 1; // uint64_t drmFormatModifier
+  uint32 drmFormatModifierPlaneCount = 2; // uint32_t drmFormatModifierPlaneCount
+  repeated VkSubresourceLayout pPlaneLayouts = 3; // const VkSubresourceLayout* pPlaneLayouts
+}
+
+message VkShaderModuleValidationCacheCreateInfoEXT {
+  uint64 validationCache = 1; // VkValidationCacheEXT validationCache
+}
+
+message VkShadingRatePaletteNV {
+  uint32 shadingRatePaletteEntryCount = 1; // uint32_t shadingRatePaletteEntryCount
+  repeated VkShadingRatePaletteEntryNV pShadingRatePaletteEntries = 2; // const VkShadingRatePaletteEntryNV* pShadingRatePaletteEntries
+}
+
+message VkPipelineViewportShadingRateImageStateCreateInfoNV {
+  bool shadingRateImageEnable = 1; // VkBool32 shadingRateImageEnable
+  optional uint32 viewportCount = 2; // uint32_t viewportCount
+  repeated VkShadingRatePaletteNV pShadingRatePalettes = 3; // const VkShadingRatePaletteNV* pShadingRatePalettes
+}
+
+message VkPhysicalDeviceShadingRateImageFeaturesNV {
+  bool shadingRateImage = 1; // VkBool32 shadingRateImage
+  bool shadingRateCoarseSampleOrder = 2; // VkBool32 shadingRateCoarseSampleOrder
+}
+
+message VkPhysicalDeviceShadingRateImagePropertiesNV {
+  VkExtent2D shadingRateTexelSize = 1; // VkExtent2D shadingRateTexelSize
+  uint32 shadingRatePaletteSize = 2; // uint32_t shadingRatePaletteSize
+  uint32 shadingRateMaxCoarseSamples = 3; // uint32_t shadingRateMaxCoarseSamples
+}
+
+message VkCoarseSampleLocationNV {
+  uint32 pixelX = 1; // uint32_t pixelX
+  uint32 pixelY = 2; // uint32_t pixelY
+  uint32 sample = 3; // uint32_t sample
+}
+
+message VkCoarseSampleOrderCustomNV {
+  VkShadingRatePaletteEntryNV shadingRate = 1; // VkShadingRatePaletteEntryNV shadingRate
+  uint32 sampleCount = 2; // uint32_t sampleCount
+  uint32 sampleLocationCount = 3; // uint32_t sampleLocationCount
+  repeated VkCoarseSampleLocationNV pSampleLocations = 4; // const VkCoarseSampleLocationNV* pSampleLocations
+}
+
+message VkPipelineViewportCoarseSampleOrderStateCreateInfoNV {
+  VkCoarseSampleOrderTypeNV sampleOrderType = 1; // VkCoarseSampleOrderTypeNV sampleOrderType
+  optional uint32 customSampleOrderCount = 2; // uint32_t customSampleOrderCount
+  repeated VkCoarseSampleOrderCustomNV pCustomSampleOrders = 3; // const VkCoarseSampleOrderCustomNV* pCustomSampleOrders
+}
+
+message VkPhysicalDeviceRayTracingPropertiesNV {
+  uint32 shaderGroupHandleSize = 1; // uint32_t shaderGroupHandleSize
+  uint32 maxRecursionDepth = 2; // uint32_t maxRecursionDepth
+  uint32 maxShaderGroupStride = 3; // uint32_t maxShaderGroupStride
+  uint32 shaderGroupBaseAlignment = 4; // uint32_t shaderGroupBaseAlignment
+  uint64 maxGeometryCount = 5; // uint64_t maxGeometryCount
+  uint64 maxInstanceCount = 6; // uint64_t maxInstanceCount
+  uint64 maxTriangleCount = 7; // uint64_t maxTriangleCount
+  uint32 maxDescriptorSetAccelerationStructures = 8; // uint32_t maxDescriptorSetAccelerationStructures
+}
+
+message VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV {
+  bool representativeFragmentTest = 1; // VkBool32 representativeFragmentTest
+}
+
+message VkPipelineRepresentativeFragmentTestStateCreateInfoNV {
+  bool representativeFragmentTestEnable = 1; // VkBool32 representativeFragmentTestEnable
+}
+
+message VkImportMemoryHostPointerInfoEXT {
+  uint32 handleType = 1; // VkExternalMemoryHandleTypeFlagBits handleType
+  bytes pHostPointer = 2; // void* pHostPointer NON-CONST POINTER
+}
+
+message VkPhysicalDeviceExternalMemoryHostPropertiesEXT {
+  uint64 minImportedHostPointerAlignment = 1; // VkDeviceSize minImportedHostPointerAlignment
+}
+
+message VkPipelineCompilerControlCreateInfoAMD {
+  optional uint32 compilerControlFlags = 1; // VkPipelineCompilerControlFlagsAMD compilerControlFlags
+}
+
+message VkPhysicalDeviceShaderCorePropertiesAMD {
+  uint32 shaderEngineCount = 1; // uint32_t shaderEngineCount
+  uint32 shaderArraysPerEngineCount = 2; // uint32_t shaderArraysPerEngineCount
+  uint32 computeUnitsPerShaderArray = 3; // uint32_t computeUnitsPerShaderArray
+  uint32 simdPerComputeUnit = 4; // uint32_t simdPerComputeUnit
+  uint32 wavefrontsPerSimd = 5; // uint32_t wavefrontsPerSimd
+  uint32 wavefrontSize = 6; // uint32_t wavefrontSize
+  uint32 sgprsPerSimd = 7; // uint32_t sgprsPerSimd
+  uint32 minSgprAllocation = 8; // uint32_t minSgprAllocation
+  uint32 maxSgprAllocation = 9; // uint32_t maxSgprAllocation
+  uint32 sgprAllocationGranularity = 10; // uint32_t sgprAllocationGranularity
+  uint32 vgprsPerSimd = 11; // uint32_t vgprsPerSimd
+  uint32 minVgprAllocation = 12; // uint32_t minVgprAllocation
+  uint32 maxVgprAllocation = 13; // uint32_t maxVgprAllocation
+  uint32 vgprAllocationGranularity = 14; // uint32_t vgprAllocationGranularity
+}
+
+message VkDeviceMemoryOverallocationCreateInfoAMD {
+  VkMemoryOverallocationBehaviorAMD overallocationBehavior = 1; // VkMemoryOverallocationBehaviorAMD overallocationBehavior
+}
+
+message VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT {
+  uint32 maxVertexAttribDivisor = 1; // uint32_t maxVertexAttribDivisor
+}
+
+message VkPhysicalDeviceMeshShaderFeaturesNV {
+  bool taskShader = 1; // VkBool32 taskShader
+  bool meshShader = 2; // VkBool32 meshShader
+}
+
+message VkPhysicalDeviceMeshShaderPropertiesNV {
+  uint32 maxDrawMeshTasksCount = 1; // uint32_t maxDrawMeshTasksCount
+  uint32 maxTaskWorkGroupInvocations = 2; // uint32_t maxTaskWorkGroupInvocations
+  repeated uint32 maxTaskWorkGroupSize = 3; // uint32_t maxTaskWorkGroupSize[3]
+  uint32 maxTaskTotalMemorySize = 4; // uint32_t maxTaskTotalMemorySize
+  uint32 maxTaskOutputCount = 5; // uint32_t maxTaskOutputCount
+  uint32 maxMeshWorkGroupInvocations = 6; // uint32_t maxMeshWorkGroupInvocations
+  repeated uint32 maxMeshWorkGroupSize = 7; // uint32_t maxMeshWorkGroupSize[3]
+  uint32 maxMeshTotalMemorySize = 8; // uint32_t maxMeshTotalMemorySize
+  uint32 maxMeshOutputVertices = 9; // uint32_t maxMeshOutputVertices
+  uint32 maxMeshOutputPrimitives = 10; // uint32_t maxMeshOutputPrimitives
+  uint32 maxMeshMultiviewViewCount = 11; // uint32_t maxMeshMultiviewViewCount
+  uint32 meshOutputPerVertexGranularity = 12; // uint32_t meshOutputPerVertexGranularity
+  uint32 meshOutputPerPrimitiveGranularity = 13; // uint32_t meshOutputPerPrimitiveGranularity
+}
+
+message VkPhysicalDeviceShaderImageFootprintFeaturesNV {
+  bool imageFootprint = 1; // VkBool32 imageFootprint
+}
+
+message VkPipelineViewportExclusiveScissorStateCreateInfoNV {
+  optional uint32 exclusiveScissorCount = 1; // uint32_t exclusiveScissorCount
+  repeated VkRect2D pExclusiveScissors = 2; // const VkRect2D* pExclusiveScissors
+}
+
+message VkPhysicalDeviceExclusiveScissorFeaturesNV {
+  bool exclusiveScissor = 1; // VkBool32 exclusiveScissor
+}
+
+message VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL {
+  bool shaderIntegerFunctions2 = 1; // VkBool32 shaderIntegerFunctions2
+}
+
+message VkPhysicalDevicePCIBusInfoPropertiesEXT {
+  uint32 pciDomain = 1; // uint32_t pciDomain
+  uint32 pciBus = 2; // uint32_t pciBus
+  uint32 pciDevice = 3; // uint32_t pciDevice
+  uint32 pciFunction = 4; // uint32_t pciFunction
+}
+
+message VkPhysicalDeviceFragmentDensityMapFeaturesEXT {
+  bool fragmentDensityMap = 1; // VkBool32 fragmentDensityMap
+  bool fragmentDensityMapDynamic = 2; // VkBool32 fragmentDensityMapDynamic
+  bool fragmentDensityMapNonSubsampledImages = 3; // VkBool32 fragmentDensityMapNonSubsampledImages
+}
+
+message VkPhysicalDeviceFragmentDensityMapPropertiesEXT {
+  VkExtent2D minFragmentDensityTexelSize = 1; // VkExtent2D minFragmentDensityTexelSize
+  VkExtent2D maxFragmentDensityTexelSize = 2; // VkExtent2D maxFragmentDensityTexelSize
+  bool fragmentDensityInvocations = 3; // VkBool32 fragmentDensityInvocations
+}
+
+message VkRenderPassFragmentDensityMapCreateInfoEXT {
+  VkAttachmentReference fragmentDensityMapAttachment = 1; // VkAttachmentReference fragmentDensityMapAttachment
+}
+
+message VkPhysicalDeviceShaderCoreProperties2AMD {
+  uint32 shaderCoreFeatures = 1; // VkShaderCorePropertiesFlagsAMD shaderCoreFeatures
+  uint32 activeComputeUnitCount = 2; // uint32_t activeComputeUnitCount
+}
+
+message VkPhysicalDeviceCoherentMemoryFeaturesAMD {
+  bool deviceCoherentMemory = 1; // VkBool32 deviceCoherentMemory
+}
+
+message VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT {
+  bool shaderImageInt64Atomics = 1; // VkBool32 shaderImageInt64Atomics
+  bool sparseImageInt64Atomics = 2; // VkBool32 sparseImageInt64Atomics
+}
+
+message VkPhysicalDeviceMemoryPriorityFeaturesEXT {
+  bool memoryPriority = 1; // VkBool32 memoryPriority
+}
+
+message VkMemoryPriorityAllocateInfoEXT {
+  float priority = 1; // float priority
+}
+
+message VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV {
+  bool dedicatedAllocationImageAliasing = 1; // VkBool32 dedicatedAllocationImageAliasing
+}
+
+message VkPhysicalDeviceBufferDeviceAddressFeaturesEXT {
+  bool bufferDeviceAddress = 1; // VkBool32 bufferDeviceAddress
+  bool bufferDeviceAddressCaptureReplay = 2; // VkBool32 bufferDeviceAddressCaptureReplay
+  bool bufferDeviceAddressMultiDevice = 3; // VkBool32 bufferDeviceAddressMultiDevice
+}
+
+message VkValidationFeaturesEXT {
+  optional uint32 enabledValidationFeatureCount = 1; // uint32_t enabledValidationFeatureCount
+  repeated VkValidationFeatureEnableEXT pEnabledValidationFeatures = 2; // const VkValidationFeatureEnableEXT* pEnabledValidationFeatures
+  optional uint32 disabledValidationFeatureCount = 3; // uint32_t disabledValidationFeatureCount
+  repeated VkValidationFeatureDisableEXT pDisabledValidationFeatures = 4; // const VkValidationFeatureDisableEXT* pDisabledValidationFeatures
+}
+
+message VkPhysicalDeviceCooperativeMatrixFeaturesNV {
+  bool cooperativeMatrix = 1; // VkBool32 cooperativeMatrix
+  bool cooperativeMatrixRobustBufferAccess = 2; // VkBool32 cooperativeMatrixRobustBufferAccess
+}
+
+message VkPhysicalDeviceCooperativeMatrixPropertiesNV {
+  uint32 cooperativeMatrixSupportedStages = 1; // VkShaderStageFlags cooperativeMatrixSupportedStages
+}
+
+message VkPhysicalDeviceCoverageReductionModeFeaturesNV {
+  bool coverageReductionMode = 1; // VkBool32 coverageReductionMode
+}
+
+message VkPipelineCoverageReductionStateCreateInfoNV {
+  optional uint32 flags = 1; // VkPipelineCoverageReductionStateCreateFlagsNV flags
+  VkCoverageReductionModeNV coverageReductionMode = 2; // VkCoverageReductionModeNV coverageReductionMode
+}
+
+message VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT {
+  bool fragmentShaderSampleInterlock = 1; // VkBool32 fragmentShaderSampleInterlock
+  bool fragmentShaderPixelInterlock = 2; // VkBool32 fragmentShaderPixelInterlock
+  bool fragmentShaderShadingRateInterlock = 3; // VkBool32 fragmentShaderShadingRateInterlock
+}
+
+message VkPhysicalDeviceYcbcrImageArraysFeaturesEXT {
+  bool ycbcrImageArrays = 1; // VkBool32 ycbcrImageArrays
+}
+
+message VkPhysicalDeviceProvokingVertexFeaturesEXT {
+  bool provokingVertexLast = 1; // VkBool32 provokingVertexLast
+  bool transformFeedbackPreservesProvokingVertex = 2; // VkBool32 transformFeedbackPreservesProvokingVertex
+}
+
+message VkPhysicalDeviceProvokingVertexPropertiesEXT {
+  bool provokingVertexModePerPipeline = 1; // VkBool32 provokingVertexModePerPipeline
+  bool transformFeedbackPreservesTriangleFanProvokingVertex = 2; // VkBool32 transformFeedbackPreservesTriangleFanProvokingVertex
+}
+
+message VkPipelineRasterizationProvokingVertexStateCreateInfoEXT {
+  VkProvokingVertexModeEXT provokingVertexMode = 1; // VkProvokingVertexModeEXT provokingVertexMode
+}
+
+message VkPhysicalDeviceShaderAtomicFloatFeaturesEXT {
+  bool shaderBufferFloat32Atomics = 1; // VkBool32 shaderBufferFloat32Atomics
+  bool shaderBufferFloat32AtomicAdd = 2; // VkBool32 shaderBufferFloat32AtomicAdd
+  bool shaderBufferFloat64Atomics = 3; // VkBool32 shaderBufferFloat64Atomics
+  bool shaderBufferFloat64AtomicAdd = 4; // VkBool32 shaderBufferFloat64AtomicAdd
+  bool shaderSharedFloat32Atomics = 5; // VkBool32 shaderSharedFloat32Atomics
+  bool shaderSharedFloat32AtomicAdd = 6; // VkBool32 shaderSharedFloat32AtomicAdd
+  bool shaderSharedFloat64Atomics = 7; // VkBool32 shaderSharedFloat64Atomics
+  bool shaderSharedFloat64AtomicAdd = 8; // VkBool32 shaderSharedFloat64AtomicAdd
+  bool shaderImageFloat32Atomics = 9; // VkBool32 shaderImageFloat32Atomics
+  bool shaderImageFloat32AtomicAdd = 10; // VkBool32 shaderImageFloat32AtomicAdd
+  bool sparseImageFloat32Atomics = 11; // VkBool32 sparseImageFloat32Atomics
+  bool sparseImageFloat32AtomicAdd = 12; // VkBool32 sparseImageFloat32AtomicAdd
+}
+
+message VkPhysicalDeviceExtendedDynamicStateFeaturesEXT {
+  bool extendedDynamicState = 1; // VkBool32 extendedDynamicState
+}
+
+message VkPhysicalDeviceMapMemoryPlacedFeaturesEXT {
+  bool memoryMapPlaced = 1; // VkBool32 memoryMapPlaced
+  bool memoryMapRangePlaced = 2; // VkBool32 memoryMapRangePlaced
+  bool memoryUnmapReserve = 3; // VkBool32 memoryUnmapReserve
+}
+
+message VkPhysicalDeviceMapMemoryPlacedPropertiesEXT {
+  uint64 minPlacedMemoryMapAlignment = 1; // VkDeviceSize minPlacedMemoryMapAlignment
+}
+
+message VkPhysicalDeviceShaderAtomicFloat2FeaturesEXT {
+  bool shaderBufferFloat16Atomics = 1; // VkBool32 shaderBufferFloat16Atomics
+  bool shaderBufferFloat16AtomicAdd = 2; // VkBool32 shaderBufferFloat16AtomicAdd
+  bool shaderBufferFloat16AtomicMinMax = 3; // VkBool32 shaderBufferFloat16AtomicMinMax
+  bool shaderBufferFloat32AtomicMinMax = 4; // VkBool32 shaderBufferFloat32AtomicMinMax
+  bool shaderBufferFloat64AtomicMinMax = 5; // VkBool32 shaderBufferFloat64AtomicMinMax
+  bool shaderSharedFloat16Atomics = 6; // VkBool32 shaderSharedFloat16Atomics
+  bool shaderSharedFloat16AtomicAdd = 7; // VkBool32 shaderSharedFloat16AtomicAdd
+  bool shaderSharedFloat16AtomicMinMax = 8; // VkBool32 shaderSharedFloat16AtomicMinMax
+  bool shaderSharedFloat32AtomicMinMax = 9; // VkBool32 shaderSharedFloat32AtomicMinMax
+  bool shaderSharedFloat64AtomicMinMax = 10; // VkBool32 shaderSharedFloat64AtomicMinMax
+  bool shaderImageFloat32AtomicMinMax = 11; // VkBool32 shaderImageFloat32AtomicMinMax
+  bool sparseImageFloat32AtomicMinMax = 12; // VkBool32 sparseImageFloat32AtomicMinMax
+}
+
+message VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT {
+  bool swapchainMaintenance1 = 1; // VkBool32 swapchainMaintenance1
+}
+
+message VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV {
+  uint32 maxGraphicsShaderGroupCount = 1; // uint32_t maxGraphicsShaderGroupCount
+  uint32 maxIndirectSequenceCount = 2; // uint32_t maxIndirectSequenceCount
+  uint32 maxIndirectCommandsTokenCount = 3; // uint32_t maxIndirectCommandsTokenCount
+  uint32 maxIndirectCommandsStreamCount = 4; // uint32_t maxIndirectCommandsStreamCount
+  uint32 maxIndirectCommandsTokenOffset = 5; // uint32_t maxIndirectCommandsTokenOffset
+  uint32 maxIndirectCommandsStreamStride = 6; // uint32_t maxIndirectCommandsStreamStride
+  uint32 minSequencesCountBufferOffsetAlignment = 7; // uint32_t minSequencesCountBufferOffsetAlignment
+  uint32 minSequencesIndexBufferOffsetAlignment = 8; // uint32_t minSequencesIndexBufferOffsetAlignment
+  uint32 minIndirectCommandsBufferOffsetAlignment = 9; // uint32_t minIndirectCommandsBufferOffsetAlignment
+}
+
+message VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV {
+  bool deviceGeneratedCommands = 1; // VkBool32 deviceGeneratedCommands
+}
+
+message VkGraphicsShaderGroupCreateInfoNV {
+  uint32 stageCount = 1; // uint32_t stageCount
+  repeated VkPipelineShaderStageCreateInfo pStages = 2; // const VkPipelineShaderStageCreateInfo* pStages
+  optional VkPipelineVertexInputStateCreateInfo pVertexInputState = 3; // const VkPipelineVertexInputStateCreateInfo* pVertexInputState
+  optional VkPipelineTessellationStateCreateInfo pTessellationState = 4; // const VkPipelineTessellationStateCreateInfo* pTessellationState
+}
+
+message VkGraphicsPipelineShaderGroupsCreateInfoNV {
+  optional uint32 groupCount = 1; // uint32_t groupCount
+  repeated VkGraphicsShaderGroupCreateInfoNV pGroups = 2; // const VkGraphicsShaderGroupCreateInfoNV* pGroups
+  optional uint32 pipelineCount = 3; // uint32_t pipelineCount
+  repeated uint64 pPipelines = 4; // const VkPipeline* pPipelines
+}
+
+message VkPhysicalDeviceInheritedViewportScissorFeaturesNV {
+  bool inheritedViewportScissor2D = 1; // VkBool32 inheritedViewportScissor2D
+}
+
+message VkCommandBufferInheritanceViewportScissorInfoNV {
+  bool viewportScissor2D = 1; // VkBool32 viewportScissor2D
+  uint32 viewportDepthCount = 2; // uint32_t viewportDepthCount
+  VkViewport pViewportDepths = 3; // const VkViewport* pViewportDepths
+}
+
+message VkPhysicalDeviceTexelBufferAlignmentFeaturesEXT {
+  bool texelBufferAlignment = 1; // VkBool32 texelBufferAlignment
+}
+
+message VkRenderPassTransformBeginInfoQCOM {
+  uint32 transform = 1; // VkSurfaceTransformFlagBitsKHR transform
+}
+
+message VkCommandBufferInheritanceRenderPassTransformInfoQCOM {
+  uint32 transform = 1; // VkSurfaceTransformFlagBitsKHR transform
+  VkRect2D renderArea = 2; // VkRect2D renderArea
+}
+
+message VkPhysicalDeviceDepthBiasControlFeaturesEXT {
+  bool depthBiasControl = 1; // VkBool32 depthBiasControl
+  bool leastRepresentableValueForceUnormRepresentation = 2; // VkBool32 leastRepresentableValueForceUnormRepresentation
+  bool floatRepresentation = 3; // VkBool32 floatRepresentation
+  bool depthBiasExact = 4; // VkBool32 depthBiasExact
+}
+
+message VkDepthBiasRepresentationInfoEXT {
+  VkDepthBiasRepresentationEXT depthBiasRepresentation = 1; // VkDepthBiasRepresentationEXT depthBiasRepresentation
+  bool depthBiasExact = 2; // VkBool32 depthBiasExact
+}
+
+message VkPhysicalDeviceDeviceMemoryReportFeaturesEXT {
+  bool deviceMemoryReport = 1; // VkBool32 deviceMemoryReport
+}
+
+message VkDeviceDeviceMemoryReportCreateInfoEXT {
+  uint32 flags = 1; // VkDeviceMemoryReportFlagsEXT flags
+  uint64 pfnUserCallback = 2; // PFN_vkDeviceMemoryReportCallbackEXT pfnUserCallback NON-CONST POINTER
+  bytes pUserData = 3; // void* pUserData NON-CONST POINTER
+}
+
+message VkPhysicalDeviceRobustness2FeaturesEXT {
+  bool robustBufferAccess2 = 1; // VkBool32 robustBufferAccess2
+  bool robustImageAccess2 = 2; // VkBool32 robustImageAccess2
+  bool nullDescriptor = 3; // VkBool32 nullDescriptor
+}
+
+message VkPhysicalDeviceRobustness2PropertiesEXT {
+  uint64 robustStorageBufferAccessSizeAlignment = 1; // VkDeviceSize robustStorageBufferAccessSizeAlignment
+  uint64 robustUniformBufferAccessSizeAlignment = 2; // VkDeviceSize robustUniformBufferAccessSizeAlignment
+}
+
+message VkPhysicalDeviceCustomBorderColorPropertiesEXT {
+  uint32 maxCustomBorderColorSamplers = 1; // uint32_t maxCustomBorderColorSamplers
+}
+
+message VkPhysicalDeviceCustomBorderColorFeaturesEXT {
+  bool customBorderColors = 1; // VkBool32 customBorderColors
+  bool customBorderColorWithoutFormat = 2; // VkBool32 customBorderColorWithoutFormat
+}
+
+message VkPhysicalDevicePresentBarrierFeaturesNV {
+  bool presentBarrier = 1; // VkBool32 presentBarrier
+}
+
+message VkPhysicalDeviceDiagnosticsConfigFeaturesNV {
+  bool diagnosticsConfig = 1; // VkBool32 diagnosticsConfig
+}
+
+message VkDeviceDiagnosticsConfigCreateInfoNV {
+  optional uint32 flags = 1; // VkDeviceDiagnosticsConfigFlagsNV flags
+}
+
+message VkPhysicalDeviceCudaKernelLaunchFeaturesNV {
+  bool cudaKernelLaunchFeatures = 1; // VkBool32 cudaKernelLaunchFeatures
+}
+
+message VkPhysicalDeviceCudaKernelLaunchPropertiesNV {
+  uint32 computeCapabilityMinor = 1; // uint32_t computeCapabilityMinor
+  uint32 computeCapabilityMajor = 2; // uint32_t computeCapabilityMajor
+}
+
+message VkPhysicalDeviceTileShadingFeaturesQCOM {
+  bool tileShading = 1; // VkBool32 tileShading
+  bool tileShadingFragmentStage = 2; // VkBool32 tileShadingFragmentStage
+  bool tileShadingColorAttachments = 3; // VkBool32 tileShadingColorAttachments
+  bool tileShadingDepthAttachments = 4; // VkBool32 tileShadingDepthAttachments
+  bool tileShadingStencilAttachments = 5; // VkBool32 tileShadingStencilAttachments
+  bool tileShadingInputAttachments = 6; // VkBool32 tileShadingInputAttachments
+  bool tileShadingSampledAttachments = 7; // VkBool32 tileShadingSampledAttachments
+  bool tileShadingPerTileDraw = 8; // VkBool32 tileShadingPerTileDraw
+  bool tileShadingPerTileDispatch = 9; // VkBool32 tileShadingPerTileDispatch
+  bool tileShadingDispatchTile = 10; // VkBool32 tileShadingDispatchTile
+  bool tileShadingApron = 11; // VkBool32 tileShadingApron
+  bool tileShadingAnisotropicApron = 12; // VkBool32 tileShadingAnisotropicApron
+  bool tileShadingAtomicOps = 13; // VkBool32 tileShadingAtomicOps
+  bool tileShadingImageProcessing = 14; // VkBool32 tileShadingImageProcessing
+}
+
+message VkPhysicalDeviceTileShadingPropertiesQCOM {
+  uint32 maxApronSize = 1; // uint32_t maxApronSize
+  bool preferNonCoherent = 2; // VkBool32 preferNonCoherent
+  VkExtent2D tileGranularity = 3; // VkExtent2D tileGranularity
+  VkExtent2D maxTileShadingRate = 4; // VkExtent2D maxTileShadingRate
+}
+
+message VkRenderPassTileShadingCreateInfoQCOM {
+  optional uint32 flags = 1; // VkTileShadingRenderPassFlagsQCOM flags
+  optional VkExtent2D tileApronSize = 2; // VkExtent2D tileApronSize
+}
+
+message VkQueryLowLatencySupportNV {
+  bytes pQueriedLowLatencyData = 1; // void* pQueriedLowLatencyData NON-CONST POINTER
+}
+
+message VkExportMetalObjectCreateInfoEXT {
+  optional uint32 exportObjectType = 1; // VkExportMetalObjectTypeFlagBitsEXT exportObjectType
+}
+
+message VkImportMetalBufferInfoEXT {
+  uint64 mtlBuffer = 1; // MTLBuffer_id mtlBuffer
+}
+
+message VkImportMetalTextureInfoEXT {
+  uint32 plane = 1; // VkImageAspectFlagBits plane
+  uint64 mtlTexture = 2; // MTLTexture_id mtlTexture
+}
+
+message VkImportMetalIOSurfaceInfoEXT {
+  optional uint64 ioSurface = 1; // IOSurfaceRef ioSurface
+}
+
+message VkImportMetalSharedEventInfoEXT {
+  uint64 mtlSharedEvent = 1; // MTLSharedEvent_id mtlSharedEvent
+}
+
+message VkPhysicalDeviceDescriptorBufferPropertiesEXT {
+  bool combinedImageSamplerDescriptorSingleArray = 1; // VkBool32 combinedImageSamplerDescriptorSingleArray
+  bool bufferlessPushDescriptors = 2; // VkBool32 bufferlessPushDescriptors
+  bool allowSamplerImageViewPostSubmitCreation = 3; // VkBool32 allowSamplerImageViewPostSubmitCreation
+  uint64 descriptorBufferOffsetAlignment = 4; // VkDeviceSize descriptorBufferOffsetAlignment
+  uint32 maxDescriptorBufferBindings = 5; // uint32_t maxDescriptorBufferBindings
+  uint32 maxResourceDescriptorBufferBindings = 6; // uint32_t maxResourceDescriptorBufferBindings
+  uint32 maxSamplerDescriptorBufferBindings = 7; // uint32_t maxSamplerDescriptorBufferBindings
+  uint32 maxEmbeddedImmutableSamplerBindings = 8; // uint32_t maxEmbeddedImmutableSamplerBindings
+  uint32 maxEmbeddedImmutableSamplers = 9; // uint32_t maxEmbeddedImmutableSamplers
+  uint64 bufferCaptureReplayDescriptorDataSize = 10; // size_t bufferCaptureReplayDescriptorDataSize
+  uint64 imageCaptureReplayDescriptorDataSize = 11; // size_t imageCaptureReplayDescriptorDataSize
+  uint64 imageViewCaptureReplayDescriptorDataSize = 12; // size_t imageViewCaptureReplayDescriptorDataSize
+  uint64 samplerCaptureReplayDescriptorDataSize = 13; // size_t samplerCaptureReplayDescriptorDataSize
+  uint64 accelerationStructureCaptureReplayDescriptorDataSize = 14; // size_t accelerationStructureCaptureReplayDescriptorDataSize
+  uint64 samplerDescriptorSize = 15; // size_t samplerDescriptorSize
+  uint64 combinedImageSamplerDescriptorSize = 16; // size_t combinedImageSamplerDescriptorSize
+  uint64 sampledImageDescriptorSize = 17; // size_t sampledImageDescriptorSize
+  uint64 storageImageDescriptorSize = 18; // size_t storageImageDescriptorSize
+  uint64 uniformTexelBufferDescriptorSize = 19; // size_t uniformTexelBufferDescriptorSize
+  uint64 robustUniformTexelBufferDescriptorSize = 20; // size_t robustUniformTexelBufferDescriptorSize
+  uint64 storageTexelBufferDescriptorSize = 21; // size_t storageTexelBufferDescriptorSize
+  uint64 robustStorageTexelBufferDescriptorSize = 22; // size_t robustStorageTexelBufferDescriptorSize
+  uint64 uniformBufferDescriptorSize = 23; // size_t uniformBufferDescriptorSize
+  uint64 robustUniformBufferDescriptorSize = 24; // size_t robustUniformBufferDescriptorSize
+  uint64 storageBufferDescriptorSize = 25; // size_t storageBufferDescriptorSize
+  uint64 robustStorageBufferDescriptorSize = 26; // size_t robustStorageBufferDescriptorSize
+  uint64 inputAttachmentDescriptorSize = 27; // size_t inputAttachmentDescriptorSize
+  uint64 accelerationStructureDescriptorSize = 28; // size_t accelerationStructureDescriptorSize
+  uint64 maxSamplerDescriptorBufferRange = 29; // VkDeviceSize maxSamplerDescriptorBufferRange
+  uint64 maxResourceDescriptorBufferRange = 30; // VkDeviceSize maxResourceDescriptorBufferRange
+  uint64 samplerDescriptorBufferAddressSpaceSize = 31; // VkDeviceSize samplerDescriptorBufferAddressSpaceSize
+  uint64 resourceDescriptorBufferAddressSpaceSize = 32; // VkDeviceSize resourceDescriptorBufferAddressSpaceSize
+  uint64 descriptorBufferAddressSpaceSize = 33; // VkDeviceSize descriptorBufferAddressSpaceSize
+}
+
+message VkPhysicalDeviceDescriptorBufferDensityMapPropertiesEXT {
+  uint64 combinedImageSamplerDensityMapDescriptorSize = 1; // size_t combinedImageSamplerDensityMapDescriptorSize
+}
+
+message VkPhysicalDeviceDescriptorBufferFeaturesEXT {
+  bool descriptorBuffer = 1; // VkBool32 descriptorBuffer
+  bool descriptorBufferCaptureReplay = 2; // VkBool32 descriptorBufferCaptureReplay
+  bool descriptorBufferImageLayoutIgnored = 3; // VkBool32 descriptorBufferImageLayoutIgnored
+  bool descriptorBufferPushDescriptors = 4; // VkBool32 descriptorBufferPushDescriptors
+}
+
+message VkOpaqueCaptureDescriptorDataCreateInfoEXT {
+  bytes opaqueCaptureDescriptorData = 1; // const void* opaqueCaptureDescriptorData
+}
+
+message VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT {
+  bool graphicsPipelineLibrary = 1; // VkBool32 graphicsPipelineLibrary
+}
+
+message VkPhysicalDeviceGraphicsPipelineLibraryPropertiesEXT {
+  bool graphicsPipelineLibraryFastLinking = 1; // VkBool32 graphicsPipelineLibraryFastLinking
+  bool graphicsPipelineLibraryIndependentInterpolationDecoration = 2; // VkBool32 graphicsPipelineLibraryIndependentInterpolationDecoration
+}
+
+message VkGraphicsPipelineLibraryCreateInfoEXT {
+  uint32 flags = 1; // VkGraphicsPipelineLibraryFlagsEXT flags
+}
+
+message VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD {
+  bool shaderEarlyAndLateFragmentTests = 1; // VkBool32 shaderEarlyAndLateFragmentTests
+}
+
+message VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNV {
+  bool fragmentShadingRateEnums = 1; // VkBool32 fragmentShadingRateEnums
+  bool supersampleFragmentShadingRates = 2; // VkBool32 supersampleFragmentShadingRates
+  bool noInvocationFragmentShadingRates = 3; // VkBool32 noInvocationFragmentShadingRates
+}
+
+message VkPhysicalDeviceFragmentShadingRateEnumsPropertiesNV {
+  uint32 maxFragmentShadingRateInvocationCount = 1; // VkSampleCountFlagBits maxFragmentShadingRateInvocationCount
+}
+
+message VkPipelineFragmentShadingRateEnumStateCreateInfoNV {
+  VkFragmentShadingRateTypeNV shadingRateType = 1; // VkFragmentShadingRateTypeNV shadingRateType
+  VkFragmentShadingRateNV shadingRate = 2; // VkFragmentShadingRateNV shadingRate
+  repeated VkFragmentShadingRateCombinerOpKHR combinerOps = 3; // VkFragmentShadingRateCombinerOpKHR combinerOps[2]
+}
+
+message VkPhysicalDeviceRayTracingMotionBlurFeaturesNV {
+  bool rayTracingMotionBlur = 1; // VkBool32 rayTracingMotionBlur
+  bool rayTracingMotionBlurPipelineTraceRaysIndirect = 2; // VkBool32 rayTracingMotionBlurPipelineTraceRaysIndirect
+}
+
+message VkPhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT {
+  bool ycbcr2plane444Formats = 1; // VkBool32 ycbcr2plane444Formats
+}
+
+message VkPhysicalDeviceFragmentDensityMap2FeaturesEXT {
+  bool fragmentDensityMapDeferred = 1; // VkBool32 fragmentDensityMapDeferred
+}
+
+message VkPhysicalDeviceFragmentDensityMap2PropertiesEXT {
+  bool subsampledLoads = 1; // VkBool32 subsampledLoads
+  bool subsampledCoarseReconstructionEarlyAccess = 2; // VkBool32 subsampledCoarseReconstructionEarlyAccess
+  uint32 maxSubsampledArrayLayers = 3; // uint32_t maxSubsampledArrayLayers
+  uint32 maxDescriptorSetSubsampledSamplers = 4; // uint32_t maxDescriptorSetSubsampledSamplers
+}
+
+message VkPhysicalDeviceImageCompressionControlFeaturesEXT {
+  bool imageCompressionControl = 1; // VkBool32 imageCompressionControl
+}
+
+message VkImageCompressionControlEXT {
+  uint32 flags = 1; // VkImageCompressionFlagsEXT flags
+  optional uint32 compressionControlPlaneCount = 2; // uint32_t compressionControlPlaneCount
+  repeated uint32 pFixedRateFlags = 3; // VkImageCompressionFixedRateFlagsEXT* pFixedRateFlags NON-CONST POINTER
+}
+
+message VkPhysicalDeviceAttachmentFeedbackLoopLayoutFeaturesEXT {
+  bool attachmentFeedbackLoopLayout = 1; // VkBool32 attachmentFeedbackLoopLayout
+}
+
+message VkPhysicalDevice4444FormatsFeaturesEXT {
+  bool formatA4R4G4B4 = 1; // VkBool32 formatA4R4G4B4
+  bool formatA4B4G4R4 = 2; // VkBool32 formatA4B4G4R4
+}
+
+message VkPhysicalDeviceFaultFeaturesEXT {
+  bool deviceFault = 1; // VkBool32 deviceFault
+  bool deviceFaultVendorBinary = 2; // VkBool32 deviceFaultVendorBinary
+}
+
+message VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT {
+  bool rasterizationOrderColorAttachmentAccess = 1; // VkBool32 rasterizationOrderColorAttachmentAccess
+  bool rasterizationOrderDepthAttachmentAccess = 2; // VkBool32 rasterizationOrderDepthAttachmentAccess
+  bool rasterizationOrderStencilAttachmentAccess = 3; // VkBool32 rasterizationOrderStencilAttachmentAccess
+}
+
+message VkPhysicalDeviceRGBA10X6FormatsFeaturesEXT {
+  bool formatRgba10x6WithoutYCbCrSampler = 1; // VkBool32 formatRgba10x6WithoutYCbCrSampler
+}
+
+message VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT {
+  bool mutableDescriptorType = 1; // VkBool32 mutableDescriptorType
+}
+
+message VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT {
+  bool vertexInputDynamicState = 1; // VkBool32 vertexInputDynamicState
+}
+
+message VkPhysicalDeviceDrmPropertiesEXT {
+  bool hasPrimary = 1; // VkBool32 hasPrimary
+  bool hasRender = 2; // VkBool32 hasRender
+  int64 primaryMajor = 3; // int64_t primaryMajor
+  int64 primaryMinor = 4; // int64_t primaryMinor
+  int64 renderMajor = 5; // int64_t renderMajor
+  int64 renderMinor = 6; // int64_t renderMinor
+}
+
+message VkPhysicalDeviceAddressBindingReportFeaturesEXT {
+  bool reportAddressBinding = 1; // VkBool32 reportAddressBinding
+}
+
+message VkPhysicalDeviceDepthClipControlFeaturesEXT {
+  bool depthClipControl = 1; // VkBool32 depthClipControl
+}
+
+message VkPipelineViewportDepthClipControlCreateInfoEXT {
+  bool negativeOneToOne = 1; // VkBool32 negativeOneToOne
+}
+
+message VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT {
+  bool primitiveTopologyListRestart = 1; // VkBool32 primitiveTopologyListRestart
+  bool primitiveTopologyPatchListRestart = 2; // VkBool32 primitiveTopologyPatchListRestart
+}
+
+message VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT {
+  bool presentModeFifoLatestReady = 1; // VkBool32 presentModeFifoLatestReady
+}
+
+message VkImportMemoryZirconHandleInfoFUCHSIA {
+  optional uint32 handleType = 1; // VkExternalMemoryHandleTypeFlagBits handleType
+  optional uint64 handle = 2; // zx_handle_t handle
+}
+
+message VkImportMemoryBufferCollectionFUCHSIA {
+  uint64 collection = 1; // VkBufferCollectionFUCHSIA collection
+  uint32 index = 2; // uint32_t index
+}
+
+message VkBufferCollectionImageCreateInfoFUCHSIA {
+  uint64 collection = 1; // VkBufferCollectionFUCHSIA collection
+  uint32 index = 2; // uint32_t index
+}
+
+message VkPhysicalDeviceSubpassShadingFeaturesHUAWEI {
+  bool subpassShading = 1; // VkBool32 subpassShading
+}
+
+message VkPhysicalDeviceSubpassShadingPropertiesHUAWEI {
+  uint32 maxSubpassShadingWorkgroupSizeAspectRatio = 1; // uint32_t maxSubpassShadingWorkgroupSizeAspectRatio
+}
+
+message VkPhysicalDeviceInvocationMaskFeaturesHUAWEI {
+  bool invocationMask = 1; // VkBool32 invocationMask
+}
+
+message VkPhysicalDeviceExternalMemoryRDMAFeaturesNV {
+  bool externalMemoryRDMA = 1; // VkBool32 externalMemoryRDMA
+}
+
+message VkPhysicalDevicePipelinePropertiesFeaturesEXT {
+  bool pipelinePropertiesIdentifier = 1; // VkBool32 pipelinePropertiesIdentifier
+}
+
+message VkPhysicalDeviceFrameBoundaryFeaturesEXT {
+  bool frameBoundary = 1; // VkBool32 frameBoundary
+}
+
+message VkFrameBoundaryEXT {
+  optional uint32 flags = 1; // VkFrameBoundaryFlagsEXT flags
+  uint64 frameID = 2; // uint64_t frameID
+  optional uint32 imageCount = 3; // uint32_t imageCount
+  repeated uint64 pImages = 4; // const VkImage* pImages
+  optional uint32 bufferCount = 5; // uint32_t bufferCount
+  repeated uint64 pBuffers = 6; // const VkBuffer* pBuffers
+  optional uint64 tagName = 7; // uint64_t tagName
+  optional uint64 tagSize = 8; // size_t tagSize
+  optional bytes pTag = 9; // const void* pTag
+}
+
+message VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT {
+  bool multisampledRenderToSingleSampled = 1; // VkBool32 multisampledRenderToSingleSampled
+}
+
+message VkPhysicalDeviceExtendedDynamicState2FeaturesEXT {
+  bool extendedDynamicState2 = 1; // VkBool32 extendedDynamicState2
+  bool extendedDynamicState2LogicOp = 2; // VkBool32 extendedDynamicState2LogicOp
+  bool extendedDynamicState2PatchControlPoints = 3; // VkBool32 extendedDynamicState2PatchControlPoints
+}
+
+message VkPhysicalDeviceColorWriteEnableFeaturesEXT {
+  bool colorWriteEnable = 1; // VkBool32 colorWriteEnable
+}
+
+message VkPipelineColorWriteCreateInfoEXT {
+  optional uint32 attachmentCount = 1; // uint32_t attachmentCount
+  repeated bool pColorWriteEnables = 2; // const VkBool32* pColorWriteEnables
+}
+
+message VkPhysicalDevicePrimitivesGeneratedQueryFeaturesEXT {
+  bool primitivesGeneratedQuery = 1; // VkBool32 primitivesGeneratedQuery
+  bool primitivesGeneratedQueryWithRasterizerDiscard = 2; // VkBool32 primitivesGeneratedQueryWithRasterizerDiscard
+  bool primitivesGeneratedQueryWithNonZeroStreams = 3; // VkBool32 primitivesGeneratedQueryWithNonZeroStreams
+}
+
+message VkPhysicalDeviceImageViewMinLodFeaturesEXT {
+  bool minLod = 1; // VkBool32 minLod
+}
+
+message VkImageViewMinLodCreateInfoEXT {
+  float minLod = 1; // float minLod
+}
+
+message VkPhysicalDeviceMultiDrawFeaturesEXT {
+  bool multiDraw = 1; // VkBool32 multiDraw
+}
+
+message VkPhysicalDeviceMultiDrawPropertiesEXT {
+  uint32 maxMultiDrawCount = 1; // uint32_t maxMultiDrawCount
+}
+
+message VkPhysicalDeviceImage2DViewOf3DFeaturesEXT {
+  bool image2DViewOf3D = 1; // VkBool32 image2DViewOf3D
+  bool sampler2DViewOf3D = 2; // VkBool32 sampler2DViewOf3D
+}
+
+message VkPhysicalDeviceShaderTileImageFeaturesEXT {
+  bool shaderTileImageColorReadAccess = 1; // VkBool32 shaderTileImageColorReadAccess
+  bool shaderTileImageDepthReadAccess = 2; // VkBool32 shaderTileImageDepthReadAccess
+  bool shaderTileImageStencilReadAccess = 3; // VkBool32 shaderTileImageStencilReadAccess
+}
+
+message VkPhysicalDeviceShaderTileImagePropertiesEXT {
+  bool shaderTileImageCoherentReadAccelerated = 1; // VkBool32 shaderTileImageCoherentReadAccelerated
+  bool shaderTileImageReadSampleFromPixelRateInvocation = 2; // VkBool32 shaderTileImageReadSampleFromPixelRateInvocation
+  bool shaderTileImageReadFromHelperInvocation = 3; // VkBool32 shaderTileImageReadFromHelperInvocation
+}
+
+message VkPhysicalDeviceOpacityMicromapFeaturesEXT {
+  bool micromap = 1; // VkBool32 micromap
+  bool micromapCaptureReplay = 2; // VkBool32 micromapCaptureReplay
+  bool micromapHostCommands = 3; // VkBool32 micromapHostCommands
+}
+
+message VkPhysicalDeviceOpacityMicromapPropertiesEXT {
+  uint32 maxOpacity2StateSubdivisionLevel = 1; // uint32_t maxOpacity2StateSubdivisionLevel
+  uint32 maxOpacity4StateSubdivisionLevel = 2; // uint32_t maxOpacity4StateSubdivisionLevel
+}
+
+message VkPhysicalDeviceDisplacementMicromapFeaturesNV {
+  bool displacementMicromap = 1; // VkBool32 displacementMicromap
+}
+
+message VkPhysicalDeviceDisplacementMicromapPropertiesNV {
+  uint32 maxDisplacementMicromapSubdivisionLevel = 1; // uint32_t maxDisplacementMicromapSubdivisionLevel
+}
+
+message VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI {
+  bool clustercullingShader = 1; // VkBool32 clustercullingShader
+  bool multiviewClusterCullingShader = 2; // VkBool32 multiviewClusterCullingShader
+}
+
+message VkPhysicalDeviceClusterCullingShaderPropertiesHUAWEI {
+  repeated uint32 maxWorkGroupCount = 1; // uint32_t maxWorkGroupCount[3]
+  repeated uint32 maxWorkGroupSize = 2; // uint32_t maxWorkGroupSize[3]
+  uint32 maxOutputClusterCount = 3; // uint32_t maxOutputClusterCount
+  uint64 indirectBufferOffsetAlignment = 4; // VkDeviceSize indirectBufferOffsetAlignment
+}
+
+message VkPhysicalDeviceClusterCullingShaderVrsFeaturesHUAWEI {
+  bool clusterShadingRate = 1; // VkBool32 clusterShadingRate
+}
+
+message VkPhysicalDeviceBorderColorSwizzleFeaturesEXT {
+  bool borderColorSwizzle = 1; // VkBool32 borderColorSwizzle
+  bool borderColorSwizzleFromImage = 2; // VkBool32 borderColorSwizzleFromImage
+}
+
+message VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT {
+  bool pageableDeviceLocalMemory = 1; // VkBool32 pageableDeviceLocalMemory
+}
+
+message VkPhysicalDeviceShaderCorePropertiesARM {
+  uint32 pixelRate = 1; // uint32_t pixelRate
+  uint32 texelRate = 2; // uint32_t texelRate
+  uint32 fmaRate = 3; // uint32_t fmaRate
+}
+
+message VkDeviceQueueShaderCoreControlCreateInfoARM {
+  uint32 shaderCoreCount = 1; // uint32_t shaderCoreCount
+}
+
+message VkPhysicalDeviceSchedulingControlsFeaturesARM {
+  bool schedulingControls = 1; // VkBool32 schedulingControls
+}
+
+message VkPhysicalDeviceSchedulingControlsPropertiesARM {
+  uint32 schedulingControlsFlags = 1; // VkPhysicalDeviceSchedulingControlsFlagsARM schedulingControlsFlags
+}
+
+message VkPhysicalDeviceImageSlicedViewOf3DFeaturesEXT {
+  bool imageSlicedViewOf3D = 1; // VkBool32 imageSlicedViewOf3D
+}
+
+message VkImageViewSlicedCreateInfoEXT {
+  uint32 sliceOffset = 1; // uint32_t sliceOffset
+  uint32 sliceCount = 2; // uint32_t sliceCount
+}
+
+message VkPhysicalDeviceDescriptorSetHostMappingFeaturesVALVE {
+  bool descriptorSetHostMapping = 1; // VkBool32 descriptorSetHostMapping
+}
+
+message VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT {
+  bool nonSeamlessCubeMap = 1; // VkBool32 nonSeamlessCubeMap
+}
+
+message VkPhysicalDeviceRenderPassStripedFeaturesARM {
+  bool renderPassStriped = 1; // VkBool32 renderPassStriped
+}
+
+message VkPhysicalDeviceRenderPassStripedPropertiesARM {
+  VkExtent2D renderPassStripeGranularity = 1; // VkExtent2D renderPassStripeGranularity
+  uint32 maxRenderPassStripes = 2; // uint32_t maxRenderPassStripes
+}
+
+message VkRenderPassStripeInfoARM {
+  VkRect2D stripeArea = 1; // VkRect2D stripeArea
+}
+
+message VkRenderPassStripeBeginInfoARM {
+  uint32 stripeInfoCount = 1; // uint32_t stripeInfoCount
+  repeated VkRenderPassStripeInfoARM pStripeInfos = 2; // const VkRenderPassStripeInfoARM* pStripeInfos
+}
+
+message VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT {
+  bool fragmentDensityMapOffset = 1; // VkBool32 fragmentDensityMapOffset
+}
+
+message VkPhysicalDeviceFragmentDensityMapOffsetPropertiesEXT {
+  VkExtent2D fragmentDensityOffsetGranularity = 1; // VkExtent2D fragmentDensityOffsetGranularity
+}
+
+message VkPhysicalDeviceCopyMemoryIndirectFeaturesNV {
+  bool indirectCopy = 1; // VkBool32 indirectCopy
+}
+
+message VkPhysicalDeviceCopyMemoryIndirectPropertiesNV {
+  uint32 supportedQueues = 1; // VkQueueFlags supportedQueues
+}
+
+message VkPhysicalDeviceMemoryDecompressionFeaturesNV {
+  bool memoryDecompression = 1; // VkBool32 memoryDecompression
+}
+
+message VkPhysicalDeviceMemoryDecompressionPropertiesNV {
+  uint32 decompressionMethods = 1; // VkMemoryDecompressionMethodFlagsNV decompressionMethods
+  uint64 maxDecompressionIndirectCount = 2; // uint64_t maxDecompressionIndirectCount
+}
+
+message VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV {
+  bool deviceGeneratedCompute = 1; // VkBool32 deviceGeneratedCompute
+  bool deviceGeneratedComputePipelines = 2; // VkBool32 deviceGeneratedComputePipelines
+  bool deviceGeneratedComputeCaptureReplay = 3; // VkBool32 deviceGeneratedComputeCaptureReplay
+}
+
+message VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV {
+  bool spheres = 1; // VkBool32 spheres
+  bool linearSweptSpheres = 2; // VkBool32 linearSweptSpheres
+}
+
+message VkPhysicalDeviceLinearColorAttachmentFeaturesNV {
+  bool linearColorAttachment = 1; // VkBool32 linearColorAttachment
+}
+
+message VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT {
+  bool imageCompressionControlSwapchain = 1; // VkBool32 imageCompressionControlSwapchain
+}
+
+message VkImageViewSampleWeightCreateInfoQCOM {
+  VkOffset2D filterCenter = 1; // VkOffset2D filterCenter
+  VkExtent2D filterSize = 2; // VkExtent2D filterSize
+  uint32 numPhases = 3; // uint32_t numPhases
+}
+
+message VkPhysicalDeviceImageProcessingFeaturesQCOM {
+  bool textureSampleWeighted = 1; // VkBool32 textureSampleWeighted
+  bool textureBoxFilter = 2; // VkBool32 textureBoxFilter
+  bool textureBlockMatch = 3; // VkBool32 textureBlockMatch
+}
+
+message VkPhysicalDeviceImageProcessingPropertiesQCOM {
+  optional uint32 maxWeightFilterPhases = 1; // uint32_t maxWeightFilterPhases
+  optional VkExtent2D maxWeightFilterDimension = 2; // VkExtent2D maxWeightFilterDimension
+  optional VkExtent2D maxBlockMatchRegion = 3; // VkExtent2D maxBlockMatchRegion
+  optional VkExtent2D maxBoxFilterBlockSize = 4; // VkExtent2D maxBoxFilterBlockSize
+}
+
+message VkPhysicalDeviceNestedCommandBufferFeaturesEXT {
+  bool nestedCommandBuffer = 1; // VkBool32 nestedCommandBuffer
+  bool nestedCommandBufferRendering = 2; // VkBool32 nestedCommandBufferRendering
+  bool nestedCommandBufferSimultaneousUse = 3; // VkBool32 nestedCommandBufferSimultaneousUse
+}
+
+message VkPhysicalDeviceNestedCommandBufferPropertiesEXT {
+  uint32 maxCommandBufferNestingLevel = 1; // uint32_t maxCommandBufferNestingLevel
+}
+
+message VkExternalMemoryAcquireUnmodifiedEXT {
+  bool acquireUnmodifiedMemory = 1; // VkBool32 acquireUnmodifiedMemory
+}
+
+message VkPhysicalDeviceExtendedDynamicState3FeaturesEXT {
+  bool extendedDynamicState3TessellationDomainOrigin = 1; // VkBool32 extendedDynamicState3TessellationDomainOrigin
+  bool extendedDynamicState3DepthClampEnable = 2; // VkBool32 extendedDynamicState3DepthClampEnable
+  bool extendedDynamicState3PolygonMode = 3; // VkBool32 extendedDynamicState3PolygonMode
+  bool extendedDynamicState3RasterizationSamples = 4; // VkBool32 extendedDynamicState3RasterizationSamples
+  bool extendedDynamicState3SampleMask = 5; // VkBool32 extendedDynamicState3SampleMask
+  bool extendedDynamicState3AlphaToCoverageEnable = 6; // VkBool32 extendedDynamicState3AlphaToCoverageEnable
+  bool extendedDynamicState3AlphaToOneEnable = 7; // VkBool32 extendedDynamicState3AlphaToOneEnable
+  bool extendedDynamicState3LogicOpEnable = 8; // VkBool32 extendedDynamicState3LogicOpEnable
+  bool extendedDynamicState3ColorBlendEnable = 9; // VkBool32 extendedDynamicState3ColorBlendEnable
+  bool extendedDynamicState3ColorBlendEquation = 10; // VkBool32 extendedDynamicState3ColorBlendEquation
+  bool extendedDynamicState3ColorWriteMask = 11; // VkBool32 extendedDynamicState3ColorWriteMask
+  bool extendedDynamicState3RasterizationStream = 12; // VkBool32 extendedDynamicState3RasterizationStream
+  bool extendedDynamicState3ConservativeRasterizationMode = 13; // VkBool32 extendedDynamicState3ConservativeRasterizationMode
+  bool extendedDynamicState3ExtraPrimitiveOverestimationSize = 14; // VkBool32 extendedDynamicState3ExtraPrimitiveOverestimationSize
+  bool extendedDynamicState3DepthClipEnable = 15; // VkBool32 extendedDynamicState3DepthClipEnable
+  bool extendedDynamicState3SampleLocationsEnable = 16; // VkBool32 extendedDynamicState3SampleLocationsEnable
+  bool extendedDynamicState3ColorBlendAdvanced = 17; // VkBool32 extendedDynamicState3ColorBlendAdvanced
+  bool extendedDynamicState3ProvokingVertexMode = 18; // VkBool32 extendedDynamicState3ProvokingVertexMode
+  bool extendedDynamicState3LineRasterizationMode = 19; // VkBool32 extendedDynamicState3LineRasterizationMode
+  bool extendedDynamicState3LineStippleEnable = 20; // VkBool32 extendedDynamicState3LineStippleEnable
+  bool extendedDynamicState3DepthClipNegativeOneToOne = 21; // VkBool32 extendedDynamicState3DepthClipNegativeOneToOne
+  bool extendedDynamicState3ViewportWScalingEnable = 22; // VkBool32 extendedDynamicState3ViewportWScalingEnable
+  bool extendedDynamicState3ViewportSwizzle = 23; // VkBool32 extendedDynamicState3ViewportSwizzle
+  bool extendedDynamicState3CoverageToColorEnable = 24; // VkBool32 extendedDynamicState3CoverageToColorEnable
+  bool extendedDynamicState3CoverageToColorLocation = 25; // VkBool32 extendedDynamicState3CoverageToColorLocation
+  bool extendedDynamicState3CoverageModulationMode = 26; // VkBool32 extendedDynamicState3CoverageModulationMode
+  bool extendedDynamicState3CoverageModulationTableEnable = 27; // VkBool32 extendedDynamicState3CoverageModulationTableEnable
+  bool extendedDynamicState3CoverageModulationTable = 28; // VkBool32 extendedDynamicState3CoverageModulationTable
+  bool extendedDynamicState3CoverageReductionMode = 29; // VkBool32 extendedDynamicState3CoverageReductionMode
+  bool extendedDynamicState3RepresentativeFragmentTestEnable = 30; // VkBool32 extendedDynamicState3RepresentativeFragmentTestEnable
+  bool extendedDynamicState3ShadingRateImageEnable = 31; // VkBool32 extendedDynamicState3ShadingRateImageEnable
+}
+
+message VkPhysicalDeviceExtendedDynamicState3PropertiesEXT {
+  bool dynamicPrimitiveTopologyUnrestricted = 1; // VkBool32 dynamicPrimitiveTopologyUnrestricted
+}
+
+message VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT {
+  bool subpassMergeFeedback = 1; // VkBool32 subpassMergeFeedback
+}
+
+message VkDirectDriverLoadingInfoLUNARG {
+  uint32 flags = 1; // VkDirectDriverLoadingFlagsLUNARG flags
+  uint64 pfnGetInstanceProcAddr = 2; // PFN_vkGetInstanceProcAddrLUNARG pfnGetInstanceProcAddr NON-CONST POINTER
+}
+
+message VkDirectDriverLoadingListLUNARG {
+  VkDirectDriverLoadingModeLUNARG mode = 1; // VkDirectDriverLoadingModeLUNARG mode
+  uint32 driverCount = 2; // uint32_t driverCount
+  repeated VkDirectDriverLoadingInfoLUNARG pDrivers = 3; // const VkDirectDriverLoadingInfoLUNARG* pDrivers
+}
+
+message VkPhysicalDeviceShaderModuleIdentifierFeaturesEXT {
+  bool shaderModuleIdentifier = 1; // VkBool32 shaderModuleIdentifier
+}
+
+message VkPhysicalDeviceShaderModuleIdentifierPropertiesEXT {
+  repeated uint32 shaderModuleIdentifierAlgorithmUUID = 1; // uint8_t shaderModuleIdentifierAlgorithmUUID[VK_UUID_SIZE]
+}
+
+message VkPipelineShaderStageModuleIdentifierCreateInfoEXT {
+  optional uint32 identifierSize = 1; // uint32_t identifierSize
+  repeated uint32 pIdentifier = 2; // const uint8_t* pIdentifier
+}
+
+message VkPhysicalDeviceOpticalFlowFeaturesNV {
+  bool opticalFlow = 1; // VkBool32 opticalFlow
+}
+
+message VkPhysicalDeviceOpticalFlowPropertiesNV {
+  uint32 supportedOutputGridSizes = 1; // VkOpticalFlowGridSizeFlagsNV supportedOutputGridSizes
+  uint32 supportedHintGridSizes = 2; // VkOpticalFlowGridSizeFlagsNV supportedHintGridSizes
+  bool hintSupported = 3; // VkBool32 hintSupported
+  bool costSupported = 4; // VkBool32 costSupported
+  bool bidirectionalFlowSupported = 5; // VkBool32 bidirectionalFlowSupported
+  bool globalFlowSupported = 6; // VkBool32 globalFlowSupported
+  uint32 minWidth = 7; // uint32_t minWidth
+  uint32 minHeight = 8; // uint32_t minHeight
+  uint32 maxWidth = 9; // uint32_t maxWidth
+  uint32 maxHeight = 10; // uint32_t maxHeight
+  uint32 maxNumRegionsOfInterest = 11; // uint32_t maxNumRegionsOfInterest
+}
+
+message VkOpticalFlowImageFormatInfoNV {
+  uint32 usage = 1; // VkOpticalFlowUsageFlagsNV usage
+}
+
+message VkPhysicalDeviceLegacyDitheringFeaturesEXT {
+  bool legacyDithering = 1; // VkBool32 legacyDithering
+}
+
+message VkPhysicalDeviceExternalFormatResolveFeaturesANDROID {
+  bool externalFormatResolve = 1; // VkBool32 externalFormatResolve
+}
+
+message VkPhysicalDeviceExternalFormatResolvePropertiesANDROID {
+  bool nullColorAttachmentWithExternalFormatResolve = 1; // VkBool32 nullColorAttachmentWithExternalFormatResolve
+  VkChromaLocation externalFormatResolveChromaOffsetX = 2; // VkChromaLocation externalFormatResolveChromaOffsetX
+  VkChromaLocation externalFormatResolveChromaOffsetY = 3; // VkChromaLocation externalFormatResolveChromaOffsetY
+}
+
+message VkPhysicalDeviceAntiLagFeaturesAMD {
+  bool antiLag = 1; // VkBool32 antiLag
+}
+
+message VkPhysicalDeviceShaderObjectFeaturesEXT {
+  bool shaderObject = 1; // VkBool32 shaderObject
+}
+
+message VkPhysicalDeviceShaderObjectPropertiesEXT {
+  repeated uint32 shaderBinaryUUID = 1; // uint8_t shaderBinaryUUID[VK_UUID_SIZE]
+  uint32 shaderBinaryVersion = 2; // uint32_t shaderBinaryVersion
+}
+
+message VkDepthClampRangeEXT {
+  float minDepthClamp = 1; // float minDepthClamp
+  float maxDepthClamp = 2; // float maxDepthClamp
+}
+
+message VkPhysicalDeviceTilePropertiesFeaturesQCOM {
+  bool tileProperties = 1; // VkBool32 tileProperties
+}
+
+message VkPhysicalDeviceAmigoProfilingFeaturesSEC {
+  bool amigoProfiling = 1; // VkBool32 amigoProfiling
+}
+
+message VkAmigoProfilingSubmitInfoSEC {
+  uint64 firstDrawTimestamp = 1; // uint64_t firstDrawTimestamp
+  uint64 swapBufferTimestamp = 2; // uint64_t swapBufferTimestamp
+}
+
+message VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQCOM {
+  bool multiviewPerViewViewports = 1; // VkBool32 multiviewPerViewViewports
+}
+
+message VkPhysicalDeviceRayTracingInvocationReorderPropertiesNV {
+  VkRayTracingInvocationReorderModeNV rayTracingInvocationReorderReorderingHint = 1; // VkRayTracingInvocationReorderModeNV rayTracingInvocationReorderReorderingHint
+}
+
+message VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV {
+  bool rayTracingInvocationReorder = 1; // VkBool32 rayTracingInvocationReorder
+}
+
+message VkPhysicalDeviceCooperativeVectorPropertiesNV {
+  uint32 cooperativeVectorSupportedStages = 1; // VkShaderStageFlags cooperativeVectorSupportedStages
+  bool cooperativeVectorTrainingFloat16Accumulation = 2; // VkBool32 cooperativeVectorTrainingFloat16Accumulation
+  bool cooperativeVectorTrainingFloat32Accumulation = 3; // VkBool32 cooperativeVectorTrainingFloat32Accumulation
+  uint32 maxCooperativeVectorComponents = 4; // uint32_t maxCooperativeVectorComponents
+}
+
+message VkPhysicalDeviceCooperativeVectorFeaturesNV {
+  bool cooperativeVector = 1; // VkBool32 cooperativeVector
+  bool cooperativeVectorTraining = 2; // VkBool32 cooperativeVectorTraining
+}
+
+message VkPhysicalDeviceExtendedSparseAddressSpaceFeaturesNV {
+  bool extendedSparseAddressSpace = 1; // VkBool32 extendedSparseAddressSpace
+}
+
+message VkPhysicalDeviceExtendedSparseAddressSpacePropertiesNV {
+  uint64 extendedSparseAddressSpaceSize = 1; // VkDeviceSize extendedSparseAddressSpaceSize
+  uint32 extendedSparseImageUsageFlags = 2; // VkImageUsageFlags extendedSparseImageUsageFlags
+  uint32 extendedSparseBufferUsageFlags = 3; // VkBufferUsageFlags extendedSparseBufferUsageFlags
+}
+
+message VkPhysicalDeviceLegacyVertexAttributesFeaturesEXT {
+  bool legacyVertexAttributes = 1; // VkBool32 legacyVertexAttributes
+}
+
+message VkPhysicalDeviceLegacyVertexAttributesPropertiesEXT {
+  bool nativeUnalignedPerformance = 1; // VkBool32 nativeUnalignedPerformance
+}
+
+message VkLayerSettingEXT {
+  string pLayerName = 1; // const char* pLayerName
+  string pSettingName = 2; // const char* pSettingName
+  VkLayerSettingTypeEXT type = 3; // VkLayerSettingTypeEXT type
+  optional uint32 valueCount = 4; // uint32_t valueCount
+  bytes pValues = 5; // const void* pValues
+}
+
+message VkLayerSettingsCreateInfoEXT {
+  optional uint32 settingCount = 1; // uint32_t settingCount
+  repeated VkLayerSettingEXT pSettings = 2; // const VkLayerSettingEXT* pSettings
+}
+
+message VkPhysicalDeviceShaderCoreBuiltinsFeaturesARM {
+  bool shaderCoreBuiltins = 1; // VkBool32 shaderCoreBuiltins
+}
+
+message VkPhysicalDeviceShaderCoreBuiltinsPropertiesARM {
+  uint64 shaderCoreMask = 1; // uint64_t shaderCoreMask
+  uint32 shaderCoreCount = 2; // uint32_t shaderCoreCount
+  uint32 shaderWarpsPerCore = 3; // uint32_t shaderWarpsPerCore
+}
+
+message VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT {
+  bool pipelineLibraryGroupHandles = 1; // VkBool32 pipelineLibraryGroupHandles
+}
+
+message VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT {
+  bool dynamicRenderingUnusedAttachments = 1; // VkBool32 dynamicRenderingUnusedAttachments
+}
+
+message VkLatencySubmissionPresentIdNV {
+  uint64 presentID = 1; // uint64_t presentID
+}
+
+message VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQCOM {
+  bool multiviewPerViewRenderAreas = 1; // VkBool32 multiviewPerViewRenderAreas
+}
+
+message VkMultiviewPerViewRenderAreasRenderPassBeginInfoQCOM {
+  optional uint32 perViewRenderAreaCount = 1; // uint32_t perViewRenderAreaCount
+  repeated VkRect2D pPerViewRenderAreas = 2; // const VkRect2D* pPerViewRenderAreas
+}
+
+message VkPhysicalDevicePerStageDescriptorSetFeaturesNV {
+  bool perStageDescriptorSet = 1; // VkBool32 perStageDescriptorSet
+  bool dynamicPipelineLayout = 2; // VkBool32 dynamicPipelineLayout
+}
+
+message VkPhysicalDeviceImageProcessing2FeaturesQCOM {
+  bool textureBlockMatch2 = 1; // VkBool32 textureBlockMatch2
+}
+
+message VkPhysicalDeviceImageProcessing2PropertiesQCOM {
+  optional VkExtent2D maxBlockMatchWindow = 1; // VkExtent2D maxBlockMatchWindow
+}
+
+message VkPhysicalDeviceCubicWeightsFeaturesQCOM {
+  bool selectableCubicWeights = 1; // VkBool32 selectableCubicWeights
+}
+
+message VkPhysicalDeviceYcbcrDegammaFeaturesQCOM {
+  bool ycbcrDegamma = 1; // VkBool32 ycbcrDegamma
+}
+
+message VkPhysicalDeviceCubicClampFeaturesQCOM {
+  bool cubicRangeClamp = 1; // VkBool32 cubicRangeClamp
+}
+
+message VkPhysicalDeviceAttachmentFeedbackLoopDynamicStateFeaturesEXT {
+  bool attachmentFeedbackLoopDynamicState = 1; // VkBool32 attachmentFeedbackLoopDynamicState
+}
+
+message VkImportScreenBufferInfoQNX {
+  uint64 buffer = 1; // struct _screen_buffer* buffer NON-CONST POINTER
+}
+
+message VkExternalFormatQNX {
+  uint64 externalFormat = 1; // uint64_t externalFormat
+}
+
+message VkPhysicalDeviceExternalMemoryScreenBufferFeaturesQNX {
+  bool screenBufferImport = 1; // VkBool32 screenBufferImport
+}
+
+message VkPhysicalDeviceLayeredDriverPropertiesMSFT {
+  VkLayeredDriverUnderlyingApiMSFT underlyingAPI = 1; // VkLayeredDriverUnderlyingApiMSFT underlyingAPI
+}
+
+message VkPhysicalDeviceDescriptorPoolOverallocationFeaturesNV {
+  bool descriptorPoolOverallocation = 1; // VkBool32 descriptorPoolOverallocation
+}
+
+message VkPhysicalDeviceTileMemoryHeapFeaturesQCOM {
+  bool tileMemoryHeap = 1; // VkBool32 tileMemoryHeap
+}
+
+message VkPhysicalDeviceTileMemoryHeapPropertiesQCOM {
+  bool queueSubmitBoundary = 1; // VkBool32 queueSubmitBoundary
+  bool tileBufferTransfers = 2; // VkBool32 tileBufferTransfers
+}
+
+message VkTileMemoryRequirementsQCOM {
+  uint64 size = 1; // VkDeviceSize size
+  uint64 alignment = 2; // VkDeviceSize alignment
+}
+
+message VkTileMemoryBindInfoQCOM {
+  uint64 memory = 1; // VkDeviceMemory memory
+}
+
+message VkTileMemorySizeInfoQCOM {
+  uint64 size = 1; // VkDeviceSize size
+}
+
+message VkPhysicalDeviceRawAccessChainsFeaturesNV {
+  bool shaderRawAccessChains = 1; // VkBool32 shaderRawAccessChains
+}
+
+message VkExternalComputeQueueDeviceCreateInfoNV {
+  uint32 reservedExternalQueues = 1; // uint32_t reservedExternalQueues
+}
+
+message VkPhysicalDeviceExternalComputeQueuePropertiesNV {
+  uint32 externalDataSize = 1; // uint32_t externalDataSize
+  uint32 maxExternalQueues = 2; // uint32_t maxExternalQueues
+}
+
+message VkPhysicalDeviceCommandBufferInheritanceFeaturesNV {
+  bool commandBufferInheritance = 1; // VkBool32 commandBufferInheritance
+}
+
+message VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV {
+  bool shaderFloat16VectorAtomics = 1; // VkBool32 shaderFloat16VectorAtomics
+}
+
+message VkPhysicalDeviceShaderReplicatedCompositesFeaturesEXT {
+  bool shaderReplicatedComposites = 1; // VkBool32 shaderReplicatedComposites
+}
+
+message VkPhysicalDeviceRayTracingValidationFeaturesNV {
+  bool rayTracingValidation = 1; // VkBool32 rayTracingValidation
+}
+
+message VkPhysicalDeviceClusterAccelerationStructureFeaturesNV {
+  bool clusterAccelerationStructure = 1; // VkBool32 clusterAccelerationStructure
+}
+
+message VkPhysicalDeviceClusterAccelerationStructurePropertiesNV {
+  uint32 maxVerticesPerCluster = 1; // uint32_t maxVerticesPerCluster
+  uint32 maxTrianglesPerCluster = 2; // uint32_t maxTrianglesPerCluster
+  uint32 clusterScratchByteAlignment = 3; // uint32_t clusterScratchByteAlignment
+  uint32 clusterByteAlignment = 4; // uint32_t clusterByteAlignment
+  uint32 clusterTemplateByteAlignment = 5; // uint32_t clusterTemplateByteAlignment
+  uint32 clusterBottomLevelByteAlignment = 6; // uint32_t clusterBottomLevelByteAlignment
+  uint32 clusterTemplateBoundsByteAlignment = 7; // uint32_t clusterTemplateBoundsByteAlignment
+  uint32 maxClusterGeometryIndex = 8; // uint32_t maxClusterGeometryIndex
+}
+
+message VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV {
+  bool partitionedAccelerationStructure = 1; // VkBool32 partitionedAccelerationStructure
+}
+
+message VkPhysicalDevicePartitionedAccelerationStructurePropertiesNV {
+  uint32 maxPartitionCount = 1; // uint32_t maxPartitionCount
+}
+
+message VkPhysicalDeviceDeviceGeneratedCommandsFeaturesEXT {
+  bool deviceGeneratedCommands = 1; // VkBool32 deviceGeneratedCommands
+  bool dynamicGeneratedPipelineLayout = 2; // VkBool32 dynamicGeneratedPipelineLayout
+}
+
+message VkPhysicalDeviceDeviceGeneratedCommandsPropertiesEXT {
+  uint32 maxIndirectPipelineCount = 1; // uint32_t maxIndirectPipelineCount
+  uint32 maxIndirectShaderObjectCount = 2; // uint32_t maxIndirectShaderObjectCount
+  uint32 maxIndirectSequenceCount = 3; // uint32_t maxIndirectSequenceCount
+  uint32 maxIndirectCommandsTokenCount = 4; // uint32_t maxIndirectCommandsTokenCount
+  uint32 maxIndirectCommandsTokenOffset = 5; // uint32_t maxIndirectCommandsTokenOffset
+  uint32 maxIndirectCommandsIndirectStride = 6; // uint32_t maxIndirectCommandsIndirectStride
+  uint32 supportedIndirectCommandsInputModes = 7; // VkIndirectCommandsInputModeFlagsEXT supportedIndirectCommandsInputModes
+  uint32 supportedIndirectCommandsShaderStages = 8; // VkShaderStageFlags supportedIndirectCommandsShaderStages
+  uint32 supportedIndirectCommandsShaderStagesPipelineBinding = 9; // VkShaderStageFlags supportedIndirectCommandsShaderStagesPipelineBinding
+  uint32 supportedIndirectCommandsShaderStagesShaderBinding = 10; // VkShaderStageFlags supportedIndirectCommandsShaderStagesShaderBinding
+  bool deviceGeneratedCommandsTransformFeedback = 11; // VkBool32 deviceGeneratedCommandsTransformFeedback
+  bool deviceGeneratedCommandsMultiDrawIndirectCount = 12; // VkBool32 deviceGeneratedCommandsMultiDrawIndirectCount
+}
+
+message VkPhysicalDeviceImageAlignmentControlFeaturesMESA {
+  bool imageAlignmentControl = 1; // VkBool32 imageAlignmentControl
+}
+
+message VkPhysicalDeviceImageAlignmentControlPropertiesMESA {
+  uint32 supportedImageAlignmentMask = 1; // uint32_t supportedImageAlignmentMask
+}
+
+message VkImageAlignmentControlCreateInfoMESA {
+  uint32 maximumRequestedAlignment = 1; // uint32_t maximumRequestedAlignment
+}
+
+message VkPhysicalDeviceDepthClampControlFeaturesEXT {
+  bool depthClampControl = 1; // VkBool32 depthClampControl
+}
+
+message VkPipelineViewportDepthClampControlCreateInfoEXT {
+  VkDepthClampModeEXT depthClampMode = 1; // VkDepthClampModeEXT depthClampMode
+  optional VkDepthClampRangeEXT pDepthClampRange = 2; // const VkDepthClampRangeEXT* pDepthClampRange
+}
+
+message VkPhysicalDeviceHdrVividFeaturesHUAWEI {
+  bool hdrVivid = 1; // VkBool32 hdrVivid
+}
+
+message VkPhysicalDeviceCooperativeMatrix2FeaturesNV {
+  bool cooperativeMatrixWorkgroupScope = 1; // VkBool32 cooperativeMatrixWorkgroupScope
+  bool cooperativeMatrixFlexibleDimensions = 2; // VkBool32 cooperativeMatrixFlexibleDimensions
+  bool cooperativeMatrixReductions = 3; // VkBool32 cooperativeMatrixReductions
+  bool cooperativeMatrixConversions = 4; // VkBool32 cooperativeMatrixConversions
+  bool cooperativeMatrixPerElementOperations = 5; // VkBool32 cooperativeMatrixPerElementOperations
+  bool cooperativeMatrixTensorAddressing = 6; // VkBool32 cooperativeMatrixTensorAddressing
+  bool cooperativeMatrixBlockLoads = 7; // VkBool32 cooperativeMatrixBlockLoads
+}
+
+message VkPhysicalDeviceCooperativeMatrix2PropertiesNV {
+  uint32 cooperativeMatrixWorkgroupScopeMaxWorkgroupSize = 1; // uint32_t cooperativeMatrixWorkgroupScopeMaxWorkgroupSize
+  uint32 cooperativeMatrixFlexibleDimensionsMaxDimension = 2; // uint32_t cooperativeMatrixFlexibleDimensionsMaxDimension
+  uint32 cooperativeMatrixWorkgroupScopeReservedSharedMemory = 3; // uint32_t cooperativeMatrixWorkgroupScopeReservedSharedMemory
+}
+
+message VkPhysicalDevicePipelineOpacityMicromapFeaturesARM {
+  bool pipelineOpacityMicromap = 1; // VkBool32 pipelineOpacityMicromap
+}
+
+message VkImportMemoryMetalHandleInfoEXT {
+  optional uint32 handleType = 1; // VkExternalMemoryHandleTypeFlagBits handleType
+  optional bytes handle = 2; // void* handle NON-CONST POINTER
+}
+
+message VkPhysicalDeviceVertexAttributeRobustnessFeaturesEXT {
+  bool vertexAttributeRobustness = 1; // VkBool32 vertexAttributeRobustness
+}
+
+message VkPhysicalDevicePresentMeteringFeaturesNV {
+  bool presentMetering = 1; // VkBool32 presentMetering
+}
+
+message VkPhysicalDeviceAccelerationStructureFeaturesKHR {
+  bool accelerationStructure = 1; // VkBool32 accelerationStructure
+  bool accelerationStructureCaptureReplay = 2; // VkBool32 accelerationStructureCaptureReplay
+  bool accelerationStructureIndirectBuild = 3; // VkBool32 accelerationStructureIndirectBuild
+  bool accelerationStructureHostCommands = 4; // VkBool32 accelerationStructureHostCommands
+  bool descriptorBindingAccelerationStructureUpdateAfterBind = 5; // VkBool32 descriptorBindingAccelerationStructureUpdateAfterBind
+}
+
+message VkPhysicalDeviceAccelerationStructurePropertiesKHR {
+  uint64 maxGeometryCount = 1; // uint64_t maxGeometryCount
+  uint64 maxInstanceCount = 2; // uint64_t maxInstanceCount
+  uint64 maxPrimitiveCount = 3; // uint64_t maxPrimitiveCount
+  uint32 maxPerStageDescriptorAccelerationStructures = 4; // uint32_t maxPerStageDescriptorAccelerationStructures
+  uint32 maxPerStageDescriptorUpdateAfterBindAccelerationStructures = 5; // uint32_t maxPerStageDescriptorUpdateAfterBindAccelerationStructures
+  uint32 maxDescriptorSetAccelerationStructures = 6; // uint32_t maxDescriptorSetAccelerationStructures
+  uint32 maxDescriptorSetUpdateAfterBindAccelerationStructures = 7; // uint32_t maxDescriptorSetUpdateAfterBindAccelerationStructures
+  uint32 minAccelerationStructureScratchOffsetAlignment = 8; // uint32_t minAccelerationStructureScratchOffsetAlignment
+}
+
+message VkPhysicalDeviceRayTracingPipelineFeaturesKHR {
+  bool rayTracingPipeline = 1; // VkBool32 rayTracingPipeline
+  bool rayTracingPipelineShaderGroupHandleCaptureReplay = 2; // VkBool32 rayTracingPipelineShaderGroupHandleCaptureReplay
+  bool rayTracingPipelineShaderGroupHandleCaptureReplayMixed = 3; // VkBool32 rayTracingPipelineShaderGroupHandleCaptureReplayMixed
+  bool rayTracingPipelineTraceRaysIndirect = 4; // VkBool32 rayTracingPipelineTraceRaysIndirect
+  bool rayTraversalPrimitiveCulling = 5; // VkBool32 rayTraversalPrimitiveCulling
+}
+
+message VkPhysicalDeviceRayTracingPipelinePropertiesKHR {
+  uint32 shaderGroupHandleSize = 1; // uint32_t shaderGroupHandleSize
+  uint32 maxRayRecursionDepth = 2; // uint32_t maxRayRecursionDepth
+  uint32 maxShaderGroupStride = 3; // uint32_t maxShaderGroupStride
+  uint32 shaderGroupBaseAlignment = 4; // uint32_t shaderGroupBaseAlignment
+  uint32 shaderGroupHandleCaptureReplaySize = 5; // uint32_t shaderGroupHandleCaptureReplaySize
+  uint32 maxRayDispatchInvocationCount = 6; // uint32_t maxRayDispatchInvocationCount
+  uint32 shaderGroupHandleAlignment = 7; // uint32_t shaderGroupHandleAlignment
+  uint32 maxRayHitAttributeSize = 8; // uint32_t maxRayHitAttributeSize
+}
+
+message VkPhysicalDeviceRayQueryFeaturesKHR {
+  bool rayQuery = 1; // VkBool32 rayQuery
+}
+
+message VkPhysicalDeviceMeshShaderFeaturesEXT {
+  bool taskShader = 1; // VkBool32 taskShader
+  bool meshShader = 2; // VkBool32 meshShader
+  bool multiviewMeshShader = 3; // VkBool32 multiviewMeshShader
+  bool primitiveFragmentShadingRateMeshShader = 4; // VkBool32 primitiveFragmentShadingRateMeshShader
+  bool meshShaderQueries = 5; // VkBool32 meshShaderQueries
+}
+
+message VkPhysicalDeviceMeshShaderPropertiesEXT {
+  uint32 maxTaskWorkGroupTotalCount = 1; // uint32_t maxTaskWorkGroupTotalCount
+  repeated uint32 maxTaskWorkGroupCount = 2; // uint32_t maxTaskWorkGroupCount[3]
+  uint32 maxTaskWorkGroupInvocations = 3; // uint32_t maxTaskWorkGroupInvocations
+  repeated uint32 maxTaskWorkGroupSize = 4; // uint32_t maxTaskWorkGroupSize[3]
+  uint32 maxTaskPayloadSize = 5; // uint32_t maxTaskPayloadSize
+  uint32 maxTaskSharedMemorySize = 6; // uint32_t maxTaskSharedMemorySize
+  uint32 maxTaskPayloadAndSharedMemorySize = 7; // uint32_t maxTaskPayloadAndSharedMemorySize
+  uint32 maxMeshWorkGroupTotalCount = 8; // uint32_t maxMeshWorkGroupTotalCount
+  repeated uint32 maxMeshWorkGroupCount = 9; // uint32_t maxMeshWorkGroupCount[3]
+  uint32 maxMeshWorkGroupInvocations = 10; // uint32_t maxMeshWorkGroupInvocations
+  repeated uint32 maxMeshWorkGroupSize = 11; // uint32_t maxMeshWorkGroupSize[3]
+  uint32 maxMeshSharedMemorySize = 12; // uint32_t maxMeshSharedMemorySize
+  uint32 maxMeshPayloadAndSharedMemorySize = 13; // uint32_t maxMeshPayloadAndSharedMemorySize
+  uint32 maxMeshOutputMemorySize = 14; // uint32_t maxMeshOutputMemorySize
+  uint32 maxMeshPayloadAndOutputMemorySize = 15; // uint32_t maxMeshPayloadAndOutputMemorySize
+  uint32 maxMeshOutputComponents = 16; // uint32_t maxMeshOutputComponents
+  uint32 maxMeshOutputVertices = 17; // uint32_t maxMeshOutputVertices
+  uint32 maxMeshOutputPrimitives = 18; // uint32_t maxMeshOutputPrimitives
+  uint32 maxMeshOutputLayers = 19; // uint32_t maxMeshOutputLayers
+  uint32 maxMeshMultiviewViewCount = 20; // uint32_t maxMeshMultiviewViewCount
+  uint32 meshOutputPerVertexGranularity = 21; // uint32_t meshOutputPerVertexGranularity
+  uint32 meshOutputPerPrimitiveGranularity = 22; // uint32_t meshOutputPerPrimitiveGranularity
+  uint32 maxPreferredTaskWorkGroupInvocations = 23; // uint32_t maxPreferredTaskWorkGroupInvocations
+  uint32 maxPreferredMeshWorkGroupInvocations = 24; // uint32_t maxPreferredMeshWorkGroupInvocations
+  bool prefersLocalInvocationVertexOutput = 25; // VkBool32 prefersLocalInvocationVertexOutput
+  bool prefersLocalInvocationPrimitiveOutput = 26; // VkBool32 prefersLocalInvocationPrimitiveOutput
+  bool prefersCompactVertexOutput = 27; // VkBool32 prefersCompactVertexOutput
+  bool prefersCompactPrimitiveOutput = 28; // VkBool32 prefersCompactPrimitiveOutput
 }
 
 
