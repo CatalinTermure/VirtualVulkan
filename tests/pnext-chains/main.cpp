@@ -82,6 +82,8 @@ int main() {
   };
   vkGetPhysicalDeviceFeatures2(chosen_device, &base_features);
 
+  assert(features_12.timelineSemaphore == VK_TRUE);
+
   VkDevice device = VK_NULL_HANDLE;
   VkDeviceQueueCreateInfo queue_create_info = {
       .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
