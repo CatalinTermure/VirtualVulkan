@@ -12,8 +12,17 @@ class ClientSrcGenerator(BaseGenerator):
     def __init__(self):
         BaseGenerator.__init__(self)
 
-    def get_function_definition(self, func_name: str) -> str:
-        return func_name + ";\n"
+    def get_function_definition(self, func: str) -> str:
+        (func_name, type_name) = func.split('/')
+        if func_name == "FillProtoFromStruct":
+            out: list[str] = []
+            out.append(
+                f'void FillProtoFromStruct(vvk::server::{type_name}* proto, const {type_name}* original_struct) {{\n')
+            out.append(fill_proto_from_struct(
+                self, type_name, 'proto', 'original_struct'))
+            out.append("}\n")
+            return "".join(out)
+        return 'static_assert(false, "Unkown function type");\n'
 
     def generate_param(self, cmd_name: str, param: Param) -> tuple[set[str], str, str]:
         required_functions = set()
@@ -34,9 +43,8 @@ class ClientSrcGenerator(BaseGenerator):
         elif param.pointer and param.const and param.type in self.vk.structs:
             if param.length is None:
                 out.append(
-                    f'  vvk::server::{param.type}* {param.name}_proto = request.mutable_{cmd_name.lower()}()->mutable_{param.name.lower()}();\n')
-                out.append(fill_proto_from_struct(self,
-                                                  param.type, f'{param.name}_proto', f'{param.name}'))
+                    f'  FillProtoFromStruct(request.mutable_{cmd_name.lower()}()->mutable_{param.name.lower()}(), {param.name});\n')
+                required_functions.add(f'FillProtoFromStruct/{param.type}')
             else:
                 assert (param.length in [p.name for p in command.params])
 
@@ -44,11 +52,8 @@ class ClientSrcGenerator(BaseGenerator):
                 out.append(
                     f'  for (int {index_name} = 0; {index_name} < {param.length}; {index_name}++) {{\n')
                 out.append(
-                    f'    vvk::server::{param.type}* {param.name}_proto = request.mutable_{cmd_name.lower()}()->add_{param.name.lower()}();\n')
-                out.append(
-                    f'    const {param.type}* {param.name}_i = &{param.name}[{index_name}];\n')
-                out.append(indent(fill_proto_from_struct(self,
-                                                         param.type, f'{param.name}_proto', f'{param.name}_i'), 2))
+                    f'    FillProtoFromStruct(request.mutable_{cmd_name.lower()}()->add_{param.name.lower()}(), &{param.name}[{index_name}]);\n')
+                required_functions.add(f'FillProtoFromStruct/{param.type}')
                 out.append("  }\n")
         elif param.pointer and param.const and param.type in self.vk.handles:
             if param.length is None:
@@ -246,7 +251,7 @@ namespace vvk {
             out.append("}\n")
 
         required_function_definitions = [
-            self.get_function_definition(func) for func in required_functions]
+            self.get_function_definition(func) for func in sorted(required_functions)]
         out[insert_function_definitions_index:insert_function_definitions_index] = [
             "namespace {\n"] + required_function_definitions + ["}\n"]
 
