@@ -1,12 +1,14 @@
 from xml.etree import ElementTree
 from reg import Registry
-from base_generator import BaseGenerator, BaseGeneratorOptions, SetTargetApiName, SetMergedApiNames
-from .commons import first_letter_upper, COMMANDS_TO_GENERATE
+from base_generator import BaseGeneratorOptions
+from vulkan_object import VulkanObject
+from .vvk_generator import VvkGenerator
+from .commons import COMMANDS_TO_GENERATE
 
 
-class ClientHeaderGenerator(BaseGenerator):
-    def __init__(self):
-        BaseGenerator.__init__(self)
+class ClientHeaderGenerator(VvkGenerator):
+    def __init__(self, base_vk: VulkanObject):
+        VvkGenerator.__init__(self, base_vk)
 
     def generate(self):
         out = []
@@ -53,19 +55,16 @@ PFN_vkVoidFunction DefaultGetDeviceProcAddr(VkDevice device, const char* pName);
         self.write("".join(out))
 
 
-def generate_functions_header():
-    SetTargetApiName('vulkan')
-    SetMergedApiNames('vulkan')
+def generate_functions_header(vk_tree: ElementTree.ElementTree, base_vk: VulkanObject):
     opts = BaseGeneratorOptions(
         customFileName="functions.h",
         customDirectory="./layer",
     )
-    gen = ClientHeaderGenerator()
+    gen = ClientHeaderGenerator(base_vk)
     reg = Registry(gen, opts)
-    tree = ElementTree.parse("./Vulkan-Headers/registry/vk.xml")
-    reg.loadElementTree(tree)
+    reg.loadElementTree(vk_tree)
     reg.apiGen()
 
 
-def generate_layer():
-    generate_functions_header()
+def generate_layer(vk_tree: ElementTree.ElementTree, base_vk: VulkanObject):
+    generate_functions_header(vk_tree, base_vk)

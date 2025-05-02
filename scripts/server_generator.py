@@ -1,6 +1,8 @@
 from xml.etree import ElementTree
 from reg import Registry
-from base_generator import BaseGenerator, BaseGeneratorOptions, SetTargetApiName, SetMergedApiNames
+from base_generator import BaseGeneratorOptions
+from vulkan_object import VulkanObject
+from .vvk_generator import VvkGenerator
 from .commons import first_letter_upper, COMMANDS_TO_GENERATE, fill_proto_from_struct, fill_struct_from_proto, indent, TRIVIAL_TYPES
 
 
@@ -8,9 +10,9 @@ def log(*args):
     print("server_generator:", *args)
 
 
-class ServerSrcGenerator(BaseGenerator):
-    def __init__(self):
-        BaseGenerator.__init__(self)
+class ServerSrcGenerator(VvkGenerator):
+    def __init__(self, base_vk: VulkanObject):
+        VvkGenerator.__init__(self, base_vk)
 
     def c_to_proto_accessor(self, c_accessor: str) -> str:
         # a->b->c -> a().b().c()
@@ -245,9 +247,9 @@ class ServerSrcGenerator(BaseGenerator):
         self.write("".join(out))
 
 
-class ServerHeaderGenerator(BaseGenerator):
-    def __init__(self):
-        BaseGenerator.__init__(self)
+class ServerHeaderGenerator(VvkGenerator):
+    def __init__(self, base_vk: VulkanObject):
+        VvkGenerator.__init__(self, base_vk)
 
     def generate(self):
         out = []
@@ -273,34 +275,28 @@ class ServerHeaderGenerator(BaseGenerator):
         self.write("".join(out))
 
 
-def generate_server_src():
-    SetTargetApiName('vulkan')
-    SetMergedApiNames('vulkan')
+def generate_server_src(vk_tree: ElementTree.ElementTree, base_vk: VulkanObject):
     opts = BaseGeneratorOptions(
         customFileName="implementations.cpp",
         customDirectory="./server",
     )
-    gen = ServerSrcGenerator()
+    gen = ServerSrcGenerator(base_vk)
     reg = Registry(gen, opts)
-    tree = ElementTree.parse("./Vulkan-Headers/registry/vk.xml")
-    reg.loadElementTree(tree)
+    reg.loadElementTree(vk_tree)
     reg.apiGen()
 
 
-def generate_server_header():
-    SetTargetApiName('vulkan')
-    SetMergedApiNames('vulkan')
+def generate_server_header(vk_tree: ElementTree.ElementTree, base_vk: VulkanObject):
     opts = BaseGeneratorOptions(
         customFileName="implementations.h",
         customDirectory="./server",
     )
-    gen = ServerHeaderGenerator()
+    gen = ServerHeaderGenerator(base_vk)
     reg = Registry(gen, opts)
-    tree = ElementTree.parse("./Vulkan-Headers/registry/vk.xml")
-    reg.loadElementTree(tree)
+    reg.loadElementTree(vk_tree)
     reg.apiGen()
 
 
-def generate_server():
-    generate_server_header()
-    generate_server_src()
+def generate_server(vk_tree: ElementTree.ElementTree, base_vk: VulkanObject):
+    generate_server_header(vk_tree, base_vk)
+    generate_server_src(vk_tree, base_vk)

@@ -1,6 +1,8 @@
 from xml.etree import ElementTree
 from reg import Registry
-from base_generator import BaseGenerator, BaseGeneratorOptions, SetTargetApiName, SetMergedApiNames, Param
+from base_generator import BaseGeneratorOptions, Param
+from vulkan_object import VulkanObject
+from .vvk_generator import VvkGenerator
 from .commons import first_letter_upper, COMMANDS_TO_GENERATE, fill_proto_from_struct, fill_struct_from_proto, indent, TRIVIAL_TYPES
 
 
@@ -8,9 +10,9 @@ def log(*args):
     print("client_generator:", *args)
 
 
-class ClientSrcGenerator(BaseGenerator):
-    def __init__(self):
-        BaseGenerator.__init__(self)
+class ClientSrcGenerator(VvkGenerator):
+    def __init__(self, base_vk: VulkanObject):
+        VvkGenerator.__init__(self, base_vk)
 
     def get_function_definition(self, func: str) -> str:
         (func_name, type_name) = func.split('/')
@@ -260,9 +262,9 @@ namespace vvk {
         self.write("".join(out))
 
 
-class ClientHeaderGenerator(BaseGenerator):
-    def __init__(self):
-        BaseGenerator.__init__(self)
+class ClientHeaderGenerator(VvkGenerator):
+    def __init__(self, base_vk: VulkanObject):
+        VvkGenerator.__init__(self, base_vk)
 
     def generate(self):
         out = []
@@ -295,34 +297,28 @@ namespace vvk {
         self.write("".join(out))
 
 
-def generate_client_src():
-    SetTargetApiName('vulkan')
-    SetMergedApiNames('vulkan')
+def generate_client_src(vk_tree: ElementTree.ElementTree, base_vk: VulkanObject):
     opts = BaseGeneratorOptions(
         customFileName="remote_call.cpp",
         customDirectory="./commons",
     )
-    gen = ClientSrcGenerator()
+    gen = ClientSrcGenerator(base_vk)
     reg = Registry(gen, opts)
-    tree = ElementTree.parse("./Vulkan-Headers/registry/vk.xml")
-    reg.loadElementTree(tree)
+    reg.loadElementTree(vk_tree)
     reg.apiGen()
 
 
-def generate_client_header():
-    SetTargetApiName('vulkan')
-    SetMergedApiNames('vulkan')
+def generate_client_header(vk_tree: ElementTree.ElementTree, base_vk: VulkanObject):
     opts = BaseGeneratorOptions(
         customFileName="remote_call.h",
         customDirectory="./commons",
     )
-    gen = ClientHeaderGenerator()
+    gen = ClientHeaderGenerator(base_vk)
     reg = Registry(gen, opts)
-    tree = ElementTree.parse("./Vulkan-Headers/registry/vk.xml")
-    reg.loadElementTree(tree)
+    reg.loadElementTree(vk_tree)
     reg.apiGen()
 
 
-def generate_client():
-    generate_client_header()
-    generate_client_src()
+def generate_client(vk_tree: ElementTree.ElementTree, base_vk: VulkanObject):
+    generate_client_header(vk_tree, base_vk)
+    generate_client_src(vk_tree, base_vk)

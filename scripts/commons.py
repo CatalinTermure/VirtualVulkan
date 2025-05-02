@@ -1,4 +1,5 @@
-from base_generator import BaseGenerator, Member
+from base_generator import Member
+from .vvk_generator import VvkGenerator
 from dataclasses import dataclass
 import re
 
@@ -107,7 +108,7 @@ def indent(text: str, spaces: int) -> str:
     return '\n'.join(' ' * spaces + line for line in lines) + '\n'
 
 
-def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, name: str, proto_accessor: str, member: Member) -> tuple[str, str, str]:
+def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member) -> tuple[str, str, str]:
     pre_fill_declarations = []
     out = []
     after = []
@@ -272,7 +273,7 @@ def __fill_struct_member_from_proto(generator: BaseGenerator, struct_type: str, 
     return "".join(pre_fill_declarations), "".join(out), "".join(after)
 
 
-def fill_struct_from_proto(generator: BaseGenerator, struct_type: str, name: str, proto_accessor: str) -> tuple[str, str]:
+def fill_struct_from_proto(generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str) -> tuple[str, str]:
     out = []
     after = []
     struct = generator.vk.structs[struct_type]
@@ -320,7 +321,7 @@ def fill_struct_from_proto(generator: BaseGenerator, struct_type: str, name: str
     return "".join(out), "".join(after)
 
 
-def access_length_member_from_struct(generator: BaseGenerator, struct_type: str, name: str, struct_accessor: str, member: Member) -> str:
+def access_length_member_from_struct(generator: VvkGenerator, struct_type: str, name: str, struct_accessor: str, member: Member) -> str:
     """
     Returns code necessary to access the length of a struct member.
 
@@ -341,7 +342,7 @@ def access_length_member_from_struct(generator: BaseGenerator, struct_type: str,
     return f'  const size_t {name}_{member.name}_length = {length};\n'
 
 
-def __fill_proto_from_member(generator: BaseGenerator, struct_type: str, name: str, struct_accessor: str, member: Member) -> str:
+def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: str, struct_accessor: str, member: Member) -> str:
     out = []
     if member.name in ['sType']:
         return ""
@@ -472,7 +473,7 @@ def __fill_proto_from_member(generator: BaseGenerator, struct_type: str, name: s
     return "".join(out)
 
 
-def fill_proto_from_struct(generator: BaseGenerator, struct_type: str, name: str, struct_accessor: str) -> str:
+def fill_proto_from_struct(generator: VvkGenerator, struct_type: str, name: str, struct_accessor: str) -> str:
     out = []
     struct = generator.vk.structs[struct_type]
     for member in struct.members:
