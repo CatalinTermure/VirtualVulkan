@@ -6,3 +6,4 @@ class VvkGenerator(BaseGenerator):
     def __init__(self, base_vk: VulkanObject):
         BaseGenerator.__init__(self)
         self.vk = base_vk
+        self.required_functions = set()
