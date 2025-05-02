@@ -12,13 +12,17 @@ class ClientSrcGenerator(BaseGenerator):
     def __init__(self):
         BaseGenerator.__init__(self)
 
-    def generate_param(self, cmd_name: str, param: Param) -> tuple[str, str]:
+    def get_function_definition(self, func_name: str) -> str:
+        return func_name + ";\n"
+
+    def generate_param(self, cmd_name: str, param: Param) -> tuple[set[str], str, str]:
+        required_functions = set()
         out = []
         after_call_code = []
         response_accessor = f'response.{cmd_name.lower()}()'
         command = self.vk.commands[cmd_name]
         if param.type in ['VkAllocationCallbacks']:
-            return "", ""
+            return set(), "", ""
         elif param.type in self.vk.enums:
             assert (not param.pointer and param.length is None)
             out.append(
@@ -168,7 +172,7 @@ class ClientSrcGenerator(BaseGenerator):
             out.append(
                 f"  // Unsupported param: {param.cDeclaration}\n")
             log("UNSUPPORTED PARAM:", cmd_name, param.cDeclaration)
-        return "".join(out), "".join(after_call_code)
+        return required_functions, "".join(out), "".join(after_call_code)
 
     def generate(self):
         out = []
@@ -185,6 +189,9 @@ class ClientSrcGenerator(BaseGenerator):
 
 namespace vvk {
 ''')
+        insert_function_definitions_index = len(out)
+
+        required_functions = set()
 
         for cmd_name in COMMANDS_TO_GENERATE:
             after_call_code = []
@@ -201,16 +208,18 @@ namespace vvk {
             for param in command.params:
                 if param.optional and "vkEnumerate" not in cmd_name and cmd_name not in ["vkGetPhysicalDeviceQueueFamilyProperties"] and param.type not in ['VkAllocationCallbacks']:
                     out.append(f'  if ({param.name}) {{\n')
-                    out_, after_call_code_ = self.generate_param(
+                    required_functions_, out_, after_call_code_ = self.generate_param(
                         cmd_name, param)
                     out.append(indent(out_, 2))
                     out.append("  }\n")
                     after_call_code.append(after_call_code_)
+                    required_functions.update(required_functions_)
                 else:
-                    out_, after_call_code_ = self.generate_param(
+                    required_functions_, out_, after_call_code_ = self.generate_param(
                         cmd_name, param)
                     out.append(out_)
                     after_call_code.append(after_call_code_)
+                    required_functions.update(required_functions_)
 
             out.append("  vvk::server::VvkResponse response;\n")
 
@@ -235,6 +244,11 @@ namespace vvk {
                 log("UNHANDLED RETURN TYPE:", command.returnType)
 
             out.append("}\n")
+
+        required_function_definitions = [
+            self.get_function_definition(func) for func in required_functions]
+        out[insert_function_definitions_index:insert_function_definitions_index] = [
+            "namespace {\n"] + required_function_definitions + ["}\n"]
 
         out.append("}  // namespace vvk\n")
 

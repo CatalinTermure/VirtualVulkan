@@ -10,6 +10,8 @@
 #include <cstring>
 
 namespace vvk {
+namespace {
+}
 VkResult PackAndCallVkCreateInstance(VvkCommandClientBidiStream& stream, const VkInstanceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkInstance* pInstance) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreateInstance");
