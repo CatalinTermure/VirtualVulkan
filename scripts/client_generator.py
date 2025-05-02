@@ -4,7 +4,7 @@ from reg import Registry
 from base_generator import BaseGeneratorOptions, Param
 from vulkan_object import VulkanObject
 from .vvk_generator import VvkGenerator
-from .commons import first_letter_upper, COMMANDS_TO_GENERATE, fill_proto_from_struct, fill_struct_from_proto, indent, TRIVIAL_TYPES
+from .commons import first_letter_upper, COMMANDS_TO_GENERATE, get_required_function_definitions, fill_struct_from_proto, indent, TRIVIAL_TYPES
 
 
 def log(*args):
@@ -14,18 +14,6 @@ def log(*args):
 class ClientSrcGenerator(VvkGenerator):
     def __init__(self, base_vk: VulkanObject):
         VvkGenerator.__init__(self, base_vk)
-
-    def get_function_definition(self, func: str) -> str:
-        (func_name, type_name) = func.split('/')
-        if func_name == "FillProtoFromStruct":
-            out: list[str] = []
-            out.append(
-                f'void FillProtoFromStruct(vvk::server::{type_name}* proto, const {type_name}* original_struct) {{\n')
-            out.append(fill_proto_from_struct(
-                self, type_name, 'proto', 'original_struct'))
-            out.append("}\n")
-            return "".join(out)
-        return 'static_assert(false, "Unkown function type");\n'
 
     def get_function_prototype(self, func: str) -> str:
         (func_name, type_name) = func.split('/')
@@ -256,18 +244,7 @@ namespace vvk {
 
             out.append("}\n")
 
-        required_function_definitions: dict[str, str] = {}
-        adding_done = False
-        while not adding_done:
-            adding_done = True
-            old_required_functions = copy.deepcopy(self.required_functions)
-            for func in old_required_functions:
-                if func not in required_function_definitions:
-                    adding_done = False
-                    required_function_definitions[func] = self.get_function_definition(
-                        func)
-        functions_to_generate = sorted(
-            [value for value in required_function_definitions.values()])
+        functions_to_generate = get_required_function_definitions(self)
         out[insert_function_definitions_index:insert_function_definitions_index] = \
             ["namespace {\n"] + \
             [func_def.splitlines()[0][:-2] + ";\n" for func_def in functions_to_generate] + \

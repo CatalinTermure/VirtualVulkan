@@ -1,3 +1,4 @@
+import copy
 from base_generator import Member
 from .vvk_generator import VvkGenerator
 from dataclasses import dataclass
@@ -419,9 +420,9 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
     elif not member.pointer and member.type in generator.vk.structs:
         if member.length is None:
             out.append(
-                f'  vvk::server::{member.type}* {name}_{member.name}_proto = {name}->mutable_{member.name.lower()}();\n')
-            out.append(fill_proto_from_struct(generator,
-                                              member.type, f'{name}_{member.name}_proto', f'(&{struct_accessor}->{member.name})'))
+                f'  FillProtoFromStruct({name}->mutable_{member.name.lower()}(), &{struct_accessor}->{member.name});\n')
+            generator.required_functions.add(
+                f'FillProtoFromStruct/{member.type}')
         else:
             # if it's not a pointer, it must be a fixed size array
             assert (member.fixedSizeArray)
@@ -431,9 +432,9 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
             out.append(
                 f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
             out.append(
-                f'    vvk::server::{member.type}* {name}_{member.name}_proto = {name}->add_{member.name.lower()}();\n')
-            out.append(indent(fill_proto_from_struct(generator,
-                                                     member.type, f'{name}_{member.name}_proto', f'(&{struct_accessor}->{member.name}[{index_name}])'), 2))
+                f'    FillProtoFromStruct({name}->add_{member.name.lower()}(), &{struct_accessor}->{member.name}[{index_name}]);\n')
+            generator.required_functions.add(
+                f'FillProtoFromStruct/{member.type}')
             out.append('  }\n')
     elif member.pointer and member.type in generator.vk.handles:
         assert (member.const)
@@ -490,3 +491,31 @@ def fill_proto_from_struct(generator: VvkGenerator, struct_type: str, name: str,
 
 def first_letter_upper(name: str) -> str:
     return name[0].upper() + name[1:]
+
+
+def __get_function_definition(generator: VvkGenerator, func: str) -> str:
+    (func_name, type_name) = func.split('/')
+    if func_name == "FillProtoFromStruct":
+        out: list[str] = []
+        out.append(
+            f'void FillProtoFromStruct(vvk::server::{type_name}* proto, const {type_name}* original_struct) {{\n')
+        out.append(fill_proto_from_struct(
+            generator, type_name, 'proto', 'original_struct'))
+        out.append("}\n")
+        return "".join(out)
+    return 'static_assert(false, "Unkown function type");\n'
+
+
+def get_required_function_definitions(generator: VvkGenerator) -> list[str]:
+    required_function_definitions: dict[str, str] = {}
+    adding_done = False
+    while not adding_done:
+        adding_done = True
+        old_required_functions = copy.deepcopy(generator.required_functions)
+        for func in old_required_functions:
+            if func not in required_function_definitions:
+                adding_done = False
+                required_function_definitions[func] = __get_function_definition(generator,
+                                                                                func)
+    return sorted(
+        [value for value in required_function_definitions.values()])

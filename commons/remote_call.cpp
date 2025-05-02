@@ -17,13 +17,18 @@ void FillProtoFromStruct(vvk::server::VkAttachmentReference* proto, const VkAtta
 void FillProtoFromStruct(vvk::server::VkBindImageMemoryInfo* proto, const VkBindImageMemoryInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkBufferImageCopy* proto, const VkBufferImageCopy* original_struct);
 void FillProtoFromStruct(vvk::server::VkBufferMemoryBarrier* proto, const VkBufferMemoryBarrier* original_struct);
+void FillProtoFromStruct(vvk::server::VkClearColorValue* proto, const VkClearColorValue* original_struct);
+void FillProtoFromStruct(vvk::server::VkClearDepthStencilValue* proto, const VkClearDepthStencilValue* original_struct);
 void FillProtoFromStruct(vvk::server::VkClearValue* proto, const VkClearValue* original_struct);
 void FillProtoFromStruct(vvk::server::VkCommandBufferAllocateInfo* proto, const VkCommandBufferAllocateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkCommandBufferBeginInfo* proto, const VkCommandBufferBeginInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkCommandBufferInheritanceInfo* proto, const VkCommandBufferInheritanceInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkCommandPoolCreateInfo* proto, const VkCommandPoolCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkComponentMapping* proto, const VkComponentMapping* original_struct);
 void FillProtoFromStruct(vvk::server::VkDeviceCreateInfo* proto, const VkDeviceCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkDeviceQueueCreateInfo* proto, const VkDeviceQueueCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkExtent2D* proto, const VkExtent2D* original_struct);
+void FillProtoFromStruct(vvk::server::VkExtent3D* proto, const VkExtent3D* original_struct);
 void FillProtoFromStruct(vvk::server::VkFenceCreateInfo* proto, const VkFenceCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkFramebufferCreateInfo* proto, const VkFramebufferCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkGraphicsPipelineCreateInfo* proto, const VkGraphicsPipelineCreateInfo* original_struct);
@@ -31,10 +36,14 @@ void FillProtoFromStruct(vvk::server::VkImageCreateInfo* proto, const VkImageCre
 void FillProtoFromStruct(vvk::server::VkImageMemoryBarrier* proto, const VkImageMemoryBarrier* original_struct);
 void FillProtoFromStruct(vvk::server::VkImageMemoryRequirementsInfo2* proto, const VkImageMemoryRequirementsInfo2* original_struct);
 void FillProtoFromStruct(vvk::server::VkImageSubresource* proto, const VkImageSubresource* original_struct);
+void FillProtoFromStruct(vvk::server::VkImageSubresourceLayers* proto, const VkImageSubresourceLayers* original_struct);
+void FillProtoFromStruct(vvk::server::VkImageSubresourceRange* proto, const VkImageSubresourceRange* original_struct);
 void FillProtoFromStruct(vvk::server::VkImageViewCreateInfo* proto, const VkImageViewCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkInstanceCreateInfo* proto, const VkInstanceCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryAllocateInfo* proto, const VkMemoryAllocateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryBarrier* proto, const VkMemoryBarrier* original_struct);
+void FillProtoFromStruct(vvk::server::VkOffset2D* proto, const VkOffset2D* original_struct);
+void FillProtoFromStruct(vvk::server::VkOffset3D* proto, const VkOffset3D* original_struct);
 void FillProtoFromStruct(vvk::server::VkPhysicalDeviceFeatures* proto, const VkPhysicalDeviceFeatures* original_struct);
 void FillProtoFromStruct(vvk::server::VkPipelineColorBlendAttachmentState* proto, const VkPipelineColorBlendAttachmentState* original_struct);
 void FillProtoFromStruct(vvk::server::VkPipelineColorBlendStateCreateInfo* proto, const VkPipelineColorBlendStateCreateInfo* original_struct);
@@ -56,6 +65,7 @@ void FillProtoFromStruct(vvk::server::VkSemaphoreCreateInfo* proto, const VkSema
 void FillProtoFromStruct(vvk::server::VkShaderModuleCreateInfo* proto, const VkShaderModuleCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkSpecializationInfo* proto, const VkSpecializationInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkSpecializationMapEntry* proto, const VkSpecializationMapEntry* original_struct);
+void FillProtoFromStruct(vvk::server::VkStencilOpState* proto, const VkStencilOpState* original_struct);
 void FillProtoFromStruct(vvk::server::VkSubmitInfo* proto, const VkSubmitInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkSubpassDependency* proto, const VkSubpassDependency* original_struct);
 void FillProtoFromStruct(vvk::server::VkSubpassDescription* proto, const VkSubpassDescription* original_struct);
@@ -105,19 +115,9 @@ void FillProtoFromStruct(vvk::server::VkBufferImageCopy* proto, const VkBufferIm
   proto->set_bufferoffset(static_cast<uint64_t>(original_struct->bufferOffset));
   proto->set_bufferrowlength(original_struct->bufferRowLength);
   proto->set_bufferimageheight(original_struct->bufferImageHeight);
-  vvk::server::VkImageSubresourceLayers* proto_imageSubresource_proto = proto->mutable_imagesubresource();
-  proto_imageSubresource_proto->set_aspectmask((&original_struct->imageSubresource)->aspectMask);
-  proto_imageSubresource_proto->set_miplevel((&original_struct->imageSubresource)->mipLevel);
-  proto_imageSubresource_proto->set_basearraylayer((&original_struct->imageSubresource)->baseArrayLayer);
-  proto_imageSubresource_proto->set_layercount((&original_struct->imageSubresource)->layerCount);
-  vvk::server::VkOffset3D* proto_imageOffset_proto = proto->mutable_imageoffset();
-  proto_imageOffset_proto->set_x((&original_struct->imageOffset)->x);
-  proto_imageOffset_proto->set_y((&original_struct->imageOffset)->y);
-  proto_imageOffset_proto->set_z((&original_struct->imageOffset)->z);
-  vvk::server::VkExtent3D* proto_imageExtent_proto = proto->mutable_imageextent();
-  proto_imageExtent_proto->set_width((&original_struct->imageExtent)->width);
-  proto_imageExtent_proto->set_height((&original_struct->imageExtent)->height);
-  proto_imageExtent_proto->set_depth((&original_struct->imageExtent)->depth);
+  FillProtoFromStruct(proto->mutable_imagesubresource(), &original_struct->imageSubresource);
+  FillProtoFromStruct(proto->mutable_imageoffset(), &original_struct->imageOffset);
+  FillProtoFromStruct(proto->mutable_imageextent(), &original_struct->imageExtent);
 }
 void FillProtoFromStruct(vvk::server::VkBufferMemoryBarrier* proto, const VkBufferMemoryBarrier* original_struct) {
   if (original_struct->pNext) {
@@ -131,23 +131,27 @@ void FillProtoFromStruct(vvk::server::VkBufferMemoryBarrier* proto, const VkBuff
   proto->set_offset(static_cast<uint64_t>(original_struct->offset));
   proto->set_size(static_cast<uint64_t>(original_struct->size));
 }
+void FillProtoFromStruct(vvk::server::VkClearColorValue* proto, const VkClearColorValue* original_struct) {
+  const size_t proto_float32_length = 4;
+  for (int float32_indx = 0; float32_indx < proto_float32_length; float32_indx++) {
+    proto->add_float32(original_struct->float32[float32_indx]);
+  }
+  const size_t proto_int32_length = 4;
+  for (int int32_indx = 0; int32_indx < proto_int32_length; int32_indx++) {
+    proto->add_int32(original_struct->int32[int32_indx]);
+  }
+  const size_t proto_uint32_length = 4;
+  for (int uint32_indx = 0; uint32_indx < proto_uint32_length; uint32_indx++) {
+    proto->add_uint32(original_struct->uint32[uint32_indx]);
+  }
+}
+void FillProtoFromStruct(vvk::server::VkClearDepthStencilValue* proto, const VkClearDepthStencilValue* original_struct) {
+  proto->set_depth(original_struct->depth);
+  proto->set_stencil(original_struct->stencil);
+}
 void FillProtoFromStruct(vvk::server::VkClearValue* proto, const VkClearValue* original_struct) {
-  vvk::server::VkClearColorValue* proto_color_proto = proto->mutable_color();
-  const size_t proto_color_proto_float32_length = 4;
-  for (int float32_indx = 0; float32_indx < proto_color_proto_float32_length; float32_indx++) {
-    proto_color_proto->add_float32((&original_struct->color)->float32[float32_indx]);
-  }
-  const size_t proto_color_proto_int32_length = 4;
-  for (int int32_indx = 0; int32_indx < proto_color_proto_int32_length; int32_indx++) {
-    proto_color_proto->add_int32((&original_struct->color)->int32[int32_indx]);
-  }
-  const size_t proto_color_proto_uint32_length = 4;
-  for (int uint32_indx = 0; uint32_indx < proto_color_proto_uint32_length; uint32_indx++) {
-    proto_color_proto->add_uint32((&original_struct->color)->uint32[uint32_indx]);
-  }
-  vvk::server::VkClearDepthStencilValue* proto_depthStencil_proto = proto->mutable_depthstencil();
-  proto_depthStencil_proto->set_depth((&original_struct->depthStencil)->depth);
-  proto_depthStencil_proto->set_stencil((&original_struct->depthStencil)->stencil);
+  FillProtoFromStruct(proto->mutable_color(), &original_struct->color);
+  FillProtoFromStruct(proto->mutable_depthstencil(), &original_struct->depthStencil);
 }
 void FillProtoFromStruct(vvk::server::VkCommandBufferAllocateInfo* proto, const VkCommandBufferAllocateInfo* original_struct) {
   if (original_struct->pNext) {
@@ -196,6 +200,12 @@ void FillProtoFromStruct(vvk::server::VkCommandPoolCreateInfo* proto, const VkCo
   }
   proto->set_queuefamilyindex(original_struct->queueFamilyIndex);
 }
+void FillProtoFromStruct(vvk::server::VkComponentMapping* proto, const VkComponentMapping* original_struct) {
+  proto->set_r(static_cast<vvk::server::VkComponentSwizzle>(original_struct->r));
+  proto->set_g(static_cast<vvk::server::VkComponentSwizzle>(original_struct->g));
+  proto->set_b(static_cast<vvk::server::VkComponentSwizzle>(original_struct->b));
+  proto->set_a(static_cast<vvk::server::VkComponentSwizzle>(original_struct->a));
+}
 void FillProtoFromStruct(vvk::server::VkDeviceCreateInfo* proto, const VkDeviceCreateInfo* original_struct) {
   if (original_struct->pNext) {
     // pNext chains are currently not supported
@@ -239,6 +249,15 @@ void FillProtoFromStruct(vvk::server::VkDeviceQueueCreateInfo* proto, const VkDe
   for (int pQueuePriorities_indx = 0; pQueuePriorities_indx < proto_pQueuePriorities_length; pQueuePriorities_indx++) {
     proto->add_pqueuepriorities(original_struct->pQueuePriorities[pQueuePriorities_indx]);
   }
+}
+void FillProtoFromStruct(vvk::server::VkExtent2D* proto, const VkExtent2D* original_struct) {
+  proto->set_width(original_struct->width);
+  proto->set_height(original_struct->height);
+}
+void FillProtoFromStruct(vvk::server::VkExtent3D* proto, const VkExtent3D* original_struct) {
+  proto->set_width(original_struct->width);
+  proto->set_height(original_struct->height);
+  proto->set_depth(original_struct->depth);
 }
 void FillProtoFromStruct(vvk::server::VkFenceCreateInfo* proto, const VkFenceCreateInfo* original_struct) {
   if (original_struct->pNext) {
@@ -331,10 +350,7 @@ void FillProtoFromStruct(vvk::server::VkImageCreateInfo* proto, const VkImageCre
   }
   proto->set_imagetype(static_cast<vvk::server::VkImageType>(original_struct->imageType));
   proto->set_format(static_cast<vvk::server::VkFormat>(original_struct->format));
-  vvk::server::VkExtent3D* proto_extent_proto = proto->mutable_extent();
-  proto_extent_proto->set_width((&original_struct->extent)->width);
-  proto_extent_proto->set_height((&original_struct->extent)->height);
-  proto_extent_proto->set_depth((&original_struct->extent)->depth);
+  FillProtoFromStruct(proto->mutable_extent(), &original_struct->extent);
   proto->set_miplevels(original_struct->mipLevels);
   proto->set_arraylayers(original_struct->arrayLayers);
   proto->set_samples(original_struct->samples);
@@ -361,12 +377,7 @@ void FillProtoFromStruct(vvk::server::VkImageMemoryBarrier* proto, const VkImage
   proto->set_srcqueuefamilyindex(original_struct->srcQueueFamilyIndex);
   proto->set_dstqueuefamilyindex(original_struct->dstQueueFamilyIndex);
   proto->set_image(reinterpret_cast<uint64_t>(original_struct->image));
-  vvk::server::VkImageSubresourceRange* proto_subresourceRange_proto = proto->mutable_subresourcerange();
-  proto_subresourceRange_proto->set_aspectmask((&original_struct->subresourceRange)->aspectMask);
-  proto_subresourceRange_proto->set_basemiplevel((&original_struct->subresourceRange)->baseMipLevel);
-  proto_subresourceRange_proto->set_levelcount((&original_struct->subresourceRange)->levelCount);
-  proto_subresourceRange_proto->set_basearraylayer((&original_struct->subresourceRange)->baseArrayLayer);
-  proto_subresourceRange_proto->set_layercount((&original_struct->subresourceRange)->layerCount);
+  FillProtoFromStruct(proto->mutable_subresourcerange(), &original_struct->subresourceRange);
 }
 void FillProtoFromStruct(vvk::server::VkImageMemoryRequirementsInfo2* proto, const VkImageMemoryRequirementsInfo2* original_struct) {
   if (original_struct->pNext) {
@@ -379,6 +390,19 @@ void FillProtoFromStruct(vvk::server::VkImageSubresource* proto, const VkImageSu
   proto->set_miplevel(original_struct->mipLevel);
   proto->set_arraylayer(original_struct->arrayLayer);
 }
+void FillProtoFromStruct(vvk::server::VkImageSubresourceLayers* proto, const VkImageSubresourceLayers* original_struct) {
+  proto->set_aspectmask(original_struct->aspectMask);
+  proto->set_miplevel(original_struct->mipLevel);
+  proto->set_basearraylayer(original_struct->baseArrayLayer);
+  proto->set_layercount(original_struct->layerCount);
+}
+void FillProtoFromStruct(vvk::server::VkImageSubresourceRange* proto, const VkImageSubresourceRange* original_struct) {
+  proto->set_aspectmask(original_struct->aspectMask);
+  proto->set_basemiplevel(original_struct->baseMipLevel);
+  proto->set_levelcount(original_struct->levelCount);
+  proto->set_basearraylayer(original_struct->baseArrayLayer);
+  proto->set_layercount(original_struct->layerCount);
+}
 void FillProtoFromStruct(vvk::server::VkImageViewCreateInfo* proto, const VkImageViewCreateInfo* original_struct) {
   if (original_struct->pNext) {
     // pNext chains are currently not supported
@@ -389,17 +413,8 @@ void FillProtoFromStruct(vvk::server::VkImageViewCreateInfo* proto, const VkImag
   proto->set_image(reinterpret_cast<uint64_t>(original_struct->image));
   proto->set_viewtype(static_cast<vvk::server::VkImageViewType>(original_struct->viewType));
   proto->set_format(static_cast<vvk::server::VkFormat>(original_struct->format));
-  vvk::server::VkComponentMapping* proto_components_proto = proto->mutable_components();
-  proto_components_proto->set_r(static_cast<vvk::server::VkComponentSwizzle>((&original_struct->components)->r));
-  proto_components_proto->set_g(static_cast<vvk::server::VkComponentSwizzle>((&original_struct->components)->g));
-  proto_components_proto->set_b(static_cast<vvk::server::VkComponentSwizzle>((&original_struct->components)->b));
-  proto_components_proto->set_a(static_cast<vvk::server::VkComponentSwizzle>((&original_struct->components)->a));
-  vvk::server::VkImageSubresourceRange* proto_subresourceRange_proto = proto->mutable_subresourcerange();
-  proto_subresourceRange_proto->set_aspectmask((&original_struct->subresourceRange)->aspectMask);
-  proto_subresourceRange_proto->set_basemiplevel((&original_struct->subresourceRange)->baseMipLevel);
-  proto_subresourceRange_proto->set_levelcount((&original_struct->subresourceRange)->levelCount);
-  proto_subresourceRange_proto->set_basearraylayer((&original_struct->subresourceRange)->baseArrayLayer);
-  proto_subresourceRange_proto->set_layercount((&original_struct->subresourceRange)->layerCount);
+  FillProtoFromStruct(proto->mutable_components(), &original_struct->components);
+  FillProtoFromStruct(proto->mutable_subresourcerange(), &original_struct->subresourceRange);
 }
 void FillProtoFromStruct(vvk::server::VkInstanceCreateInfo* proto, const VkInstanceCreateInfo* original_struct) {
   if (original_struct->pNext) {
@@ -443,6 +458,15 @@ void FillProtoFromStruct(vvk::server::VkMemoryBarrier* proto, const VkMemoryBarr
   if (original_struct->dstAccessMask) {
     proto->set_dstaccessmask(original_struct->dstAccessMask);
   }
+}
+void FillProtoFromStruct(vvk::server::VkOffset2D* proto, const VkOffset2D* original_struct) {
+  proto->set_x(original_struct->x);
+  proto->set_y(original_struct->y);
+}
+void FillProtoFromStruct(vvk::server::VkOffset3D* proto, const VkOffset3D* original_struct) {
+  proto->set_x(original_struct->x);
+  proto->set_y(original_struct->y);
+  proto->set_z(original_struct->z);
 }
 void FillProtoFromStruct(vvk::server::VkPhysicalDeviceFeatures* proto, const VkPhysicalDeviceFeatures* original_struct) {
   proto->set_robustbufferaccess(original_struct->robustBufferAccess);
@@ -548,22 +572,8 @@ void FillProtoFromStruct(vvk::server::VkPipelineDepthStencilStateCreateInfo* pro
   proto->set_depthcompareop(static_cast<vvk::server::VkCompareOp>(original_struct->depthCompareOp));
   proto->set_depthboundstestenable(original_struct->depthBoundsTestEnable);
   proto->set_stenciltestenable(original_struct->stencilTestEnable);
-  vvk::server::VkStencilOpState* proto_front_proto = proto->mutable_front();
-  proto_front_proto->set_failop(static_cast<vvk::server::VkStencilOp>((&original_struct->front)->failOp));
-  proto_front_proto->set_passop(static_cast<vvk::server::VkStencilOp>((&original_struct->front)->passOp));
-  proto_front_proto->set_depthfailop(static_cast<vvk::server::VkStencilOp>((&original_struct->front)->depthFailOp));
-  proto_front_proto->set_compareop(static_cast<vvk::server::VkCompareOp>((&original_struct->front)->compareOp));
-  proto_front_proto->set_comparemask((&original_struct->front)->compareMask);
-  proto_front_proto->set_writemask((&original_struct->front)->writeMask);
-  proto_front_proto->set_reference((&original_struct->front)->reference);
-  vvk::server::VkStencilOpState* proto_back_proto = proto->mutable_back();
-  proto_back_proto->set_failop(static_cast<vvk::server::VkStencilOp>((&original_struct->back)->failOp));
-  proto_back_proto->set_passop(static_cast<vvk::server::VkStencilOp>((&original_struct->back)->passOp));
-  proto_back_proto->set_depthfailop(static_cast<vvk::server::VkStencilOp>((&original_struct->back)->depthFailOp));
-  proto_back_proto->set_compareop(static_cast<vvk::server::VkCompareOp>((&original_struct->back)->compareOp));
-  proto_back_proto->set_comparemask((&original_struct->back)->compareMask);
-  proto_back_proto->set_writemask((&original_struct->back)->writeMask);
-  proto_back_proto->set_reference((&original_struct->back)->reference);
+  FillProtoFromStruct(proto->mutable_front(), &original_struct->front);
+  FillProtoFromStruct(proto->mutable_back(), &original_struct->back);
   proto->set_mindepthbounds(original_struct->minDepthBounds);
   proto->set_maxdepthbounds(original_struct->maxDepthBounds);
 }
@@ -732,12 +742,8 @@ void FillProtoFromStruct(vvk::server::VkPushConstantRange* proto, const VkPushCo
   proto->set_size(original_struct->size);
 }
 void FillProtoFromStruct(vvk::server::VkRect2D* proto, const VkRect2D* original_struct) {
-  vvk::server::VkOffset2D* proto_offset_proto = proto->mutable_offset();
-  proto_offset_proto->set_x((&original_struct->offset)->x);
-  proto_offset_proto->set_y((&original_struct->offset)->y);
-  vvk::server::VkExtent2D* proto_extent_proto = proto->mutable_extent();
-  proto_extent_proto->set_width((&original_struct->extent)->width);
-  proto_extent_proto->set_height((&original_struct->extent)->height);
+  FillProtoFromStruct(proto->mutable_offset(), &original_struct->offset);
+  FillProtoFromStruct(proto->mutable_extent(), &original_struct->extent);
 }
 void FillProtoFromStruct(vvk::server::VkRenderPassBeginInfo* proto, const VkRenderPassBeginInfo* original_struct) {
   if (original_struct->pNext) {
@@ -745,13 +751,7 @@ void FillProtoFromStruct(vvk::server::VkRenderPassBeginInfo* proto, const VkRend
   }
   proto->set_renderpass(reinterpret_cast<uint64_t>(original_struct->renderPass));
   proto->set_framebuffer(reinterpret_cast<uint64_t>(original_struct->framebuffer));
-  vvk::server::VkRect2D* proto_renderArea_proto = proto->mutable_renderarea();
-  vvk::server::VkOffset2D* proto_renderArea_proto_offset_proto = proto_renderArea_proto->mutable_offset();
-  proto_renderArea_proto_offset_proto->set_x((&(&original_struct->renderArea)->offset)->x);
-  proto_renderArea_proto_offset_proto->set_y((&(&original_struct->renderArea)->offset)->y);
-  vvk::server::VkExtent2D* proto_renderArea_proto_extent_proto = proto_renderArea_proto->mutable_extent();
-  proto_renderArea_proto_extent_proto->set_width((&(&original_struct->renderArea)->extent)->width);
-  proto_renderArea_proto_extent_proto->set_height((&(&original_struct->renderArea)->extent)->height);
+  FillProtoFromStruct(proto->mutable_renderarea(), &original_struct->renderArea);
   if (original_struct->clearValueCount) {
     proto->set_clearvaluecount(original_struct->clearValueCount);
   }
@@ -826,6 +826,15 @@ void FillProtoFromStruct(vvk::server::VkSpecializationMapEntry* proto, const VkS
   proto->set_constantid(original_struct->constantID);
   proto->set_offset(original_struct->offset);
   proto->set_size(original_struct->size);
+}
+void FillProtoFromStruct(vvk::server::VkStencilOpState* proto, const VkStencilOpState* original_struct) {
+  proto->set_failop(static_cast<vvk::server::VkStencilOp>(original_struct->failOp));
+  proto->set_passop(static_cast<vvk::server::VkStencilOp>(original_struct->passOp));
+  proto->set_depthfailop(static_cast<vvk::server::VkStencilOp>(original_struct->depthFailOp));
+  proto->set_compareop(static_cast<vvk::server::VkCompareOp>(original_struct->compareOp));
+  proto->set_comparemask(original_struct->compareMask);
+  proto->set_writemask(original_struct->writeMask);
+  proto->set_reference(original_struct->reference);
 }
 void FillProtoFromStruct(vvk::server::VkSubmitInfo* proto, const VkSubmitInfo* original_struct) {
   if (original_struct->pNext) {

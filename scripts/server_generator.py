@@ -3,7 +3,7 @@ from reg import Registry
 from base_generator import BaseGeneratorOptions
 from vulkan_object import VulkanObject
 from .vvk_generator import VvkGenerator
-from .commons import first_letter_upper, COMMANDS_TO_GENERATE, fill_proto_from_struct, fill_struct_from_proto, indent, TRIVIAL_TYPES
+from .commons import first_letter_upper, COMMANDS_TO_GENERATE, fill_proto_from_struct, fill_struct_from_proto, get_required_function_definitions, indent, TRIVIAL_TYPES
 
 
 def log(*args):
@@ -34,6 +34,8 @@ class ServerSrcGenerator(VvkGenerator):
 #include "server/execution_context.h"
 
 ''')
+
+        insert_function_definitions_index = len(out)
 
         for cmd_name in COMMANDS_TO_GENERATE:
             after_call_code = []
@@ -243,6 +245,13 @@ class ServerSrcGenerator(VvkGenerator):
 
             out.extend(deletions)
             out.append("}\n")
+
+        functions_to_generate = get_required_function_definitions(self)
+        out[insert_function_definitions_index:insert_function_definitions_index] = \
+            ["namespace {\n"] + \
+            [func_def.splitlines()[0][:-2] + ";\n" for func_def in functions_to_generate] + \
+            [func_def for func_def in functions_to_generate] + \
+            ["}\n"]
 
         self.write("".join(out))
 
