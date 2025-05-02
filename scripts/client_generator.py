@@ -1,3 +1,4 @@
+import copy
 from xml.etree import ElementTree
 from reg import Registry
 from base_generator import BaseGeneratorOptions, Param
@@ -24,6 +25,12 @@ class ClientSrcGenerator(VvkGenerator):
                 self, type_name, 'proto', 'original_struct'))
             out.append("}\n")
             return "".join(out)
+        return 'static_assert(false, "Unkown function type");\n'
+
+    def get_function_prototype(self, func: str) -> str:
+        (func_name, type_name) = func.split('/')
+        if func_name == "FillProtoFromStruct":
+            return f'void FillProtoFromStruct(vvk::server::{type_name}* proto, const {type_name}* original_struct);\n'
         return 'static_assert(false, "Unkown function type");\n'
 
     def generate_param(self, cmd_name: str, param: Param) -> tuple[str, str]:
@@ -249,10 +256,23 @@ namespace vvk {
 
             out.append("}\n")
 
-        required_function_definitions = [
-            self.get_function_definition(func) for func in sorted(self.required_functions)]
-        out[insert_function_definitions_index:insert_function_definitions_index] = [
-            "namespace {\n"] + required_function_definitions + ["}\n"]
+        required_function_definitions: dict[str, str] = {}
+        adding_done = False
+        while not adding_done:
+            adding_done = True
+            old_required_functions = copy.deepcopy(self.required_functions)
+            for func in old_required_functions:
+                if func not in required_function_definitions:
+                    adding_done = False
+                    required_function_definitions[func] = self.get_function_definition(
+                        func)
+        functions_to_generate = sorted(
+            [value for value in required_function_definitions.values()])
+        out[insert_function_definitions_index:insert_function_definitions_index] = \
+            ["namespace {\n"] + \
+            [func_def.splitlines()[0][:-2] + ";\n" for func_def in functions_to_generate] + \
+            [func_def for func_def in functions_to_generate] + \
+            ["}\n"]
 
         out.append("}  // namespace vvk\n")
 

@@ -11,6 +11,32 @@
 
 namespace vvk {
 namespace {
+void FillProtoFromStruct(vvk::server::VkBindImageMemoryInfo* proto, const VkBindImageMemoryInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkBufferImageCopy* proto, const VkBufferImageCopy* original_struct);
+void FillProtoFromStruct(vvk::server::VkBufferMemoryBarrier* proto, const VkBufferMemoryBarrier* original_struct);
+void FillProtoFromStruct(vvk::server::VkCommandBufferAllocateInfo* proto, const VkCommandBufferAllocateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkCommandBufferBeginInfo* proto, const VkCommandBufferBeginInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkCommandPoolCreateInfo* proto, const VkCommandPoolCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkDeviceCreateInfo* proto, const VkDeviceCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkFenceCreateInfo* proto, const VkFenceCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkFramebufferCreateInfo* proto, const VkFramebufferCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkGraphicsPipelineCreateInfo* proto, const VkGraphicsPipelineCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkImageCreateInfo* proto, const VkImageCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkImageMemoryBarrier* proto, const VkImageMemoryBarrier* original_struct);
+void FillProtoFromStruct(vvk::server::VkImageMemoryRequirementsInfo2* proto, const VkImageMemoryRequirementsInfo2* original_struct);
+void FillProtoFromStruct(vvk::server::VkImageSubresource* proto, const VkImageSubresource* original_struct);
+void FillProtoFromStruct(vvk::server::VkImageViewCreateInfo* proto, const VkImageViewCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkInstanceCreateInfo* proto, const VkInstanceCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkMemoryAllocateInfo* proto, const VkMemoryAllocateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkMemoryBarrier* proto, const VkMemoryBarrier* original_struct);
+void FillProtoFromStruct(vvk::server::VkPipelineLayoutCreateInfo* proto, const VkPipelineLayoutCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkRect2D* proto, const VkRect2D* original_struct);
+void FillProtoFromStruct(vvk::server::VkRenderPassBeginInfo* proto, const VkRenderPassBeginInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkRenderPassCreateInfo* proto, const VkRenderPassCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkSemaphoreCreateInfo* proto, const VkSemaphoreCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkShaderModuleCreateInfo* proto, const VkShaderModuleCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkSubmitInfo* proto, const VkSubmitInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkViewport* proto, const VkViewport* original_struct);
 void FillProtoFromStruct(vvk::server::VkBindImageMemoryInfo* proto, const VkBindImageMemoryInfo* original_struct) {
   if (original_struct->pNext) {
     // pNext chains are currently not supported
