@@ -11,13 +11,19 @@
 
 namespace vvk {
 namespace {
+void FillProtoFromStruct(vvk::server::VkApplicationInfo* proto, const VkApplicationInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkAttachmentDescription* proto, const VkAttachmentDescription* original_struct);
+void FillProtoFromStruct(vvk::server::VkAttachmentReference* proto, const VkAttachmentReference* original_struct);
 void FillProtoFromStruct(vvk::server::VkBindImageMemoryInfo* proto, const VkBindImageMemoryInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkBufferImageCopy* proto, const VkBufferImageCopy* original_struct);
 void FillProtoFromStruct(vvk::server::VkBufferMemoryBarrier* proto, const VkBufferMemoryBarrier* original_struct);
+void FillProtoFromStruct(vvk::server::VkClearValue* proto, const VkClearValue* original_struct);
 void FillProtoFromStruct(vvk::server::VkCommandBufferAllocateInfo* proto, const VkCommandBufferAllocateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkCommandBufferBeginInfo* proto, const VkCommandBufferBeginInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkCommandBufferInheritanceInfo* proto, const VkCommandBufferInheritanceInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkCommandPoolCreateInfo* proto, const VkCommandPoolCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkDeviceCreateInfo* proto, const VkDeviceCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkDeviceQueueCreateInfo* proto, const VkDeviceQueueCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkFenceCreateInfo* proto, const VkFenceCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkFramebufferCreateInfo* proto, const VkFramebufferCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkGraphicsPipelineCreateInfo* proto, const VkGraphicsPipelineCreateInfo* original_struct);
@@ -29,14 +35,64 @@ void FillProtoFromStruct(vvk::server::VkImageViewCreateInfo* proto, const VkImag
 void FillProtoFromStruct(vvk::server::VkInstanceCreateInfo* proto, const VkInstanceCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryAllocateInfo* proto, const VkMemoryAllocateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryBarrier* proto, const VkMemoryBarrier* original_struct);
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceFeatures* proto, const VkPhysicalDeviceFeatures* original_struct);
+void FillProtoFromStruct(vvk::server::VkPipelineColorBlendAttachmentState* proto, const VkPipelineColorBlendAttachmentState* original_struct);
+void FillProtoFromStruct(vvk::server::VkPipelineColorBlendStateCreateInfo* proto, const VkPipelineColorBlendStateCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkPipelineDepthStencilStateCreateInfo* proto, const VkPipelineDepthStencilStateCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkPipelineDynamicStateCreateInfo* proto, const VkPipelineDynamicStateCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkPipelineInputAssemblyStateCreateInfo* proto, const VkPipelineInputAssemblyStateCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkPipelineLayoutCreateInfo* proto, const VkPipelineLayoutCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkPipelineMultisampleStateCreateInfo* proto, const VkPipelineMultisampleStateCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkPipelineRasterizationStateCreateInfo* proto, const VkPipelineRasterizationStateCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkPipelineShaderStageCreateInfo* proto, const VkPipelineShaderStageCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkPipelineTessellationStateCreateInfo* proto, const VkPipelineTessellationStateCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkPipelineVertexInputStateCreateInfo* proto, const VkPipelineVertexInputStateCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkPipelineViewportStateCreateInfo* proto, const VkPipelineViewportStateCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkPushConstantRange* proto, const VkPushConstantRange* original_struct);
 void FillProtoFromStruct(vvk::server::VkRect2D* proto, const VkRect2D* original_struct);
 void FillProtoFromStruct(vvk::server::VkRenderPassBeginInfo* proto, const VkRenderPassBeginInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkRenderPassCreateInfo* proto, const VkRenderPassCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkSemaphoreCreateInfo* proto, const VkSemaphoreCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkShaderModuleCreateInfo* proto, const VkShaderModuleCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkSpecializationInfo* proto, const VkSpecializationInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkSpecializationMapEntry* proto, const VkSpecializationMapEntry* original_struct);
 void FillProtoFromStruct(vvk::server::VkSubmitInfo* proto, const VkSubmitInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkSubpassDependency* proto, const VkSubpassDependency* original_struct);
+void FillProtoFromStruct(vvk::server::VkSubpassDescription* proto, const VkSubpassDescription* original_struct);
+void FillProtoFromStruct(vvk::server::VkVertexInputAttributeDescription* proto, const VkVertexInputAttributeDescription* original_struct);
+void FillProtoFromStruct(vvk::server::VkVertexInputBindingDescription* proto, const VkVertexInputBindingDescription* original_struct);
 void FillProtoFromStruct(vvk::server::VkViewport* proto, const VkViewport* original_struct);
+void FillProtoFromStruct(vvk::server::VkApplicationInfo* proto, const VkApplicationInfo* original_struct) {
+  if (original_struct->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (original_struct->pApplicationName) {
+    proto->set_papplicationname(original_struct->pApplicationName);
+  }
+  proto->set_applicationversion(original_struct->applicationVersion);
+  if (original_struct->pEngineName) {
+    proto->set_penginename(original_struct->pEngineName);
+  }
+  proto->set_engineversion(original_struct->engineVersion);
+  proto->set_apiversion(original_struct->apiVersion);
+}
+void FillProtoFromStruct(vvk::server::VkAttachmentDescription* proto, const VkAttachmentDescription* original_struct) {
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  proto->set_format(static_cast<vvk::server::VkFormat>(original_struct->format));
+  proto->set_samples(original_struct->samples);
+  proto->set_loadop(static_cast<vvk::server::VkAttachmentLoadOp>(original_struct->loadOp));
+  proto->set_storeop(static_cast<vvk::server::VkAttachmentStoreOp>(original_struct->storeOp));
+  proto->set_stencilloadop(static_cast<vvk::server::VkAttachmentLoadOp>(original_struct->stencilLoadOp));
+  proto->set_stencilstoreop(static_cast<vvk::server::VkAttachmentStoreOp>(original_struct->stencilStoreOp));
+  proto->set_initiallayout(static_cast<vvk::server::VkImageLayout>(original_struct->initialLayout));
+  proto->set_finallayout(static_cast<vvk::server::VkImageLayout>(original_struct->finalLayout));
+}
+void FillProtoFromStruct(vvk::server::VkAttachmentReference* proto, const VkAttachmentReference* original_struct) {
+  proto->set_attachment(original_struct->attachment);
+  proto->set_layout(static_cast<vvk::server::VkImageLayout>(original_struct->layout));
+}
 void FillProtoFromStruct(vvk::server::VkBindImageMemoryInfo* proto, const VkBindImageMemoryInfo* original_struct) {
   if (original_struct->pNext) {
     // pNext chains are currently not supported
@@ -75,6 +131,24 @@ void FillProtoFromStruct(vvk::server::VkBufferMemoryBarrier* proto, const VkBuff
   proto->set_offset(static_cast<uint64_t>(original_struct->offset));
   proto->set_size(static_cast<uint64_t>(original_struct->size));
 }
+void FillProtoFromStruct(vvk::server::VkClearValue* proto, const VkClearValue* original_struct) {
+  vvk::server::VkClearColorValue* proto_color_proto = proto->mutable_color();
+  const size_t proto_color_proto_float32_length = 4;
+  for (int float32_indx = 0; float32_indx < proto_color_proto_float32_length; float32_indx++) {
+    proto_color_proto->add_float32((&original_struct->color)->float32[float32_indx]);
+  }
+  const size_t proto_color_proto_int32_length = 4;
+  for (int int32_indx = 0; int32_indx < proto_color_proto_int32_length; int32_indx++) {
+    proto_color_proto->add_int32((&original_struct->color)->int32[int32_indx]);
+  }
+  const size_t proto_color_proto_uint32_length = 4;
+  for (int uint32_indx = 0; uint32_indx < proto_color_proto_uint32_length; uint32_indx++) {
+    proto_color_proto->add_uint32((&original_struct->color)->uint32[uint32_indx]);
+  }
+  vvk::server::VkClearDepthStencilValue* proto_depthStencil_proto = proto->mutable_depthstencil();
+  proto_depthStencil_proto->set_depth((&original_struct->depthStencil)->depth);
+  proto_depthStencil_proto->set_stencil((&original_struct->depthStencil)->stencil);
+}
 void FillProtoFromStruct(vvk::server::VkCommandBufferAllocateInfo* proto, const VkCommandBufferAllocateInfo* original_struct) {
   if (original_struct->pNext) {
     // pNext chains are currently not supported
@@ -91,24 +165,26 @@ void FillProtoFromStruct(vvk::server::VkCommandBufferBeginInfo* proto, const VkC
     proto->set_flags(original_struct->flags);
   }
   if (original_struct->pInheritanceInfo) {
-    vvk::server::VkCommandBufferInheritanceInfo* proto_pInheritanceInfo_proto = proto->mutable_pinheritanceinfo();
-    if (original_struct->pInheritanceInfo->pNext) {
-      // pNext chains are currently not supported
-    }
-    if (original_struct->pInheritanceInfo->renderPass) {
-      proto_pInheritanceInfo_proto->set_renderpass(reinterpret_cast<uint64_t>(original_struct->pInheritanceInfo->renderPass));
-    }
-    proto_pInheritanceInfo_proto->set_subpass(original_struct->pInheritanceInfo->subpass);
-    if (original_struct->pInheritanceInfo->framebuffer) {
-      proto_pInheritanceInfo_proto->set_framebuffer(reinterpret_cast<uint64_t>(original_struct->pInheritanceInfo->framebuffer));
-    }
-    proto_pInheritanceInfo_proto->set_occlusionqueryenable(original_struct->pInheritanceInfo->occlusionQueryEnable);
-    if (original_struct->pInheritanceInfo->queryFlags) {
-      proto_pInheritanceInfo_proto->set_queryflags(original_struct->pInheritanceInfo->queryFlags);
-    }
-    if (original_struct->pInheritanceInfo->pipelineStatistics) {
-      proto_pInheritanceInfo_proto->set_pipelinestatistics(original_struct->pInheritanceInfo->pipelineStatistics);
-    }
+    FillProtoFromStruct(proto->mutable_pinheritanceinfo(), original_struct->pInheritanceInfo);
+  }
+}
+void FillProtoFromStruct(vvk::server::VkCommandBufferInheritanceInfo* proto, const VkCommandBufferInheritanceInfo* original_struct) {
+  if (original_struct->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (original_struct->renderPass) {
+    proto->set_renderpass(reinterpret_cast<uint64_t>(original_struct->renderPass));
+  }
+  proto->set_subpass(original_struct->subpass);
+  if (original_struct->framebuffer) {
+    proto->set_framebuffer(reinterpret_cast<uint64_t>(original_struct->framebuffer));
+  }
+  proto->set_occlusionqueryenable(original_struct->occlusionQueryEnable);
+  if (original_struct->queryFlags) {
+    proto->set_queryflags(original_struct->queryFlags);
+  }
+  if (original_struct->pipelineStatistics) {
+    proto->set_pipelinestatistics(original_struct->pipelineStatistics);
   }
 }
 void FillProtoFromStruct(vvk::server::VkCommandPoolCreateInfo* proto, const VkCommandPoolCreateInfo* original_struct) {
@@ -130,19 +206,7 @@ void FillProtoFromStruct(vvk::server::VkDeviceCreateInfo* proto, const VkDeviceC
   proto->set_queuecreateinfocount(original_struct->queueCreateInfoCount);
   const size_t proto_pQueueCreateInfos_length = original_struct->queueCreateInfoCount;
   for (int pQueueCreateInfos_indx = 0; pQueueCreateInfos_indx < proto_pQueueCreateInfos_length; pQueueCreateInfos_indx++) {
-    vvk::server::VkDeviceQueueCreateInfo* proto_pQueueCreateInfos_proto = proto->add_pqueuecreateinfos();
-    if ((&original_struct->pQueueCreateInfos[pQueueCreateInfos_indx])->pNext) {
-      // pNext chains are currently not supported
-    }
-    if ((&original_struct->pQueueCreateInfos[pQueueCreateInfos_indx])->flags) {
-      proto_pQueueCreateInfos_proto->set_flags((&original_struct->pQueueCreateInfos[pQueueCreateInfos_indx])->flags);
-    }
-    proto_pQueueCreateInfos_proto->set_queuefamilyindex((&original_struct->pQueueCreateInfos[pQueueCreateInfos_indx])->queueFamilyIndex);
-    proto_pQueueCreateInfos_proto->set_queuecount((&original_struct->pQueueCreateInfos[pQueueCreateInfos_indx])->queueCount);
-    const size_t proto_pQueueCreateInfos_proto_pQueuePriorities_length = (&original_struct->pQueueCreateInfos[pQueueCreateInfos_indx])->queueCount;
-    for (int pQueuePriorities_indx = 0; pQueuePriorities_indx < proto_pQueueCreateInfos_proto_pQueuePriorities_length; pQueuePriorities_indx++) {
-      proto_pQueueCreateInfos_proto->add_pqueuepriorities((&original_struct->pQueueCreateInfos[pQueueCreateInfos_indx])->pQueuePriorities[pQueuePriorities_indx]);
-    }
+    FillProtoFromStruct(proto->add_pqueuecreateinfos(), (&original_struct->pQueueCreateInfos[pQueueCreateInfos_indx]));
   }
   if (original_struct->enabledLayerCount) {
     proto->set_enabledlayercount(original_struct->enabledLayerCount);
@@ -159,62 +223,21 @@ void FillProtoFromStruct(vvk::server::VkDeviceCreateInfo* proto, const VkDeviceC
     proto->add_ppenabledextensionnames(original_struct->ppEnabledExtensionNames[ppEnabledExtensionNames_indx]);
   }
   if (original_struct->pEnabledFeatures) {
-    vvk::server::VkPhysicalDeviceFeatures* proto_pEnabledFeatures_proto = proto->mutable_penabledfeatures();
-    proto_pEnabledFeatures_proto->set_robustbufferaccess(original_struct->pEnabledFeatures->robustBufferAccess);
-    proto_pEnabledFeatures_proto->set_fulldrawindexuint32(original_struct->pEnabledFeatures->fullDrawIndexUint32);
-    proto_pEnabledFeatures_proto->set_imagecubearray(original_struct->pEnabledFeatures->imageCubeArray);
-    proto_pEnabledFeatures_proto->set_independentblend(original_struct->pEnabledFeatures->independentBlend);
-    proto_pEnabledFeatures_proto->set_geometryshader(original_struct->pEnabledFeatures->geometryShader);
-    proto_pEnabledFeatures_proto->set_tessellationshader(original_struct->pEnabledFeatures->tessellationShader);
-    proto_pEnabledFeatures_proto->set_samplerateshading(original_struct->pEnabledFeatures->sampleRateShading);
-    proto_pEnabledFeatures_proto->set_dualsrcblend(original_struct->pEnabledFeatures->dualSrcBlend);
-    proto_pEnabledFeatures_proto->set_logicop(original_struct->pEnabledFeatures->logicOp);
-    proto_pEnabledFeatures_proto->set_multidrawindirect(original_struct->pEnabledFeatures->multiDrawIndirect);
-    proto_pEnabledFeatures_proto->set_drawindirectfirstinstance(original_struct->pEnabledFeatures->drawIndirectFirstInstance);
-    proto_pEnabledFeatures_proto->set_depthclamp(original_struct->pEnabledFeatures->depthClamp);
-    proto_pEnabledFeatures_proto->set_depthbiasclamp(original_struct->pEnabledFeatures->depthBiasClamp);
-    proto_pEnabledFeatures_proto->set_fillmodenonsolid(original_struct->pEnabledFeatures->fillModeNonSolid);
-    proto_pEnabledFeatures_proto->set_depthbounds(original_struct->pEnabledFeatures->depthBounds);
-    proto_pEnabledFeatures_proto->set_widelines(original_struct->pEnabledFeatures->wideLines);
-    proto_pEnabledFeatures_proto->set_largepoints(original_struct->pEnabledFeatures->largePoints);
-    proto_pEnabledFeatures_proto->set_alphatoone(original_struct->pEnabledFeatures->alphaToOne);
-    proto_pEnabledFeatures_proto->set_multiviewport(original_struct->pEnabledFeatures->multiViewport);
-    proto_pEnabledFeatures_proto->set_sampleranisotropy(original_struct->pEnabledFeatures->samplerAnisotropy);
-    proto_pEnabledFeatures_proto->set_texturecompressionetc2(original_struct->pEnabledFeatures->textureCompressionETC2);
-    proto_pEnabledFeatures_proto->set_texturecompressionastc_ldr(original_struct->pEnabledFeatures->textureCompressionASTC_LDR);
-    proto_pEnabledFeatures_proto->set_texturecompressionbc(original_struct->pEnabledFeatures->textureCompressionBC);
-    proto_pEnabledFeatures_proto->set_occlusionqueryprecise(original_struct->pEnabledFeatures->occlusionQueryPrecise);
-    proto_pEnabledFeatures_proto->set_pipelinestatisticsquery(original_struct->pEnabledFeatures->pipelineStatisticsQuery);
-    proto_pEnabledFeatures_proto->set_vertexpipelinestoresandatomics(original_struct->pEnabledFeatures->vertexPipelineStoresAndAtomics);
-    proto_pEnabledFeatures_proto->set_fragmentstoresandatomics(original_struct->pEnabledFeatures->fragmentStoresAndAtomics);
-    proto_pEnabledFeatures_proto->set_shadertessellationandgeometrypointsize(original_struct->pEnabledFeatures->shaderTessellationAndGeometryPointSize);
-    proto_pEnabledFeatures_proto->set_shaderimagegatherextended(original_struct->pEnabledFeatures->shaderImageGatherExtended);
-    proto_pEnabledFeatures_proto->set_shaderstorageimageextendedformats(original_struct->pEnabledFeatures->shaderStorageImageExtendedFormats);
-    proto_pEnabledFeatures_proto->set_shaderstorageimagemultisample(original_struct->pEnabledFeatures->shaderStorageImageMultisample);
-    proto_pEnabledFeatures_proto->set_shaderstorageimagereadwithoutformat(original_struct->pEnabledFeatures->shaderStorageImageReadWithoutFormat);
-    proto_pEnabledFeatures_proto->set_shaderstorageimagewritewithoutformat(original_struct->pEnabledFeatures->shaderStorageImageWriteWithoutFormat);
-    proto_pEnabledFeatures_proto->set_shaderuniformbufferarraydynamicindexing(original_struct->pEnabledFeatures->shaderUniformBufferArrayDynamicIndexing);
-    proto_pEnabledFeatures_proto->set_shadersampledimagearraydynamicindexing(original_struct->pEnabledFeatures->shaderSampledImageArrayDynamicIndexing);
-    proto_pEnabledFeatures_proto->set_shaderstoragebufferarraydynamicindexing(original_struct->pEnabledFeatures->shaderStorageBufferArrayDynamicIndexing);
-    proto_pEnabledFeatures_proto->set_shaderstorageimagearraydynamicindexing(original_struct->pEnabledFeatures->shaderStorageImageArrayDynamicIndexing);
-    proto_pEnabledFeatures_proto->set_shaderclipdistance(original_struct->pEnabledFeatures->shaderClipDistance);
-    proto_pEnabledFeatures_proto->set_shaderculldistance(original_struct->pEnabledFeatures->shaderCullDistance);
-    proto_pEnabledFeatures_proto->set_shaderfloat64(original_struct->pEnabledFeatures->shaderFloat64);
-    proto_pEnabledFeatures_proto->set_shaderint64(original_struct->pEnabledFeatures->shaderInt64);
-    proto_pEnabledFeatures_proto->set_shaderint16(original_struct->pEnabledFeatures->shaderInt16);
-    proto_pEnabledFeatures_proto->set_shaderresourceresidency(original_struct->pEnabledFeatures->shaderResourceResidency);
-    proto_pEnabledFeatures_proto->set_shaderresourceminlod(original_struct->pEnabledFeatures->shaderResourceMinLod);
-    proto_pEnabledFeatures_proto->set_sparsebinding(original_struct->pEnabledFeatures->sparseBinding);
-    proto_pEnabledFeatures_proto->set_sparseresidencybuffer(original_struct->pEnabledFeatures->sparseResidencyBuffer);
-    proto_pEnabledFeatures_proto->set_sparseresidencyimage2d(original_struct->pEnabledFeatures->sparseResidencyImage2D);
-    proto_pEnabledFeatures_proto->set_sparseresidencyimage3d(original_struct->pEnabledFeatures->sparseResidencyImage3D);
-    proto_pEnabledFeatures_proto->set_sparseresidency2samples(original_struct->pEnabledFeatures->sparseResidency2Samples);
-    proto_pEnabledFeatures_proto->set_sparseresidency4samples(original_struct->pEnabledFeatures->sparseResidency4Samples);
-    proto_pEnabledFeatures_proto->set_sparseresidency8samples(original_struct->pEnabledFeatures->sparseResidency8Samples);
-    proto_pEnabledFeatures_proto->set_sparseresidency16samples(original_struct->pEnabledFeatures->sparseResidency16Samples);
-    proto_pEnabledFeatures_proto->set_sparseresidencyaliased(original_struct->pEnabledFeatures->sparseResidencyAliased);
-    proto_pEnabledFeatures_proto->set_variablemultisamplerate(original_struct->pEnabledFeatures->variableMultisampleRate);
-    proto_pEnabledFeatures_proto->set_inheritedqueries(original_struct->pEnabledFeatures->inheritedQueries);
+    FillProtoFromStruct(proto->mutable_penabledfeatures(), original_struct->pEnabledFeatures);
+  }
+}
+void FillProtoFromStruct(vvk::server::VkDeviceQueueCreateInfo* proto, const VkDeviceQueueCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  proto->set_queuefamilyindex(original_struct->queueFamilyIndex);
+  proto->set_queuecount(original_struct->queueCount);
+  const size_t proto_pQueuePriorities_length = original_struct->queueCount;
+  for (int pQueuePriorities_indx = 0; pQueuePriorities_indx < proto_pQueuePriorities_length; pQueuePriorities_indx++) {
+    proto->add_pqueuepriorities(original_struct->pQueuePriorities[pQueuePriorities_indx]);
   }
 }
 void FillProtoFromStruct(vvk::server::VkFenceCreateInfo* proto, const VkFenceCreateInfo* original_struct) {
@@ -257,250 +280,35 @@ void FillProtoFromStruct(vvk::server::VkGraphicsPipelineCreateInfo* proto, const
   if (original_struct->pStages) {
     const size_t proto_pStages_length = original_struct->stageCount;
     for (int pStages_indx = 0; pStages_indx < proto_pStages_length; pStages_indx++) {
-      vvk::server::VkPipelineShaderStageCreateInfo* proto_pStages_proto = proto->add_pstages();
-      if ((&original_struct->pStages[pStages_indx])->pNext) {
-        // pNext chains are currently not supported
-      }
-      if ((&original_struct->pStages[pStages_indx])->flags) {
-        proto_pStages_proto->set_flags((&original_struct->pStages[pStages_indx])->flags);
-      }
-      proto_pStages_proto->set_stage((&original_struct->pStages[pStages_indx])->stage);
-      if ((&original_struct->pStages[pStages_indx])->module) {
-        proto_pStages_proto->set_module(reinterpret_cast<uint64_t>((&original_struct->pStages[pStages_indx])->module));
-      }
-      proto_pStages_proto->set_pname((&original_struct->pStages[pStages_indx])->pName);
-      if ((&original_struct->pStages[pStages_indx])->pSpecializationInfo) {
-        vvk::server::VkSpecializationInfo* proto_pStages_proto_pSpecializationInfo_proto = proto_pStages_proto->mutable_pspecializationinfo();
-        if ((&original_struct->pStages[pStages_indx])->pSpecializationInfo->mapEntryCount) {
-          proto_pStages_proto_pSpecializationInfo_proto->set_mapentrycount((&original_struct->pStages[pStages_indx])->pSpecializationInfo->mapEntryCount);
-        }
-        const size_t proto_pStages_proto_pSpecializationInfo_proto_pMapEntries_length = (&original_struct->pStages[pStages_indx])->pSpecializationInfo->mapEntryCount;
-        for (int pMapEntries_indx = 0; pMapEntries_indx < proto_pStages_proto_pSpecializationInfo_proto_pMapEntries_length; pMapEntries_indx++) {
-          vvk::server::VkSpecializationMapEntry* proto_pStages_proto_pSpecializationInfo_proto_pMapEntries_proto = proto_pStages_proto_pSpecializationInfo_proto->add_pmapentries();
-          proto_pStages_proto_pSpecializationInfo_proto_pMapEntries_proto->set_constantid((&(&original_struct->pStages[pStages_indx])->pSpecializationInfo->pMapEntries[pMapEntries_indx])->constantID);
-          proto_pStages_proto_pSpecializationInfo_proto_pMapEntries_proto->set_offset((&(&original_struct->pStages[pStages_indx])->pSpecializationInfo->pMapEntries[pMapEntries_indx])->offset);
-          proto_pStages_proto_pSpecializationInfo_proto_pMapEntries_proto->set_size((&(&original_struct->pStages[pStages_indx])->pSpecializationInfo->pMapEntries[pMapEntries_indx])->size);
-        }
-        if ((&original_struct->pStages[pStages_indx])->pSpecializationInfo->dataSize) {
-          proto_pStages_proto_pSpecializationInfo_proto->set_datasize((&original_struct->pStages[pStages_indx])->pSpecializationInfo->dataSize);
-        }
-        const size_t proto_pStages_proto_pSpecializationInfo_proto_pData_length = (&original_struct->pStages[pStages_indx])->pSpecializationInfo->dataSize;
-        proto_pStages_proto_pSpecializationInfo_proto->set_pdata((&original_struct->pStages[pStages_indx])->pSpecializationInfo->pData, proto_pStages_proto_pSpecializationInfo_proto_pData_length);
-      }
+      FillProtoFromStruct(proto->add_pstages(), (&original_struct->pStages[pStages_indx]));
     }
   }
   if (original_struct->pVertexInputState) {
-    vvk::server::VkPipelineVertexInputStateCreateInfo* proto_pVertexInputState_proto = proto->mutable_pvertexinputstate();
-    if (original_struct->pVertexInputState->pNext) {
-      // pNext chains are currently not supported
-    }
-    if (original_struct->pVertexInputState->flags) {
-      proto_pVertexInputState_proto->set_flags(original_struct->pVertexInputState->flags);
-    }
-    if (original_struct->pVertexInputState->vertexBindingDescriptionCount) {
-      proto_pVertexInputState_proto->set_vertexbindingdescriptioncount(original_struct->pVertexInputState->vertexBindingDescriptionCount);
-    }
-    const size_t proto_pVertexInputState_proto_pVertexBindingDescriptions_length = original_struct->pVertexInputState->vertexBindingDescriptionCount;
-    for (int pVertexBindingDescriptions_indx = 0; pVertexBindingDescriptions_indx < proto_pVertexInputState_proto_pVertexBindingDescriptions_length; pVertexBindingDescriptions_indx++) {
-      vvk::server::VkVertexInputBindingDescription* proto_pVertexInputState_proto_pVertexBindingDescriptions_proto = proto_pVertexInputState_proto->add_pvertexbindingdescriptions();
-      proto_pVertexInputState_proto_pVertexBindingDescriptions_proto->set_binding((&original_struct->pVertexInputState->pVertexBindingDescriptions[pVertexBindingDescriptions_indx])->binding);
-      proto_pVertexInputState_proto_pVertexBindingDescriptions_proto->set_stride((&original_struct->pVertexInputState->pVertexBindingDescriptions[pVertexBindingDescriptions_indx])->stride);
-      proto_pVertexInputState_proto_pVertexBindingDescriptions_proto->set_inputrate(static_cast<vvk::server::VkVertexInputRate>((&original_struct->pVertexInputState->pVertexBindingDescriptions[pVertexBindingDescriptions_indx])->inputRate));
-    }
-    if (original_struct->pVertexInputState->vertexAttributeDescriptionCount) {
-      proto_pVertexInputState_proto->set_vertexattributedescriptioncount(original_struct->pVertexInputState->vertexAttributeDescriptionCount);
-    }
-    const size_t proto_pVertexInputState_proto_pVertexAttributeDescriptions_length = original_struct->pVertexInputState->vertexAttributeDescriptionCount;
-    for (int pVertexAttributeDescriptions_indx = 0; pVertexAttributeDescriptions_indx < proto_pVertexInputState_proto_pVertexAttributeDescriptions_length; pVertexAttributeDescriptions_indx++) {
-      vvk::server::VkVertexInputAttributeDescription* proto_pVertexInputState_proto_pVertexAttributeDescriptions_proto = proto_pVertexInputState_proto->add_pvertexattributedescriptions();
-      proto_pVertexInputState_proto_pVertexAttributeDescriptions_proto->set_location((&original_struct->pVertexInputState->pVertexAttributeDescriptions[pVertexAttributeDescriptions_indx])->location);
-      proto_pVertexInputState_proto_pVertexAttributeDescriptions_proto->set_binding((&original_struct->pVertexInputState->pVertexAttributeDescriptions[pVertexAttributeDescriptions_indx])->binding);
-      proto_pVertexInputState_proto_pVertexAttributeDescriptions_proto->set_format(static_cast<vvk::server::VkFormat>((&original_struct->pVertexInputState->pVertexAttributeDescriptions[pVertexAttributeDescriptions_indx])->format));
-      proto_pVertexInputState_proto_pVertexAttributeDescriptions_proto->set_offset((&original_struct->pVertexInputState->pVertexAttributeDescriptions[pVertexAttributeDescriptions_indx])->offset);
-    }
+    FillProtoFromStruct(proto->mutable_pvertexinputstate(), original_struct->pVertexInputState);
   }
   if (original_struct->pInputAssemblyState) {
-    vvk::server::VkPipelineInputAssemblyStateCreateInfo* proto_pInputAssemblyState_proto = proto->mutable_pinputassemblystate();
-    if (original_struct->pInputAssemblyState->pNext) {
-      // pNext chains are currently not supported
-    }
-    if (original_struct->pInputAssemblyState->flags) {
-      proto_pInputAssemblyState_proto->set_flags(original_struct->pInputAssemblyState->flags);
-    }
-    proto_pInputAssemblyState_proto->set_topology(static_cast<vvk::server::VkPrimitiveTopology>(original_struct->pInputAssemblyState->topology));
-    proto_pInputAssemblyState_proto->set_primitiverestartenable(original_struct->pInputAssemblyState->primitiveRestartEnable);
+    FillProtoFromStruct(proto->mutable_pinputassemblystate(), original_struct->pInputAssemblyState);
   }
   if (original_struct->pTessellationState) {
-    vvk::server::VkPipelineTessellationStateCreateInfo* proto_pTessellationState_proto = proto->mutable_ptessellationstate();
-    if (original_struct->pTessellationState->pNext) {
-      // pNext chains are currently not supported
-    }
-    if (original_struct->pTessellationState->flags) {
-      proto_pTessellationState_proto->set_flags(original_struct->pTessellationState->flags);
-    }
-    proto_pTessellationState_proto->set_patchcontrolpoints(original_struct->pTessellationState->patchControlPoints);
+    FillProtoFromStruct(proto->mutable_ptessellationstate(), original_struct->pTessellationState);
   }
   if (original_struct->pViewportState) {
-    vvk::server::VkPipelineViewportStateCreateInfo* proto_pViewportState_proto = proto->mutable_pviewportstate();
-    if (original_struct->pViewportState->pNext) {
-      // pNext chains are currently not supported
-    }
-    if (original_struct->pViewportState->flags) {
-      proto_pViewportState_proto->set_flags(original_struct->pViewportState->flags);
-    }
-    if (original_struct->pViewportState->viewportCount) {
-      proto_pViewportState_proto->set_viewportcount(original_struct->pViewportState->viewportCount);
-    }
-    if (original_struct->pViewportState->pViewports) {
-      const size_t proto_pViewportState_proto_pViewports_length = original_struct->pViewportState->viewportCount;
-      for (int pViewports_indx = 0; pViewports_indx < proto_pViewportState_proto_pViewports_length; pViewports_indx++) {
-        vvk::server::VkViewport* proto_pViewportState_proto_pViewports_proto = proto_pViewportState_proto->add_pviewports();
-        proto_pViewportState_proto_pViewports_proto->set_x((&original_struct->pViewportState->pViewports[pViewports_indx])->x);
-        proto_pViewportState_proto_pViewports_proto->set_y((&original_struct->pViewportState->pViewports[pViewports_indx])->y);
-        proto_pViewportState_proto_pViewports_proto->set_width((&original_struct->pViewportState->pViewports[pViewports_indx])->width);
-        proto_pViewportState_proto_pViewports_proto->set_height((&original_struct->pViewportState->pViewports[pViewports_indx])->height);
-        proto_pViewportState_proto_pViewports_proto->set_mindepth((&original_struct->pViewportState->pViewports[pViewports_indx])->minDepth);
-        proto_pViewportState_proto_pViewports_proto->set_maxdepth((&original_struct->pViewportState->pViewports[pViewports_indx])->maxDepth);
-      }
-    }
-    if (original_struct->pViewportState->scissorCount) {
-      proto_pViewportState_proto->set_scissorcount(original_struct->pViewportState->scissorCount);
-    }
-    if (original_struct->pViewportState->pScissors) {
-      const size_t proto_pViewportState_proto_pScissors_length = original_struct->pViewportState->scissorCount;
-      for (int pScissors_indx = 0; pScissors_indx < proto_pViewportState_proto_pScissors_length; pScissors_indx++) {
-        vvk::server::VkRect2D* proto_pViewportState_proto_pScissors_proto = proto_pViewportState_proto->add_pscissors();
-        vvk::server::VkOffset2D* proto_pViewportState_proto_pScissors_proto_offset_proto = proto_pViewportState_proto_pScissors_proto->mutable_offset();
-        proto_pViewportState_proto_pScissors_proto_offset_proto->set_x((&(&original_struct->pViewportState->pScissors[pScissors_indx])->offset)->x);
-        proto_pViewportState_proto_pScissors_proto_offset_proto->set_y((&(&original_struct->pViewportState->pScissors[pScissors_indx])->offset)->y);
-        vvk::server::VkExtent2D* proto_pViewportState_proto_pScissors_proto_extent_proto = proto_pViewportState_proto_pScissors_proto->mutable_extent();
-        proto_pViewportState_proto_pScissors_proto_extent_proto->set_width((&(&original_struct->pViewportState->pScissors[pScissors_indx])->extent)->width);
-        proto_pViewportState_proto_pScissors_proto_extent_proto->set_height((&(&original_struct->pViewportState->pScissors[pScissors_indx])->extent)->height);
-      }
-    }
+    FillProtoFromStruct(proto->mutable_pviewportstate(), original_struct->pViewportState);
   }
   if (original_struct->pRasterizationState) {
-    vvk::server::VkPipelineRasterizationStateCreateInfo* proto_pRasterizationState_proto = proto->mutable_prasterizationstate();
-    if (original_struct->pRasterizationState->pNext) {
-      // pNext chains are currently not supported
-    }
-    if (original_struct->pRasterizationState->flags) {
-      proto_pRasterizationState_proto->set_flags(original_struct->pRasterizationState->flags);
-    }
-    proto_pRasterizationState_proto->set_depthclampenable(original_struct->pRasterizationState->depthClampEnable);
-    proto_pRasterizationState_proto->set_rasterizerdiscardenable(original_struct->pRasterizationState->rasterizerDiscardEnable);
-    proto_pRasterizationState_proto->set_polygonmode(static_cast<vvk::server::VkPolygonMode>(original_struct->pRasterizationState->polygonMode));
-    if (original_struct->pRasterizationState->cullMode) {
-      proto_pRasterizationState_proto->set_cullmode(original_struct->pRasterizationState->cullMode);
-    }
-    proto_pRasterizationState_proto->set_frontface(static_cast<vvk::server::VkFrontFace>(original_struct->pRasterizationState->frontFace));
-    proto_pRasterizationState_proto->set_depthbiasenable(original_struct->pRasterizationState->depthBiasEnable);
-    proto_pRasterizationState_proto->set_depthbiasconstantfactor(original_struct->pRasterizationState->depthBiasConstantFactor);
-    proto_pRasterizationState_proto->set_depthbiasclamp(original_struct->pRasterizationState->depthBiasClamp);
-    proto_pRasterizationState_proto->set_depthbiasslopefactor(original_struct->pRasterizationState->depthBiasSlopeFactor);
-    proto_pRasterizationState_proto->set_linewidth(original_struct->pRasterizationState->lineWidth);
+    FillProtoFromStruct(proto->mutable_prasterizationstate(), original_struct->pRasterizationState);
   }
   if (original_struct->pMultisampleState) {
-    vvk::server::VkPipelineMultisampleStateCreateInfo* proto_pMultisampleState_proto = proto->mutable_pmultisamplestate();
-    if (original_struct->pMultisampleState->pNext) {
-      // pNext chains are currently not supported
-    }
-    if (original_struct->pMultisampleState->flags) {
-      proto_pMultisampleState_proto->set_flags(original_struct->pMultisampleState->flags);
-    }
-    proto_pMultisampleState_proto->set_rasterizationsamples(original_struct->pMultisampleState->rasterizationSamples);
-    proto_pMultisampleState_proto->set_sampleshadingenable(original_struct->pMultisampleState->sampleShadingEnable);
-    proto_pMultisampleState_proto->set_minsampleshading(original_struct->pMultisampleState->minSampleShading);
-    if (original_struct->pMultisampleState->pSampleMask) {
-      const size_t proto_pMultisampleState_proto_pSampleMask_length = (original_struct->pMultisampleState->rasterizationSamples + 31) / 32;
-      for (int pSampleMask_indx = 0; pSampleMask_indx < proto_pMultisampleState_proto_pSampleMask_length; pSampleMask_indx++) {
-        proto_pMultisampleState_proto->add_psamplemask(static_cast<uint32_t>(original_struct->pMultisampleState->pSampleMask[pSampleMask_indx]));
-      }
-    }
-    proto_pMultisampleState_proto->set_alphatocoverageenable(original_struct->pMultisampleState->alphaToCoverageEnable);
-    proto_pMultisampleState_proto->set_alphatooneenable(original_struct->pMultisampleState->alphaToOneEnable);
+    FillProtoFromStruct(proto->mutable_pmultisamplestate(), original_struct->pMultisampleState);
   }
   if (original_struct->pDepthStencilState) {
-    vvk::server::VkPipelineDepthStencilStateCreateInfo* proto_pDepthStencilState_proto = proto->mutable_pdepthstencilstate();
-    if (original_struct->pDepthStencilState->pNext) {
-      // pNext chains are currently not supported
-    }
-    if (original_struct->pDepthStencilState->flags) {
-      proto_pDepthStencilState_proto->set_flags(original_struct->pDepthStencilState->flags);
-    }
-    proto_pDepthStencilState_proto->set_depthtestenable(original_struct->pDepthStencilState->depthTestEnable);
-    proto_pDepthStencilState_proto->set_depthwriteenable(original_struct->pDepthStencilState->depthWriteEnable);
-    proto_pDepthStencilState_proto->set_depthcompareop(static_cast<vvk::server::VkCompareOp>(original_struct->pDepthStencilState->depthCompareOp));
-    proto_pDepthStencilState_proto->set_depthboundstestenable(original_struct->pDepthStencilState->depthBoundsTestEnable);
-    proto_pDepthStencilState_proto->set_stenciltestenable(original_struct->pDepthStencilState->stencilTestEnable);
-    vvk::server::VkStencilOpState* proto_pDepthStencilState_proto_front_proto = proto_pDepthStencilState_proto->mutable_front();
-    proto_pDepthStencilState_proto_front_proto->set_failop(static_cast<vvk::server::VkStencilOp>((&original_struct->pDepthStencilState->front)->failOp));
-    proto_pDepthStencilState_proto_front_proto->set_passop(static_cast<vvk::server::VkStencilOp>((&original_struct->pDepthStencilState->front)->passOp));
-    proto_pDepthStencilState_proto_front_proto->set_depthfailop(static_cast<vvk::server::VkStencilOp>((&original_struct->pDepthStencilState->front)->depthFailOp));
-    proto_pDepthStencilState_proto_front_proto->set_compareop(static_cast<vvk::server::VkCompareOp>((&original_struct->pDepthStencilState->front)->compareOp));
-    proto_pDepthStencilState_proto_front_proto->set_comparemask((&original_struct->pDepthStencilState->front)->compareMask);
-    proto_pDepthStencilState_proto_front_proto->set_writemask((&original_struct->pDepthStencilState->front)->writeMask);
-    proto_pDepthStencilState_proto_front_proto->set_reference((&original_struct->pDepthStencilState->front)->reference);
-    vvk::server::VkStencilOpState* proto_pDepthStencilState_proto_back_proto = proto_pDepthStencilState_proto->mutable_back();
-    proto_pDepthStencilState_proto_back_proto->set_failop(static_cast<vvk::server::VkStencilOp>((&original_struct->pDepthStencilState->back)->failOp));
-    proto_pDepthStencilState_proto_back_proto->set_passop(static_cast<vvk::server::VkStencilOp>((&original_struct->pDepthStencilState->back)->passOp));
-    proto_pDepthStencilState_proto_back_proto->set_depthfailop(static_cast<vvk::server::VkStencilOp>((&original_struct->pDepthStencilState->back)->depthFailOp));
-    proto_pDepthStencilState_proto_back_proto->set_compareop(static_cast<vvk::server::VkCompareOp>((&original_struct->pDepthStencilState->back)->compareOp));
-    proto_pDepthStencilState_proto_back_proto->set_comparemask((&original_struct->pDepthStencilState->back)->compareMask);
-    proto_pDepthStencilState_proto_back_proto->set_writemask((&original_struct->pDepthStencilState->back)->writeMask);
-    proto_pDepthStencilState_proto_back_proto->set_reference((&original_struct->pDepthStencilState->back)->reference);
-    proto_pDepthStencilState_proto->set_mindepthbounds(original_struct->pDepthStencilState->minDepthBounds);
-    proto_pDepthStencilState_proto->set_maxdepthbounds(original_struct->pDepthStencilState->maxDepthBounds);
+    FillProtoFromStruct(proto->mutable_pdepthstencilstate(), original_struct->pDepthStencilState);
   }
   if (original_struct->pColorBlendState) {
-    vvk::server::VkPipelineColorBlendStateCreateInfo* proto_pColorBlendState_proto = proto->mutable_pcolorblendstate();
-    if (original_struct->pColorBlendState->pNext) {
-      // pNext chains are currently not supported
-    }
-    if (original_struct->pColorBlendState->flags) {
-      proto_pColorBlendState_proto->set_flags(original_struct->pColorBlendState->flags);
-    }
-    proto_pColorBlendState_proto->set_logicopenable(original_struct->pColorBlendState->logicOpEnable);
-    proto_pColorBlendState_proto->set_logicop(static_cast<vvk::server::VkLogicOp>(original_struct->pColorBlendState->logicOp));
-    if (original_struct->pColorBlendState->attachmentCount) {
-      proto_pColorBlendState_proto->set_attachmentcount(original_struct->pColorBlendState->attachmentCount);
-    }
-    if (original_struct->pColorBlendState->pAttachments) {
-      const size_t proto_pColorBlendState_proto_pAttachments_length = original_struct->pColorBlendState->attachmentCount;
-      for (int pAttachments_indx = 0; pAttachments_indx < proto_pColorBlendState_proto_pAttachments_length; pAttachments_indx++) {
-        vvk::server::VkPipelineColorBlendAttachmentState* proto_pColorBlendState_proto_pAttachments_proto = proto_pColorBlendState_proto->add_pattachments();
-        proto_pColorBlendState_proto_pAttachments_proto->set_blendenable((&original_struct->pColorBlendState->pAttachments[pAttachments_indx])->blendEnable);
-        proto_pColorBlendState_proto_pAttachments_proto->set_srccolorblendfactor(static_cast<vvk::server::VkBlendFactor>((&original_struct->pColorBlendState->pAttachments[pAttachments_indx])->srcColorBlendFactor));
-        proto_pColorBlendState_proto_pAttachments_proto->set_dstcolorblendfactor(static_cast<vvk::server::VkBlendFactor>((&original_struct->pColorBlendState->pAttachments[pAttachments_indx])->dstColorBlendFactor));
-        proto_pColorBlendState_proto_pAttachments_proto->set_colorblendop(static_cast<vvk::server::VkBlendOp>((&original_struct->pColorBlendState->pAttachments[pAttachments_indx])->colorBlendOp));
-        proto_pColorBlendState_proto_pAttachments_proto->set_srcalphablendfactor(static_cast<vvk::server::VkBlendFactor>((&original_struct->pColorBlendState->pAttachments[pAttachments_indx])->srcAlphaBlendFactor));
-        proto_pColorBlendState_proto_pAttachments_proto->set_dstalphablendfactor(static_cast<vvk::server::VkBlendFactor>((&original_struct->pColorBlendState->pAttachments[pAttachments_indx])->dstAlphaBlendFactor));
-        proto_pColorBlendState_proto_pAttachments_proto->set_alphablendop(static_cast<vvk::server::VkBlendOp>((&original_struct->pColorBlendState->pAttachments[pAttachments_indx])->alphaBlendOp));
-        if ((&original_struct->pColorBlendState->pAttachments[pAttachments_indx])->colorWriteMask) {
-          proto_pColorBlendState_proto_pAttachments_proto->set_colorwritemask((&original_struct->pColorBlendState->pAttachments[pAttachments_indx])->colorWriteMask);
-        }
-      }
-    }
-    const size_t proto_pColorBlendState_proto_blendConstants_length = 4;
-    for (int blendConstants_indx = 0; blendConstants_indx < proto_pColorBlendState_proto_blendConstants_length; blendConstants_indx++) {
-      proto_pColorBlendState_proto->add_blendconstants(original_struct->pColorBlendState->blendConstants[blendConstants_indx]);
-    }
+    FillProtoFromStruct(proto->mutable_pcolorblendstate(), original_struct->pColorBlendState);
   }
   if (original_struct->pDynamicState) {
-    vvk::server::VkPipelineDynamicStateCreateInfo* proto_pDynamicState_proto = proto->mutable_pdynamicstate();
-    if (original_struct->pDynamicState->pNext) {
-      // pNext chains are currently not supported
-    }
-    if (original_struct->pDynamicState->flags) {
-      proto_pDynamicState_proto->set_flags(original_struct->pDynamicState->flags);
-    }
-    if (original_struct->pDynamicState->dynamicStateCount) {
-      proto_pDynamicState_proto->set_dynamicstatecount(original_struct->pDynamicState->dynamicStateCount);
-    }
-    const size_t proto_pDynamicState_proto_pDynamicStates_length = original_struct->pDynamicState->dynamicStateCount;
-    for (int pDynamicStates_indx = 0; pDynamicStates_indx < proto_pDynamicState_proto_pDynamicStates_length; pDynamicStates_indx++) {
-      proto_pDynamicState_proto->add_pdynamicstates(static_cast<vvk::server::VkDynamicState>(original_struct->pDynamicState->pDynamicStates[pDynamicStates_indx]));
-    }
+    FillProtoFromStruct(proto->mutable_pdynamicstate(), original_struct->pDynamicState);
   }
   if (original_struct->layout) {
     proto->set_layout(reinterpret_cast<uint64_t>(original_struct->layout));
@@ -601,19 +409,7 @@ void FillProtoFromStruct(vvk::server::VkInstanceCreateInfo* proto, const VkInsta
     proto->set_flags(original_struct->flags);
   }
   if (original_struct->pApplicationInfo) {
-    vvk::server::VkApplicationInfo* proto_pApplicationInfo_proto = proto->mutable_papplicationinfo();
-    if (original_struct->pApplicationInfo->pNext) {
-      // pNext chains are currently not supported
-    }
-    if (original_struct->pApplicationInfo->pApplicationName) {
-      proto_pApplicationInfo_proto->set_papplicationname(original_struct->pApplicationInfo->pApplicationName);
-    }
-    proto_pApplicationInfo_proto->set_applicationversion(original_struct->pApplicationInfo->applicationVersion);
-    if (original_struct->pApplicationInfo->pEngineName) {
-      proto_pApplicationInfo_proto->set_penginename(original_struct->pApplicationInfo->pEngineName);
-    }
-    proto_pApplicationInfo_proto->set_engineversion(original_struct->pApplicationInfo->engineVersion);
-    proto_pApplicationInfo_proto->set_apiversion(original_struct->pApplicationInfo->apiVersion);
+    FillProtoFromStruct(proto->mutable_papplicationinfo(), original_struct->pApplicationInfo);
   }
   if (original_struct->enabledLayerCount) {
     proto->set_enabledlayercount(original_struct->enabledLayerCount);
@@ -648,6 +444,154 @@ void FillProtoFromStruct(vvk::server::VkMemoryBarrier* proto, const VkMemoryBarr
     proto->set_dstaccessmask(original_struct->dstAccessMask);
   }
 }
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceFeatures* proto, const VkPhysicalDeviceFeatures* original_struct) {
+  proto->set_robustbufferaccess(original_struct->robustBufferAccess);
+  proto->set_fulldrawindexuint32(original_struct->fullDrawIndexUint32);
+  proto->set_imagecubearray(original_struct->imageCubeArray);
+  proto->set_independentblend(original_struct->independentBlend);
+  proto->set_geometryshader(original_struct->geometryShader);
+  proto->set_tessellationshader(original_struct->tessellationShader);
+  proto->set_samplerateshading(original_struct->sampleRateShading);
+  proto->set_dualsrcblend(original_struct->dualSrcBlend);
+  proto->set_logicop(original_struct->logicOp);
+  proto->set_multidrawindirect(original_struct->multiDrawIndirect);
+  proto->set_drawindirectfirstinstance(original_struct->drawIndirectFirstInstance);
+  proto->set_depthclamp(original_struct->depthClamp);
+  proto->set_depthbiasclamp(original_struct->depthBiasClamp);
+  proto->set_fillmodenonsolid(original_struct->fillModeNonSolid);
+  proto->set_depthbounds(original_struct->depthBounds);
+  proto->set_widelines(original_struct->wideLines);
+  proto->set_largepoints(original_struct->largePoints);
+  proto->set_alphatoone(original_struct->alphaToOne);
+  proto->set_multiviewport(original_struct->multiViewport);
+  proto->set_sampleranisotropy(original_struct->samplerAnisotropy);
+  proto->set_texturecompressionetc2(original_struct->textureCompressionETC2);
+  proto->set_texturecompressionastc_ldr(original_struct->textureCompressionASTC_LDR);
+  proto->set_texturecompressionbc(original_struct->textureCompressionBC);
+  proto->set_occlusionqueryprecise(original_struct->occlusionQueryPrecise);
+  proto->set_pipelinestatisticsquery(original_struct->pipelineStatisticsQuery);
+  proto->set_vertexpipelinestoresandatomics(original_struct->vertexPipelineStoresAndAtomics);
+  proto->set_fragmentstoresandatomics(original_struct->fragmentStoresAndAtomics);
+  proto->set_shadertessellationandgeometrypointsize(original_struct->shaderTessellationAndGeometryPointSize);
+  proto->set_shaderimagegatherextended(original_struct->shaderImageGatherExtended);
+  proto->set_shaderstorageimageextendedformats(original_struct->shaderStorageImageExtendedFormats);
+  proto->set_shaderstorageimagemultisample(original_struct->shaderStorageImageMultisample);
+  proto->set_shaderstorageimagereadwithoutformat(original_struct->shaderStorageImageReadWithoutFormat);
+  proto->set_shaderstorageimagewritewithoutformat(original_struct->shaderStorageImageWriteWithoutFormat);
+  proto->set_shaderuniformbufferarraydynamicindexing(original_struct->shaderUniformBufferArrayDynamicIndexing);
+  proto->set_shadersampledimagearraydynamicindexing(original_struct->shaderSampledImageArrayDynamicIndexing);
+  proto->set_shaderstoragebufferarraydynamicindexing(original_struct->shaderStorageBufferArrayDynamicIndexing);
+  proto->set_shaderstorageimagearraydynamicindexing(original_struct->shaderStorageImageArrayDynamicIndexing);
+  proto->set_shaderclipdistance(original_struct->shaderClipDistance);
+  proto->set_shaderculldistance(original_struct->shaderCullDistance);
+  proto->set_shaderfloat64(original_struct->shaderFloat64);
+  proto->set_shaderint64(original_struct->shaderInt64);
+  proto->set_shaderint16(original_struct->shaderInt16);
+  proto->set_shaderresourceresidency(original_struct->shaderResourceResidency);
+  proto->set_shaderresourceminlod(original_struct->shaderResourceMinLod);
+  proto->set_sparsebinding(original_struct->sparseBinding);
+  proto->set_sparseresidencybuffer(original_struct->sparseResidencyBuffer);
+  proto->set_sparseresidencyimage2d(original_struct->sparseResidencyImage2D);
+  proto->set_sparseresidencyimage3d(original_struct->sparseResidencyImage3D);
+  proto->set_sparseresidency2samples(original_struct->sparseResidency2Samples);
+  proto->set_sparseresidency4samples(original_struct->sparseResidency4Samples);
+  proto->set_sparseresidency8samples(original_struct->sparseResidency8Samples);
+  proto->set_sparseresidency16samples(original_struct->sparseResidency16Samples);
+  proto->set_sparseresidencyaliased(original_struct->sparseResidencyAliased);
+  proto->set_variablemultisamplerate(original_struct->variableMultisampleRate);
+  proto->set_inheritedqueries(original_struct->inheritedQueries);
+}
+void FillProtoFromStruct(vvk::server::VkPipelineColorBlendAttachmentState* proto, const VkPipelineColorBlendAttachmentState* original_struct) {
+  proto->set_blendenable(original_struct->blendEnable);
+  proto->set_srccolorblendfactor(static_cast<vvk::server::VkBlendFactor>(original_struct->srcColorBlendFactor));
+  proto->set_dstcolorblendfactor(static_cast<vvk::server::VkBlendFactor>(original_struct->dstColorBlendFactor));
+  proto->set_colorblendop(static_cast<vvk::server::VkBlendOp>(original_struct->colorBlendOp));
+  proto->set_srcalphablendfactor(static_cast<vvk::server::VkBlendFactor>(original_struct->srcAlphaBlendFactor));
+  proto->set_dstalphablendfactor(static_cast<vvk::server::VkBlendFactor>(original_struct->dstAlphaBlendFactor));
+  proto->set_alphablendop(static_cast<vvk::server::VkBlendOp>(original_struct->alphaBlendOp));
+  if (original_struct->colorWriteMask) {
+    proto->set_colorwritemask(original_struct->colorWriteMask);
+  }
+}
+void FillProtoFromStruct(vvk::server::VkPipelineColorBlendStateCreateInfo* proto, const VkPipelineColorBlendStateCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  proto->set_logicopenable(original_struct->logicOpEnable);
+  proto->set_logicop(static_cast<vvk::server::VkLogicOp>(original_struct->logicOp));
+  if (original_struct->attachmentCount) {
+    proto->set_attachmentcount(original_struct->attachmentCount);
+  }
+  if (original_struct->pAttachments) {
+    const size_t proto_pAttachments_length = original_struct->attachmentCount;
+    for (int pAttachments_indx = 0; pAttachments_indx < proto_pAttachments_length; pAttachments_indx++) {
+      FillProtoFromStruct(proto->add_pattachments(), (&original_struct->pAttachments[pAttachments_indx]));
+    }
+  }
+  const size_t proto_blendConstants_length = 4;
+  for (int blendConstants_indx = 0; blendConstants_indx < proto_blendConstants_length; blendConstants_indx++) {
+    proto->add_blendconstants(original_struct->blendConstants[blendConstants_indx]);
+  }
+}
+void FillProtoFromStruct(vvk::server::VkPipelineDepthStencilStateCreateInfo* proto, const VkPipelineDepthStencilStateCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  proto->set_depthtestenable(original_struct->depthTestEnable);
+  proto->set_depthwriteenable(original_struct->depthWriteEnable);
+  proto->set_depthcompareop(static_cast<vvk::server::VkCompareOp>(original_struct->depthCompareOp));
+  proto->set_depthboundstestenable(original_struct->depthBoundsTestEnable);
+  proto->set_stenciltestenable(original_struct->stencilTestEnable);
+  vvk::server::VkStencilOpState* proto_front_proto = proto->mutable_front();
+  proto_front_proto->set_failop(static_cast<vvk::server::VkStencilOp>((&original_struct->front)->failOp));
+  proto_front_proto->set_passop(static_cast<vvk::server::VkStencilOp>((&original_struct->front)->passOp));
+  proto_front_proto->set_depthfailop(static_cast<vvk::server::VkStencilOp>((&original_struct->front)->depthFailOp));
+  proto_front_proto->set_compareop(static_cast<vvk::server::VkCompareOp>((&original_struct->front)->compareOp));
+  proto_front_proto->set_comparemask((&original_struct->front)->compareMask);
+  proto_front_proto->set_writemask((&original_struct->front)->writeMask);
+  proto_front_proto->set_reference((&original_struct->front)->reference);
+  vvk::server::VkStencilOpState* proto_back_proto = proto->mutable_back();
+  proto_back_proto->set_failop(static_cast<vvk::server::VkStencilOp>((&original_struct->back)->failOp));
+  proto_back_proto->set_passop(static_cast<vvk::server::VkStencilOp>((&original_struct->back)->passOp));
+  proto_back_proto->set_depthfailop(static_cast<vvk::server::VkStencilOp>((&original_struct->back)->depthFailOp));
+  proto_back_proto->set_compareop(static_cast<vvk::server::VkCompareOp>((&original_struct->back)->compareOp));
+  proto_back_proto->set_comparemask((&original_struct->back)->compareMask);
+  proto_back_proto->set_writemask((&original_struct->back)->writeMask);
+  proto_back_proto->set_reference((&original_struct->back)->reference);
+  proto->set_mindepthbounds(original_struct->minDepthBounds);
+  proto->set_maxdepthbounds(original_struct->maxDepthBounds);
+}
+void FillProtoFromStruct(vvk::server::VkPipelineDynamicStateCreateInfo* proto, const VkPipelineDynamicStateCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  if (original_struct->dynamicStateCount) {
+    proto->set_dynamicstatecount(original_struct->dynamicStateCount);
+  }
+  const size_t proto_pDynamicStates_length = original_struct->dynamicStateCount;
+  for (int pDynamicStates_indx = 0; pDynamicStates_indx < proto_pDynamicStates_length; pDynamicStates_indx++) {
+    proto->add_pdynamicstates(static_cast<vvk::server::VkDynamicState>(original_struct->pDynamicStates[pDynamicStates_indx]));
+  }
+}
+void FillProtoFromStruct(vvk::server::VkPipelineInputAssemblyStateCreateInfo* proto, const VkPipelineInputAssemblyStateCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  proto->set_topology(static_cast<vvk::server::VkPrimitiveTopology>(original_struct->topology));
+  proto->set_primitiverestartenable(original_struct->primitiveRestartEnable);
+}
 void FillProtoFromStruct(vvk::server::VkPipelineLayoutCreateInfo* proto, const VkPipelineLayoutCreateInfo* original_struct) {
   if (original_struct->pNext) {
     // pNext chains are currently not supported
@@ -667,11 +611,125 @@ void FillProtoFromStruct(vvk::server::VkPipelineLayoutCreateInfo* proto, const V
   }
   const size_t proto_pPushConstantRanges_length = original_struct->pushConstantRangeCount;
   for (int pPushConstantRanges_indx = 0; pPushConstantRanges_indx < proto_pPushConstantRanges_length; pPushConstantRanges_indx++) {
-    vvk::server::VkPushConstantRange* proto_pPushConstantRanges_proto = proto->add_ppushconstantranges();
-    proto_pPushConstantRanges_proto->set_stageflags((&original_struct->pPushConstantRanges[pPushConstantRanges_indx])->stageFlags);
-    proto_pPushConstantRanges_proto->set_offset((&original_struct->pPushConstantRanges[pPushConstantRanges_indx])->offset);
-    proto_pPushConstantRanges_proto->set_size((&original_struct->pPushConstantRanges[pPushConstantRanges_indx])->size);
+    FillProtoFromStruct(proto->add_ppushconstantranges(), (&original_struct->pPushConstantRanges[pPushConstantRanges_indx]));
   }
+}
+void FillProtoFromStruct(vvk::server::VkPipelineMultisampleStateCreateInfo* proto, const VkPipelineMultisampleStateCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  proto->set_rasterizationsamples(original_struct->rasterizationSamples);
+  proto->set_sampleshadingenable(original_struct->sampleShadingEnable);
+  proto->set_minsampleshading(original_struct->minSampleShading);
+  if (original_struct->pSampleMask) {
+    const size_t proto_pSampleMask_length = (original_struct->rasterizationSamples + 31) / 32;
+    for (int pSampleMask_indx = 0; pSampleMask_indx < proto_pSampleMask_length; pSampleMask_indx++) {
+      proto->add_psamplemask(static_cast<uint32_t>(original_struct->pSampleMask[pSampleMask_indx]));
+    }
+  }
+  proto->set_alphatocoverageenable(original_struct->alphaToCoverageEnable);
+  proto->set_alphatooneenable(original_struct->alphaToOneEnable);
+}
+void FillProtoFromStruct(vvk::server::VkPipelineRasterizationStateCreateInfo* proto, const VkPipelineRasterizationStateCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  proto->set_depthclampenable(original_struct->depthClampEnable);
+  proto->set_rasterizerdiscardenable(original_struct->rasterizerDiscardEnable);
+  proto->set_polygonmode(static_cast<vvk::server::VkPolygonMode>(original_struct->polygonMode));
+  if (original_struct->cullMode) {
+    proto->set_cullmode(original_struct->cullMode);
+  }
+  proto->set_frontface(static_cast<vvk::server::VkFrontFace>(original_struct->frontFace));
+  proto->set_depthbiasenable(original_struct->depthBiasEnable);
+  proto->set_depthbiasconstantfactor(original_struct->depthBiasConstantFactor);
+  proto->set_depthbiasclamp(original_struct->depthBiasClamp);
+  proto->set_depthbiasslopefactor(original_struct->depthBiasSlopeFactor);
+  proto->set_linewidth(original_struct->lineWidth);
+}
+void FillProtoFromStruct(vvk::server::VkPipelineShaderStageCreateInfo* proto, const VkPipelineShaderStageCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  proto->set_stage(original_struct->stage);
+  if (original_struct->module) {
+    proto->set_module(reinterpret_cast<uint64_t>(original_struct->module));
+  }
+  proto->set_pname(original_struct->pName);
+  if (original_struct->pSpecializationInfo) {
+    FillProtoFromStruct(proto->mutable_pspecializationinfo(), original_struct->pSpecializationInfo);
+  }
+}
+void FillProtoFromStruct(vvk::server::VkPipelineTessellationStateCreateInfo* proto, const VkPipelineTessellationStateCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  proto->set_patchcontrolpoints(original_struct->patchControlPoints);
+}
+void FillProtoFromStruct(vvk::server::VkPipelineVertexInputStateCreateInfo* proto, const VkPipelineVertexInputStateCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  if (original_struct->vertexBindingDescriptionCount) {
+    proto->set_vertexbindingdescriptioncount(original_struct->vertexBindingDescriptionCount);
+  }
+  const size_t proto_pVertexBindingDescriptions_length = original_struct->vertexBindingDescriptionCount;
+  for (int pVertexBindingDescriptions_indx = 0; pVertexBindingDescriptions_indx < proto_pVertexBindingDescriptions_length; pVertexBindingDescriptions_indx++) {
+    FillProtoFromStruct(proto->add_pvertexbindingdescriptions(), (&original_struct->pVertexBindingDescriptions[pVertexBindingDescriptions_indx]));
+  }
+  if (original_struct->vertexAttributeDescriptionCount) {
+    proto->set_vertexattributedescriptioncount(original_struct->vertexAttributeDescriptionCount);
+  }
+  const size_t proto_pVertexAttributeDescriptions_length = original_struct->vertexAttributeDescriptionCount;
+  for (int pVertexAttributeDescriptions_indx = 0; pVertexAttributeDescriptions_indx < proto_pVertexAttributeDescriptions_length; pVertexAttributeDescriptions_indx++) {
+    FillProtoFromStruct(proto->add_pvertexattributedescriptions(), (&original_struct->pVertexAttributeDescriptions[pVertexAttributeDescriptions_indx]));
+  }
+}
+void FillProtoFromStruct(vvk::server::VkPipelineViewportStateCreateInfo* proto, const VkPipelineViewportStateCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // pNext chains are currently not supported
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  if (original_struct->viewportCount) {
+    proto->set_viewportcount(original_struct->viewportCount);
+  }
+  if (original_struct->pViewports) {
+    const size_t proto_pViewports_length = original_struct->viewportCount;
+    for (int pViewports_indx = 0; pViewports_indx < proto_pViewports_length; pViewports_indx++) {
+      FillProtoFromStruct(proto->add_pviewports(), (&original_struct->pViewports[pViewports_indx]));
+    }
+  }
+  if (original_struct->scissorCount) {
+    proto->set_scissorcount(original_struct->scissorCount);
+  }
+  if (original_struct->pScissors) {
+    const size_t proto_pScissors_length = original_struct->scissorCount;
+    for (int pScissors_indx = 0; pScissors_indx < proto_pScissors_length; pScissors_indx++) {
+      FillProtoFromStruct(proto->add_pscissors(), (&original_struct->pScissors[pScissors_indx]));
+    }
+  }
+}
+void FillProtoFromStruct(vvk::server::VkPushConstantRange* proto, const VkPushConstantRange* original_struct) {
+  proto->set_stageflags(original_struct->stageFlags);
+  proto->set_offset(original_struct->offset);
+  proto->set_size(original_struct->size);
 }
 void FillProtoFromStruct(vvk::server::VkRect2D* proto, const VkRect2D* original_struct) {
   vvk::server::VkOffset2D* proto_offset_proto = proto->mutable_offset();
@@ -699,23 +757,7 @@ void FillProtoFromStruct(vvk::server::VkRenderPassBeginInfo* proto, const VkRend
   }
   const size_t proto_pClearValues_length = original_struct->clearValueCount;
   for (int pClearValues_indx = 0; pClearValues_indx < proto_pClearValues_length; pClearValues_indx++) {
-    vvk::server::VkClearValue* proto_pClearValues_proto = proto->add_pclearvalues();
-    vvk::server::VkClearColorValue* proto_pClearValues_proto_color_proto = proto_pClearValues_proto->mutable_color();
-    const size_t proto_pClearValues_proto_color_proto_float32_length = 4;
-    for (int float32_indx = 0; float32_indx < proto_pClearValues_proto_color_proto_float32_length; float32_indx++) {
-      proto_pClearValues_proto_color_proto->add_float32((&(&original_struct->pClearValues[pClearValues_indx])->color)->float32[float32_indx]);
-    }
-    const size_t proto_pClearValues_proto_color_proto_int32_length = 4;
-    for (int int32_indx = 0; int32_indx < proto_pClearValues_proto_color_proto_int32_length; int32_indx++) {
-      proto_pClearValues_proto_color_proto->add_int32((&(&original_struct->pClearValues[pClearValues_indx])->color)->int32[int32_indx]);
-    }
-    const size_t proto_pClearValues_proto_color_proto_uint32_length = 4;
-    for (int uint32_indx = 0; uint32_indx < proto_pClearValues_proto_color_proto_uint32_length; uint32_indx++) {
-      proto_pClearValues_proto_color_proto->add_uint32((&(&original_struct->pClearValues[pClearValues_indx])->color)->uint32[uint32_indx]);
-    }
-    vvk::server::VkClearDepthStencilValue* proto_pClearValues_proto_depthStencil_proto = proto_pClearValues_proto->mutable_depthstencil();
-    proto_pClearValues_proto_depthStencil_proto->set_depth((&(&original_struct->pClearValues[pClearValues_indx])->depthStencil)->depth);
-    proto_pClearValues_proto_depthStencil_proto->set_stencil((&(&original_struct->pClearValues[pClearValues_indx])->depthStencil)->stencil);
+    FillProtoFromStruct(proto->add_pclearvalues(), (&original_struct->pClearValues[pClearValues_indx]));
   }
 }
 void FillProtoFromStruct(vvk::server::VkRenderPassCreateInfo* proto, const VkRenderPassCreateInfo* original_struct) {
@@ -730,89 +772,19 @@ void FillProtoFromStruct(vvk::server::VkRenderPassCreateInfo* proto, const VkRen
   }
   const size_t proto_pAttachments_length = original_struct->attachmentCount;
   for (int pAttachments_indx = 0; pAttachments_indx < proto_pAttachments_length; pAttachments_indx++) {
-    vvk::server::VkAttachmentDescription* proto_pAttachments_proto = proto->add_pattachments();
-    if ((&original_struct->pAttachments[pAttachments_indx])->flags) {
-      proto_pAttachments_proto->set_flags((&original_struct->pAttachments[pAttachments_indx])->flags);
-    }
-    proto_pAttachments_proto->set_format(static_cast<vvk::server::VkFormat>((&original_struct->pAttachments[pAttachments_indx])->format));
-    proto_pAttachments_proto->set_samples((&original_struct->pAttachments[pAttachments_indx])->samples);
-    proto_pAttachments_proto->set_loadop(static_cast<vvk::server::VkAttachmentLoadOp>((&original_struct->pAttachments[pAttachments_indx])->loadOp));
-    proto_pAttachments_proto->set_storeop(static_cast<vvk::server::VkAttachmentStoreOp>((&original_struct->pAttachments[pAttachments_indx])->storeOp));
-    proto_pAttachments_proto->set_stencilloadop(static_cast<vvk::server::VkAttachmentLoadOp>((&original_struct->pAttachments[pAttachments_indx])->stencilLoadOp));
-    proto_pAttachments_proto->set_stencilstoreop(static_cast<vvk::server::VkAttachmentStoreOp>((&original_struct->pAttachments[pAttachments_indx])->stencilStoreOp));
-    proto_pAttachments_proto->set_initiallayout(static_cast<vvk::server::VkImageLayout>((&original_struct->pAttachments[pAttachments_indx])->initialLayout));
-    proto_pAttachments_proto->set_finallayout(static_cast<vvk::server::VkImageLayout>((&original_struct->pAttachments[pAttachments_indx])->finalLayout));
+    FillProtoFromStruct(proto->add_pattachments(), (&original_struct->pAttachments[pAttachments_indx]));
   }
   proto->set_subpasscount(original_struct->subpassCount);
   const size_t proto_pSubpasses_length = original_struct->subpassCount;
   for (int pSubpasses_indx = 0; pSubpasses_indx < proto_pSubpasses_length; pSubpasses_indx++) {
-    vvk::server::VkSubpassDescription* proto_pSubpasses_proto = proto->add_psubpasses();
-    if ((&original_struct->pSubpasses[pSubpasses_indx])->flags) {
-      proto_pSubpasses_proto->set_flags((&original_struct->pSubpasses[pSubpasses_indx])->flags);
-    }
-    proto_pSubpasses_proto->set_pipelinebindpoint(static_cast<vvk::server::VkPipelineBindPoint>((&original_struct->pSubpasses[pSubpasses_indx])->pipelineBindPoint));
-    if ((&original_struct->pSubpasses[pSubpasses_indx])->inputAttachmentCount) {
-      proto_pSubpasses_proto->set_inputattachmentcount((&original_struct->pSubpasses[pSubpasses_indx])->inputAttachmentCount);
-    }
-    const size_t proto_pSubpasses_proto_pInputAttachments_length = (&original_struct->pSubpasses[pSubpasses_indx])->inputAttachmentCount;
-    for (int pInputAttachments_indx = 0; pInputAttachments_indx < proto_pSubpasses_proto_pInputAttachments_length; pInputAttachments_indx++) {
-      vvk::server::VkAttachmentReference* proto_pSubpasses_proto_pInputAttachments_proto = proto_pSubpasses_proto->add_pinputattachments();
-      proto_pSubpasses_proto_pInputAttachments_proto->set_attachment((&(&original_struct->pSubpasses[pSubpasses_indx])->pInputAttachments[pInputAttachments_indx])->attachment);
-      proto_pSubpasses_proto_pInputAttachments_proto->set_layout(static_cast<vvk::server::VkImageLayout>((&(&original_struct->pSubpasses[pSubpasses_indx])->pInputAttachments[pInputAttachments_indx])->layout));
-    }
-    if ((&original_struct->pSubpasses[pSubpasses_indx])->colorAttachmentCount) {
-      proto_pSubpasses_proto->set_colorattachmentcount((&original_struct->pSubpasses[pSubpasses_indx])->colorAttachmentCount);
-    }
-    const size_t proto_pSubpasses_proto_pColorAttachments_length = (&original_struct->pSubpasses[pSubpasses_indx])->colorAttachmentCount;
-    for (int pColorAttachments_indx = 0; pColorAttachments_indx < proto_pSubpasses_proto_pColorAttachments_length; pColorAttachments_indx++) {
-      vvk::server::VkAttachmentReference* proto_pSubpasses_proto_pColorAttachments_proto = proto_pSubpasses_proto->add_pcolorattachments();
-      proto_pSubpasses_proto_pColorAttachments_proto->set_attachment((&(&original_struct->pSubpasses[pSubpasses_indx])->pColorAttachments[pColorAttachments_indx])->attachment);
-      proto_pSubpasses_proto_pColorAttachments_proto->set_layout(static_cast<vvk::server::VkImageLayout>((&(&original_struct->pSubpasses[pSubpasses_indx])->pColorAttachments[pColorAttachments_indx])->layout));
-    }
-    if ((&original_struct->pSubpasses[pSubpasses_indx])->pResolveAttachments) {
-      const size_t proto_pSubpasses_proto_pResolveAttachments_length = (&original_struct->pSubpasses[pSubpasses_indx])->colorAttachmentCount;
-      for (int pResolveAttachments_indx = 0; pResolveAttachments_indx < proto_pSubpasses_proto_pResolveAttachments_length; pResolveAttachments_indx++) {
-        vvk::server::VkAttachmentReference* proto_pSubpasses_proto_pResolveAttachments_proto = proto_pSubpasses_proto->add_presolveattachments();
-        proto_pSubpasses_proto_pResolveAttachments_proto->set_attachment((&(&original_struct->pSubpasses[pSubpasses_indx])->pResolveAttachments[pResolveAttachments_indx])->attachment);
-        proto_pSubpasses_proto_pResolveAttachments_proto->set_layout(static_cast<vvk::server::VkImageLayout>((&(&original_struct->pSubpasses[pSubpasses_indx])->pResolveAttachments[pResolveAttachments_indx])->layout));
-      }
-    }
-    if ((&original_struct->pSubpasses[pSubpasses_indx])->pDepthStencilAttachment) {
-      vvk::server::VkAttachmentReference* proto_pSubpasses_proto_pDepthStencilAttachment_proto = proto_pSubpasses_proto->mutable_pdepthstencilattachment();
-      proto_pSubpasses_proto_pDepthStencilAttachment_proto->set_attachment((&original_struct->pSubpasses[pSubpasses_indx])->pDepthStencilAttachment->attachment);
-      proto_pSubpasses_proto_pDepthStencilAttachment_proto->set_layout(static_cast<vvk::server::VkImageLayout>((&original_struct->pSubpasses[pSubpasses_indx])->pDepthStencilAttachment->layout));
-    }
-    if ((&original_struct->pSubpasses[pSubpasses_indx])->preserveAttachmentCount) {
-      proto_pSubpasses_proto->set_preserveattachmentcount((&original_struct->pSubpasses[pSubpasses_indx])->preserveAttachmentCount);
-    }
-    const size_t proto_pSubpasses_proto_pPreserveAttachments_length = (&original_struct->pSubpasses[pSubpasses_indx])->preserveAttachmentCount;
-    for (int pPreserveAttachments_indx = 0; pPreserveAttachments_indx < proto_pSubpasses_proto_pPreserveAttachments_length; pPreserveAttachments_indx++) {
-      proto_pSubpasses_proto->add_ppreserveattachments((&original_struct->pSubpasses[pSubpasses_indx])->pPreserveAttachments[pPreserveAttachments_indx]);
-    }
+    FillProtoFromStruct(proto->add_psubpasses(), (&original_struct->pSubpasses[pSubpasses_indx]));
   }
   if (original_struct->dependencyCount) {
     proto->set_dependencycount(original_struct->dependencyCount);
   }
   const size_t proto_pDependencies_length = original_struct->dependencyCount;
   for (int pDependencies_indx = 0; pDependencies_indx < proto_pDependencies_length; pDependencies_indx++) {
-    vvk::server::VkSubpassDependency* proto_pDependencies_proto = proto->add_pdependencies();
-    proto_pDependencies_proto->set_srcsubpass((&original_struct->pDependencies[pDependencies_indx])->srcSubpass);
-    proto_pDependencies_proto->set_dstsubpass((&original_struct->pDependencies[pDependencies_indx])->dstSubpass);
-    if ((&original_struct->pDependencies[pDependencies_indx])->srcStageMask) {
-      proto_pDependencies_proto->set_srcstagemask((&original_struct->pDependencies[pDependencies_indx])->srcStageMask);
-    }
-    if ((&original_struct->pDependencies[pDependencies_indx])->dstStageMask) {
-      proto_pDependencies_proto->set_dststagemask((&original_struct->pDependencies[pDependencies_indx])->dstStageMask);
-    }
-    if ((&original_struct->pDependencies[pDependencies_indx])->srcAccessMask) {
-      proto_pDependencies_proto->set_srcaccessmask((&original_struct->pDependencies[pDependencies_indx])->srcAccessMask);
-    }
-    if ((&original_struct->pDependencies[pDependencies_indx])->dstAccessMask) {
-      proto_pDependencies_proto->set_dstaccessmask((&original_struct->pDependencies[pDependencies_indx])->dstAccessMask);
-    }
-    if ((&original_struct->pDependencies[pDependencies_indx])->dependencyFlags) {
-      proto_pDependencies_proto->set_dependencyflags((&original_struct->pDependencies[pDependencies_indx])->dependencyFlags);
-    }
+    FillProtoFromStruct(proto->add_pdependencies(), (&original_struct->pDependencies[pDependencies_indx]));
   }
 }
 void FillProtoFromStruct(vvk::server::VkSemaphoreCreateInfo* proto, const VkSemaphoreCreateInfo* original_struct) {
@@ -835,6 +807,25 @@ void FillProtoFromStruct(vvk::server::VkShaderModuleCreateInfo* proto, const VkS
   for (int pCode_indx = 0; pCode_indx < proto_pCode_length; pCode_indx++) {
     proto->add_pcode(original_struct->pCode[pCode_indx]);
   }
+}
+void FillProtoFromStruct(vvk::server::VkSpecializationInfo* proto, const VkSpecializationInfo* original_struct) {
+  if (original_struct->mapEntryCount) {
+    proto->set_mapentrycount(original_struct->mapEntryCount);
+  }
+  const size_t proto_pMapEntries_length = original_struct->mapEntryCount;
+  for (int pMapEntries_indx = 0; pMapEntries_indx < proto_pMapEntries_length; pMapEntries_indx++) {
+    FillProtoFromStruct(proto->add_pmapentries(), (&original_struct->pMapEntries[pMapEntries_indx]));
+  }
+  if (original_struct->dataSize) {
+    proto->set_datasize(original_struct->dataSize);
+  }
+  const size_t proto_pData_length = original_struct->dataSize;
+  proto->set_pdata(original_struct->pData, proto_pData_length);
+}
+void FillProtoFromStruct(vvk::server::VkSpecializationMapEntry* proto, const VkSpecializationMapEntry* original_struct) {
+  proto->set_constantid(original_struct->constantID);
+  proto->set_offset(original_struct->offset);
+  proto->set_size(original_struct->size);
 }
 void FillProtoFromStruct(vvk::server::VkSubmitInfo* proto, const VkSubmitInfo* original_struct) {
   if (original_struct->pNext) {
@@ -865,6 +856,72 @@ void FillProtoFromStruct(vvk::server::VkSubmitInfo* proto, const VkSubmitInfo* o
   for (int pSignalSemaphores_indx = 0; pSignalSemaphores_indx < proto_pSignalSemaphores_length; pSignalSemaphores_indx++) {
     proto->add_psignalsemaphores(reinterpret_cast<uint64_t>(original_struct->pSignalSemaphores[pSignalSemaphores_indx]));
   }
+}
+void FillProtoFromStruct(vvk::server::VkSubpassDependency* proto, const VkSubpassDependency* original_struct) {
+  proto->set_srcsubpass(original_struct->srcSubpass);
+  proto->set_dstsubpass(original_struct->dstSubpass);
+  if (original_struct->srcStageMask) {
+    proto->set_srcstagemask(original_struct->srcStageMask);
+  }
+  if (original_struct->dstStageMask) {
+    proto->set_dststagemask(original_struct->dstStageMask);
+  }
+  if (original_struct->srcAccessMask) {
+    proto->set_srcaccessmask(original_struct->srcAccessMask);
+  }
+  if (original_struct->dstAccessMask) {
+    proto->set_dstaccessmask(original_struct->dstAccessMask);
+  }
+  if (original_struct->dependencyFlags) {
+    proto->set_dependencyflags(original_struct->dependencyFlags);
+  }
+}
+void FillProtoFromStruct(vvk::server::VkSubpassDescription* proto, const VkSubpassDescription* original_struct) {
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  proto->set_pipelinebindpoint(static_cast<vvk::server::VkPipelineBindPoint>(original_struct->pipelineBindPoint));
+  if (original_struct->inputAttachmentCount) {
+    proto->set_inputattachmentcount(original_struct->inputAttachmentCount);
+  }
+  const size_t proto_pInputAttachments_length = original_struct->inputAttachmentCount;
+  for (int pInputAttachments_indx = 0; pInputAttachments_indx < proto_pInputAttachments_length; pInputAttachments_indx++) {
+    FillProtoFromStruct(proto->add_pinputattachments(), (&original_struct->pInputAttachments[pInputAttachments_indx]));
+  }
+  if (original_struct->colorAttachmentCount) {
+    proto->set_colorattachmentcount(original_struct->colorAttachmentCount);
+  }
+  const size_t proto_pColorAttachments_length = original_struct->colorAttachmentCount;
+  for (int pColorAttachments_indx = 0; pColorAttachments_indx < proto_pColorAttachments_length; pColorAttachments_indx++) {
+    FillProtoFromStruct(proto->add_pcolorattachments(), (&original_struct->pColorAttachments[pColorAttachments_indx]));
+  }
+  if (original_struct->pResolveAttachments) {
+    const size_t proto_pResolveAttachments_length = original_struct->colorAttachmentCount;
+    for (int pResolveAttachments_indx = 0; pResolveAttachments_indx < proto_pResolveAttachments_length; pResolveAttachments_indx++) {
+      FillProtoFromStruct(proto->add_presolveattachments(), (&original_struct->pResolveAttachments[pResolveAttachments_indx]));
+    }
+  }
+  if (original_struct->pDepthStencilAttachment) {
+    FillProtoFromStruct(proto->mutable_pdepthstencilattachment(), original_struct->pDepthStencilAttachment);
+  }
+  if (original_struct->preserveAttachmentCount) {
+    proto->set_preserveattachmentcount(original_struct->preserveAttachmentCount);
+  }
+  const size_t proto_pPreserveAttachments_length = original_struct->preserveAttachmentCount;
+  for (int pPreserveAttachments_indx = 0; pPreserveAttachments_indx < proto_pPreserveAttachments_length; pPreserveAttachments_indx++) {
+    proto->add_ppreserveattachments(original_struct->pPreserveAttachments[pPreserveAttachments_indx]);
+  }
+}
+void FillProtoFromStruct(vvk::server::VkVertexInputAttributeDescription* proto, const VkVertexInputAttributeDescription* original_struct) {
+  proto->set_location(original_struct->location);
+  proto->set_binding(original_struct->binding);
+  proto->set_format(static_cast<vvk::server::VkFormat>(original_struct->format));
+  proto->set_offset(original_struct->offset);
+}
+void FillProtoFromStruct(vvk::server::VkVertexInputBindingDescription* proto, const VkVertexInputBindingDescription* original_struct) {
+  proto->set_binding(original_struct->binding);
+  proto->set_stride(original_struct->stride);
+  proto->set_inputrate(static_cast<vvk::server::VkVertexInputRate>(original_struct->inputRate));
 }
 void FillProtoFromStruct(vvk::server::VkViewport* proto, const VkViewport* original_struct) {
   proto->set_x(original_struct->x);

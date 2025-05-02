@@ -402,9 +402,9 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
     elif member.pointer and member.const and member.type in generator.vk.structs:
         if member.length is None:
             out.append(
-                f'  vvk::server::{member.type}* {name}_{member.name}_proto = {name}->mutable_{member.name.lower()}();\n')
-            out.append(fill_proto_from_struct(generator,
-                                              member.type, f'{name}_{member.name}_proto', f'{struct_accessor}->{member.name}'))
+                f'  FillProtoFromStruct({name}->mutable_{member.name.lower()}(), {struct_accessor}->{member.name});\n')
+            generator.required_functions.add(
+                f'FillProtoFromStruct/{member.type}')
         else:
             out.append(access_length_member_from_struct(
                 generator, struct_type, name, struct_accessor, member))
@@ -412,9 +412,9 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
             out.append(
                 f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
             out.append(
-                f'    vvk::server::{member.type}* {name}_{member.name}_proto = {name}->add_{member.name.lower()}();\n')
-            out.append(indent(fill_proto_from_struct(generator,
-                                                     member.type, f'{name}_{member.name}_proto', f'(&{struct_accessor}->{member.name}[{index_name}])'), 2))
+                f'    FillProtoFromStruct({name}->add_{member.name.lower()}(), (&{struct_accessor}->{member.name}[{index_name}]));\n')
+            generator.required_functions.add(
+                f'FillProtoFromStruct/{member.type}')
             out.append('  }\n')
     elif not member.pointer and member.type in generator.vk.structs:
         if member.length is None:
