@@ -388,6 +388,15 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
     elif member.type == 'char' and member.fixedSizeArray:
         out.append(
             f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
+    elif 'const char* const*' in member.cDeclaration:
+        out.append(access_length_member_from_struct(
+            generator, struct_type, name, struct_accessor, member))
+        index_name = f'{member.name}_indx'
+        out.append(
+            f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
+        out.append(
+            f'    {name}->add_{member.name.lower()}({struct_accessor}->{member.name}[{index_name}]);\n')
+        out.append('  }\n')
     elif member.type in TRIVIAL_TYPES:
         type_info = TRIVIAL_TYPES[member.type]
         if member.length is None:
@@ -436,7 +445,8 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
             out.append(
                 f'    {name}->add_{member.name.lower()}(static_cast<vvk::server::{member.type}>({struct_accessor}->{member.name}[{index_name}]));\n')
             out.append('  }\n')
-    elif member.pointer and member.const and member.type in generator.vk.structs:
+    elif member.pointer and member.type in generator.vk.structs:
+        assert (member.const)
         if member.length is None:
             out.append(
                 f'  FillProtoFromStruct({name}->mutable_{member.name.lower()}(), {struct_accessor}->{member.name});\n')
@@ -453,6 +463,27 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
             generator.required_functions.add(
                 f'FillProtoFromStruct/{member.type}')
             out.append('  }\n')
+    elif member.pointer and member.type in generator.vk.handles:
+        assert (member.const)
+        out.append(access_length_member_from_struct(
+            generator, struct_type, name, struct_accessor, member))
+        index_name = f'{member.name}_indx'
+        out.append(
+            f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
+        out.append(
+            f'    {name}->add_{member.name.lower()}(reinterpret_cast<uint64_t>({struct_accessor}->{member.name}[{index_name}]));\n')
+        out.append('  }\n')
+    elif member.pointer:
+        assert (member.const)
+        if member.type == 'void':
+            assert (member.length is not None)
+            out.append(access_length_member_from_struct(
+                generator, struct_type, name, struct_accessor, member))
+            out.append(
+                f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name}, {name}_{member.name}_length);\n')
+        else:
+            out.append(
+                f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
     elif not member.pointer and member.type in generator.vk.structs:
         if member.length is None:
             out.append(
@@ -472,38 +503,9 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
             generator.required_functions.add(
                 f'FillProtoFromStruct/{member.type}')
             out.append('  }\n')
-    elif member.pointer and member.type in generator.vk.handles:
-        assert (member.const)
-        out.append(access_length_member_from_struct(
-            generator, struct_type, name, struct_accessor, member))
-        index_name = f'{member.name}_indx'
-        out.append(
-            f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
-        out.append(
-            f'    {name}->add_{member.name.lower()}(reinterpret_cast<uint64_t>({struct_accessor}->{member.name}[{index_name}]));\n')
-        out.append('  }\n')
     elif not member.pointer and member.type in generator.vk.handles:
         out.append(
             f'  {name}->set_{member.name.lower()}(reinterpret_cast<uint64_t>({struct_accessor}->{member.name}));\n')
-    elif 'const char* const*' in member.cDeclaration:
-        out.append(access_length_member_from_struct(
-            generator, struct_type, name, struct_accessor, member))
-        index_name = f'{member.name}_indx'
-        out.append(
-            f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
-        out.append(
-            f'    {name}->add_{member.name.lower()}({struct_accessor}->{member.name}[{index_name}]);\n')
-        out.append('  }\n')
-    elif member.pointer and member.const:
-        if member.type == 'void':
-            assert (member.length is not None)
-            out.append(access_length_member_from_struct(
-                generator, struct_type, name, struct_accessor, member))
-            out.append(
-                f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name}, {name}_{member.name}_length);\n')
-        else:
-            out.append(
-                f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
     else:
         out.append(f'  // Unsupported member: {member.cDeclaration}\n')
         print("UNSUPPORTED MEMBER:", struct_type, member.cDeclaration)
