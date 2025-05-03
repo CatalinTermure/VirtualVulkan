@@ -12,6 +12,7 @@
 #include "server/execution_context.h"
 
 namespace {
+void FillProtoFromStruct(vvk::server::VkConformanceVersion* proto, const VkConformanceVersion* original_struct);
 void FillProtoFromStruct(vvk::server::VkExtent3D* proto, const VkExtent3D* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryHeap* proto, const VkMemoryHeap* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryRequirements* proto, const VkMemoryRequirements* original_struct);
@@ -19,7 +20,27 @@ void FillProtoFromStruct(vvk::server::VkMemoryType* proto, const VkMemoryType* o
 void FillProtoFromStruct(vvk::server::VkPhysicalDeviceFeatures* proto, const VkPhysicalDeviceFeatures* original_struct);
 void FillProtoFromStruct(vvk::server::VkPhysicalDeviceLimits* proto, const VkPhysicalDeviceLimits* original_struct);
 void FillProtoFromStruct(vvk::server::VkPhysicalDeviceProperties* proto, const VkPhysicalDeviceProperties* original_struct);
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceProtectedMemoryFeatures* proto, const VkPhysicalDeviceProtectedMemoryFeatures* original_struct);
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceProtectedMemoryProperties* proto, const VkPhysicalDeviceProtectedMemoryProperties* original_struct);
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceShaderDrawParametersFeatures* proto, const VkPhysicalDeviceShaderDrawParametersFeatures* original_struct);
 void FillProtoFromStruct(vvk::server::VkPhysicalDeviceSparseProperties* proto, const VkPhysicalDeviceSparseProperties* original_struct);
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceSubgroupProperties* proto, const VkPhysicalDeviceSubgroupProperties* original_struct);
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceTimelineSemaphoreFeatures* proto, const VkPhysicalDeviceTimelineSemaphoreFeatures* original_struct);
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceTimelineSemaphoreProperties* proto, const VkPhysicalDeviceTimelineSemaphoreProperties* original_struct);
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan11Features* proto, const VkPhysicalDeviceVulkan11Features* original_struct);
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan11Properties* proto, const VkPhysicalDeviceVulkan11Properties* original_struct);
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan12Features* proto, const VkPhysicalDeviceVulkan12Features* original_struct);
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan12Properties* proto, const VkPhysicalDeviceVulkan12Properties* original_struct);
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan13Features* proto, const VkPhysicalDeviceVulkan13Features* original_struct);
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan13Properties* proto, const VkPhysicalDeviceVulkan13Properties* original_struct);
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan14Features* proto, const VkPhysicalDeviceVulkan14Features* original_struct);
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan14Properties* proto, const VkPhysicalDeviceVulkan14Properties* original_struct);
+void FillProtoFromStruct(vvk::server::VkConformanceVersion* proto, const VkConformanceVersion* original_struct) {
+  proto->set_major(static_cast<uint32_t>(original_struct->major));
+  proto->set_minor(static_cast<uint32_t>(original_struct->minor));
+  proto->set_subminor(static_cast<uint32_t>(original_struct->subminor));
+  proto->set_patch(static_cast<uint32_t>(original_struct->patch));
+}
 void FillProtoFromStruct(vvk::server::VkExtent3D* proto, const VkExtent3D* original_struct) {
   proto->set_width(original_struct->width);
   proto->set_height(original_struct->height);
@@ -257,12 +278,353 @@ void FillProtoFromStruct(vvk::server::VkPhysicalDeviceProperties* proto, const V
   FillProtoFromStruct(proto->mutable_limits(), &original_struct->limits);
   FillProtoFromStruct(proto->mutable_sparseproperties(), &original_struct->sparseProperties);
 }
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceProtectedMemoryFeatures* proto, const VkPhysicalDeviceProtectedMemoryFeatures* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_protectedmemory(original_struct->protectedMemory);
+}
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceProtectedMemoryProperties* proto, const VkPhysicalDeviceProtectedMemoryProperties* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_protectednofault(original_struct->protectedNoFault);
+}
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceShaderDrawParametersFeatures* proto, const VkPhysicalDeviceShaderDrawParametersFeatures* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_shaderdrawparameters(original_struct->shaderDrawParameters);
+}
 void FillProtoFromStruct(vvk::server::VkPhysicalDeviceSparseProperties* proto, const VkPhysicalDeviceSparseProperties* original_struct) {
   proto->set_residencystandard2dblockshape(original_struct->residencyStandard2DBlockShape);
   proto->set_residencystandard2dmultisampleblockshape(original_struct->residencyStandard2DMultisampleBlockShape);
   proto->set_residencystandard3dblockshape(original_struct->residencyStandard3DBlockShape);
   proto->set_residencyalignedmipsize(original_struct->residencyAlignedMipSize);
   proto->set_residencynonresidentstrict(original_struct->residencyNonResidentStrict);
+}
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceSubgroupProperties* proto, const VkPhysicalDeviceSubgroupProperties* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_subgroupsize(original_struct->subgroupSize);
+  proto->set_supportedstages(original_struct->supportedStages);
+  proto->set_supportedoperations(original_struct->supportedOperations);
+  proto->set_quadoperationsinallstages(original_struct->quadOperationsInAllStages);
+}
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceTimelineSemaphoreFeatures* proto, const VkPhysicalDeviceTimelineSemaphoreFeatures* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_timelinesemaphore(original_struct->timelineSemaphore);
+}
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceTimelineSemaphoreProperties* proto, const VkPhysicalDeviceTimelineSemaphoreProperties* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_maxtimelinesemaphorevaluedifference(original_struct->maxTimelineSemaphoreValueDifference);
+}
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan11Features* proto, const VkPhysicalDeviceVulkan11Features* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_storagebuffer16bitaccess(original_struct->storageBuffer16BitAccess);
+  proto->set_uniformandstoragebuffer16bitaccess(original_struct->uniformAndStorageBuffer16BitAccess);
+  proto->set_storagepushconstant16(original_struct->storagePushConstant16);
+  proto->set_storageinputoutput16(original_struct->storageInputOutput16);
+  proto->set_multiview(original_struct->multiview);
+  proto->set_multiviewgeometryshader(original_struct->multiviewGeometryShader);
+  proto->set_multiviewtessellationshader(original_struct->multiviewTessellationShader);
+  proto->set_variablepointersstoragebuffer(original_struct->variablePointersStorageBuffer);
+  proto->set_variablepointers(original_struct->variablePointers);
+  proto->set_protectedmemory(original_struct->protectedMemory);
+  proto->set_samplerycbcrconversion(original_struct->samplerYcbcrConversion);
+  proto->set_shaderdrawparameters(original_struct->shaderDrawParameters);
+}
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan11Properties* proto, const VkPhysicalDeviceVulkan11Properties* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  const size_t proto_deviceUUID_length = VK_UUID_SIZE;
+  for (int deviceUUID_indx = 0; deviceUUID_indx < proto_deviceUUID_length; deviceUUID_indx++) {
+    proto->add_deviceuuid(static_cast<uint32_t>(original_struct->deviceUUID[deviceUUID_indx]));
+  }
+  const size_t proto_driverUUID_length = VK_UUID_SIZE;
+  for (int driverUUID_indx = 0; driverUUID_indx < proto_driverUUID_length; driverUUID_indx++) {
+    proto->add_driveruuid(static_cast<uint32_t>(original_struct->driverUUID[driverUUID_indx]));
+  }
+  const size_t proto_deviceLUID_length = VK_LUID_SIZE;
+  for (int deviceLUID_indx = 0; deviceLUID_indx < proto_deviceLUID_length; deviceLUID_indx++) {
+    proto->add_deviceluid(static_cast<uint32_t>(original_struct->deviceLUID[deviceLUID_indx]));
+  }
+  proto->set_devicenodemask(original_struct->deviceNodeMask);
+  proto->set_deviceluidvalid(original_struct->deviceLUIDValid);
+  proto->set_subgroupsize(original_struct->subgroupSize);
+  proto->set_subgroupsupportedstages(original_struct->subgroupSupportedStages);
+  proto->set_subgroupsupportedoperations(original_struct->subgroupSupportedOperations);
+  proto->set_subgroupquadoperationsinallstages(original_struct->subgroupQuadOperationsInAllStages);
+  proto->set_pointclippingbehavior(static_cast<vvk::server::VkPointClippingBehavior>(original_struct->pointClippingBehavior));
+  proto->set_maxmultiviewviewcount(original_struct->maxMultiviewViewCount);
+  proto->set_maxmultiviewinstanceindex(original_struct->maxMultiviewInstanceIndex);
+  proto->set_protectednofault(original_struct->protectedNoFault);
+  proto->set_maxpersetdescriptors(original_struct->maxPerSetDescriptors);
+  proto->set_maxmemoryallocationsize(static_cast<uint64_t>(original_struct->maxMemoryAllocationSize));
+}
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan12Features* proto, const VkPhysicalDeviceVulkan12Features* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_samplermirrorclamptoedge(original_struct->samplerMirrorClampToEdge);
+  proto->set_drawindirectcount(original_struct->drawIndirectCount);
+  proto->set_storagebuffer8bitaccess(original_struct->storageBuffer8BitAccess);
+  proto->set_uniformandstoragebuffer8bitaccess(original_struct->uniformAndStorageBuffer8BitAccess);
+  proto->set_storagepushconstant8(original_struct->storagePushConstant8);
+  proto->set_shaderbufferint64atomics(original_struct->shaderBufferInt64Atomics);
+  proto->set_shadersharedint64atomics(original_struct->shaderSharedInt64Atomics);
+  proto->set_shaderfloat16(original_struct->shaderFloat16);
+  proto->set_shaderint8(original_struct->shaderInt8);
+  proto->set_descriptorindexing(original_struct->descriptorIndexing);
+  proto->set_shaderinputattachmentarraydynamicindexing(original_struct->shaderInputAttachmentArrayDynamicIndexing);
+  proto->set_shaderuniformtexelbufferarraydynamicindexing(original_struct->shaderUniformTexelBufferArrayDynamicIndexing);
+  proto->set_shaderstoragetexelbufferarraydynamicindexing(original_struct->shaderStorageTexelBufferArrayDynamicIndexing);
+  proto->set_shaderuniformbufferarraynonuniformindexing(original_struct->shaderUniformBufferArrayNonUniformIndexing);
+  proto->set_shadersampledimagearraynonuniformindexing(original_struct->shaderSampledImageArrayNonUniformIndexing);
+  proto->set_shaderstoragebufferarraynonuniformindexing(original_struct->shaderStorageBufferArrayNonUniformIndexing);
+  proto->set_shaderstorageimagearraynonuniformindexing(original_struct->shaderStorageImageArrayNonUniformIndexing);
+  proto->set_shaderinputattachmentarraynonuniformindexing(original_struct->shaderInputAttachmentArrayNonUniformIndexing);
+  proto->set_shaderuniformtexelbufferarraynonuniformindexing(original_struct->shaderUniformTexelBufferArrayNonUniformIndexing);
+  proto->set_shaderstoragetexelbufferarraynonuniformindexing(original_struct->shaderStorageTexelBufferArrayNonUniformIndexing);
+  proto->set_descriptorbindinguniformbufferupdateafterbind(original_struct->descriptorBindingUniformBufferUpdateAfterBind);
+  proto->set_descriptorbindingsampledimageupdateafterbind(original_struct->descriptorBindingSampledImageUpdateAfterBind);
+  proto->set_descriptorbindingstorageimageupdateafterbind(original_struct->descriptorBindingStorageImageUpdateAfterBind);
+  proto->set_descriptorbindingstoragebufferupdateafterbind(original_struct->descriptorBindingStorageBufferUpdateAfterBind);
+  proto->set_descriptorbindinguniformtexelbufferupdateafterbind(original_struct->descriptorBindingUniformTexelBufferUpdateAfterBind);
+  proto->set_descriptorbindingstoragetexelbufferupdateafterbind(original_struct->descriptorBindingStorageTexelBufferUpdateAfterBind);
+  proto->set_descriptorbindingupdateunusedwhilepending(original_struct->descriptorBindingUpdateUnusedWhilePending);
+  proto->set_descriptorbindingpartiallybound(original_struct->descriptorBindingPartiallyBound);
+  proto->set_descriptorbindingvariabledescriptorcount(original_struct->descriptorBindingVariableDescriptorCount);
+  proto->set_runtimedescriptorarray(original_struct->runtimeDescriptorArray);
+  proto->set_samplerfilterminmax(original_struct->samplerFilterMinmax);
+  proto->set_scalarblocklayout(original_struct->scalarBlockLayout);
+  proto->set_imagelessframebuffer(original_struct->imagelessFramebuffer);
+  proto->set_uniformbufferstandardlayout(original_struct->uniformBufferStandardLayout);
+  proto->set_shadersubgroupextendedtypes(original_struct->shaderSubgroupExtendedTypes);
+  proto->set_separatedepthstencillayouts(original_struct->separateDepthStencilLayouts);
+  proto->set_hostqueryreset(original_struct->hostQueryReset);
+  proto->set_timelinesemaphore(original_struct->timelineSemaphore);
+  proto->set_bufferdeviceaddress(original_struct->bufferDeviceAddress);
+  proto->set_bufferdeviceaddresscapturereplay(original_struct->bufferDeviceAddressCaptureReplay);
+  proto->set_bufferdeviceaddressmultidevice(original_struct->bufferDeviceAddressMultiDevice);
+  proto->set_vulkanmemorymodel(original_struct->vulkanMemoryModel);
+  proto->set_vulkanmemorymodeldevicescope(original_struct->vulkanMemoryModelDeviceScope);
+  proto->set_vulkanmemorymodelavailabilityvisibilitychains(original_struct->vulkanMemoryModelAvailabilityVisibilityChains);
+  proto->set_shaderoutputviewportindex(original_struct->shaderOutputViewportIndex);
+  proto->set_shaderoutputlayer(original_struct->shaderOutputLayer);
+  proto->set_subgroupbroadcastdynamicid(original_struct->subgroupBroadcastDynamicId);
+}
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan12Properties* proto, const VkPhysicalDeviceVulkan12Properties* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_driverid(static_cast<vvk::server::VkDriverId>(original_struct->driverID));
+  proto->set_drivername(original_struct->driverName);
+  proto->set_driverinfo(original_struct->driverInfo);
+  FillProtoFromStruct(proto->mutable_conformanceversion(), &original_struct->conformanceVersion);
+  proto->set_denormbehaviorindependence(static_cast<vvk::server::VkShaderFloatControlsIndependence>(original_struct->denormBehaviorIndependence));
+  proto->set_roundingmodeindependence(static_cast<vvk::server::VkShaderFloatControlsIndependence>(original_struct->roundingModeIndependence));
+  proto->set_shadersignedzeroinfnanpreservefloat16(original_struct->shaderSignedZeroInfNanPreserveFloat16);
+  proto->set_shadersignedzeroinfnanpreservefloat32(original_struct->shaderSignedZeroInfNanPreserveFloat32);
+  proto->set_shadersignedzeroinfnanpreservefloat64(original_struct->shaderSignedZeroInfNanPreserveFloat64);
+  proto->set_shaderdenormpreservefloat16(original_struct->shaderDenormPreserveFloat16);
+  proto->set_shaderdenormpreservefloat32(original_struct->shaderDenormPreserveFloat32);
+  proto->set_shaderdenormpreservefloat64(original_struct->shaderDenormPreserveFloat64);
+  proto->set_shaderdenormflushtozerofloat16(original_struct->shaderDenormFlushToZeroFloat16);
+  proto->set_shaderdenormflushtozerofloat32(original_struct->shaderDenormFlushToZeroFloat32);
+  proto->set_shaderdenormflushtozerofloat64(original_struct->shaderDenormFlushToZeroFloat64);
+  proto->set_shaderroundingmodertefloat16(original_struct->shaderRoundingModeRTEFloat16);
+  proto->set_shaderroundingmodertefloat32(original_struct->shaderRoundingModeRTEFloat32);
+  proto->set_shaderroundingmodertefloat64(original_struct->shaderRoundingModeRTEFloat64);
+  proto->set_shaderroundingmodertzfloat16(original_struct->shaderRoundingModeRTZFloat16);
+  proto->set_shaderroundingmodertzfloat32(original_struct->shaderRoundingModeRTZFloat32);
+  proto->set_shaderroundingmodertzfloat64(original_struct->shaderRoundingModeRTZFloat64);
+  proto->set_maxupdateafterbinddescriptorsinallpools(original_struct->maxUpdateAfterBindDescriptorsInAllPools);
+  proto->set_shaderuniformbufferarraynonuniformindexingnative(original_struct->shaderUniformBufferArrayNonUniformIndexingNative);
+  proto->set_shadersampledimagearraynonuniformindexingnative(original_struct->shaderSampledImageArrayNonUniformIndexingNative);
+  proto->set_shaderstoragebufferarraynonuniformindexingnative(original_struct->shaderStorageBufferArrayNonUniformIndexingNative);
+  proto->set_shaderstorageimagearraynonuniformindexingnative(original_struct->shaderStorageImageArrayNonUniformIndexingNative);
+  proto->set_shaderinputattachmentarraynonuniformindexingnative(original_struct->shaderInputAttachmentArrayNonUniformIndexingNative);
+  proto->set_robustbufferaccessupdateafterbind(original_struct->robustBufferAccessUpdateAfterBind);
+  proto->set_quaddivergentimplicitlod(original_struct->quadDivergentImplicitLod);
+  proto->set_maxperstagedescriptorupdateafterbindsamplers(original_struct->maxPerStageDescriptorUpdateAfterBindSamplers);
+  proto->set_maxperstagedescriptorupdateafterbinduniformbuffers(original_struct->maxPerStageDescriptorUpdateAfterBindUniformBuffers);
+  proto->set_maxperstagedescriptorupdateafterbindstoragebuffers(original_struct->maxPerStageDescriptorUpdateAfterBindStorageBuffers);
+  proto->set_maxperstagedescriptorupdateafterbindsampledimages(original_struct->maxPerStageDescriptorUpdateAfterBindSampledImages);
+  proto->set_maxperstagedescriptorupdateafterbindstorageimages(original_struct->maxPerStageDescriptorUpdateAfterBindStorageImages);
+  proto->set_maxperstagedescriptorupdateafterbindinputattachments(original_struct->maxPerStageDescriptorUpdateAfterBindInputAttachments);
+  proto->set_maxperstageupdateafterbindresources(original_struct->maxPerStageUpdateAfterBindResources);
+  proto->set_maxdescriptorsetupdateafterbindsamplers(original_struct->maxDescriptorSetUpdateAfterBindSamplers);
+  proto->set_maxdescriptorsetupdateafterbinduniformbuffers(original_struct->maxDescriptorSetUpdateAfterBindUniformBuffers);
+  proto->set_maxdescriptorsetupdateafterbinduniformbuffersdynamic(original_struct->maxDescriptorSetUpdateAfterBindUniformBuffersDynamic);
+  proto->set_maxdescriptorsetupdateafterbindstoragebuffers(original_struct->maxDescriptorSetUpdateAfterBindStorageBuffers);
+  proto->set_maxdescriptorsetupdateafterbindstoragebuffersdynamic(original_struct->maxDescriptorSetUpdateAfterBindStorageBuffersDynamic);
+  proto->set_maxdescriptorsetupdateafterbindsampledimages(original_struct->maxDescriptorSetUpdateAfterBindSampledImages);
+  proto->set_maxdescriptorsetupdateafterbindstorageimages(original_struct->maxDescriptorSetUpdateAfterBindStorageImages);
+  proto->set_maxdescriptorsetupdateafterbindinputattachments(original_struct->maxDescriptorSetUpdateAfterBindInputAttachments);
+  proto->set_supporteddepthresolvemodes(original_struct->supportedDepthResolveModes);
+  proto->set_supportedstencilresolvemodes(original_struct->supportedStencilResolveModes);
+  proto->set_independentresolvenone(original_struct->independentResolveNone);
+  proto->set_independentresolve(original_struct->independentResolve);
+  proto->set_filterminmaxsinglecomponentformats(original_struct->filterMinmaxSingleComponentFormats);
+  proto->set_filterminmaximagecomponentmapping(original_struct->filterMinmaxImageComponentMapping);
+  proto->set_maxtimelinesemaphorevaluedifference(original_struct->maxTimelineSemaphoreValueDifference);
+  if (original_struct->framebufferIntegerColorSampleCounts) {
+    proto->set_framebufferintegercolorsamplecounts(original_struct->framebufferIntegerColorSampleCounts);
+  }
+}
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan13Features* proto, const VkPhysicalDeviceVulkan13Features* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_robustimageaccess(original_struct->robustImageAccess);
+  proto->set_inlineuniformblock(original_struct->inlineUniformBlock);
+  proto->set_descriptorbindinginlineuniformblockupdateafterbind(original_struct->descriptorBindingInlineUniformBlockUpdateAfterBind);
+  proto->set_pipelinecreationcachecontrol(original_struct->pipelineCreationCacheControl);
+  proto->set_privatedata(original_struct->privateData);
+  proto->set_shaderdemotetohelperinvocation(original_struct->shaderDemoteToHelperInvocation);
+  proto->set_shaderterminateinvocation(original_struct->shaderTerminateInvocation);
+  proto->set_subgroupsizecontrol(original_struct->subgroupSizeControl);
+  proto->set_computefullsubgroups(original_struct->computeFullSubgroups);
+  proto->set_synchronization2(original_struct->synchronization2);
+  proto->set_texturecompressionastc_hdr(original_struct->textureCompressionASTC_HDR);
+  proto->set_shaderzeroinitializeworkgroupmemory(original_struct->shaderZeroInitializeWorkgroupMemory);
+  proto->set_dynamicrendering(original_struct->dynamicRendering);
+  proto->set_shaderintegerdotproduct(original_struct->shaderIntegerDotProduct);
+  proto->set_maintenance4(original_struct->maintenance4);
+}
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan13Properties* proto, const VkPhysicalDeviceVulkan13Properties* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_minsubgroupsize(original_struct->minSubgroupSize);
+  proto->set_maxsubgroupsize(original_struct->maxSubgroupSize);
+  proto->set_maxcomputeworkgroupsubgroups(original_struct->maxComputeWorkgroupSubgroups);
+  proto->set_requiredsubgroupsizestages(original_struct->requiredSubgroupSizeStages);
+  proto->set_maxinlineuniformblocksize(original_struct->maxInlineUniformBlockSize);
+  proto->set_maxperstagedescriptorinlineuniformblocks(original_struct->maxPerStageDescriptorInlineUniformBlocks);
+  proto->set_maxperstagedescriptorupdateafterbindinlineuniformblocks(original_struct->maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks);
+  proto->set_maxdescriptorsetinlineuniformblocks(original_struct->maxDescriptorSetInlineUniformBlocks);
+  proto->set_maxdescriptorsetupdateafterbindinlineuniformblocks(original_struct->maxDescriptorSetUpdateAfterBindInlineUniformBlocks);
+  proto->set_maxinlineuniformtotalsize(original_struct->maxInlineUniformTotalSize);
+  proto->set_integerdotproduct8bitunsignedaccelerated(original_struct->integerDotProduct8BitUnsignedAccelerated);
+  proto->set_integerdotproduct8bitsignedaccelerated(original_struct->integerDotProduct8BitSignedAccelerated);
+  proto->set_integerdotproduct8bitmixedsignednessaccelerated(original_struct->integerDotProduct8BitMixedSignednessAccelerated);
+  proto->set_integerdotproduct4x8bitpackedunsignedaccelerated(original_struct->integerDotProduct4x8BitPackedUnsignedAccelerated);
+  proto->set_integerdotproduct4x8bitpackedsignedaccelerated(original_struct->integerDotProduct4x8BitPackedSignedAccelerated);
+  proto->set_integerdotproduct4x8bitpackedmixedsignednessaccelerated(original_struct->integerDotProduct4x8BitPackedMixedSignednessAccelerated);
+  proto->set_integerdotproduct16bitunsignedaccelerated(original_struct->integerDotProduct16BitUnsignedAccelerated);
+  proto->set_integerdotproduct16bitsignedaccelerated(original_struct->integerDotProduct16BitSignedAccelerated);
+  proto->set_integerdotproduct16bitmixedsignednessaccelerated(original_struct->integerDotProduct16BitMixedSignednessAccelerated);
+  proto->set_integerdotproduct32bitunsignedaccelerated(original_struct->integerDotProduct32BitUnsignedAccelerated);
+  proto->set_integerdotproduct32bitsignedaccelerated(original_struct->integerDotProduct32BitSignedAccelerated);
+  proto->set_integerdotproduct32bitmixedsignednessaccelerated(original_struct->integerDotProduct32BitMixedSignednessAccelerated);
+  proto->set_integerdotproduct64bitunsignedaccelerated(original_struct->integerDotProduct64BitUnsignedAccelerated);
+  proto->set_integerdotproduct64bitsignedaccelerated(original_struct->integerDotProduct64BitSignedAccelerated);
+  proto->set_integerdotproduct64bitmixedsignednessaccelerated(original_struct->integerDotProduct64BitMixedSignednessAccelerated);
+  proto->set_integerdotproductaccumulatingsaturating8bitunsignedaccelerated(original_struct->integerDotProductAccumulatingSaturating8BitUnsignedAccelerated);
+  proto->set_integerdotproductaccumulatingsaturating8bitsignedaccelerated(original_struct->integerDotProductAccumulatingSaturating8BitSignedAccelerated);
+  proto->set_integerdotproductaccumulatingsaturating8bitmixedsignednessaccelerated(original_struct->integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated);
+  proto->set_integerdotproductaccumulatingsaturating4x8bitpackedunsignedaccelerated(original_struct->integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated);
+  proto->set_integerdotproductaccumulatingsaturating4x8bitpackedsignedaccelerated(original_struct->integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated);
+  proto->set_integerdotproductaccumulatingsaturating4x8bitpackedmixedsignednessaccelerated(original_struct->integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated);
+  proto->set_integerdotproductaccumulatingsaturating16bitunsignedaccelerated(original_struct->integerDotProductAccumulatingSaturating16BitUnsignedAccelerated);
+  proto->set_integerdotproductaccumulatingsaturating16bitsignedaccelerated(original_struct->integerDotProductAccumulatingSaturating16BitSignedAccelerated);
+  proto->set_integerdotproductaccumulatingsaturating16bitmixedsignednessaccelerated(original_struct->integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated);
+  proto->set_integerdotproductaccumulatingsaturating32bitunsignedaccelerated(original_struct->integerDotProductAccumulatingSaturating32BitUnsignedAccelerated);
+  proto->set_integerdotproductaccumulatingsaturating32bitsignedaccelerated(original_struct->integerDotProductAccumulatingSaturating32BitSignedAccelerated);
+  proto->set_integerdotproductaccumulatingsaturating32bitmixedsignednessaccelerated(original_struct->integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated);
+  proto->set_integerdotproductaccumulatingsaturating64bitunsignedaccelerated(original_struct->integerDotProductAccumulatingSaturating64BitUnsignedAccelerated);
+  proto->set_integerdotproductaccumulatingsaturating64bitsignedaccelerated(original_struct->integerDotProductAccumulatingSaturating64BitSignedAccelerated);
+  proto->set_integerdotproductaccumulatingsaturating64bitmixedsignednessaccelerated(original_struct->integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated);
+  proto->set_storagetexelbufferoffsetalignmentbytes(static_cast<uint64_t>(original_struct->storageTexelBufferOffsetAlignmentBytes));
+  proto->set_storagetexelbufferoffsetsingletexelalignment(original_struct->storageTexelBufferOffsetSingleTexelAlignment);
+  proto->set_uniformtexelbufferoffsetalignmentbytes(static_cast<uint64_t>(original_struct->uniformTexelBufferOffsetAlignmentBytes));
+  proto->set_uniformtexelbufferoffsetsingletexelalignment(original_struct->uniformTexelBufferOffsetSingleTexelAlignment);
+  proto->set_maxbuffersize(static_cast<uint64_t>(original_struct->maxBufferSize));
+}
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan14Features* proto, const VkPhysicalDeviceVulkan14Features* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_globalpriorityquery(original_struct->globalPriorityQuery);
+  proto->set_shadersubgrouprotate(original_struct->shaderSubgroupRotate);
+  proto->set_shadersubgrouprotateclustered(original_struct->shaderSubgroupRotateClustered);
+  proto->set_shaderfloatcontrols2(original_struct->shaderFloatControls2);
+  proto->set_shaderexpectassume(original_struct->shaderExpectAssume);
+  proto->set_rectangularlines(original_struct->rectangularLines);
+  proto->set_bresenhamlines(original_struct->bresenhamLines);
+  proto->set_smoothlines(original_struct->smoothLines);
+  proto->set_stippledrectangularlines(original_struct->stippledRectangularLines);
+  proto->set_stippledbresenhamlines(original_struct->stippledBresenhamLines);
+  proto->set_stippledsmoothlines(original_struct->stippledSmoothLines);
+  proto->set_vertexattributeinstanceratedivisor(original_struct->vertexAttributeInstanceRateDivisor);
+  proto->set_vertexattributeinstanceratezerodivisor(original_struct->vertexAttributeInstanceRateZeroDivisor);
+  proto->set_indextypeuint8(original_struct->indexTypeUint8);
+  proto->set_dynamicrenderinglocalread(original_struct->dynamicRenderingLocalRead);
+  proto->set_maintenance5(original_struct->maintenance5);
+  proto->set_maintenance6(original_struct->maintenance6);
+  proto->set_pipelineprotectedaccess(original_struct->pipelineProtectedAccess);
+  proto->set_pipelinerobustness(original_struct->pipelineRobustness);
+  proto->set_hostimagecopy(original_struct->hostImageCopy);
+  proto->set_pushdescriptor(original_struct->pushDescriptor);
+}
+void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan14Properties* proto, const VkPhysicalDeviceVulkan14Properties* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_linesubpixelprecisionbits(original_struct->lineSubPixelPrecisionBits);
+  proto->set_maxvertexattribdivisor(original_struct->maxVertexAttribDivisor);
+  proto->set_supportsnonzerofirstinstance(original_struct->supportsNonZeroFirstInstance);
+  proto->set_maxpushdescriptors(original_struct->maxPushDescriptors);
+  proto->set_dynamicrenderinglocalreaddepthstencilattachments(original_struct->dynamicRenderingLocalReadDepthStencilAttachments);
+  proto->set_dynamicrenderinglocalreadmultisampledattachments(original_struct->dynamicRenderingLocalReadMultisampledAttachments);
+  proto->set_earlyfragmentmultisamplecoverageaftersamplecounting(original_struct->earlyFragmentMultisampleCoverageAfterSampleCounting);
+  proto->set_earlyfragmentsamplemasktestbeforesamplecounting(original_struct->earlyFragmentSampleMaskTestBeforeSampleCounting);
+  proto->set_depthstencilswizzleonesupport(original_struct->depthStencilSwizzleOneSupport);
+  proto->set_polygonmodepointsize(original_struct->polygonModePointSize);
+  proto->set_nonstrictsinglepixelwidelinesuseparallelogram(original_struct->nonStrictSinglePixelWideLinesUseParallelogram);
+  proto->set_nonstrictwidelinesuseparallelogram(original_struct->nonStrictWideLinesUseParallelogram);
+  proto->set_blocktexelviewcompatiblemultiplelayers(original_struct->blockTexelViewCompatibleMultipleLayers);
+  proto->set_maxcombinedimagesamplerdescriptorcount(original_struct->maxCombinedImageSamplerDescriptorCount);
+  proto->set_fragmentshadingrateclampcombinerinputs(original_struct->fragmentShadingRateClampCombinerInputs);
+  proto->set_defaultrobustnessstoragebuffers(static_cast<vvk::server::VkPipelineRobustnessBufferBehavior>(original_struct->defaultRobustnessStorageBuffers));
+  proto->set_defaultrobustnessuniformbuffers(static_cast<vvk::server::VkPipelineRobustnessBufferBehavior>(original_struct->defaultRobustnessUniformBuffers));
+  proto->set_defaultrobustnessvertexinputs(static_cast<vvk::server::VkPipelineRobustnessBufferBehavior>(original_struct->defaultRobustnessVertexInputs));
+  proto->set_defaultrobustnessimages(static_cast<vvk::server::VkPipelineRobustnessImageBehavior>(original_struct->defaultRobustnessImages));
+  if (original_struct->copySrcLayoutCount) {
+    proto->set_copysrclayoutcount(original_struct->copySrcLayoutCount);
+  }
+  if (original_struct->pCopySrcLayouts) {
+    const size_t proto_pCopySrcLayouts_length = original_struct->copySrcLayoutCount;
+    for (int pCopySrcLayouts_indx = 0; pCopySrcLayouts_indx < proto_pCopySrcLayouts_length; pCopySrcLayouts_indx++) {
+      proto->add_pcopysrclayouts(static_cast<vvk::server::VkImageLayout>(original_struct->pCopySrcLayouts[pCopySrcLayouts_indx]));
+    }
+  }
+  if (original_struct->copyDstLayoutCount) {
+    proto->set_copydstlayoutcount(original_struct->copyDstLayoutCount);
+  }
+  if (original_struct->pCopyDstLayouts) {
+    const size_t proto_pCopyDstLayouts_length = original_struct->copyDstLayoutCount;
+    for (int pCopyDstLayouts_indx = 0; pCopyDstLayouts_indx < proto_pCopyDstLayouts_length; pCopyDstLayouts_indx++) {
+      proto->add_pcopydstlayouts(static_cast<vvk::server::VkImageLayout>(original_struct->pCopyDstLayouts[pCopyDstLayouts_indx]));
+    }
+  }
+  if (original_struct->optimalTilingLayoutUUID) {
+    const size_t proto_optimalTilingLayoutUUID_length = VK_UUID_SIZE;
+    for (int optimalTilingLayoutUUID_indx = 0; optimalTilingLayoutUUID_indx < proto_optimalTilingLayoutUUID_length; optimalTilingLayoutUUID_indx++) {
+      proto->add_optimaltilinglayoutuuid(static_cast<uint32_t>(original_struct->optimalTilingLayoutUUID[optimalTilingLayoutUUID_indx]));
+    }
+  }
+  proto->set_identicalmemorytyperequirements(original_struct->identicalMemoryTypeRequirements);
 }
 }
 void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
@@ -840,7 +1202,7 @@ void UnpackAndExecuteVkGetImageMemoryRequirements2(vvk::ExecutionContext& contex
   vkGetImageMemoryRequirements2(reinterpret_cast<VkDevice>(request.vkgetimagememoryrequirements2().device()), &pInfo, &pMemoryRequirements);
   vvk::server::VkMemoryRequirements2* pMemoryRequirements_proto = response->mutable_vkgetimagememoryrequirements2()->mutable_pmemoryrequirements();
   if ((&pMemoryRequirements)->pNext) {
-    // pNext chains are currently not supported
+    // Empty pNext chain
   }
   FillProtoFromStruct(pMemoryRequirements_proto->mutable_memoryrequirements(), &(&pMemoryRequirements)->memoryRequirements);
   response->set_result(VK_SUCCESS);
@@ -1909,7 +2271,32 @@ void UnpackAndExecuteVkGetPhysicalDeviceProperties2(vvk::ExecutionContext& conte
   vkGetPhysicalDeviceProperties2(context.physical_device(), &pProperties);
   vvk::server::VkPhysicalDeviceProperties2* pProperties_proto = response->mutable_vkgetphysicaldeviceproperties2()->mutable_pproperties();
   if ((&pProperties)->pNext) {
-    // pNext chains are currently not supported
+    const void* pNext = (&pProperties)->pNext;
+    while (pNext) {
+      const VkBaseInStructure* base = reinterpret_cast<const VkBaseInStructure*>(pNext);
+      if (base->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_PROPERTIES) {
+        FillProtoFromStruct(pProperties_proto->add_pnext()->mutable_vkphysicaldeviceprotectedmemoryproperties_chain_elem(), reinterpret_cast<const VkPhysicalDeviceProtectedMemoryProperties*>(pNext));
+      }
+      if (base->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES) {
+        FillProtoFromStruct(pProperties_proto->add_pnext()->mutable_vkphysicaldevicesubgroupproperties_chain_elem(), reinterpret_cast<const VkPhysicalDeviceSubgroupProperties*>(pNext));
+      }
+      if (base->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_PROPERTIES) {
+        FillProtoFromStruct(pProperties_proto->add_pnext()->mutable_vkphysicaldevicetimelinesemaphoreproperties_chain_elem(), reinterpret_cast<const VkPhysicalDeviceTimelineSemaphoreProperties*>(pNext));
+      }
+      if (base->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_PROPERTIES) {
+        FillProtoFromStruct(pProperties_proto->add_pnext()->mutable_vkphysicaldevicevulkan11properties_chain_elem(), reinterpret_cast<const VkPhysicalDeviceVulkan11Properties*>(pNext));
+      }
+      if (base->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_PROPERTIES) {
+        FillProtoFromStruct(pProperties_proto->add_pnext()->mutable_vkphysicaldevicevulkan12properties_chain_elem(), reinterpret_cast<const VkPhysicalDeviceVulkan12Properties*>(pNext));
+      }
+      if (base->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_PROPERTIES) {
+        FillProtoFromStruct(pProperties_proto->add_pnext()->mutable_vkphysicaldevicevulkan13properties_chain_elem(), reinterpret_cast<const VkPhysicalDeviceVulkan13Properties*>(pNext));
+      }
+      if (base->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_PROPERTIES) {
+        FillProtoFromStruct(pProperties_proto->add_pnext()->mutable_vkphysicaldevicevulkan14properties_chain_elem(), reinterpret_cast<const VkPhysicalDeviceVulkan14Properties*>(pNext));
+      }
+      pNext = reinterpret_cast<const void*>(base->pNext);
+    }
   }
   FillProtoFromStruct(pProperties_proto->mutable_properties(), &(&pProperties)->properties);
   response->set_result(VK_SUCCESS);
@@ -1922,7 +2309,32 @@ void UnpackAndExecuteVkGetPhysicalDeviceFeatures2(vvk::ExecutionContext& context
   vkGetPhysicalDeviceFeatures2(context.physical_device(), &pFeatures);
   vvk::server::VkPhysicalDeviceFeatures2* pFeatures_proto = response->mutable_vkgetphysicaldevicefeatures2()->mutable_pfeatures();
   if ((&pFeatures)->pNext) {
-    // pNext chains are currently not supported
+    const void* pNext = (&pFeatures)->pNext;
+    while (pNext) {
+      const VkBaseInStructure* base = reinterpret_cast<const VkBaseInStructure*>(pNext);
+      if (base->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_FEATURES) {
+        FillProtoFromStruct(pFeatures_proto->add_pnext()->mutable_vkphysicaldeviceprotectedmemoryfeatures_chain_elem(), reinterpret_cast<const VkPhysicalDeviceProtectedMemoryFeatures*>(pNext));
+      }
+      if (base->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES) {
+        FillProtoFromStruct(pFeatures_proto->add_pnext()->mutable_vkphysicaldeviceshaderdrawparametersfeatures_chain_elem(), reinterpret_cast<const VkPhysicalDeviceShaderDrawParametersFeatures*>(pNext));
+      }
+      if (base->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES) {
+        FillProtoFromStruct(pFeatures_proto->add_pnext()->mutable_vkphysicaldevicetimelinesemaphorefeatures_chain_elem(), reinterpret_cast<const VkPhysicalDeviceTimelineSemaphoreFeatures*>(pNext));
+      }
+      if (base->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES) {
+        FillProtoFromStruct(pFeatures_proto->add_pnext()->mutable_vkphysicaldevicevulkan11features_chain_elem(), reinterpret_cast<const VkPhysicalDeviceVulkan11Features*>(pNext));
+      }
+      if (base->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES) {
+        FillProtoFromStruct(pFeatures_proto->add_pnext()->mutable_vkphysicaldevicevulkan12features_chain_elem(), reinterpret_cast<const VkPhysicalDeviceVulkan12Features*>(pNext));
+      }
+      if (base->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES) {
+        FillProtoFromStruct(pFeatures_proto->add_pnext()->mutable_vkphysicaldevicevulkan13features_chain_elem(), reinterpret_cast<const VkPhysicalDeviceVulkan13Features*>(pNext));
+      }
+      if (base->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES) {
+        FillProtoFromStruct(pFeatures_proto->add_pnext()->mutable_vkphysicaldevicevulkan14features_chain_elem(), reinterpret_cast<const VkPhysicalDeviceVulkan14Features*>(pNext));
+      }
+      pNext = reinterpret_cast<const void*>(base->pNext);
+    }
   }
   FillProtoFromStruct(pFeatures_proto->mutable_features(), &(&pFeatures)->features);
   response->set_result(VK_SUCCESS);

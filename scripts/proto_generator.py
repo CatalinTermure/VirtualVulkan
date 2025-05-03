@@ -3,7 +3,7 @@ from reg import Registry
 from base_generator import BaseGeneratorOptions
 from .vvk_generator import VvkGenerator
 from vulkan_object import Param, Member, VulkanObject
-from .commons import first_letter_upper, COMMANDS_TO_GENERATE, EXTENSIONS_TO_ALLOW, RetVal
+from .commons import first_letter_upper, COMMANDS_TO_GENERATE, RetVal, is_struct_allowed
 import copy
 import inflection
 
@@ -263,7 +263,7 @@ message VkAllocationCallbacks {
                 if struct.extendedBy:
                     for extended_by in struct.extendedBy:
                         struct_extended_by = self.vk.structs[extended_by]
-                        if all([extension.name in EXTENSIONS_TO_ALLOW for extension in struct_extended_by.extensions]):
+                        if is_struct_allowed(struct_extended_by):
                             required_structs.add(extended_by)
                 for member in struct.members:
                     if member.name == "pNext" or member.name == "sType":

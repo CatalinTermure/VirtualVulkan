@@ -1,5 +1,5 @@
 import copy
-from base_generator import Member
+from base_generator import Member, Struct
 from .vvk_generator import VvkGenerator
 from dataclasses import dataclass
 import re
@@ -94,7 +94,6 @@ COMMANDS_TO_GENERATE = [
     "vkGetPhysicalDeviceFeatures2",
 ]
 
-
 TRIVIAL_TYPES: dict[str, TypeInfo] = {
     "uint32_t": TypeInfo(cast_to=None),
     "VkBool32": TypeInfo(cast_to=None),
@@ -106,6 +105,12 @@ TRIVIAL_TYPES: dict[str, TypeInfo] = {
     "VkSampleMask": TypeInfo(cast_to="uint32_t"),
     "uint8_t": TypeInfo(cast_to="uint32_t"),
 }
+
+
+def is_struct_allowed(struct: Struct) -> bool:
+    if any([extension.name not in EXTENSIONS_TO_ALLOW for extension in struct.extensions]):
+        return False
+    return True
 
 
 def indent(text: str, spaces: int) -> str:
@@ -352,7 +357,34 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
     if member.name in ['sType']:
         return ""
     elif member.name == 'pNext':
-        out.append("  // pNext chains are currently not supported\n")
+        struct_info = generator.vk.structs[struct_type]
+        if not struct_info.extendedBy:
+            return "  // Empty pNext chain\n"
+
+        extended_by_list = [
+            extended_by for extended_by in struct_info.extendedBy if is_struct_allowed(generator.vk.structs[extended_by])]
+
+        if not extended_by_list:
+            return "  // Empty pNext chain\n"
+
+        out.append(f"  const void* pNext = {struct_accessor}->pNext;\n")
+        out.append(f"  while (pNext) {{\n")
+        out.append(
+            f"    const VkBaseInStructure* base = reinterpret_cast<const VkBaseInStructure*>(pNext);\n")
+
+        for extended_by in extended_by_list:
+            struct_extended_by = generator.vk.structs[extended_by]
+            out.append(
+                f"    if (base->sType == {struct_extended_by.sType}) {{\n")
+            out.append(
+                f"      FillProtoFromStruct({name}->add_pnext()->mutable_{extended_by.lower()}_chain_elem(), reinterpret_cast<const {struct_extended_by.name}*>(pNext));\n")
+            generator.required_functions.add(
+                f"FillProtoFromStruct/{extended_by}")
+            out.append("    }\n")
+
+        out.append(
+            f"    pNext = reinterpret_cast<const void*>(base->pNext);\n")
+        out.append("  }\n")
     elif member.type == 'char' and member.fixedSizeArray:
         out.append(
             f'  {name}->set_{member.name.lower()}({struct_accessor}->{member.name});\n')
