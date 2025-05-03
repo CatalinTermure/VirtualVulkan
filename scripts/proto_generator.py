@@ -3,7 +3,7 @@ from reg import Registry
 from base_generator import BaseGeneratorOptions
 from .vvk_generator import VvkGenerator
 from vulkan_object import Param, Member, VulkanObject
-from .commons import first_letter_upper, COMMANDS_TO_GENERATE, RetVal
+from .commons import first_letter_upper, COMMANDS_TO_GENERATE, EXTENSIONS_TO_ALLOW, RetVal
 import copy
 import inflection
 
@@ -262,7 +262,9 @@ message VkAllocationCallbacks {
                     continue
                 if struct.extendedBy:
                     for extended_by in struct.extendedBy:
-                        required_structs.add(extended_by)
+                        struct_extended_by = self.vk.structs[extended_by]
+                        if all([extension.name in EXTENSIONS_TO_ALLOW for extension in struct_extended_by.extensions]):
+                            required_structs.add(extended_by)
                 for member in struct.members:
                     if member.name == "pNext" or member.name == "sType":
                         continue
@@ -284,18 +286,24 @@ message VkAllocationCallbacks {
                     continue
                 if member.name == "pNext":
                     if struct.extendedBy:
+                        pnext_chain: list[str] = []
                         pnext_chain_index = 1
-                        pnext_chain_elements.append(
+                        pnext_chain.append(
                             f'message PNextChain_{struct.name} {{\n')
-                        pnext_chain_elements.append(
-                            '  oneof chain_element {\n')
+                        pnext_chain.append('  oneof chain_element {\n')
                         for extended_by in struct.extendedBy:
-                            pnext_chain_elements.append(
+                            if extended_by not in required_structs:
+                                continue
+                            pnext_chain.append(
                                 f'    {extended_by} {extended_by}_chain_elem = {pnext_chain_index};\n')
                             pnext_chain_index += 1
-                        pnext_chain_elements.append('  }\n')
-                        pnext_chain_elements.append('}\n')
+                        pnext_chain.append('  }\n')
+                        pnext_chain.append('}\n')
 
+                        if pnext_chain_index == 1:
+                            continue
+
+                        pnext_chain_elements.extend(pnext_chain)
                         out.append(
                             f'  repeated PNextChain_{struct.name} pNext = {index};\n')
                         index += 1

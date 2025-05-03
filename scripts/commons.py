@@ -27,6 +27,10 @@ class TypeInfo:
     cast_to: str | None
 
 
+EXTENSIONS_TO_ALLOW = {
+    "VK_KHR_timeline_semaphore",
+}
+
 COMMANDS_TO_GENERATE = [
     "vkCreateInstance",
     "vkDestroyInstance",
