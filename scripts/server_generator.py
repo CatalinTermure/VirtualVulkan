@@ -3,7 +3,7 @@ from reg import Registry
 from base_generator import BaseGeneratorOptions
 from vulkan_object import VulkanObject
 from .vvk_generator import VvkGenerator
-from .commons import first_letter_upper, COMMANDS_TO_GENERATE, fill_proto_from_struct, fill_struct_from_proto, get_required_function_definitions, indent, TRIVIAL_TYPES
+from .commons import first_letter_upper, COMMANDS_TO_GENERATE, fill_struct_from_proto, get_required_function_definitions, indent, TRIVIAL_TYPES
 
 
 def log(*args):
@@ -160,9 +160,9 @@ class ServerSrcGenerator(VvkGenerator):
                                 f'  {param.name}.sType = {self.vk.structs[param.type].sType};\n')
 
                         after_call_code.append(
-                            f'  vvk::server::{param.type}* {param.name}_proto = response->mutable_{cmd_name.lower()}()->mutable_{param.name.lower()}();\n')
-                        after_call_code.append(fill_proto_from_struct(
-                            self, param.type, f'{param.name}_proto', f'(&{param.name})'))
+                            f'  FillProtoFromStruct(response->mutable_{cmd_name.lower()}()->mutable_{param.name.lower()}(), &{param.name});\n')
+                        self.required_functions.add(
+                            f'FillProtoFromStruct/{param.type}')
                     else:
                         # only vkEnumerate* commands return multiple structs
                         assert ("vkEnumerate" in cmd_name or cmd_name in [
@@ -192,9 +192,9 @@ class ServerSrcGenerator(VvkGenerator):
                         after_call_code.append(
                             f'    for (int {index_name} = 0; {index_name} < {length_param.name}; {index_name}++) {{\n')
                         after_call_code.append(
-                            f'      vvk::server::{param.type}* {param.name}_proto = response->mutable_{cmd_name.lower()}()->add_{param.name.lower()}();\n')
-                        after_call_code.append(indent(
-                            fill_proto_from_struct(self, param.type, f'{param.name}_proto', f'(&{param.name}[{index_name}])'), 4))
+                            f'      FillProtoFromStruct(response->mutable_{cmd_name.lower()}()->add_{param.name.lower()}(), &{param.name}[{index_name}]);\n')
+                        self.required_functions.add(
+                            f'FillProtoFromStruct/{param.type}')
                         after_call_code.append("    }\n")
                         after_call_code.append("  }\n")
                 elif param.pointer and not param.const:
