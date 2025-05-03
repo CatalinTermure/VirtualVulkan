@@ -3146,9 +3146,9 @@ message VkMemoryBarrier {
 }
 
 message VkApplicationInfo {
-  optional string pApplicationName = 1; // const char* pApplicationName
+  optional bytes pApplicationName = 1; // const char* pApplicationName
   uint32 applicationVersion = 2; // uint32_t applicationVersion
-  optional string pEngineName = 3; // const char* pEngineName
+  optional bytes pEngineName = 3; // const char* pEngineName
   uint32 engineVersion = 4; // uint32_t engineVersion
   uint32 apiVersion = 5; // uint32_t apiVersion
 }
@@ -3163,9 +3163,9 @@ message VkInstanceCreateInfo {
   optional uint32 flags = 1; // VkInstanceCreateFlags flags
   optional VkApplicationInfo pApplicationInfo = 2; // const VkApplicationInfo* pApplicationInfo
   optional uint32 enabledLayerCount = 3; // uint32_t enabledLayerCount
-  repeated string ppEnabledLayerNames = 4; // const char* const* ppEnabledLayerNames
+  repeated bytes ppEnabledLayerNames = 4; // const char* const* ppEnabledLayerNames
   optional uint32 enabledExtensionCount = 5; // uint32_t enabledExtensionCount
-  repeated string ppEnabledExtensionNames = 6; // const char* const* ppEnabledExtensionNames
+  repeated bytes ppEnabledExtensionNames = 6; // const char* const* ppEnabledExtensionNames
 }
 
 message VkMemoryHeap {
@@ -3366,7 +3366,7 @@ message VkPhysicalDeviceProperties {
   uint32 vendorID = 3; // uint32_t vendorID
   uint32 deviceID = 4; // uint32_t deviceID
   VkPhysicalDeviceType deviceType = 5; // VkPhysicalDeviceType deviceType
-  string deviceName = 6; // char deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE]
+  bytes deviceName = 6; // char deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE]
   repeated uint32 pipelineCacheUUID = 7; // uint8_t pipelineCacheUUID[VK_UUID_SIZE]
   VkPhysicalDeviceLimits limits = 8; // VkPhysicalDeviceLimits limits
   VkPhysicalDeviceSparseProperties sparseProperties = 9; // VkPhysicalDeviceSparseProperties sparseProperties
@@ -3392,14 +3392,14 @@ message VkDeviceCreateInfo {
   uint32 queueCreateInfoCount = 3; // uint32_t queueCreateInfoCount
   repeated VkDeviceQueueCreateInfo pQueueCreateInfos = 4; // const VkDeviceQueueCreateInfo* pQueueCreateInfos
   optional uint32 enabledLayerCount = 5; // uint32_t enabledLayerCount
-  repeated string ppEnabledLayerNames = 6; // const char* const* ppEnabledLayerNames
+  repeated bytes ppEnabledLayerNames = 6; // const char* const* ppEnabledLayerNames
   optional uint32 enabledExtensionCount = 7; // uint32_t enabledExtensionCount
-  repeated string ppEnabledExtensionNames = 8; // const char* const* ppEnabledExtensionNames
+  repeated bytes ppEnabledExtensionNames = 8; // const char* const* ppEnabledExtensionNames
   optional VkPhysicalDeviceFeatures pEnabledFeatures = 9; // const VkPhysicalDeviceFeatures* pEnabledFeatures
 }
 
 message VkExtensionProperties {
-  string extensionName = 1; // char extensionName[VK_MAX_EXTENSION_NAME_SIZE]
+  bytes extensionName = 1; // char extensionName[VK_MAX_EXTENSION_NAME_SIZE]
   uint32 specVersion = 2; // uint32_t specVersion
 }
 
@@ -3504,7 +3504,7 @@ message VkPipelineShaderStageCreateInfo {
   optional uint32 flags = 2; // VkPipelineShaderStageCreateFlags flags
   uint32 stage = 3; // VkShaderStageFlagBits stage
   optional uint64 module = 4; // VkShaderModule module
-  string pName = 5; // const char* pName
+  bytes pName = 5; // const char* pName
   optional VkSpecializationInfo pSpecializationInfo = 6; // const VkSpecializationInfo* pSpecializationInfo
 }
 
@@ -3928,8 +3928,8 @@ message VkConformanceVersion {
 
 message VkPhysicalDeviceVulkan12Properties {
   VkDriverId driverID = 1; // VkDriverId driverID
-  string driverName = 2; // char driverName[VK_MAX_DRIVER_NAME_SIZE]
-  string driverInfo = 3; // char driverInfo[VK_MAX_DRIVER_INFO_SIZE]
+  bytes driverName = 2; // char driverName[VK_MAX_DRIVER_NAME_SIZE]
+  bytes driverInfo = 3; // char driverInfo[VK_MAX_DRIVER_INFO_SIZE]
   VkConformanceVersion conformanceVersion = 4; // VkConformanceVersion conformanceVersion
   VkShaderFloatControlsIndependence denormBehaviorIndependence = 5; // VkShaderFloatControlsIndependence denormBehaviorIndependence
   VkShaderFloatControlsIndependence roundingModeIndependence = 6; // VkShaderFloatControlsIndependence roundingModeIndependence

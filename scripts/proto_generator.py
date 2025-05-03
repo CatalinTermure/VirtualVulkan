@@ -12,8 +12,8 @@ C_TYPE_TO_PROTO_TYPE = {
     "uint32_t": "uint32",
     "uint64_t": "uint64",
     'int64_t': "int64",
-    "char*": "string",
-    "char**": "repeated string",
+    "char*": "bytes",
+    "char**": "repeated bytes",
     "VkDeviceSize": "uint64",
     "VkBool32": "bool",
     "float": "float",
@@ -27,7 +27,7 @@ C_TYPE_TO_PROTO_TYPE = {
 
     "HANDLE": "uint64",
     "DWORD": "uint32",
-    "LPCWSTR": "string",
+    "LPCWSTR": "bytes",
     # TODO: if this ever is needed, we need to add a new proto type
     "SECURITY_ATTRIBUTES*": "uint64",
 
@@ -54,7 +54,7 @@ def get_proto_type(generator: VvkGenerator, param: Param | Member | RetVal) -> s
         param_type = "char**"
     if param.fixedSizeArray:
         if param.type == 'char':
-            return "string"
+            return "bytes"
         non_pointer_param = copy.deepcopy(param)
         non_pointer_param.fixedSizeArray = None
         return f'repeated {get_proto_type(generator, non_pointer_param)}'

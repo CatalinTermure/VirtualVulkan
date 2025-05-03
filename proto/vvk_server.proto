@@ -214,7 +214,7 @@ message VkEnumerateInstanceExtensionPropertiesResponse {
 }
 
 message VkEnumerateInstanceExtensionPropertiesParams {
-  optional string pLayerName = 1; // const char* pLayerName
+  optional bytes pLayerName = 1; // const char* pLayerName
   uint32 pPropertyCount = 2; // uint32_t* pPropertyCount NON-CONST POINTER
   repeated VkExtensionProperties pProperties = 3; // VkExtensionProperties* pProperties NON-CONST POINTER
 }
@@ -226,7 +226,7 @@ message VkEnumerateDeviceExtensionPropertiesResponse {
 
 message VkEnumerateDeviceExtensionPropertiesParams {
   uint64 physicalDevice = 1; // VkPhysicalDevice physicalDevice
-  optional string pLayerName = 2; // const char* pLayerName
+  optional bytes pLayerName = 2; // const char* pLayerName
   uint32 pPropertyCount = 3; // uint32_t* pPropertyCount NON-CONST POINTER
   repeated VkExtensionProperties pProperties = 4; // VkExtensionProperties* pProperties NON-CONST POINTER
 }
