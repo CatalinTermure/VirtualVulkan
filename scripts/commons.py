@@ -192,20 +192,19 @@ def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, n
     elif member.pointer and member.const and member.type in generator.vk.structs:
         if member.length is None:
             aux_var = f'{name}_{member.name}'
-            pre_fill_declarations.append(
-                f'  {member.type} {aux_var} = {{}};\n')
             _, after_ = fill_struct_from_proto(generator,
                                                member.type, aux_var, f'{proto_accessor}.{member.name.lower()}()')
+            out.append(f'  {member.type}* {aux_var} = new {member.type};\n')
             out.append(
-                f'  FillStructFromProto({aux_var}, {proto_accessor}.{member.name.lower()}());\n')
+                f'  FillStructFromProto(*{aux_var}, {proto_accessor}.{member.name.lower()}());\n')
+            out.append(f'  {name}.{member.name} = {aux_var};\n')
             generator.required_functions.add(
                 f'FillStructFromProto/{member.type}')
-            out.append(
-                f'  {name}.{member.name} = &{aux_var};\n')
+            after.append(
+                f'  const {member.type} &{aux_var} = *{name}.{member.name};\n')
             if after_:
-                after.append(
-                    f'  const {member.type} &{aux_var} = *{name}.{member.name};\n')
                 after.append(after_)
+            after.append(f'  delete {name}.{member.name};\n')
         else:
             index_name = f'{member.name}_indx'
             pre_fill_declarations.append(

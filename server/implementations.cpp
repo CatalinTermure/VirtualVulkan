@@ -906,10 +906,10 @@ void FillStructFromProto(VkCommandBufferBeginInfo& original_struct, const vvk::s
   } else {
     original_struct.flags = VkCommandBufferUsageFlags{};
   }
-  VkCommandBufferInheritanceInfo original_struct_pInheritanceInfo = {};
   if (proto.has_pinheritanceinfo()) {
-    FillStructFromProto(original_struct_pInheritanceInfo, proto.pinheritanceinfo());
-    original_struct.pInheritanceInfo = &original_struct_pInheritanceInfo;
+    VkCommandBufferInheritanceInfo* original_struct_pInheritanceInfo = new VkCommandBufferInheritanceInfo;
+    FillStructFromProto(*original_struct_pInheritanceInfo, proto.pinheritanceinfo());
+    original_struct.pInheritanceInfo = original_struct_pInheritanceInfo;
   } else {
     original_struct.pInheritanceInfo = nullptr;
   }
@@ -991,10 +991,10 @@ void FillStructFromProto(VkDeviceCreateInfo& original_struct, const vvk::server:
   for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < proto.ppenabledextensionnames_size(); ppEnabledExtensionNames_indx++) {
     original_struct_ppEnabledExtensionNames[ppEnabledExtensionNames_indx] = proto.ppenabledextensionnames(ppEnabledExtensionNames_indx).data();
   }
-  VkPhysicalDeviceFeatures original_struct_pEnabledFeatures = {};
   if (proto.has_penabledfeatures()) {
-    FillStructFromProto(original_struct_pEnabledFeatures, proto.penabledfeatures());
-    original_struct.pEnabledFeatures = &original_struct_pEnabledFeatures;
+    VkPhysicalDeviceFeatures* original_struct_pEnabledFeatures = new VkPhysicalDeviceFeatures;
+    FillStructFromProto(*original_struct_pEnabledFeatures, proto.penabledfeatures());
+    original_struct.pEnabledFeatures = original_struct_pEnabledFeatures;
   } else {
     original_struct.pEnabledFeatures = nullptr;
   }
@@ -1075,66 +1075,66 @@ void FillStructFromProto(VkGraphicsPipelineCreateInfo& original_struct, const vv
   } else {
     original_struct.pStages = nullptr;
   }
-  VkPipelineVertexInputStateCreateInfo original_struct_pVertexInputState = {};
   if (proto.has_pvertexinputstate()) {
-    FillStructFromProto(original_struct_pVertexInputState, proto.pvertexinputstate());
-    original_struct.pVertexInputState = &original_struct_pVertexInputState;
+    VkPipelineVertexInputStateCreateInfo* original_struct_pVertexInputState = new VkPipelineVertexInputStateCreateInfo;
+    FillStructFromProto(*original_struct_pVertexInputState, proto.pvertexinputstate());
+    original_struct.pVertexInputState = original_struct_pVertexInputState;
   } else {
     original_struct.pVertexInputState = nullptr;
   }
-  VkPipelineInputAssemblyStateCreateInfo original_struct_pInputAssemblyState = {};
   if (proto.has_pinputassemblystate()) {
-    FillStructFromProto(original_struct_pInputAssemblyState, proto.pinputassemblystate());
-    original_struct.pInputAssemblyState = &original_struct_pInputAssemblyState;
+    VkPipelineInputAssemblyStateCreateInfo* original_struct_pInputAssemblyState = new VkPipelineInputAssemblyStateCreateInfo;
+    FillStructFromProto(*original_struct_pInputAssemblyState, proto.pinputassemblystate());
+    original_struct.pInputAssemblyState = original_struct_pInputAssemblyState;
   } else {
     original_struct.pInputAssemblyState = nullptr;
   }
-  VkPipelineTessellationStateCreateInfo original_struct_pTessellationState = {};
   if (proto.has_ptessellationstate()) {
-    FillStructFromProto(original_struct_pTessellationState, proto.ptessellationstate());
-    original_struct.pTessellationState = &original_struct_pTessellationState;
+    VkPipelineTessellationStateCreateInfo* original_struct_pTessellationState = new VkPipelineTessellationStateCreateInfo;
+    FillStructFromProto(*original_struct_pTessellationState, proto.ptessellationstate());
+    original_struct.pTessellationState = original_struct_pTessellationState;
   } else {
     original_struct.pTessellationState = nullptr;
   }
-  VkPipelineViewportStateCreateInfo original_struct_pViewportState = {};
   if (proto.has_pviewportstate()) {
-    FillStructFromProto(original_struct_pViewportState, proto.pviewportstate());
-    original_struct.pViewportState = &original_struct_pViewportState;
+    VkPipelineViewportStateCreateInfo* original_struct_pViewportState = new VkPipelineViewportStateCreateInfo;
+    FillStructFromProto(*original_struct_pViewportState, proto.pviewportstate());
+    original_struct.pViewportState = original_struct_pViewportState;
   } else {
     original_struct.pViewportState = nullptr;
   }
-  VkPipelineRasterizationStateCreateInfo original_struct_pRasterizationState = {};
   if (proto.has_prasterizationstate()) {
-    FillStructFromProto(original_struct_pRasterizationState, proto.prasterizationstate());
-    original_struct.pRasterizationState = &original_struct_pRasterizationState;
+    VkPipelineRasterizationStateCreateInfo* original_struct_pRasterizationState = new VkPipelineRasterizationStateCreateInfo;
+    FillStructFromProto(*original_struct_pRasterizationState, proto.prasterizationstate());
+    original_struct.pRasterizationState = original_struct_pRasterizationState;
   } else {
     original_struct.pRasterizationState = nullptr;
   }
-  VkPipelineMultisampleStateCreateInfo original_struct_pMultisampleState = {};
   if (proto.has_pmultisamplestate()) {
-    FillStructFromProto(original_struct_pMultisampleState, proto.pmultisamplestate());
-    original_struct.pMultisampleState = &original_struct_pMultisampleState;
+    VkPipelineMultisampleStateCreateInfo* original_struct_pMultisampleState = new VkPipelineMultisampleStateCreateInfo;
+    FillStructFromProto(*original_struct_pMultisampleState, proto.pmultisamplestate());
+    original_struct.pMultisampleState = original_struct_pMultisampleState;
   } else {
     original_struct.pMultisampleState = nullptr;
   }
-  VkPipelineDepthStencilStateCreateInfo original_struct_pDepthStencilState = {};
   if (proto.has_pdepthstencilstate()) {
-    FillStructFromProto(original_struct_pDepthStencilState, proto.pdepthstencilstate());
-    original_struct.pDepthStencilState = &original_struct_pDepthStencilState;
+    VkPipelineDepthStencilStateCreateInfo* original_struct_pDepthStencilState = new VkPipelineDepthStencilStateCreateInfo;
+    FillStructFromProto(*original_struct_pDepthStencilState, proto.pdepthstencilstate());
+    original_struct.pDepthStencilState = original_struct_pDepthStencilState;
   } else {
     original_struct.pDepthStencilState = nullptr;
   }
-  VkPipelineColorBlendStateCreateInfo original_struct_pColorBlendState = {};
   if (proto.has_pcolorblendstate()) {
-    FillStructFromProto(original_struct_pColorBlendState, proto.pcolorblendstate());
-    original_struct.pColorBlendState = &original_struct_pColorBlendState;
+    VkPipelineColorBlendStateCreateInfo* original_struct_pColorBlendState = new VkPipelineColorBlendStateCreateInfo;
+    FillStructFromProto(*original_struct_pColorBlendState, proto.pcolorblendstate());
+    original_struct.pColorBlendState = original_struct_pColorBlendState;
   } else {
     original_struct.pColorBlendState = nullptr;
   }
-  VkPipelineDynamicStateCreateInfo original_struct_pDynamicState = {};
   if (proto.has_pdynamicstate()) {
-    FillStructFromProto(original_struct_pDynamicState, proto.pdynamicstate());
-    original_struct.pDynamicState = &original_struct_pDynamicState;
+    VkPipelineDynamicStateCreateInfo* original_struct_pDynamicState = new VkPipelineDynamicStateCreateInfo;
+    FillStructFromProto(*original_struct_pDynamicState, proto.pdynamicstate());
+    original_struct.pDynamicState = original_struct_pDynamicState;
   } else {
     original_struct.pDynamicState = nullptr;
   }
@@ -1246,10 +1246,10 @@ void FillStructFromProto(VkInstanceCreateInfo& original_struct, const vvk::serve
   } else {
     original_struct.flags = VkInstanceCreateFlags{};
   }
-  VkApplicationInfo original_struct_pApplicationInfo = {};
   if (proto.has_papplicationinfo()) {
-    FillStructFromProto(original_struct_pApplicationInfo, proto.papplicationinfo());
-    original_struct.pApplicationInfo = &original_struct_pApplicationInfo;
+    VkApplicationInfo* original_struct_pApplicationInfo = new VkApplicationInfo;
+    FillStructFromProto(*original_struct_pApplicationInfo, proto.papplicationinfo());
+    original_struct.pApplicationInfo = original_struct_pApplicationInfo;
   } else {
     original_struct.pApplicationInfo = nullptr;
   }
@@ -1536,10 +1536,10 @@ void FillStructFromProto(VkPipelineShaderStageCreateInfo& original_struct, const
     original_struct.module = VkShaderModule{};
   }
   original_struct.pName = proto.pname().data();
-  VkSpecializationInfo original_struct_pSpecializationInfo = {};
   if (proto.has_pspecializationinfo()) {
-    FillStructFromProto(original_struct_pSpecializationInfo, proto.pspecializationinfo());
-    original_struct.pSpecializationInfo = &original_struct_pSpecializationInfo;
+    VkSpecializationInfo* original_struct_pSpecializationInfo = new VkSpecializationInfo;
+    FillStructFromProto(*original_struct_pSpecializationInfo, proto.pspecializationinfo());
+    original_struct.pSpecializationInfo = original_struct_pSpecializationInfo;
   } else {
     original_struct.pSpecializationInfo = nullptr;
   }
@@ -1844,10 +1844,10 @@ void FillStructFromProto(VkSubpassDescription& original_struct, const vvk::serve
   } else {
     original_struct.pResolveAttachments = nullptr;
   }
-  VkAttachmentReference original_struct_pDepthStencilAttachment = {};
   if (proto.has_pdepthstencilattachment()) {
-    FillStructFromProto(original_struct_pDepthStencilAttachment, proto.pdepthstencilattachment());
-    original_struct.pDepthStencilAttachment = &original_struct_pDepthStencilAttachment;
+    VkAttachmentReference* original_struct_pDepthStencilAttachment = new VkAttachmentReference;
+    FillStructFromProto(*original_struct_pDepthStencilAttachment, proto.pdepthstencilattachment());
+    original_struct.pDepthStencilAttachment = original_struct_pDepthStencilAttachment;
   } else {
     original_struct.pDepthStencilAttachment = nullptr;
   }
@@ -1892,6 +1892,10 @@ void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context, const vvk:
   VkResult result = vkCreateInstance(&pCreateInfo, nullptr, &server_pInstance);
   response->mutable_vkcreateinstance()->set_pinstance(reinterpret_cast<uint64_t>(server_pInstance));
   response->set_result(result);
+  if (request.vkcreateinstance().pcreateinfo().has_papplicationinfo()) {
+    const VkApplicationInfo &pCreateInfo_pApplicationInfo = *pCreateInfo.pApplicationInfo;
+    delete pCreateInfo.pApplicationInfo;
+  }
   delete[] pCreateInfo.ppEnabledLayerNames;
   delete[] pCreateInfo.ppEnabledExtensionNames;
 }
@@ -1955,6 +1959,10 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
   delete[] pCreateInfo.pQueueCreateInfos;
   delete[] pCreateInfo.ppEnabledLayerNames;
   delete[] pCreateInfo.ppEnabledExtensionNames;
+  if (request.vkcreatedevice().pcreateinfo().has_penabledfeatures()) {
+    const VkPhysicalDeviceFeatures &pCreateInfo_pEnabledFeatures = *pCreateInfo.pEnabledFeatures;
+    delete pCreateInfo.pEnabledFeatures;
+  }
 }
 void UnpackAndExecuteVkDestroyDevice(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyDevice");
@@ -2213,6 +2221,10 @@ void UnpackAndExecuteVkBeginCommandBuffer(vvk::ExecutionContext& context, const 
   FillStructFromProto(pBeginInfo, request.vkbegincommandbuffer().pbegininfo());
   VkResult result = vkBeginCommandBuffer(reinterpret_cast<VkCommandBuffer>(request.vkbegincommandbuffer().commandbuffer()), &pBeginInfo);
   response->set_result(result);
+  if (request.vkbegincommandbuffer().pbegininfo().has_pinheritanceinfo()) {
+    const VkCommandBufferInheritanceInfo &pBeginInfo_pInheritanceInfo = *pBeginInfo.pInheritanceInfo;
+    delete pBeginInfo.pInheritanceInfo;
+  }
 }
 void UnpackAndExecuteVkEndCommandBuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkEndCommandBuffer");
@@ -2246,6 +2258,10 @@ void UnpackAndExecuteVkCreateRenderPass(vvk::ExecutionContext& context, const vv
     delete[] pCreateInfo_pSubpasses_i.pInputAttachments;
     delete[] pCreateInfo_pSubpasses_i.pColorAttachments;
     delete[] pCreateInfo_pSubpasses_i.pResolveAttachments;
+    if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_pdepthstencilattachment()) {
+      const VkAttachmentReference &pCreateInfo_pSubpasses_i_pDepthStencilAttachment = *pCreateInfo_pSubpasses_i.pDepthStencilAttachment;
+      delete pCreateInfo_pSubpasses_i.pDepthStencilAttachment;
+    }
     delete[] pCreateInfo_pSubpasses_i.pPreserveAttachments;
   }
   delete[] pCreateInfo.pSubpasses;
@@ -2313,6 +2329,7 @@ void UnpackAndExecuteVkCreateGraphicsPipelines(vvk::ExecutionContext& context, c
       if (request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).has_pspecializationinfo()) {
         const VkSpecializationInfo &pCreateInfos_ref_pStages_i_pSpecializationInfo = *pCreateInfos_ref_pStages_i.pSpecializationInfo;
         delete[] pCreateInfos_ref_pStages_i_pSpecializationInfo.pMapEntries;
+        delete pCreateInfos_ref_pStages_i.pSpecializationInfo;
       }
     }
     delete[] pCreateInfos_ref.pStages;
@@ -2320,19 +2337,43 @@ void UnpackAndExecuteVkCreateGraphicsPipelines(vvk::ExecutionContext& context, c
       const VkPipelineVertexInputStateCreateInfo &pCreateInfos_ref_pVertexInputState = *pCreateInfos_ref.pVertexInputState;
       delete[] pCreateInfos_ref_pVertexInputState.pVertexBindingDescriptions;
       delete[] pCreateInfos_ref_pVertexInputState.pVertexAttributeDescriptions;
+      delete pCreateInfos_ref.pVertexInputState;
+    }
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pinputassemblystate()) {
+      const VkPipelineInputAssemblyStateCreateInfo &pCreateInfos_ref_pInputAssemblyState = *pCreateInfos_ref.pInputAssemblyState;
+      delete pCreateInfos_ref.pInputAssemblyState;
+    }
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_ptessellationstate()) {
+      const VkPipelineTessellationStateCreateInfo &pCreateInfos_ref_pTessellationState = *pCreateInfos_ref.pTessellationState;
+      delete pCreateInfos_ref.pTessellationState;
     }
     if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pviewportstate()) {
       const VkPipelineViewportStateCreateInfo &pCreateInfos_ref_pViewportState = *pCreateInfos_ref.pViewportState;
       delete[] pCreateInfos_ref_pViewportState.pViewports;
       delete[] pCreateInfos_ref_pViewportState.pScissors;
+      delete pCreateInfos_ref.pViewportState;
+    }
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_prasterizationstate()) {
+      const VkPipelineRasterizationStateCreateInfo &pCreateInfos_ref_pRasterizationState = *pCreateInfos_ref.pRasterizationState;
+      delete pCreateInfos_ref.pRasterizationState;
     }
     if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pmultisamplestate()) {
       const VkPipelineMultisampleStateCreateInfo &pCreateInfos_ref_pMultisampleState = *pCreateInfos_ref.pMultisampleState;
       delete[] pCreateInfos_ref_pMultisampleState.pSampleMask;
+      delete pCreateInfos_ref.pMultisampleState;
+    }
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pdepthstencilstate()) {
+      const VkPipelineDepthStencilStateCreateInfo &pCreateInfos_ref_pDepthStencilState = *pCreateInfos_ref.pDepthStencilState;
+      delete pCreateInfos_ref.pDepthStencilState;
     }
     if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pcolorblendstate()) {
       const VkPipelineColorBlendStateCreateInfo &pCreateInfos_ref_pColorBlendState = *pCreateInfos_ref.pColorBlendState;
       delete[] pCreateInfos_ref_pColorBlendState.pAttachments;
+      delete pCreateInfos_ref.pColorBlendState;
+    }
+    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pdynamicstate()) {
+      const VkPipelineDynamicStateCreateInfo &pCreateInfos_ref_pDynamicState = *pCreateInfos_ref.pDynamicState;
+      delete pCreateInfos_ref.pDynamicState;
     }
   }
 }
