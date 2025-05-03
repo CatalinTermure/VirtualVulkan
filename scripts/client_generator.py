@@ -111,6 +111,11 @@ class ClientSrcGenerator(VvkGenerator):
                 after_call_code.append("  }\n")
         elif param.pointer and not param.const and param.type in self.vk.structs:
             if param.length is None:
+                out.append(
+                    f'  FillProtoFromStruct(request.mutable_{cmd_name.lower()}()->mutable_{param.name.lower()}(), {param.name});\n')
+                self.required_functions.add(
+                    f'FillProtoFromStruct/{param.type}')
+
                 after_call_code.append(
                     f'  {param.type}& {param.name}_ref = *{param.name};\n')
                 struct_fill_, unused = fill_struct_from_proto(
