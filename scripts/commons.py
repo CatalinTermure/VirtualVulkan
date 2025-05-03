@@ -522,10 +522,14 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
     return "".join(out)
 
 
-def fill_proto_from_struct(generator: VvkGenerator, struct_type: str, name: str, struct_accessor: str) -> str:
+def fill_proto_from_struct(generator: VvkGenerator, struct_type: str, name: str, struct_accessor: str, member_filter: set[str] = set()) -> str:
     out = []
     struct = generator.vk.structs[struct_type]
+    if not member_filter:
+        member_filter = {member.name for member in struct.members}
     for member in struct.members:
+        if member.name not in member_filter:
+            continue
         if member.optional:
             out.append(f'  if ({struct_accessor}->{member.name}) {{\n')
             out.append(
@@ -557,6 +561,14 @@ def __get_function_definition(generator: VvkGenerator, func: str) -> str:
             f'void FillStructFromProto({type_name}& original_struct, const vvk::server::{type_name}& proto) {{\n')
         out.append(fill_struct_from_proto(
             generator, type_name, 'original_struct', 'proto')[0])
+        out.append("}\n")
+        return "".join(out)
+    if func_name == "FillPNextChain":
+        out: list[str] = []
+        out.append(
+            f'void FillPNextChain(vvk::server::{type_name}* proto, const {type_name}* original_struct) {{\n')
+        out.append(fill_proto_from_struct(
+            generator, type_name, 'proto', 'original_struct', member_filter={'pNext'}))
         out.append("}\n")
         return "".join(out)
     return 'static_assert(false, "Unkown function type");\n'
