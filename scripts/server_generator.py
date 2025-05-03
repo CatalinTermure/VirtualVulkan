@@ -63,9 +63,12 @@ class ServerSrcGenerator(VvkGenerator):
                     if param.length is None:
                         actual_parameters.append(f'&{param.name}')
                         out.append(f'  {param.type} {param.name} = {{}};\n')
-                        out_, after_ = fill_struct_from_proto(self,
-                                                              param.type, param.name, f'{param_accessor}.{param.name.lower()}()')
-                        out.append(out_)
+                        _, after_ = fill_struct_from_proto(self,
+                                                           param.type, param.name, f'{param_accessor}.{param.name.lower()}()')
+                        out.append(
+                            f'  FillStructFromProto({param.name}, {param_accessor}.{param.name.lower()}());\n')
+                        self.required_functions.add(
+                            f'FillStructFromProto/{param.type}')
                         deletions.append(after_)
                     else:
                         assert (param.length in [
@@ -75,11 +78,12 @@ class ServerSrcGenerator(VvkGenerator):
                             f'  std::vector<{param.type}> {param.name}({param_accessor}.{param.length.lower()}());\n')
                         out.append(
                             f'  for (int i = 0; i < {param.name}.size(); i++) {{\n')
+                        _, after_ = fill_struct_from_proto(self,
+                                                           param.type, f'{param.name}_ref', f'{param_accessor}.{param.name.lower()}(i)')
                         out.append(
-                            f'    {param.type}& {param.name}_ref = {param.name}[i];\n')
-                        out_, after_ = fill_struct_from_proto(self,
-                                                              param.type, f'{param.name}_ref', f'{param_accessor}.{param.name.lower()}(i)')
-                        out.append(indent(out_, 2))
+                            f'    FillStructFromProto({param.name}[i], {param_accessor}.{param.name.lower()}(i));\n')
+                        self.required_functions.add(
+                            f'FillStructFromProto/{param.type}')
                         out.append("  }\n")
                         if after_:
                             deletions.append(

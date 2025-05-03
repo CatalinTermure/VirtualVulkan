@@ -43,6 +43,67 @@ void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan14Features* proto, c
 void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan14Properties* proto, const VkPhysicalDeviceVulkan14Properties* original_struct);
 void FillProtoFromStruct(vvk::server::VkQueueFamilyProperties* proto, const VkQueueFamilyProperties* original_struct);
 void FillProtoFromStruct(vvk::server::VkSubresourceLayout* proto, const VkSubresourceLayout* original_struct);
+void FillStructFromProto(VkApplicationInfo& original_struct, const vvk::server::VkApplicationInfo& proto);
+void FillStructFromProto(VkAttachmentDescription& original_struct, const vvk::server::VkAttachmentDescription& proto);
+void FillStructFromProto(VkAttachmentReference& original_struct, const vvk::server::VkAttachmentReference& proto);
+void FillStructFromProto(VkBindImageMemoryInfo& original_struct, const vvk::server::VkBindImageMemoryInfo& proto);
+void FillStructFromProto(VkBufferImageCopy& original_struct, const vvk::server::VkBufferImageCopy& proto);
+void FillStructFromProto(VkBufferMemoryBarrier& original_struct, const vvk::server::VkBufferMemoryBarrier& proto);
+void FillStructFromProto(VkClearColorValue& original_struct, const vvk::server::VkClearColorValue& proto);
+void FillStructFromProto(VkClearDepthStencilValue& original_struct, const vvk::server::VkClearDepthStencilValue& proto);
+void FillStructFromProto(VkClearValue& original_struct, const vvk::server::VkClearValue& proto);
+void FillStructFromProto(VkCommandBufferAllocateInfo& original_struct, const vvk::server::VkCommandBufferAllocateInfo& proto);
+void FillStructFromProto(VkCommandBufferBeginInfo& original_struct, const vvk::server::VkCommandBufferBeginInfo& proto);
+void FillStructFromProto(VkCommandBufferInheritanceInfo& original_struct, const vvk::server::VkCommandBufferInheritanceInfo& proto);
+void FillStructFromProto(VkCommandPoolCreateInfo& original_struct, const vvk::server::VkCommandPoolCreateInfo& proto);
+void FillStructFromProto(VkComponentMapping& original_struct, const vvk::server::VkComponentMapping& proto);
+void FillStructFromProto(VkDeviceCreateInfo& original_struct, const vvk::server::VkDeviceCreateInfo& proto);
+void FillStructFromProto(VkDeviceQueueCreateInfo& original_struct, const vvk::server::VkDeviceQueueCreateInfo& proto);
+void FillStructFromProto(VkExtent2D& original_struct, const vvk::server::VkExtent2D& proto);
+void FillStructFromProto(VkExtent3D& original_struct, const vvk::server::VkExtent3D& proto);
+void FillStructFromProto(VkFenceCreateInfo& original_struct, const vvk::server::VkFenceCreateInfo& proto);
+void FillStructFromProto(VkFramebufferCreateInfo& original_struct, const vvk::server::VkFramebufferCreateInfo& proto);
+void FillStructFromProto(VkGraphicsPipelineCreateInfo& original_struct, const vvk::server::VkGraphicsPipelineCreateInfo& proto);
+void FillStructFromProto(VkImageCreateInfo& original_struct, const vvk::server::VkImageCreateInfo& proto);
+void FillStructFromProto(VkImageMemoryBarrier& original_struct, const vvk::server::VkImageMemoryBarrier& proto);
+void FillStructFromProto(VkImageMemoryRequirementsInfo2& original_struct, const vvk::server::VkImageMemoryRequirementsInfo2& proto);
+void FillStructFromProto(VkImageSubresource& original_struct, const vvk::server::VkImageSubresource& proto);
+void FillStructFromProto(VkImageSubresourceLayers& original_struct, const vvk::server::VkImageSubresourceLayers& proto);
+void FillStructFromProto(VkImageSubresourceRange& original_struct, const vvk::server::VkImageSubresourceRange& proto);
+void FillStructFromProto(VkImageViewCreateInfo& original_struct, const vvk::server::VkImageViewCreateInfo& proto);
+void FillStructFromProto(VkInstanceCreateInfo& original_struct, const vvk::server::VkInstanceCreateInfo& proto);
+void FillStructFromProto(VkMemoryAllocateInfo& original_struct, const vvk::server::VkMemoryAllocateInfo& proto);
+void FillStructFromProto(VkMemoryBarrier& original_struct, const vvk::server::VkMemoryBarrier& proto);
+void FillStructFromProto(VkOffset2D& original_struct, const vvk::server::VkOffset2D& proto);
+void FillStructFromProto(VkOffset3D& original_struct, const vvk::server::VkOffset3D& proto);
+void FillStructFromProto(VkPhysicalDeviceFeatures& original_struct, const vvk::server::VkPhysicalDeviceFeatures& proto);
+void FillStructFromProto(VkPipelineColorBlendAttachmentState& original_struct, const vvk::server::VkPipelineColorBlendAttachmentState& proto);
+void FillStructFromProto(VkPipelineColorBlendStateCreateInfo& original_struct, const vvk::server::VkPipelineColorBlendStateCreateInfo& proto);
+void FillStructFromProto(VkPipelineDepthStencilStateCreateInfo& original_struct, const vvk::server::VkPipelineDepthStencilStateCreateInfo& proto);
+void FillStructFromProto(VkPipelineDynamicStateCreateInfo& original_struct, const vvk::server::VkPipelineDynamicStateCreateInfo& proto);
+void FillStructFromProto(VkPipelineInputAssemblyStateCreateInfo& original_struct, const vvk::server::VkPipelineInputAssemblyStateCreateInfo& proto);
+void FillStructFromProto(VkPipelineLayoutCreateInfo& original_struct, const vvk::server::VkPipelineLayoutCreateInfo& proto);
+void FillStructFromProto(VkPipelineMultisampleStateCreateInfo& original_struct, const vvk::server::VkPipelineMultisampleStateCreateInfo& proto);
+void FillStructFromProto(VkPipelineRasterizationStateCreateInfo& original_struct, const vvk::server::VkPipelineRasterizationStateCreateInfo& proto);
+void FillStructFromProto(VkPipelineShaderStageCreateInfo& original_struct, const vvk::server::VkPipelineShaderStageCreateInfo& proto);
+void FillStructFromProto(VkPipelineTessellationStateCreateInfo& original_struct, const vvk::server::VkPipelineTessellationStateCreateInfo& proto);
+void FillStructFromProto(VkPipelineVertexInputStateCreateInfo& original_struct, const vvk::server::VkPipelineVertexInputStateCreateInfo& proto);
+void FillStructFromProto(VkPipelineViewportStateCreateInfo& original_struct, const vvk::server::VkPipelineViewportStateCreateInfo& proto);
+void FillStructFromProto(VkPushConstantRange& original_struct, const vvk::server::VkPushConstantRange& proto);
+void FillStructFromProto(VkRect2D& original_struct, const vvk::server::VkRect2D& proto);
+void FillStructFromProto(VkRenderPassBeginInfo& original_struct, const vvk::server::VkRenderPassBeginInfo& proto);
+void FillStructFromProto(VkRenderPassCreateInfo& original_struct, const vvk::server::VkRenderPassCreateInfo& proto);
+void FillStructFromProto(VkSemaphoreCreateInfo& original_struct, const vvk::server::VkSemaphoreCreateInfo& proto);
+void FillStructFromProto(VkShaderModuleCreateInfo& original_struct, const vvk::server::VkShaderModuleCreateInfo& proto);
+void FillStructFromProto(VkSpecializationInfo& original_struct, const vvk::server::VkSpecializationInfo& proto);
+void FillStructFromProto(VkSpecializationMapEntry& original_struct, const vvk::server::VkSpecializationMapEntry& proto);
+void FillStructFromProto(VkStencilOpState& original_struct, const vvk::server::VkStencilOpState& proto);
+void FillStructFromProto(VkSubmitInfo& original_struct, const vvk::server::VkSubmitInfo& proto);
+void FillStructFromProto(VkSubpassDependency& original_struct, const vvk::server::VkSubpassDependency& proto);
+void FillStructFromProto(VkSubpassDescription& original_struct, const vvk::server::VkSubpassDescription& proto);
+void FillStructFromProto(VkVertexInputAttributeDescription& original_struct, const vvk::server::VkVertexInputAttributeDescription& proto);
+void FillStructFromProto(VkVertexInputBindingDescription& original_struct, const vvk::server::VkVertexInputBindingDescription& proto);
+void FillStructFromProto(VkViewport& original_struct, const vvk::server::VkViewport& proto);
 void FillProtoFromStruct(vvk::server::VkConformanceVersion* proto, const VkConformanceVersion* original_struct) {
   proto->set_major(static_cast<uint32_t>(original_struct->major));
   proto->set_minor(static_cast<uint32_t>(original_struct->minor));
@@ -744,59 +805,1088 @@ void FillProtoFromStruct(vvk::server::VkSubresourceLayout* proto, const VkSubres
   proto->set_arraypitch(static_cast<uint64_t>(original_struct->arrayPitch));
   proto->set_depthpitch(static_cast<uint64_t>(original_struct->depthPitch));
 }
+void FillStructFromProto(VkApplicationInfo& original_struct, const vvk::server::VkApplicationInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_papplicationname()) {
+    original_struct.pApplicationName = proto.papplicationname().data();
+  } else {
+    original_struct.pApplicationName = nullptr;
+  }
+  original_struct.applicationVersion = proto.applicationversion();
+  if (proto.has_penginename()) {
+    original_struct.pEngineName = proto.penginename().data();
+  } else {
+    original_struct.pEngineName = nullptr;
+  }
+  original_struct.engineVersion = proto.engineversion();
+  original_struct.apiVersion = proto.apiversion();
+}
+void FillStructFromProto(VkAttachmentDescription& original_struct, const vvk::server::VkAttachmentDescription& proto) {
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkAttachmentDescriptionFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkAttachmentDescriptionFlags{};
+  }
+  original_struct.format = static_cast<VkFormat>(proto.format());
+  original_struct.samples = static_cast<VkSampleCountFlagBits>(proto.samples());
+  original_struct.loadOp = static_cast<VkAttachmentLoadOp>(proto.loadop());
+  original_struct.storeOp = static_cast<VkAttachmentStoreOp>(proto.storeop());
+  original_struct.stencilLoadOp = static_cast<VkAttachmentLoadOp>(proto.stencilloadop());
+  original_struct.stencilStoreOp = static_cast<VkAttachmentStoreOp>(proto.stencilstoreop());
+  original_struct.initialLayout = static_cast<VkImageLayout>(proto.initiallayout());
+  original_struct.finalLayout = static_cast<VkImageLayout>(proto.finallayout());
+}
+void FillStructFromProto(VkAttachmentReference& original_struct, const vvk::server::VkAttachmentReference& proto) {
+  original_struct.attachment = proto.attachment();
+  original_struct.layout = static_cast<VkImageLayout>(proto.layout());
+}
+void FillStructFromProto(VkBindImageMemoryInfo& original_struct, const vvk::server::VkBindImageMemoryInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.image = reinterpret_cast<VkImage>(proto.image());
+  original_struct.memory = reinterpret_cast<VkDeviceMemory>(proto.memory());
+  original_struct.memoryOffset = static_cast<VkDeviceSize>(proto.memoryoffset());
+}
+void FillStructFromProto(VkBufferImageCopy& original_struct, const vvk::server::VkBufferImageCopy& proto) {
+  original_struct.bufferOffset = static_cast<VkDeviceSize>(proto.bufferoffset());
+  original_struct.bufferRowLength = proto.bufferrowlength();
+  original_struct.bufferImageHeight = proto.bufferimageheight();
+  VkImageSubresourceLayers &original_struct_imageSubresource = original_struct.imageSubresource;
+  FillStructFromProto(original_struct_imageSubresource, proto.imagesubresource());
+  VkOffset3D &original_struct_imageOffset = original_struct.imageOffset;
+  FillStructFromProto(original_struct_imageOffset, proto.imageoffset());
+  VkExtent3D &original_struct_imageExtent = original_struct.imageExtent;
+  FillStructFromProto(original_struct_imageExtent, proto.imageextent());
+}
+void FillStructFromProto(VkBufferMemoryBarrier& original_struct, const vvk::server::VkBufferMemoryBarrier& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.srcAccessMask = static_cast<VkAccessFlags>(proto.srcaccessmask());
+  original_struct.dstAccessMask = static_cast<VkAccessFlags>(proto.dstaccessmask());
+  original_struct.srcQueueFamilyIndex = proto.srcqueuefamilyindex();
+  original_struct.dstQueueFamilyIndex = proto.dstqueuefamilyindex();
+  original_struct.buffer = reinterpret_cast<VkBuffer>(proto.buffer());
+  original_struct.offset = static_cast<VkDeviceSize>(proto.offset());
+  original_struct.size = static_cast<VkDeviceSize>(proto.size());
+}
+void FillStructFromProto(VkClearColorValue& original_struct, const vvk::server::VkClearColorValue& proto) {
+  for (int float32_indx = 0; float32_indx < 4; float32_indx++) {
+    original_struct.float32[float32_indx] = proto.float32(float32_indx);
+  }
+  for (int int32_indx = 0; int32_indx < 4; int32_indx++) {
+    original_struct.int32[int32_indx] = proto.int32(int32_indx);
+  }
+  for (int uint32_indx = 0; uint32_indx < 4; uint32_indx++) {
+    original_struct.uint32[uint32_indx] = proto.uint32(uint32_indx);
+  }
+}
+void FillStructFromProto(VkClearDepthStencilValue& original_struct, const vvk::server::VkClearDepthStencilValue& proto) {
+  original_struct.depth = proto.depth();
+  original_struct.stencil = proto.stencil();
+}
+void FillStructFromProto(VkClearValue& original_struct, const vvk::server::VkClearValue& proto) {
+  VkClearColorValue &original_struct_color = original_struct.color;
+  FillStructFromProto(original_struct_color, proto.color());
+  VkClearDepthStencilValue &original_struct_depthStencil = original_struct.depthStencil;
+  FillStructFromProto(original_struct_depthStencil, proto.depthstencil());
+}
+void FillStructFromProto(VkCommandBufferAllocateInfo& original_struct, const vvk::server::VkCommandBufferAllocateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.commandPool = reinterpret_cast<VkCommandPool>(proto.commandpool());
+  original_struct.level = static_cast<VkCommandBufferLevel>(proto.level());
+  original_struct.commandBufferCount = proto.commandbuffercount();
+}
+void FillStructFromProto(VkCommandBufferBeginInfo& original_struct, const vvk::server::VkCommandBufferBeginInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkCommandBufferUsageFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkCommandBufferUsageFlags{};
+  }
+  VkCommandBufferInheritanceInfo original_struct_pInheritanceInfo = {};
+  if (proto.has_pinheritanceinfo()) {
+    FillStructFromProto(original_struct_pInheritanceInfo, proto.pinheritanceinfo());
+    original_struct.pInheritanceInfo = &original_struct_pInheritanceInfo;
+  } else {
+    original_struct.pInheritanceInfo = nullptr;
+  }
+}
+void FillStructFromProto(VkCommandBufferInheritanceInfo& original_struct, const vvk::server::VkCommandBufferInheritanceInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_renderpass()) {
+    original_struct.renderPass = reinterpret_cast<VkRenderPass>(proto.renderpass());
+  } else {
+    original_struct.renderPass = VkRenderPass{};
+  }
+  original_struct.subpass = proto.subpass();
+  if (proto.has_framebuffer()) {
+    original_struct.framebuffer = reinterpret_cast<VkFramebuffer>(proto.framebuffer());
+  } else {
+    original_struct.framebuffer = VkFramebuffer{};
+  }
+  original_struct.occlusionQueryEnable = proto.occlusionqueryenable();
+  if (proto.has_queryflags()) {
+    original_struct.queryFlags = static_cast<VkQueryControlFlags>(proto.queryflags());
+  } else {
+    original_struct.queryFlags = VkQueryControlFlags{};
+  }
+  if (proto.has_pipelinestatistics()) {
+    original_struct.pipelineStatistics = static_cast<VkQueryPipelineStatisticFlags>(proto.pipelinestatistics());
+  } else {
+    original_struct.pipelineStatistics = VkQueryPipelineStatisticFlags{};
+  }
+}
+void FillStructFromProto(VkCommandPoolCreateInfo& original_struct, const vvk::server::VkCommandPoolCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkCommandPoolCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkCommandPoolCreateFlags{};
+  }
+  original_struct.queueFamilyIndex = proto.queuefamilyindex();
+}
+void FillStructFromProto(VkComponentMapping& original_struct, const vvk::server::VkComponentMapping& proto) {
+  original_struct.r = static_cast<VkComponentSwizzle>(proto.r());
+  original_struct.g = static_cast<VkComponentSwizzle>(proto.g());
+  original_struct.b = static_cast<VkComponentSwizzle>(proto.b());
+  original_struct.a = static_cast<VkComponentSwizzle>(proto.a());
+}
+void FillStructFromProto(VkDeviceCreateInfo& original_struct, const vvk::server::VkDeviceCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkDeviceCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkDeviceCreateFlags{};
+  }
+  original_struct.queueCreateInfoCount = proto.queuecreateinfocount();
+  VkDeviceQueueCreateInfo* original_struct_pQueueCreateInfos = new VkDeviceQueueCreateInfo[proto.pqueuecreateinfos_size()]();
+  original_struct.pQueueCreateInfos = original_struct_pQueueCreateInfos;
+  for (int pQueueCreateInfos_indx = 0; pQueueCreateInfos_indx < proto.pqueuecreateinfos_size(); pQueueCreateInfos_indx++) {
+    VkDeviceQueueCreateInfo &original_struct_pQueueCreateInfos_i = original_struct_pQueueCreateInfos[pQueueCreateInfos_indx];
+    FillStructFromProto(original_struct_pQueueCreateInfos_i, proto.pqueuecreateinfos(pQueueCreateInfos_indx));
+  }
+  if (proto.has_enabledlayercount()) {
+    original_struct.enabledLayerCount = proto.enabledlayercount();
+  } else {
+    original_struct.enabledLayerCount = uint32_t{};
+  }
+  const char** original_struct_ppEnabledLayerNames = new const char*[proto.ppenabledlayernames_size()]();
+  original_struct.ppEnabledLayerNames = original_struct_ppEnabledLayerNames;
+  for (int ppEnabledLayerNames_indx = 0; ppEnabledLayerNames_indx < proto.ppenabledlayernames_size(); ppEnabledLayerNames_indx++) {
+    original_struct_ppEnabledLayerNames[ppEnabledLayerNames_indx] = proto.ppenabledlayernames(ppEnabledLayerNames_indx).data();
+  }
+  if (proto.has_enabledextensioncount()) {
+    original_struct.enabledExtensionCount = proto.enabledextensioncount();
+  } else {
+    original_struct.enabledExtensionCount = uint32_t{};
+  }
+  const char** original_struct_ppEnabledExtensionNames = new const char*[proto.ppenabledextensionnames_size()]();
+  original_struct.ppEnabledExtensionNames = original_struct_ppEnabledExtensionNames;
+  for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < proto.ppenabledextensionnames_size(); ppEnabledExtensionNames_indx++) {
+    original_struct_ppEnabledExtensionNames[ppEnabledExtensionNames_indx] = proto.ppenabledextensionnames(ppEnabledExtensionNames_indx).data();
+  }
+  VkPhysicalDeviceFeatures original_struct_pEnabledFeatures = {};
+  if (proto.has_penabledfeatures()) {
+    FillStructFromProto(original_struct_pEnabledFeatures, proto.penabledfeatures());
+    original_struct.pEnabledFeatures = &original_struct_pEnabledFeatures;
+  } else {
+    original_struct.pEnabledFeatures = nullptr;
+  }
+}
+void FillStructFromProto(VkDeviceQueueCreateInfo& original_struct, const vvk::server::VkDeviceQueueCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkDeviceQueueCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkDeviceQueueCreateFlags{};
+  }
+  original_struct.queueFamilyIndex = proto.queuefamilyindex();
+  original_struct.queueCount = proto.queuecount();
+  float* original_struct_pQueuePriorities = new float[proto.pqueuepriorities_size()]();
+  original_struct.pQueuePriorities = original_struct_pQueuePriorities;
+  for (int pQueuePriorities_indx = 0; pQueuePriorities_indx < proto.pqueuepriorities_size(); pQueuePriorities_indx++) {
+    original_struct_pQueuePriorities[pQueuePriorities_indx] = proto.pqueuepriorities(pQueuePriorities_indx);
+  }
+}
+void FillStructFromProto(VkExtent2D& original_struct, const vvk::server::VkExtent2D& proto) {
+  original_struct.width = proto.width();
+  original_struct.height = proto.height();
+}
+void FillStructFromProto(VkExtent3D& original_struct, const vvk::server::VkExtent3D& proto) {
+  original_struct.width = proto.width();
+  original_struct.height = proto.height();
+  original_struct.depth = proto.depth();
+}
+void FillStructFromProto(VkFenceCreateInfo& original_struct, const vvk::server::VkFenceCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkFenceCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkFenceCreateFlags{};
+  }
+}
+void FillStructFromProto(VkFramebufferCreateInfo& original_struct, const vvk::server::VkFramebufferCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkFramebufferCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkFramebufferCreateFlags{};
+  }
+  original_struct.renderPass = reinterpret_cast<VkRenderPass>(proto.renderpass());
+  if (proto.has_attachmentcount()) {
+    original_struct.attachmentCount = proto.attachmentcount();
+  } else {
+    original_struct.attachmentCount = uint32_t{};
+  }
+  original_struct.pAttachments = reinterpret_cast<const VkImageView*>(proto.pattachments().data());
+  original_struct.width = proto.width();
+  original_struct.height = proto.height();
+  original_struct.layers = proto.layers();
+}
+void FillStructFromProto(VkGraphicsPipelineCreateInfo& original_struct, const vvk::server::VkGraphicsPipelineCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkPipelineCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkPipelineCreateFlags{};
+  }
+  if (proto.has_stagecount()) {
+    original_struct.stageCount = proto.stagecount();
+  } else {
+    original_struct.stageCount = uint32_t{};
+  }
+  VkPipelineShaderStageCreateInfo* original_struct_pStages = new VkPipelineShaderStageCreateInfo[proto.pstages_size()]();
+  original_struct.pStages = original_struct_pStages;
+  if (proto.pstages_size()) {
+    for (int pStages_indx = 0; pStages_indx < proto.pstages_size(); pStages_indx++) {
+      VkPipelineShaderStageCreateInfo &original_struct_pStages_i = original_struct_pStages[pStages_indx];
+      FillStructFromProto(original_struct_pStages_i, proto.pstages(pStages_indx));
+    }
+  } else {
+    original_struct.pStages = nullptr;
+  }
+  VkPipelineVertexInputStateCreateInfo original_struct_pVertexInputState = {};
+  if (proto.has_pvertexinputstate()) {
+    FillStructFromProto(original_struct_pVertexInputState, proto.pvertexinputstate());
+    original_struct.pVertexInputState = &original_struct_pVertexInputState;
+  } else {
+    original_struct.pVertexInputState = nullptr;
+  }
+  VkPipelineInputAssemblyStateCreateInfo original_struct_pInputAssemblyState = {};
+  if (proto.has_pinputassemblystate()) {
+    FillStructFromProto(original_struct_pInputAssemblyState, proto.pinputassemblystate());
+    original_struct.pInputAssemblyState = &original_struct_pInputAssemblyState;
+  } else {
+    original_struct.pInputAssemblyState = nullptr;
+  }
+  VkPipelineTessellationStateCreateInfo original_struct_pTessellationState = {};
+  if (proto.has_ptessellationstate()) {
+    FillStructFromProto(original_struct_pTessellationState, proto.ptessellationstate());
+    original_struct.pTessellationState = &original_struct_pTessellationState;
+  } else {
+    original_struct.pTessellationState = nullptr;
+  }
+  VkPipelineViewportStateCreateInfo original_struct_pViewportState = {};
+  if (proto.has_pviewportstate()) {
+    FillStructFromProto(original_struct_pViewportState, proto.pviewportstate());
+    original_struct.pViewportState = &original_struct_pViewportState;
+  } else {
+    original_struct.pViewportState = nullptr;
+  }
+  VkPipelineRasterizationStateCreateInfo original_struct_pRasterizationState = {};
+  if (proto.has_prasterizationstate()) {
+    FillStructFromProto(original_struct_pRasterizationState, proto.prasterizationstate());
+    original_struct.pRasterizationState = &original_struct_pRasterizationState;
+  } else {
+    original_struct.pRasterizationState = nullptr;
+  }
+  VkPipelineMultisampleStateCreateInfo original_struct_pMultisampleState = {};
+  if (proto.has_pmultisamplestate()) {
+    FillStructFromProto(original_struct_pMultisampleState, proto.pmultisamplestate());
+    original_struct.pMultisampleState = &original_struct_pMultisampleState;
+  } else {
+    original_struct.pMultisampleState = nullptr;
+  }
+  VkPipelineDepthStencilStateCreateInfo original_struct_pDepthStencilState = {};
+  if (proto.has_pdepthstencilstate()) {
+    FillStructFromProto(original_struct_pDepthStencilState, proto.pdepthstencilstate());
+    original_struct.pDepthStencilState = &original_struct_pDepthStencilState;
+  } else {
+    original_struct.pDepthStencilState = nullptr;
+  }
+  VkPipelineColorBlendStateCreateInfo original_struct_pColorBlendState = {};
+  if (proto.has_pcolorblendstate()) {
+    FillStructFromProto(original_struct_pColorBlendState, proto.pcolorblendstate());
+    original_struct.pColorBlendState = &original_struct_pColorBlendState;
+  } else {
+    original_struct.pColorBlendState = nullptr;
+  }
+  VkPipelineDynamicStateCreateInfo original_struct_pDynamicState = {};
+  if (proto.has_pdynamicstate()) {
+    FillStructFromProto(original_struct_pDynamicState, proto.pdynamicstate());
+    original_struct.pDynamicState = &original_struct_pDynamicState;
+  } else {
+    original_struct.pDynamicState = nullptr;
+  }
+  if (proto.has_layout()) {
+    original_struct.layout = reinterpret_cast<VkPipelineLayout>(proto.layout());
+  } else {
+    original_struct.layout = VkPipelineLayout{};
+  }
+  if (proto.has_renderpass()) {
+    original_struct.renderPass = reinterpret_cast<VkRenderPass>(proto.renderpass());
+  } else {
+    original_struct.renderPass = VkRenderPass{};
+  }
+  original_struct.subpass = proto.subpass();
+  if (proto.has_basepipelinehandle()) {
+    original_struct.basePipelineHandle = reinterpret_cast<VkPipeline>(proto.basepipelinehandle());
+  } else {
+    original_struct.basePipelineHandle = VkPipeline{};
+  }
+  original_struct.basePipelineIndex = proto.basepipelineindex();
+}
+void FillStructFromProto(VkImageCreateInfo& original_struct, const vvk::server::VkImageCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkImageCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkImageCreateFlags{};
+  }
+  original_struct.imageType = static_cast<VkImageType>(proto.imagetype());
+  original_struct.format = static_cast<VkFormat>(proto.format());
+  VkExtent3D &original_struct_extent = original_struct.extent;
+  FillStructFromProto(original_struct_extent, proto.extent());
+  original_struct.mipLevels = proto.miplevels();
+  original_struct.arrayLayers = proto.arraylayers();
+  original_struct.samples = static_cast<VkSampleCountFlagBits>(proto.samples());
+  original_struct.tiling = static_cast<VkImageTiling>(proto.tiling());
+  original_struct.usage = static_cast<VkImageUsageFlags>(proto.usage());
+  original_struct.sharingMode = static_cast<VkSharingMode>(proto.sharingmode());
+  if (proto.has_queuefamilyindexcount()) {
+    original_struct.queueFamilyIndexCount = proto.queuefamilyindexcount();
+  } else {
+    original_struct.queueFamilyIndexCount = uint32_t{};
+  }
+  uint32_t* original_struct_pQueueFamilyIndices = new uint32_t[proto.pqueuefamilyindices_size()]();
+  original_struct.pQueueFamilyIndices = original_struct_pQueueFamilyIndices;
+  for (int pQueueFamilyIndices_indx = 0; pQueueFamilyIndices_indx < proto.pqueuefamilyindices_size(); pQueueFamilyIndices_indx++) {
+    original_struct_pQueueFamilyIndices[pQueueFamilyIndices_indx] = proto.pqueuefamilyindices(pQueueFamilyIndices_indx);
+  }
+  original_struct.initialLayout = static_cast<VkImageLayout>(proto.initiallayout());
+}
+void FillStructFromProto(VkImageMemoryBarrier& original_struct, const vvk::server::VkImageMemoryBarrier& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.srcAccessMask = static_cast<VkAccessFlags>(proto.srcaccessmask());
+  original_struct.dstAccessMask = static_cast<VkAccessFlags>(proto.dstaccessmask());
+  original_struct.oldLayout = static_cast<VkImageLayout>(proto.oldlayout());
+  original_struct.newLayout = static_cast<VkImageLayout>(proto.newlayout());
+  original_struct.srcQueueFamilyIndex = proto.srcqueuefamilyindex();
+  original_struct.dstQueueFamilyIndex = proto.dstqueuefamilyindex();
+  original_struct.image = reinterpret_cast<VkImage>(proto.image());
+  VkImageSubresourceRange &original_struct_subresourceRange = original_struct.subresourceRange;
+  FillStructFromProto(original_struct_subresourceRange, proto.subresourcerange());
+}
+void FillStructFromProto(VkImageMemoryRequirementsInfo2& original_struct, const vvk::server::VkImageMemoryRequirementsInfo2& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.image = reinterpret_cast<VkImage>(proto.image());
+}
+void FillStructFromProto(VkImageSubresource& original_struct, const vvk::server::VkImageSubresource& proto) {
+  original_struct.aspectMask = static_cast<VkImageAspectFlags>(proto.aspectmask());
+  original_struct.mipLevel = proto.miplevel();
+  original_struct.arrayLayer = proto.arraylayer();
+}
+void FillStructFromProto(VkImageSubresourceLayers& original_struct, const vvk::server::VkImageSubresourceLayers& proto) {
+  original_struct.aspectMask = static_cast<VkImageAspectFlags>(proto.aspectmask());
+  original_struct.mipLevel = proto.miplevel();
+  original_struct.baseArrayLayer = proto.basearraylayer();
+  original_struct.layerCount = proto.layercount();
+}
+void FillStructFromProto(VkImageSubresourceRange& original_struct, const vvk::server::VkImageSubresourceRange& proto) {
+  original_struct.aspectMask = static_cast<VkImageAspectFlags>(proto.aspectmask());
+  original_struct.baseMipLevel = proto.basemiplevel();
+  original_struct.levelCount = proto.levelcount();
+  original_struct.baseArrayLayer = proto.basearraylayer();
+  original_struct.layerCount = proto.layercount();
+}
+void FillStructFromProto(VkImageViewCreateInfo& original_struct, const vvk::server::VkImageViewCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkImageViewCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkImageViewCreateFlags{};
+  }
+  original_struct.image = reinterpret_cast<VkImage>(proto.image());
+  original_struct.viewType = static_cast<VkImageViewType>(proto.viewtype());
+  original_struct.format = static_cast<VkFormat>(proto.format());
+  VkComponentMapping &original_struct_components = original_struct.components;
+  FillStructFromProto(original_struct_components, proto.components());
+  VkImageSubresourceRange &original_struct_subresourceRange = original_struct.subresourceRange;
+  FillStructFromProto(original_struct_subresourceRange, proto.subresourcerange());
+}
+void FillStructFromProto(VkInstanceCreateInfo& original_struct, const vvk::server::VkInstanceCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkInstanceCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkInstanceCreateFlags{};
+  }
+  VkApplicationInfo original_struct_pApplicationInfo = {};
+  if (proto.has_papplicationinfo()) {
+    FillStructFromProto(original_struct_pApplicationInfo, proto.papplicationinfo());
+    original_struct.pApplicationInfo = &original_struct_pApplicationInfo;
+  } else {
+    original_struct.pApplicationInfo = nullptr;
+  }
+  if (proto.has_enabledlayercount()) {
+    original_struct.enabledLayerCount = proto.enabledlayercount();
+  } else {
+    original_struct.enabledLayerCount = uint32_t{};
+  }
+  const char** original_struct_ppEnabledLayerNames = new const char*[proto.ppenabledlayernames_size()]();
+  original_struct.ppEnabledLayerNames = original_struct_ppEnabledLayerNames;
+  for (int ppEnabledLayerNames_indx = 0; ppEnabledLayerNames_indx < proto.ppenabledlayernames_size(); ppEnabledLayerNames_indx++) {
+    original_struct_ppEnabledLayerNames[ppEnabledLayerNames_indx] = proto.ppenabledlayernames(ppEnabledLayerNames_indx).data();
+  }
+  if (proto.has_enabledextensioncount()) {
+    original_struct.enabledExtensionCount = proto.enabledextensioncount();
+  } else {
+    original_struct.enabledExtensionCount = uint32_t{};
+  }
+  const char** original_struct_ppEnabledExtensionNames = new const char*[proto.ppenabledextensionnames_size()]();
+  original_struct.ppEnabledExtensionNames = original_struct_ppEnabledExtensionNames;
+  for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < proto.ppenabledextensionnames_size(); ppEnabledExtensionNames_indx++) {
+    original_struct_ppEnabledExtensionNames[ppEnabledExtensionNames_indx] = proto.ppenabledextensionnames(ppEnabledExtensionNames_indx).data();
+  }
+}
+void FillStructFromProto(VkMemoryAllocateInfo& original_struct, const vvk::server::VkMemoryAllocateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.allocationSize = static_cast<VkDeviceSize>(proto.allocationsize());
+  original_struct.memoryTypeIndex = proto.memorytypeindex();
+}
+void FillStructFromProto(VkMemoryBarrier& original_struct, const vvk::server::VkMemoryBarrier& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_srcaccessmask()) {
+    original_struct.srcAccessMask = static_cast<VkAccessFlags>(proto.srcaccessmask());
+  } else {
+    original_struct.srcAccessMask = VkAccessFlags{};
+  }
+  if (proto.has_dstaccessmask()) {
+    original_struct.dstAccessMask = static_cast<VkAccessFlags>(proto.dstaccessmask());
+  } else {
+    original_struct.dstAccessMask = VkAccessFlags{};
+  }
+}
+void FillStructFromProto(VkOffset2D& original_struct, const vvk::server::VkOffset2D& proto) {
+  original_struct.x = proto.x();
+  original_struct.y = proto.y();
+}
+void FillStructFromProto(VkOffset3D& original_struct, const vvk::server::VkOffset3D& proto) {
+  original_struct.x = proto.x();
+  original_struct.y = proto.y();
+  original_struct.z = proto.z();
+}
+void FillStructFromProto(VkPhysicalDeviceFeatures& original_struct, const vvk::server::VkPhysicalDeviceFeatures& proto) {
+  original_struct.robustBufferAccess = proto.robustbufferaccess();
+  original_struct.fullDrawIndexUint32 = proto.fulldrawindexuint32();
+  original_struct.imageCubeArray = proto.imagecubearray();
+  original_struct.independentBlend = proto.independentblend();
+  original_struct.geometryShader = proto.geometryshader();
+  original_struct.tessellationShader = proto.tessellationshader();
+  original_struct.sampleRateShading = proto.samplerateshading();
+  original_struct.dualSrcBlend = proto.dualsrcblend();
+  original_struct.logicOp = proto.logicop();
+  original_struct.multiDrawIndirect = proto.multidrawindirect();
+  original_struct.drawIndirectFirstInstance = proto.drawindirectfirstinstance();
+  original_struct.depthClamp = proto.depthclamp();
+  original_struct.depthBiasClamp = proto.depthbiasclamp();
+  original_struct.fillModeNonSolid = proto.fillmodenonsolid();
+  original_struct.depthBounds = proto.depthbounds();
+  original_struct.wideLines = proto.widelines();
+  original_struct.largePoints = proto.largepoints();
+  original_struct.alphaToOne = proto.alphatoone();
+  original_struct.multiViewport = proto.multiviewport();
+  original_struct.samplerAnisotropy = proto.sampleranisotropy();
+  original_struct.textureCompressionETC2 = proto.texturecompressionetc2();
+  original_struct.textureCompressionASTC_LDR = proto.texturecompressionastc_ldr();
+  original_struct.textureCompressionBC = proto.texturecompressionbc();
+  original_struct.occlusionQueryPrecise = proto.occlusionqueryprecise();
+  original_struct.pipelineStatisticsQuery = proto.pipelinestatisticsquery();
+  original_struct.vertexPipelineStoresAndAtomics = proto.vertexpipelinestoresandatomics();
+  original_struct.fragmentStoresAndAtomics = proto.fragmentstoresandatomics();
+  original_struct.shaderTessellationAndGeometryPointSize = proto.shadertessellationandgeometrypointsize();
+  original_struct.shaderImageGatherExtended = proto.shaderimagegatherextended();
+  original_struct.shaderStorageImageExtendedFormats = proto.shaderstorageimageextendedformats();
+  original_struct.shaderStorageImageMultisample = proto.shaderstorageimagemultisample();
+  original_struct.shaderStorageImageReadWithoutFormat = proto.shaderstorageimagereadwithoutformat();
+  original_struct.shaderStorageImageWriteWithoutFormat = proto.shaderstorageimagewritewithoutformat();
+  original_struct.shaderUniformBufferArrayDynamicIndexing = proto.shaderuniformbufferarraydynamicindexing();
+  original_struct.shaderSampledImageArrayDynamicIndexing = proto.shadersampledimagearraydynamicindexing();
+  original_struct.shaderStorageBufferArrayDynamicIndexing = proto.shaderstoragebufferarraydynamicindexing();
+  original_struct.shaderStorageImageArrayDynamicIndexing = proto.shaderstorageimagearraydynamicindexing();
+  original_struct.shaderClipDistance = proto.shaderclipdistance();
+  original_struct.shaderCullDistance = proto.shaderculldistance();
+  original_struct.shaderFloat64 = proto.shaderfloat64();
+  original_struct.shaderInt64 = proto.shaderint64();
+  original_struct.shaderInt16 = proto.shaderint16();
+  original_struct.shaderResourceResidency = proto.shaderresourceresidency();
+  original_struct.shaderResourceMinLod = proto.shaderresourceminlod();
+  original_struct.sparseBinding = proto.sparsebinding();
+  original_struct.sparseResidencyBuffer = proto.sparseresidencybuffer();
+  original_struct.sparseResidencyImage2D = proto.sparseresidencyimage2d();
+  original_struct.sparseResidencyImage3D = proto.sparseresidencyimage3d();
+  original_struct.sparseResidency2Samples = proto.sparseresidency2samples();
+  original_struct.sparseResidency4Samples = proto.sparseresidency4samples();
+  original_struct.sparseResidency8Samples = proto.sparseresidency8samples();
+  original_struct.sparseResidency16Samples = proto.sparseresidency16samples();
+  original_struct.sparseResidencyAliased = proto.sparseresidencyaliased();
+  original_struct.variableMultisampleRate = proto.variablemultisamplerate();
+  original_struct.inheritedQueries = proto.inheritedqueries();
+}
+void FillStructFromProto(VkPipelineColorBlendAttachmentState& original_struct, const vvk::server::VkPipelineColorBlendAttachmentState& proto) {
+  original_struct.blendEnable = proto.blendenable();
+  original_struct.srcColorBlendFactor = static_cast<VkBlendFactor>(proto.srccolorblendfactor());
+  original_struct.dstColorBlendFactor = static_cast<VkBlendFactor>(proto.dstcolorblendfactor());
+  original_struct.colorBlendOp = static_cast<VkBlendOp>(proto.colorblendop());
+  original_struct.srcAlphaBlendFactor = static_cast<VkBlendFactor>(proto.srcalphablendfactor());
+  original_struct.dstAlphaBlendFactor = static_cast<VkBlendFactor>(proto.dstalphablendfactor());
+  original_struct.alphaBlendOp = static_cast<VkBlendOp>(proto.alphablendop());
+  if (proto.has_colorwritemask()) {
+    original_struct.colorWriteMask = static_cast<VkColorComponentFlags>(proto.colorwritemask());
+  } else {
+    original_struct.colorWriteMask = VkColorComponentFlags{};
+  }
+}
+void FillStructFromProto(VkPipelineColorBlendStateCreateInfo& original_struct, const vvk::server::VkPipelineColorBlendStateCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkPipelineColorBlendStateCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkPipelineColorBlendStateCreateFlags{};
+  }
+  original_struct.logicOpEnable = proto.logicopenable();
+  original_struct.logicOp = static_cast<VkLogicOp>(proto.logicop());
+  if (proto.has_attachmentcount()) {
+    original_struct.attachmentCount = proto.attachmentcount();
+  } else {
+    original_struct.attachmentCount = uint32_t{};
+  }
+  VkPipelineColorBlendAttachmentState* original_struct_pAttachments = new VkPipelineColorBlendAttachmentState[proto.pattachments_size()]();
+  original_struct.pAttachments = original_struct_pAttachments;
+  if (proto.pattachments_size()) {
+    for (int pAttachments_indx = 0; pAttachments_indx < proto.pattachments_size(); pAttachments_indx++) {
+      VkPipelineColorBlendAttachmentState &original_struct_pAttachments_i = original_struct_pAttachments[pAttachments_indx];
+      FillStructFromProto(original_struct_pAttachments_i, proto.pattachments(pAttachments_indx));
+    }
+  } else {
+    original_struct.pAttachments = nullptr;
+  }
+  for (int blendConstants_indx = 0; blendConstants_indx < 4; blendConstants_indx++) {
+    original_struct.blendConstants[blendConstants_indx] = proto.blendconstants(blendConstants_indx);
+  }
+}
+void FillStructFromProto(VkPipelineDepthStencilStateCreateInfo& original_struct, const vvk::server::VkPipelineDepthStencilStateCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkPipelineDepthStencilStateCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkPipelineDepthStencilStateCreateFlags{};
+  }
+  original_struct.depthTestEnable = proto.depthtestenable();
+  original_struct.depthWriteEnable = proto.depthwriteenable();
+  original_struct.depthCompareOp = static_cast<VkCompareOp>(proto.depthcompareop());
+  original_struct.depthBoundsTestEnable = proto.depthboundstestenable();
+  original_struct.stencilTestEnable = proto.stenciltestenable();
+  VkStencilOpState &original_struct_front = original_struct.front;
+  FillStructFromProto(original_struct_front, proto.front());
+  VkStencilOpState &original_struct_back = original_struct.back;
+  FillStructFromProto(original_struct_back, proto.back());
+  original_struct.minDepthBounds = proto.mindepthbounds();
+  original_struct.maxDepthBounds = proto.maxdepthbounds();
+}
+void FillStructFromProto(VkPipelineDynamicStateCreateInfo& original_struct, const vvk::server::VkPipelineDynamicStateCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkPipelineDynamicStateCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkPipelineDynamicStateCreateFlags{};
+  }
+  if (proto.has_dynamicstatecount()) {
+    original_struct.dynamicStateCount = proto.dynamicstatecount();
+  } else {
+    original_struct.dynamicStateCount = uint32_t{};
+  }
+  original_struct.pDynamicStates = reinterpret_cast<const VkDynamicState*>(proto.pdynamicstates().data());
+}
+void FillStructFromProto(VkPipelineInputAssemblyStateCreateInfo& original_struct, const vvk::server::VkPipelineInputAssemblyStateCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkPipelineInputAssemblyStateCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkPipelineInputAssemblyStateCreateFlags{};
+  }
+  original_struct.topology = static_cast<VkPrimitiveTopology>(proto.topology());
+  original_struct.primitiveRestartEnable = proto.primitiverestartenable();
+}
+void FillStructFromProto(VkPipelineLayoutCreateInfo& original_struct, const vvk::server::VkPipelineLayoutCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkPipelineLayoutCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkPipelineLayoutCreateFlags{};
+  }
+  if (proto.has_setlayoutcount()) {
+    original_struct.setLayoutCount = proto.setlayoutcount();
+  } else {
+    original_struct.setLayoutCount = uint32_t{};
+  }
+  original_struct.pSetLayouts = reinterpret_cast<const VkDescriptorSetLayout*>(proto.psetlayouts().data());
+  if (proto.has_pushconstantrangecount()) {
+    original_struct.pushConstantRangeCount = proto.pushconstantrangecount();
+  } else {
+    original_struct.pushConstantRangeCount = uint32_t{};
+  }
+  VkPushConstantRange* original_struct_pPushConstantRanges = new VkPushConstantRange[proto.ppushconstantranges_size()]();
+  original_struct.pPushConstantRanges = original_struct_pPushConstantRanges;
+  for (int pPushConstantRanges_indx = 0; pPushConstantRanges_indx < proto.ppushconstantranges_size(); pPushConstantRanges_indx++) {
+    VkPushConstantRange &original_struct_pPushConstantRanges_i = original_struct_pPushConstantRanges[pPushConstantRanges_indx];
+    FillStructFromProto(original_struct_pPushConstantRanges_i, proto.ppushconstantranges(pPushConstantRanges_indx));
+  }
+}
+void FillStructFromProto(VkPipelineMultisampleStateCreateInfo& original_struct, const vvk::server::VkPipelineMultisampleStateCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkPipelineMultisampleStateCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkPipelineMultisampleStateCreateFlags{};
+  }
+  original_struct.rasterizationSamples = static_cast<VkSampleCountFlagBits>(proto.rasterizationsamples());
+  original_struct.sampleShadingEnable = proto.sampleshadingenable();
+  original_struct.minSampleShading = proto.minsampleshading();
+  VkSampleMask* original_struct_pSampleMask = new VkSampleMask[proto.psamplemask_size()]();
+  original_struct.pSampleMask = original_struct_pSampleMask;
+  if (proto.psamplemask_size()) {
+    for (int pSampleMask_indx = 0; pSampleMask_indx < proto.psamplemask_size(); pSampleMask_indx++) {
+      original_struct_pSampleMask[pSampleMask_indx] = proto.psamplemask(pSampleMask_indx);
+    }
+  } else {
+    original_struct.pSampleMask = nullptr;
+  }
+  original_struct.alphaToCoverageEnable = proto.alphatocoverageenable();
+  original_struct.alphaToOneEnable = proto.alphatooneenable();
+}
+void FillStructFromProto(VkPipelineRasterizationStateCreateInfo& original_struct, const vvk::server::VkPipelineRasterizationStateCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkPipelineRasterizationStateCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkPipelineRasterizationStateCreateFlags{};
+  }
+  original_struct.depthClampEnable = proto.depthclampenable();
+  original_struct.rasterizerDiscardEnable = proto.rasterizerdiscardenable();
+  original_struct.polygonMode = static_cast<VkPolygonMode>(proto.polygonmode());
+  if (proto.has_cullmode()) {
+    original_struct.cullMode = static_cast<VkCullModeFlags>(proto.cullmode());
+  } else {
+    original_struct.cullMode = VkCullModeFlags{};
+  }
+  original_struct.frontFace = static_cast<VkFrontFace>(proto.frontface());
+  original_struct.depthBiasEnable = proto.depthbiasenable();
+  original_struct.depthBiasConstantFactor = proto.depthbiasconstantfactor();
+  original_struct.depthBiasClamp = proto.depthbiasclamp();
+  original_struct.depthBiasSlopeFactor = proto.depthbiasslopefactor();
+  original_struct.lineWidth = proto.linewidth();
+}
+void FillStructFromProto(VkPipelineShaderStageCreateInfo& original_struct, const vvk::server::VkPipelineShaderStageCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkPipelineShaderStageCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkPipelineShaderStageCreateFlags{};
+  }
+  original_struct.stage = static_cast<VkShaderStageFlagBits>(proto.stage());
+  if (proto.has_module()) {
+    original_struct.module = reinterpret_cast<VkShaderModule>(proto.module());
+  } else {
+    original_struct.module = VkShaderModule{};
+  }
+  original_struct.pName = proto.pname().data();
+  VkSpecializationInfo original_struct_pSpecializationInfo = {};
+  if (proto.has_pspecializationinfo()) {
+    FillStructFromProto(original_struct_pSpecializationInfo, proto.pspecializationinfo());
+    original_struct.pSpecializationInfo = &original_struct_pSpecializationInfo;
+  } else {
+    original_struct.pSpecializationInfo = nullptr;
+  }
+}
+void FillStructFromProto(VkPipelineTessellationStateCreateInfo& original_struct, const vvk::server::VkPipelineTessellationStateCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkPipelineTessellationStateCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkPipelineTessellationStateCreateFlags{};
+  }
+  original_struct.patchControlPoints = proto.patchcontrolpoints();
+}
+void FillStructFromProto(VkPipelineVertexInputStateCreateInfo& original_struct, const vvk::server::VkPipelineVertexInputStateCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkPipelineVertexInputStateCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkPipelineVertexInputStateCreateFlags{};
+  }
+  if (proto.has_vertexbindingdescriptioncount()) {
+    original_struct.vertexBindingDescriptionCount = proto.vertexbindingdescriptioncount();
+  } else {
+    original_struct.vertexBindingDescriptionCount = uint32_t{};
+  }
+  VkVertexInputBindingDescription* original_struct_pVertexBindingDescriptions = new VkVertexInputBindingDescription[proto.pvertexbindingdescriptions_size()]();
+  original_struct.pVertexBindingDescriptions = original_struct_pVertexBindingDescriptions;
+  for (int pVertexBindingDescriptions_indx = 0; pVertexBindingDescriptions_indx < proto.pvertexbindingdescriptions_size(); pVertexBindingDescriptions_indx++) {
+    VkVertexInputBindingDescription &original_struct_pVertexBindingDescriptions_i = original_struct_pVertexBindingDescriptions[pVertexBindingDescriptions_indx];
+    FillStructFromProto(original_struct_pVertexBindingDescriptions_i, proto.pvertexbindingdescriptions(pVertexBindingDescriptions_indx));
+  }
+  if (proto.has_vertexattributedescriptioncount()) {
+    original_struct.vertexAttributeDescriptionCount = proto.vertexattributedescriptioncount();
+  } else {
+    original_struct.vertexAttributeDescriptionCount = uint32_t{};
+  }
+  VkVertexInputAttributeDescription* original_struct_pVertexAttributeDescriptions = new VkVertexInputAttributeDescription[proto.pvertexattributedescriptions_size()]();
+  original_struct.pVertexAttributeDescriptions = original_struct_pVertexAttributeDescriptions;
+  for (int pVertexAttributeDescriptions_indx = 0; pVertexAttributeDescriptions_indx < proto.pvertexattributedescriptions_size(); pVertexAttributeDescriptions_indx++) {
+    VkVertexInputAttributeDescription &original_struct_pVertexAttributeDescriptions_i = original_struct_pVertexAttributeDescriptions[pVertexAttributeDescriptions_indx];
+    FillStructFromProto(original_struct_pVertexAttributeDescriptions_i, proto.pvertexattributedescriptions(pVertexAttributeDescriptions_indx));
+  }
+}
+void FillStructFromProto(VkPipelineViewportStateCreateInfo& original_struct, const vvk::server::VkPipelineViewportStateCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkPipelineViewportStateCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkPipelineViewportStateCreateFlags{};
+  }
+  if (proto.has_viewportcount()) {
+    original_struct.viewportCount = proto.viewportcount();
+  } else {
+    original_struct.viewportCount = uint32_t{};
+  }
+  VkViewport* original_struct_pViewports = new VkViewport[proto.pviewports_size()]();
+  original_struct.pViewports = original_struct_pViewports;
+  if (proto.pviewports_size()) {
+    for (int pViewports_indx = 0; pViewports_indx < proto.pviewports_size(); pViewports_indx++) {
+      VkViewport &original_struct_pViewports_i = original_struct_pViewports[pViewports_indx];
+      FillStructFromProto(original_struct_pViewports_i, proto.pviewports(pViewports_indx));
+    }
+  } else {
+    original_struct.pViewports = nullptr;
+  }
+  if (proto.has_scissorcount()) {
+    original_struct.scissorCount = proto.scissorcount();
+  } else {
+    original_struct.scissorCount = uint32_t{};
+  }
+  VkRect2D* original_struct_pScissors = new VkRect2D[proto.pscissors_size()]();
+  original_struct.pScissors = original_struct_pScissors;
+  if (proto.pscissors_size()) {
+    for (int pScissors_indx = 0; pScissors_indx < proto.pscissors_size(); pScissors_indx++) {
+      VkRect2D &original_struct_pScissors_i = original_struct_pScissors[pScissors_indx];
+      FillStructFromProto(original_struct_pScissors_i, proto.pscissors(pScissors_indx));
+    }
+  } else {
+    original_struct.pScissors = nullptr;
+  }
+}
+void FillStructFromProto(VkPushConstantRange& original_struct, const vvk::server::VkPushConstantRange& proto) {
+  original_struct.stageFlags = static_cast<VkShaderStageFlags>(proto.stageflags());
+  original_struct.offset = proto.offset();
+  original_struct.size = proto.size();
+}
+void FillStructFromProto(VkRect2D& original_struct, const vvk::server::VkRect2D& proto) {
+  VkOffset2D &original_struct_offset = original_struct.offset;
+  FillStructFromProto(original_struct_offset, proto.offset());
+  VkExtent2D &original_struct_extent = original_struct.extent;
+  FillStructFromProto(original_struct_extent, proto.extent());
+}
+void FillStructFromProto(VkRenderPassBeginInfo& original_struct, const vvk::server::VkRenderPassBeginInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.renderPass = reinterpret_cast<VkRenderPass>(proto.renderpass());
+  original_struct.framebuffer = reinterpret_cast<VkFramebuffer>(proto.framebuffer());
+  VkRect2D &original_struct_renderArea = original_struct.renderArea;
+  FillStructFromProto(original_struct_renderArea, proto.renderarea());
+  if (proto.has_clearvaluecount()) {
+    original_struct.clearValueCount = proto.clearvaluecount();
+  } else {
+    original_struct.clearValueCount = uint32_t{};
+  }
+  VkClearValue* original_struct_pClearValues = new VkClearValue[proto.pclearvalues_size()]();
+  original_struct.pClearValues = original_struct_pClearValues;
+  for (int pClearValues_indx = 0; pClearValues_indx < proto.pclearvalues_size(); pClearValues_indx++) {
+    VkClearValue &original_struct_pClearValues_i = original_struct_pClearValues[pClearValues_indx];
+    FillStructFromProto(original_struct_pClearValues_i, proto.pclearvalues(pClearValues_indx));
+  }
+}
+void FillStructFromProto(VkRenderPassCreateInfo& original_struct, const vvk::server::VkRenderPassCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkRenderPassCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkRenderPassCreateFlags{};
+  }
+  if (proto.has_attachmentcount()) {
+    original_struct.attachmentCount = proto.attachmentcount();
+  } else {
+    original_struct.attachmentCount = uint32_t{};
+  }
+  VkAttachmentDescription* original_struct_pAttachments = new VkAttachmentDescription[proto.pattachments_size()]();
+  original_struct.pAttachments = original_struct_pAttachments;
+  for (int pAttachments_indx = 0; pAttachments_indx < proto.pattachments_size(); pAttachments_indx++) {
+    VkAttachmentDescription &original_struct_pAttachments_i = original_struct_pAttachments[pAttachments_indx];
+    FillStructFromProto(original_struct_pAttachments_i, proto.pattachments(pAttachments_indx));
+  }
+  original_struct.subpassCount = proto.subpasscount();
+  VkSubpassDescription* original_struct_pSubpasses = new VkSubpassDescription[proto.psubpasses_size()]();
+  original_struct.pSubpasses = original_struct_pSubpasses;
+  for (int pSubpasses_indx = 0; pSubpasses_indx < proto.psubpasses_size(); pSubpasses_indx++) {
+    VkSubpassDescription &original_struct_pSubpasses_i = original_struct_pSubpasses[pSubpasses_indx];
+    FillStructFromProto(original_struct_pSubpasses_i, proto.psubpasses(pSubpasses_indx));
+  }
+  if (proto.has_dependencycount()) {
+    original_struct.dependencyCount = proto.dependencycount();
+  } else {
+    original_struct.dependencyCount = uint32_t{};
+  }
+  VkSubpassDependency* original_struct_pDependencies = new VkSubpassDependency[proto.pdependencies_size()]();
+  original_struct.pDependencies = original_struct_pDependencies;
+  for (int pDependencies_indx = 0; pDependencies_indx < proto.pdependencies_size(); pDependencies_indx++) {
+    VkSubpassDependency &original_struct_pDependencies_i = original_struct_pDependencies[pDependencies_indx];
+    FillStructFromProto(original_struct_pDependencies_i, proto.pdependencies(pDependencies_indx));
+  }
+}
+void FillStructFromProto(VkSemaphoreCreateInfo& original_struct, const vvk::server::VkSemaphoreCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkSemaphoreCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkSemaphoreCreateFlags{};
+  }
+}
+void FillStructFromProto(VkShaderModuleCreateInfo& original_struct, const vvk::server::VkShaderModuleCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkShaderModuleCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkShaderModuleCreateFlags{};
+  }
+  original_struct.codeSize = proto.codesize();
+  uint32_t* original_struct_pCode = new uint32_t[proto.pcode_size()]();
+  original_struct.pCode = original_struct_pCode;
+  for (int pCode_indx = 0; pCode_indx < proto.pcode_size(); pCode_indx++) {
+    original_struct_pCode[pCode_indx] = proto.pcode(pCode_indx);
+  }
+}
+void FillStructFromProto(VkSpecializationInfo& original_struct, const vvk::server::VkSpecializationInfo& proto) {
+  if (proto.has_mapentrycount()) {
+    original_struct.mapEntryCount = proto.mapentrycount();
+  } else {
+    original_struct.mapEntryCount = uint32_t{};
+  }
+  VkSpecializationMapEntry* original_struct_pMapEntries = new VkSpecializationMapEntry[proto.pmapentries_size()]();
+  original_struct.pMapEntries = original_struct_pMapEntries;
+  for (int pMapEntries_indx = 0; pMapEntries_indx < proto.pmapentries_size(); pMapEntries_indx++) {
+    VkSpecializationMapEntry &original_struct_pMapEntries_i = original_struct_pMapEntries[pMapEntries_indx];
+    FillStructFromProto(original_struct_pMapEntries_i, proto.pmapentries(pMapEntries_indx));
+  }
+  if (proto.has_datasize()) {
+    original_struct.dataSize = proto.datasize();
+  } else {
+    original_struct.dataSize = size_t{};
+  }
+  original_struct.pData = proto.pdata().data();
+}
+void FillStructFromProto(VkSpecializationMapEntry& original_struct, const vvk::server::VkSpecializationMapEntry& proto) {
+  original_struct.constantID = proto.constantid();
+  original_struct.offset = proto.offset();
+  original_struct.size = proto.size();
+}
+void FillStructFromProto(VkStencilOpState& original_struct, const vvk::server::VkStencilOpState& proto) {
+  original_struct.failOp = static_cast<VkStencilOp>(proto.failop());
+  original_struct.passOp = static_cast<VkStencilOp>(proto.passop());
+  original_struct.depthFailOp = static_cast<VkStencilOp>(proto.depthfailop());
+  original_struct.compareOp = static_cast<VkCompareOp>(proto.compareop());
+  original_struct.compareMask = proto.comparemask();
+  original_struct.writeMask = proto.writemask();
+  original_struct.reference = proto.reference();
+}
+void FillStructFromProto(VkSubmitInfo& original_struct, const vvk::server::VkSubmitInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  if (proto.has_waitsemaphorecount()) {
+    original_struct.waitSemaphoreCount = proto.waitsemaphorecount();
+  } else {
+    original_struct.waitSemaphoreCount = uint32_t{};
+  }
+  original_struct.pWaitSemaphores = reinterpret_cast<const VkSemaphore*>(proto.pwaitsemaphores().data());
+  VkPipelineStageFlags* original_struct_pWaitDstStageMask = new VkPipelineStageFlags[proto.pwaitdststagemask_size()]();
+  original_struct.pWaitDstStageMask = original_struct_pWaitDstStageMask;
+  for (int pWaitDstStageMask_indx = 0; pWaitDstStageMask_indx < proto.pwaitdststagemask_size(); pWaitDstStageMask_indx++) {
+    original_struct_pWaitDstStageMask[pWaitDstStageMask_indx] = static_cast<VkPipelineStageFlags>(proto.pwaitdststagemask(pWaitDstStageMask_indx));
+  }
+  if (proto.has_commandbuffercount()) {
+    original_struct.commandBufferCount = proto.commandbuffercount();
+  } else {
+    original_struct.commandBufferCount = uint32_t{};
+  }
+  original_struct.pCommandBuffers = reinterpret_cast<const VkCommandBuffer*>(proto.pcommandbuffers().data());
+  if (proto.has_signalsemaphorecount()) {
+    original_struct.signalSemaphoreCount = proto.signalsemaphorecount();
+  } else {
+    original_struct.signalSemaphoreCount = uint32_t{};
+  }
+  original_struct.pSignalSemaphores = reinterpret_cast<const VkSemaphore*>(proto.psignalsemaphores().data());
+}
+void FillStructFromProto(VkSubpassDependency& original_struct, const vvk::server::VkSubpassDependency& proto) {
+  original_struct.srcSubpass = proto.srcsubpass();
+  original_struct.dstSubpass = proto.dstsubpass();
+  if (proto.has_srcstagemask()) {
+    original_struct.srcStageMask = static_cast<VkPipelineStageFlags>(proto.srcstagemask());
+  } else {
+    original_struct.srcStageMask = VkPipelineStageFlags{};
+  }
+  if (proto.has_dststagemask()) {
+    original_struct.dstStageMask = static_cast<VkPipelineStageFlags>(proto.dststagemask());
+  } else {
+    original_struct.dstStageMask = VkPipelineStageFlags{};
+  }
+  if (proto.has_srcaccessmask()) {
+    original_struct.srcAccessMask = static_cast<VkAccessFlags>(proto.srcaccessmask());
+  } else {
+    original_struct.srcAccessMask = VkAccessFlags{};
+  }
+  if (proto.has_dstaccessmask()) {
+    original_struct.dstAccessMask = static_cast<VkAccessFlags>(proto.dstaccessmask());
+  } else {
+    original_struct.dstAccessMask = VkAccessFlags{};
+  }
+  if (proto.has_dependencyflags()) {
+    original_struct.dependencyFlags = static_cast<VkDependencyFlags>(proto.dependencyflags());
+  } else {
+    original_struct.dependencyFlags = VkDependencyFlags{};
+  }
+}
+void FillStructFromProto(VkSubpassDescription& original_struct, const vvk::server::VkSubpassDescription& proto) {
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkSubpassDescriptionFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkSubpassDescriptionFlags{};
+  }
+  original_struct.pipelineBindPoint = static_cast<VkPipelineBindPoint>(proto.pipelinebindpoint());
+  if (proto.has_inputattachmentcount()) {
+    original_struct.inputAttachmentCount = proto.inputattachmentcount();
+  } else {
+    original_struct.inputAttachmentCount = uint32_t{};
+  }
+  VkAttachmentReference* original_struct_pInputAttachments = new VkAttachmentReference[proto.pinputattachments_size()]();
+  original_struct.pInputAttachments = original_struct_pInputAttachments;
+  for (int pInputAttachments_indx = 0; pInputAttachments_indx < proto.pinputattachments_size(); pInputAttachments_indx++) {
+    VkAttachmentReference &original_struct_pInputAttachments_i = original_struct_pInputAttachments[pInputAttachments_indx];
+    FillStructFromProto(original_struct_pInputAttachments_i, proto.pinputattachments(pInputAttachments_indx));
+  }
+  if (proto.has_colorattachmentcount()) {
+    original_struct.colorAttachmentCount = proto.colorattachmentcount();
+  } else {
+    original_struct.colorAttachmentCount = uint32_t{};
+  }
+  VkAttachmentReference* original_struct_pColorAttachments = new VkAttachmentReference[proto.pcolorattachments_size()]();
+  original_struct.pColorAttachments = original_struct_pColorAttachments;
+  for (int pColorAttachments_indx = 0; pColorAttachments_indx < proto.pcolorattachments_size(); pColorAttachments_indx++) {
+    VkAttachmentReference &original_struct_pColorAttachments_i = original_struct_pColorAttachments[pColorAttachments_indx];
+    FillStructFromProto(original_struct_pColorAttachments_i, proto.pcolorattachments(pColorAttachments_indx));
+  }
+  VkAttachmentReference* original_struct_pResolveAttachments = new VkAttachmentReference[proto.presolveattachments_size()]();
+  original_struct.pResolveAttachments = original_struct_pResolveAttachments;
+  if (proto.presolveattachments_size()) {
+    for (int pResolveAttachments_indx = 0; pResolveAttachments_indx < proto.presolveattachments_size(); pResolveAttachments_indx++) {
+      VkAttachmentReference &original_struct_pResolveAttachments_i = original_struct_pResolveAttachments[pResolveAttachments_indx];
+      FillStructFromProto(original_struct_pResolveAttachments_i, proto.presolveattachments(pResolveAttachments_indx));
+    }
+  } else {
+    original_struct.pResolveAttachments = nullptr;
+  }
+  VkAttachmentReference original_struct_pDepthStencilAttachment = {};
+  if (proto.has_pdepthstencilattachment()) {
+    FillStructFromProto(original_struct_pDepthStencilAttachment, proto.pdepthstencilattachment());
+    original_struct.pDepthStencilAttachment = &original_struct_pDepthStencilAttachment;
+  } else {
+    original_struct.pDepthStencilAttachment = nullptr;
+  }
+  if (proto.has_preserveattachmentcount()) {
+    original_struct.preserveAttachmentCount = proto.preserveattachmentcount();
+  } else {
+    original_struct.preserveAttachmentCount = uint32_t{};
+  }
+  uint32_t* original_struct_pPreserveAttachments = new uint32_t[proto.ppreserveattachments_size()]();
+  original_struct.pPreserveAttachments = original_struct_pPreserveAttachments;
+  for (int pPreserveAttachments_indx = 0; pPreserveAttachments_indx < proto.ppreserveattachments_size(); pPreserveAttachments_indx++) {
+    original_struct_pPreserveAttachments[pPreserveAttachments_indx] = proto.ppreserveattachments(pPreserveAttachments_indx);
+  }
+}
+void FillStructFromProto(VkVertexInputAttributeDescription& original_struct, const vvk::server::VkVertexInputAttributeDescription& proto) {
+  original_struct.location = proto.location();
+  original_struct.binding = proto.binding();
+  original_struct.format = static_cast<VkFormat>(proto.format());
+  original_struct.offset = proto.offset();
+}
+void FillStructFromProto(VkVertexInputBindingDescription& original_struct, const vvk::server::VkVertexInputBindingDescription& proto) {
+  original_struct.binding = proto.binding();
+  original_struct.stride = proto.stride();
+  original_struct.inputRate = static_cast<VkVertexInputRate>(proto.inputrate());
+}
+void FillStructFromProto(VkViewport& original_struct, const vvk::server::VkViewport& proto) {
+  original_struct.x = proto.x();
+  original_struct.y = proto.y();
+  original_struct.width = proto.width();
+  original_struct.height = proto.height();
+  original_struct.minDepth = proto.mindepth();
+  original_struct.maxDepth = proto.maxdepth();
+}
 }
 void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateInstance");
 
   VkInstanceCreateInfo pCreateInfo = {};
-  pCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
-  if (request.vkcreateinstance().pcreateinfo().has_flags()) {
-    pCreateInfo.flags = static_cast<VkInstanceCreateFlags>(request.vkcreateinstance().pcreateinfo().flags());
-  } else {
-    pCreateInfo.flags = VkInstanceCreateFlags{};
-  }
-  VkApplicationInfo pCreateInfo_pApplicationInfo = {};
-  if (request.vkcreateinstance().pcreateinfo().has_papplicationinfo()) {
-    pCreateInfo_pApplicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    pCreateInfo_pApplicationInfo.pNext = nullptr; // pNext chains are currently unsupported
-    if (request.vkcreateinstance().pcreateinfo().papplicationinfo().has_papplicationname()) {
-      pCreateInfo_pApplicationInfo.pApplicationName = request.vkcreateinstance().pcreateinfo().papplicationinfo().papplicationname().data();
-    } else {
-      pCreateInfo_pApplicationInfo.pApplicationName = nullptr;
-    }
-    pCreateInfo_pApplicationInfo.applicationVersion = request.vkcreateinstance().pcreateinfo().papplicationinfo().applicationversion();
-    if (request.vkcreateinstance().pcreateinfo().papplicationinfo().has_penginename()) {
-      pCreateInfo_pApplicationInfo.pEngineName = request.vkcreateinstance().pcreateinfo().papplicationinfo().penginename().data();
-    } else {
-      pCreateInfo_pApplicationInfo.pEngineName = nullptr;
-    }
-    pCreateInfo_pApplicationInfo.engineVersion = request.vkcreateinstance().pcreateinfo().papplicationinfo().engineversion();
-    pCreateInfo_pApplicationInfo.apiVersion = request.vkcreateinstance().pcreateinfo().papplicationinfo().apiversion();
-    pCreateInfo.pApplicationInfo = &pCreateInfo_pApplicationInfo;
-  } else {
-    pCreateInfo.pApplicationInfo = nullptr;
-  }
-  if (request.vkcreateinstance().pcreateinfo().has_enabledlayercount()) {
-    pCreateInfo.enabledLayerCount = request.vkcreateinstance().pcreateinfo().enabledlayercount();
-  } else {
-    pCreateInfo.enabledLayerCount = uint32_t{};
-  }
-  const char** pCreateInfo_ppEnabledLayerNames = new const char*[request.vkcreateinstance().pcreateinfo().ppenabledlayernames_size()]();
-  pCreateInfo.ppEnabledLayerNames = pCreateInfo_ppEnabledLayerNames;
-  for (int ppEnabledLayerNames_indx = 0; ppEnabledLayerNames_indx < request.vkcreateinstance().pcreateinfo().ppenabledlayernames_size(); ppEnabledLayerNames_indx++) {
-    pCreateInfo_ppEnabledLayerNames[ppEnabledLayerNames_indx] = request.vkcreateinstance().pcreateinfo().ppenabledlayernames(ppEnabledLayerNames_indx).data();
-  }
-  if (request.vkcreateinstance().pcreateinfo().has_enabledextensioncount()) {
-    pCreateInfo.enabledExtensionCount = request.vkcreateinstance().pcreateinfo().enabledextensioncount();
-  } else {
-    pCreateInfo.enabledExtensionCount = uint32_t{};
-  }
-  const char** pCreateInfo_ppEnabledExtensionNames = new const char*[request.vkcreateinstance().pcreateinfo().ppenabledextensionnames_size()]();
-  pCreateInfo.ppEnabledExtensionNames = pCreateInfo_ppEnabledExtensionNames;
-  for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < request.vkcreateinstance().pcreateinfo().ppenabledextensionnames_size(); ppEnabledExtensionNames_indx++) {
-    pCreateInfo_ppEnabledExtensionNames[ppEnabledExtensionNames_indx] = request.vkcreateinstance().pcreateinfo().ppenabledextensionnames(ppEnabledExtensionNames_indx).data();
-  }
+  FillStructFromProto(pCreateInfo, request.vkcreateinstance().pcreateinfo());
   VkInstance client_pInstance = reinterpret_cast<VkInstance>(request.vkcreateinstance().pinstance());
   VkInstance server_pInstance;
   VkResult result = vkCreateInstance(&pCreateInfo, nullptr, &server_pInstance);
@@ -852,114 +1942,7 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
   assert(request.method() == "vkCreateDevice");
 
   VkDeviceCreateInfo pCreateInfo = {};
-  pCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
-  if (request.vkcreatedevice().pcreateinfo().has_flags()) {
-    pCreateInfo.flags = static_cast<VkDeviceCreateFlags>(request.vkcreatedevice().pcreateinfo().flags());
-  } else {
-    pCreateInfo.flags = VkDeviceCreateFlags{};
-  }
-  pCreateInfo.queueCreateInfoCount = request.vkcreatedevice().pcreateinfo().queuecreateinfocount();
-  VkDeviceQueueCreateInfo* pCreateInfo_pQueueCreateInfos = new VkDeviceQueueCreateInfo[request.vkcreatedevice().pcreateinfo().pqueuecreateinfos_size()]();
-  pCreateInfo.pQueueCreateInfos = pCreateInfo_pQueueCreateInfos;
-  for (int pQueueCreateInfos_indx = 0; pQueueCreateInfos_indx < request.vkcreatedevice().pcreateinfo().pqueuecreateinfos_size(); pQueueCreateInfos_indx++) {
-    VkDeviceQueueCreateInfo &pCreateInfo_pQueueCreateInfos_i = pCreateInfo_pQueueCreateInfos[pQueueCreateInfos_indx];
-    pCreateInfo_pQueueCreateInfos_i.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    pCreateInfo_pQueueCreateInfos_i.pNext = nullptr; // pNext chains are currently unsupported
-    if (request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).has_flags()) {
-      pCreateInfo_pQueueCreateInfos_i.flags = static_cast<VkDeviceQueueCreateFlags>(request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).flags());
-    } else {
-      pCreateInfo_pQueueCreateInfos_i.flags = VkDeviceQueueCreateFlags{};
-    }
-    pCreateInfo_pQueueCreateInfos_i.queueFamilyIndex = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuefamilyindex();
-    pCreateInfo_pQueueCreateInfos_i.queueCount = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).queuecount();
-    float* pCreateInfo_pQueueCreateInfos_i_pQueuePriorities = new float[request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).pqueuepriorities_size()]();
-    pCreateInfo_pQueueCreateInfos_i.pQueuePriorities = pCreateInfo_pQueueCreateInfos_i_pQueuePriorities;
-    for (int pQueuePriorities_indx = 0; pQueuePriorities_indx < request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).pqueuepriorities_size(); pQueuePriorities_indx++) {
-      pCreateInfo_pQueueCreateInfos_i_pQueuePriorities[pQueuePriorities_indx] = request.vkcreatedevice().pcreateinfo().pqueuecreateinfos(pQueueCreateInfos_indx).pqueuepriorities(pQueuePriorities_indx);
-    }
-  }
-  if (request.vkcreatedevice().pcreateinfo().has_enabledlayercount()) {
-    pCreateInfo.enabledLayerCount = request.vkcreatedevice().pcreateinfo().enabledlayercount();
-  } else {
-    pCreateInfo.enabledLayerCount = uint32_t{};
-  }
-  const char** pCreateInfo_ppEnabledLayerNames = new const char*[request.vkcreatedevice().pcreateinfo().ppenabledlayernames_size()]();
-  pCreateInfo.ppEnabledLayerNames = pCreateInfo_ppEnabledLayerNames;
-  for (int ppEnabledLayerNames_indx = 0; ppEnabledLayerNames_indx < request.vkcreatedevice().pcreateinfo().ppenabledlayernames_size(); ppEnabledLayerNames_indx++) {
-    pCreateInfo_ppEnabledLayerNames[ppEnabledLayerNames_indx] = request.vkcreatedevice().pcreateinfo().ppenabledlayernames(ppEnabledLayerNames_indx).data();
-  }
-  if (request.vkcreatedevice().pcreateinfo().has_enabledextensioncount()) {
-    pCreateInfo.enabledExtensionCount = request.vkcreatedevice().pcreateinfo().enabledextensioncount();
-  } else {
-    pCreateInfo.enabledExtensionCount = uint32_t{};
-  }
-  const char** pCreateInfo_ppEnabledExtensionNames = new const char*[request.vkcreatedevice().pcreateinfo().ppenabledextensionnames_size()]();
-  pCreateInfo.ppEnabledExtensionNames = pCreateInfo_ppEnabledExtensionNames;
-  for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < request.vkcreatedevice().pcreateinfo().ppenabledextensionnames_size(); ppEnabledExtensionNames_indx++) {
-    pCreateInfo_ppEnabledExtensionNames[ppEnabledExtensionNames_indx] = request.vkcreatedevice().pcreateinfo().ppenabledextensionnames(ppEnabledExtensionNames_indx).data();
-  }
-  VkPhysicalDeviceFeatures pCreateInfo_pEnabledFeatures = {};
-  if (request.vkcreatedevice().pcreateinfo().has_penabledfeatures()) {
-    pCreateInfo_pEnabledFeatures.robustBufferAccess = request.vkcreatedevice().pcreateinfo().penabledfeatures().robustbufferaccess();
-    pCreateInfo_pEnabledFeatures.fullDrawIndexUint32 = request.vkcreatedevice().pcreateinfo().penabledfeatures().fulldrawindexuint32();
-    pCreateInfo_pEnabledFeatures.imageCubeArray = request.vkcreatedevice().pcreateinfo().penabledfeatures().imagecubearray();
-    pCreateInfo_pEnabledFeatures.independentBlend = request.vkcreatedevice().pcreateinfo().penabledfeatures().independentblend();
-    pCreateInfo_pEnabledFeatures.geometryShader = request.vkcreatedevice().pcreateinfo().penabledfeatures().geometryshader();
-    pCreateInfo_pEnabledFeatures.tessellationShader = request.vkcreatedevice().pcreateinfo().penabledfeatures().tessellationshader();
-    pCreateInfo_pEnabledFeatures.sampleRateShading = request.vkcreatedevice().pcreateinfo().penabledfeatures().samplerateshading();
-    pCreateInfo_pEnabledFeatures.dualSrcBlend = request.vkcreatedevice().pcreateinfo().penabledfeatures().dualsrcblend();
-    pCreateInfo_pEnabledFeatures.logicOp = request.vkcreatedevice().pcreateinfo().penabledfeatures().logicop();
-    pCreateInfo_pEnabledFeatures.multiDrawIndirect = request.vkcreatedevice().pcreateinfo().penabledfeatures().multidrawindirect();
-    pCreateInfo_pEnabledFeatures.drawIndirectFirstInstance = request.vkcreatedevice().pcreateinfo().penabledfeatures().drawindirectfirstinstance();
-    pCreateInfo_pEnabledFeatures.depthClamp = request.vkcreatedevice().pcreateinfo().penabledfeatures().depthclamp();
-    pCreateInfo_pEnabledFeatures.depthBiasClamp = request.vkcreatedevice().pcreateinfo().penabledfeatures().depthbiasclamp();
-    pCreateInfo_pEnabledFeatures.fillModeNonSolid = request.vkcreatedevice().pcreateinfo().penabledfeatures().fillmodenonsolid();
-    pCreateInfo_pEnabledFeatures.depthBounds = request.vkcreatedevice().pcreateinfo().penabledfeatures().depthbounds();
-    pCreateInfo_pEnabledFeatures.wideLines = request.vkcreatedevice().pcreateinfo().penabledfeatures().widelines();
-    pCreateInfo_pEnabledFeatures.largePoints = request.vkcreatedevice().pcreateinfo().penabledfeatures().largepoints();
-    pCreateInfo_pEnabledFeatures.alphaToOne = request.vkcreatedevice().pcreateinfo().penabledfeatures().alphatoone();
-    pCreateInfo_pEnabledFeatures.multiViewport = request.vkcreatedevice().pcreateinfo().penabledfeatures().multiviewport();
-    pCreateInfo_pEnabledFeatures.samplerAnisotropy = request.vkcreatedevice().pcreateinfo().penabledfeatures().sampleranisotropy();
-    pCreateInfo_pEnabledFeatures.textureCompressionETC2 = request.vkcreatedevice().pcreateinfo().penabledfeatures().texturecompressionetc2();
-    pCreateInfo_pEnabledFeatures.textureCompressionASTC_LDR = request.vkcreatedevice().pcreateinfo().penabledfeatures().texturecompressionastc_ldr();
-    pCreateInfo_pEnabledFeatures.textureCompressionBC = request.vkcreatedevice().pcreateinfo().penabledfeatures().texturecompressionbc();
-    pCreateInfo_pEnabledFeatures.occlusionQueryPrecise = request.vkcreatedevice().pcreateinfo().penabledfeatures().occlusionqueryprecise();
-    pCreateInfo_pEnabledFeatures.pipelineStatisticsQuery = request.vkcreatedevice().pcreateinfo().penabledfeatures().pipelinestatisticsquery();
-    pCreateInfo_pEnabledFeatures.vertexPipelineStoresAndAtomics = request.vkcreatedevice().pcreateinfo().penabledfeatures().vertexpipelinestoresandatomics();
-    pCreateInfo_pEnabledFeatures.fragmentStoresAndAtomics = request.vkcreatedevice().pcreateinfo().penabledfeatures().fragmentstoresandatomics();
-    pCreateInfo_pEnabledFeatures.shaderTessellationAndGeometryPointSize = request.vkcreatedevice().pcreateinfo().penabledfeatures().shadertessellationandgeometrypointsize();
-    pCreateInfo_pEnabledFeatures.shaderImageGatherExtended = request.vkcreatedevice().pcreateinfo().penabledfeatures().shaderimagegatherextended();
-    pCreateInfo_pEnabledFeatures.shaderStorageImageExtendedFormats = request.vkcreatedevice().pcreateinfo().penabledfeatures().shaderstorageimageextendedformats();
-    pCreateInfo_pEnabledFeatures.shaderStorageImageMultisample = request.vkcreatedevice().pcreateinfo().penabledfeatures().shaderstorageimagemultisample();
-    pCreateInfo_pEnabledFeatures.shaderStorageImageReadWithoutFormat = request.vkcreatedevice().pcreateinfo().penabledfeatures().shaderstorageimagereadwithoutformat();
-    pCreateInfo_pEnabledFeatures.shaderStorageImageWriteWithoutFormat = request.vkcreatedevice().pcreateinfo().penabledfeatures().shaderstorageimagewritewithoutformat();
-    pCreateInfo_pEnabledFeatures.shaderUniformBufferArrayDynamicIndexing = request.vkcreatedevice().pcreateinfo().penabledfeatures().shaderuniformbufferarraydynamicindexing();
-    pCreateInfo_pEnabledFeatures.shaderSampledImageArrayDynamicIndexing = request.vkcreatedevice().pcreateinfo().penabledfeatures().shadersampledimagearraydynamicindexing();
-    pCreateInfo_pEnabledFeatures.shaderStorageBufferArrayDynamicIndexing = request.vkcreatedevice().pcreateinfo().penabledfeatures().shaderstoragebufferarraydynamicindexing();
-    pCreateInfo_pEnabledFeatures.shaderStorageImageArrayDynamicIndexing = request.vkcreatedevice().pcreateinfo().penabledfeatures().shaderstorageimagearraydynamicindexing();
-    pCreateInfo_pEnabledFeatures.shaderClipDistance = request.vkcreatedevice().pcreateinfo().penabledfeatures().shaderclipdistance();
-    pCreateInfo_pEnabledFeatures.shaderCullDistance = request.vkcreatedevice().pcreateinfo().penabledfeatures().shaderculldistance();
-    pCreateInfo_pEnabledFeatures.shaderFloat64 = request.vkcreatedevice().pcreateinfo().penabledfeatures().shaderfloat64();
-    pCreateInfo_pEnabledFeatures.shaderInt64 = request.vkcreatedevice().pcreateinfo().penabledfeatures().shaderint64();
-    pCreateInfo_pEnabledFeatures.shaderInt16 = request.vkcreatedevice().pcreateinfo().penabledfeatures().shaderint16();
-    pCreateInfo_pEnabledFeatures.shaderResourceResidency = request.vkcreatedevice().pcreateinfo().penabledfeatures().shaderresourceresidency();
-    pCreateInfo_pEnabledFeatures.shaderResourceMinLod = request.vkcreatedevice().pcreateinfo().penabledfeatures().shaderresourceminlod();
-    pCreateInfo_pEnabledFeatures.sparseBinding = request.vkcreatedevice().pcreateinfo().penabledfeatures().sparsebinding();
-    pCreateInfo_pEnabledFeatures.sparseResidencyBuffer = request.vkcreatedevice().pcreateinfo().penabledfeatures().sparseresidencybuffer();
-    pCreateInfo_pEnabledFeatures.sparseResidencyImage2D = request.vkcreatedevice().pcreateinfo().penabledfeatures().sparseresidencyimage2d();
-    pCreateInfo_pEnabledFeatures.sparseResidencyImage3D = request.vkcreatedevice().pcreateinfo().penabledfeatures().sparseresidencyimage3d();
-    pCreateInfo_pEnabledFeatures.sparseResidency2Samples = request.vkcreatedevice().pcreateinfo().penabledfeatures().sparseresidency2samples();
-    pCreateInfo_pEnabledFeatures.sparseResidency4Samples = request.vkcreatedevice().pcreateinfo().penabledfeatures().sparseresidency4samples();
-    pCreateInfo_pEnabledFeatures.sparseResidency8Samples = request.vkcreatedevice().pcreateinfo().penabledfeatures().sparseresidency8samples();
-    pCreateInfo_pEnabledFeatures.sparseResidency16Samples = request.vkcreatedevice().pcreateinfo().penabledfeatures().sparseresidency16samples();
-    pCreateInfo_pEnabledFeatures.sparseResidencyAliased = request.vkcreatedevice().pcreateinfo().penabledfeatures().sparseresidencyaliased();
-    pCreateInfo_pEnabledFeatures.variableMultisampleRate = request.vkcreatedevice().pcreateinfo().penabledfeatures().variablemultisamplerate();
-    pCreateInfo_pEnabledFeatures.inheritedQueries = request.vkcreatedevice().pcreateinfo().penabledfeatures().inheritedqueries();
-    pCreateInfo.pEnabledFeatures = &pCreateInfo_pEnabledFeatures;
-  } else {
-    pCreateInfo.pEnabledFeatures = nullptr;
-  }
+  FillStructFromProto(pCreateInfo, request.vkcreatedevice().pcreateinfo());
   VkDevice client_pDevice = reinterpret_cast<VkDevice>(request.vkcreatedevice().pdevice());
   VkDevice server_pDevice;
   VkResult result = vkCreateDevice(context.physical_device(), &pCreateInfo, nullptr, &server_pDevice);
@@ -1071,13 +2054,7 @@ void UnpackAndExecuteVkCreateFence(vvk::ExecutionContext& context, const vvk::se
   assert(request.method() == "vkCreateFence");
 
   VkFenceCreateInfo pCreateInfo = {};
-  pCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
-  if (request.vkcreatefence().pcreateinfo().has_flags()) {
-    pCreateInfo.flags = static_cast<VkFenceCreateFlags>(request.vkcreatefence().pcreateinfo().flags());
-  } else {
-    pCreateInfo.flags = VkFenceCreateFlags{};
-  }
+  FillStructFromProto(pCreateInfo, request.vkcreatefence().pcreateinfo());
   VkFence client_pFence = reinterpret_cast<VkFence>(request.vkcreatefence().pfence());
   VkFence server_pFence;
   VkResult result = vkCreateFence(reinterpret_cast<VkDevice>(request.vkcreatefence().device()), &pCreateInfo, nullptr, &server_pFence);
@@ -1094,13 +2071,7 @@ void UnpackAndExecuteVkCreateSemaphore(vvk::ExecutionContext& context, const vvk
   assert(request.method() == "vkCreateSemaphore");
 
   VkSemaphoreCreateInfo pCreateInfo = {};
-  pCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
-  if (request.vkcreatesemaphore().pcreateinfo().has_flags()) {
-    pCreateInfo.flags = static_cast<VkSemaphoreCreateFlags>(request.vkcreatesemaphore().pcreateinfo().flags());
-  } else {
-    pCreateInfo.flags = VkSemaphoreCreateFlags{};
-  }
+  FillStructFromProto(pCreateInfo, request.vkcreatesemaphore().pcreateinfo());
   VkSemaphore client_pSemaphore = reinterpret_cast<VkSemaphore>(request.vkcreatesemaphore().psemaphore());
   VkSemaphore server_pSemaphore;
   VkResult result = vkCreateSemaphore(reinterpret_cast<VkDevice>(request.vkcreatesemaphore().device()), &pCreateInfo, nullptr, &server_pSemaphore);
@@ -1117,10 +2088,7 @@ void UnpackAndExecuteVkAllocateMemory(vvk::ExecutionContext& context, const vvk:
   assert(request.method() == "vkAllocateMemory");
 
   VkMemoryAllocateInfo pAllocateInfo = {};
-  pAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-  pAllocateInfo.pNext = nullptr; // pNext chains are currently unsupported
-  pAllocateInfo.allocationSize = static_cast<VkDeviceSize>(request.vkallocatememory().pallocateinfo().allocationsize());
-  pAllocateInfo.memoryTypeIndex = request.vkallocatememory().pallocateinfo().memorytypeindex();
+  FillStructFromProto(pAllocateInfo, request.vkallocatememory().pallocateinfo());
   VkDeviceMemory client_pMemory = reinterpret_cast<VkDeviceMemory>(request.vkallocatememory().pmemory());
   VkDeviceMemory server_pMemory;
   VkResult result = vkAllocateMemory(reinterpret_cast<VkDevice>(request.vkallocatememory().device()), &pAllocateInfo, nullptr, &server_pMemory);
@@ -1137,36 +2105,7 @@ void UnpackAndExecuteVkCreateImage(vvk::ExecutionContext& context, const vvk::se
   assert(request.method() == "vkCreateImage");
 
   VkImageCreateInfo pCreateInfo = {};
-  pCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
-  if (request.vkcreateimage().pcreateinfo().has_flags()) {
-    pCreateInfo.flags = static_cast<VkImageCreateFlags>(request.vkcreateimage().pcreateinfo().flags());
-  } else {
-    pCreateInfo.flags = VkImageCreateFlags{};
-  }
-  pCreateInfo.imageType = static_cast<VkImageType>(request.vkcreateimage().pcreateinfo().imagetype());
-  pCreateInfo.format = static_cast<VkFormat>(request.vkcreateimage().pcreateinfo().format());
-  VkExtent3D &pCreateInfo_extent = pCreateInfo.extent;
-  pCreateInfo_extent.width = request.vkcreateimage().pcreateinfo().extent().width();
-  pCreateInfo_extent.height = request.vkcreateimage().pcreateinfo().extent().height();
-  pCreateInfo_extent.depth = request.vkcreateimage().pcreateinfo().extent().depth();
-  pCreateInfo.mipLevels = request.vkcreateimage().pcreateinfo().miplevels();
-  pCreateInfo.arrayLayers = request.vkcreateimage().pcreateinfo().arraylayers();
-  pCreateInfo.samples = static_cast<VkSampleCountFlagBits>(request.vkcreateimage().pcreateinfo().samples());
-  pCreateInfo.tiling = static_cast<VkImageTiling>(request.vkcreateimage().pcreateinfo().tiling());
-  pCreateInfo.usage = static_cast<VkImageUsageFlags>(request.vkcreateimage().pcreateinfo().usage());
-  pCreateInfo.sharingMode = static_cast<VkSharingMode>(request.vkcreateimage().pcreateinfo().sharingmode());
-  if (request.vkcreateimage().pcreateinfo().has_queuefamilyindexcount()) {
-    pCreateInfo.queueFamilyIndexCount = request.vkcreateimage().pcreateinfo().queuefamilyindexcount();
-  } else {
-    pCreateInfo.queueFamilyIndexCount = uint32_t{};
-  }
-  uint32_t* pCreateInfo_pQueueFamilyIndices = new uint32_t[request.vkcreateimage().pcreateinfo().pqueuefamilyindices_size()]();
-  pCreateInfo.pQueueFamilyIndices = pCreateInfo_pQueueFamilyIndices;
-  for (int pQueueFamilyIndices_indx = 0; pQueueFamilyIndices_indx < request.vkcreateimage().pcreateinfo().pqueuefamilyindices_size(); pQueueFamilyIndices_indx++) {
-    pCreateInfo_pQueueFamilyIndices[pQueueFamilyIndices_indx] = request.vkcreateimage().pcreateinfo().pqueuefamilyindices(pQueueFamilyIndices_indx);
-  }
-  pCreateInfo.initialLayout = static_cast<VkImageLayout>(request.vkcreateimage().pcreateinfo().initiallayout());
+  FillStructFromProto(pCreateInfo, request.vkcreateimage().pcreateinfo());
   VkImage client_pImage = reinterpret_cast<VkImage>(request.vkcreateimage().pimage());
   VkImage server_pImage;
   VkResult result = vkCreateImage(reinterpret_cast<VkDevice>(request.vkcreateimage().device()), &pCreateInfo, nullptr, &server_pImage);
@@ -1191,12 +2130,7 @@ void UnpackAndExecuteVkBindImageMemory2(vvk::ExecutionContext& context, const vv
 
   std::vector<VkBindImageMemoryInfo> pBindInfos(request.vkbindimagememory2().bindinfocount());
   for (int i = 0; i < pBindInfos.size(); i++) {
-    VkBindImageMemoryInfo& pBindInfos_ref = pBindInfos[i];
-    pBindInfos_ref.sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO;
-    pBindInfos_ref.pNext = nullptr; // pNext chains are currently unsupported
-    pBindInfos_ref.image = reinterpret_cast<VkImage>(request.vkbindimagememory2().pbindinfos(i).image());
-    pBindInfos_ref.memory = reinterpret_cast<VkDeviceMemory>(request.vkbindimagememory2().pbindinfos(i).memory());
-    pBindInfos_ref.memoryOffset = static_cast<VkDeviceSize>(request.vkbindimagememory2().pbindinfos(i).memoryoffset());
+    FillStructFromProto(pBindInfos[i], request.vkbindimagememory2().pbindinfos(i));
   }
   VkResult result = vkBindImageMemory2(reinterpret_cast<VkDevice>(request.vkbindimagememory2().device()), request.vkbindimagememory2().bindinfocount(), pBindInfos.data());
   response->set_result(result);
@@ -1213,9 +2147,7 @@ void UnpackAndExecuteVkGetImageMemoryRequirements2(vvk::ExecutionContext& contex
   assert(request.method() == "vkGetImageMemoryRequirements2");
 
   VkImageMemoryRequirementsInfo2 pInfo = {};
-  pInfo.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2;
-  pInfo.pNext = nullptr; // pNext chains are currently unsupported
-  pInfo.image = reinterpret_cast<VkImage>(request.vkgetimagememoryrequirements2().pinfo().image());
+  FillStructFromProto(pInfo, request.vkgetimagememoryrequirements2().pinfo());
   VkMemoryRequirements2 pMemoryRequirements = {};
   pMemoryRequirements.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
   vkGetImageMemoryRequirements2(reinterpret_cast<VkDevice>(request.vkgetimagememoryrequirements2().device()), &pInfo, &pMemoryRequirements);
@@ -1226,27 +2158,7 @@ void UnpackAndExecuteVkCreateImageView(vvk::ExecutionContext& context, const vvk
   assert(request.method() == "vkCreateImageView");
 
   VkImageViewCreateInfo pCreateInfo = {};
-  pCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
-  if (request.vkcreateimageview().pcreateinfo().has_flags()) {
-    pCreateInfo.flags = static_cast<VkImageViewCreateFlags>(request.vkcreateimageview().pcreateinfo().flags());
-  } else {
-    pCreateInfo.flags = VkImageViewCreateFlags{};
-  }
-  pCreateInfo.image = reinterpret_cast<VkImage>(request.vkcreateimageview().pcreateinfo().image());
-  pCreateInfo.viewType = static_cast<VkImageViewType>(request.vkcreateimageview().pcreateinfo().viewtype());
-  pCreateInfo.format = static_cast<VkFormat>(request.vkcreateimageview().pcreateinfo().format());
-  VkComponentMapping &pCreateInfo_components = pCreateInfo.components;
-  pCreateInfo_components.r = static_cast<VkComponentSwizzle>(request.vkcreateimageview().pcreateinfo().components().r());
-  pCreateInfo_components.g = static_cast<VkComponentSwizzle>(request.vkcreateimageview().pcreateinfo().components().g());
-  pCreateInfo_components.b = static_cast<VkComponentSwizzle>(request.vkcreateimageview().pcreateinfo().components().b());
-  pCreateInfo_components.a = static_cast<VkComponentSwizzle>(request.vkcreateimageview().pcreateinfo().components().a());
-  VkImageSubresourceRange &pCreateInfo_subresourceRange = pCreateInfo.subresourceRange;
-  pCreateInfo_subresourceRange.aspectMask = static_cast<VkImageAspectFlags>(request.vkcreateimageview().pcreateinfo().subresourcerange().aspectmask());
-  pCreateInfo_subresourceRange.baseMipLevel = request.vkcreateimageview().pcreateinfo().subresourcerange().basemiplevel();
-  pCreateInfo_subresourceRange.levelCount = request.vkcreateimageview().pcreateinfo().subresourcerange().levelcount();
-  pCreateInfo_subresourceRange.baseArrayLayer = request.vkcreateimageview().pcreateinfo().subresourcerange().basearraylayer();
-  pCreateInfo_subresourceRange.layerCount = request.vkcreateimageview().pcreateinfo().subresourcerange().layercount();
+  FillStructFromProto(pCreateInfo, request.vkcreateimageview().pcreateinfo());
   VkImageView client_pView = reinterpret_cast<VkImageView>(request.vkcreateimageview().pview());
   VkImageView server_pView;
   VkResult result = vkCreateImageView(reinterpret_cast<VkDevice>(request.vkcreateimageview().device()), &pCreateInfo, nullptr, &server_pView);
@@ -1263,14 +2175,7 @@ void UnpackAndExecuteVkCreateCommandPool(vvk::ExecutionContext& context, const v
   assert(request.method() == "vkCreateCommandPool");
 
   VkCommandPoolCreateInfo pCreateInfo = {};
-  pCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
-  if (request.vkcreatecommandpool().pcreateinfo().has_flags()) {
-    pCreateInfo.flags = static_cast<VkCommandPoolCreateFlags>(request.vkcreatecommandpool().pcreateinfo().flags());
-  } else {
-    pCreateInfo.flags = VkCommandPoolCreateFlags{};
-  }
-  pCreateInfo.queueFamilyIndex = request.vkcreatecommandpool().pcreateinfo().queuefamilyindex();
+  FillStructFromProto(pCreateInfo, request.vkcreatecommandpool().pcreateinfo());
   VkCommandPool client_pCommandPool = reinterpret_cast<VkCommandPool>(request.vkcreatecommandpool().pcommandpool());
   VkCommandPool server_pCommandPool;
   VkResult result = vkCreateCommandPool(reinterpret_cast<VkDevice>(request.vkcreatecommandpool().device()), &pCreateInfo, nullptr, &server_pCommandPool);
@@ -1287,11 +2192,7 @@ void UnpackAndExecuteVkAllocateCommandBuffers(vvk::ExecutionContext& context, co
   assert(request.method() == "vkAllocateCommandBuffers");
 
   VkCommandBufferAllocateInfo pAllocateInfo = {};
-  pAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-  pAllocateInfo.pNext = nullptr; // pNext chains are currently unsupported
-  pAllocateInfo.commandPool = reinterpret_cast<VkCommandPool>(request.vkallocatecommandbuffers().pallocateinfo().commandpool());
-  pAllocateInfo.level = static_cast<VkCommandBufferLevel>(request.vkallocatecommandbuffers().pallocateinfo().level());
-  pAllocateInfo.commandBufferCount = request.vkallocatecommandbuffers().pallocateinfo().commandbuffercount();
+  FillStructFromProto(pAllocateInfo, request.vkallocatecommandbuffers().pallocateinfo());
   std::vector<VkCommandBuffer> pCommandBuffers(request.vkallocatecommandbuffers().pallocateinfo().commandbuffercount());
   VkResult result = vkAllocateCommandBuffers(reinterpret_cast<VkDevice>(request.vkallocatecommandbuffers().device()), &pAllocateInfo, pCommandBuffers.data());
   for (VkCommandBuffer pCommandBuffers_elem : pCommandBuffers) {
@@ -1309,43 +2210,7 @@ void UnpackAndExecuteVkBeginCommandBuffer(vvk::ExecutionContext& context, const 
   assert(request.method() == "vkBeginCommandBuffer");
 
   VkCommandBufferBeginInfo pBeginInfo = {};
-  pBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-  pBeginInfo.pNext = nullptr; // pNext chains are currently unsupported
-  if (request.vkbegincommandbuffer().pbegininfo().has_flags()) {
-    pBeginInfo.flags = static_cast<VkCommandBufferUsageFlags>(request.vkbegincommandbuffer().pbegininfo().flags());
-  } else {
-    pBeginInfo.flags = VkCommandBufferUsageFlags{};
-  }
-  VkCommandBufferInheritanceInfo pBeginInfo_pInheritanceInfo = {};
-  if (request.vkbegincommandbuffer().pbegininfo().has_pinheritanceinfo()) {
-    pBeginInfo_pInheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
-    pBeginInfo_pInheritanceInfo.pNext = nullptr; // pNext chains are currently unsupported
-    if (request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().has_renderpass()) {
-      pBeginInfo_pInheritanceInfo.renderPass = reinterpret_cast<VkRenderPass>(request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().renderpass());
-    } else {
-      pBeginInfo_pInheritanceInfo.renderPass = VkRenderPass{};
-    }
-    pBeginInfo_pInheritanceInfo.subpass = request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().subpass();
-    if (request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().has_framebuffer()) {
-      pBeginInfo_pInheritanceInfo.framebuffer = reinterpret_cast<VkFramebuffer>(request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().framebuffer());
-    } else {
-      pBeginInfo_pInheritanceInfo.framebuffer = VkFramebuffer{};
-    }
-    pBeginInfo_pInheritanceInfo.occlusionQueryEnable = request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().occlusionqueryenable();
-    if (request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().has_queryflags()) {
-      pBeginInfo_pInheritanceInfo.queryFlags = static_cast<VkQueryControlFlags>(request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().queryflags());
-    } else {
-      pBeginInfo_pInheritanceInfo.queryFlags = VkQueryControlFlags{};
-    }
-    if (request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().has_pipelinestatistics()) {
-      pBeginInfo_pInheritanceInfo.pipelineStatistics = static_cast<VkQueryPipelineStatisticFlags>(request.vkbegincommandbuffer().pbegininfo().pinheritanceinfo().pipelinestatistics());
-    } else {
-      pBeginInfo_pInheritanceInfo.pipelineStatistics = VkQueryPipelineStatisticFlags{};
-    }
-    pBeginInfo.pInheritanceInfo = &pBeginInfo_pInheritanceInfo;
-  } else {
-    pBeginInfo.pInheritanceInfo = nullptr;
-  }
+  FillStructFromProto(pBeginInfo, request.vkbegincommandbuffer().pbegininfo());
   VkResult result = vkBeginCommandBuffer(reinterpret_cast<VkCommandBuffer>(request.vkbegincommandbuffer().commandbuffer()), &pBeginInfo);
   response->set_result(result);
 }
@@ -1359,9 +2224,7 @@ void UnpackAndExecuteVkGetImageSubresourceLayout(vvk::ExecutionContext& context,
   assert(request.method() == "vkGetImageSubresourceLayout");
 
   VkImageSubresource pSubresource = {};
-  pSubresource.aspectMask = static_cast<VkImageAspectFlags>(request.vkgetimagesubresourcelayout().psubresource().aspectmask());
-  pSubresource.mipLevel = request.vkgetimagesubresourcelayout().psubresource().miplevel();
-  pSubresource.arrayLayer = request.vkgetimagesubresourcelayout().psubresource().arraylayer();
+  FillStructFromProto(pSubresource, request.vkgetimagesubresourcelayout().psubresource());
   VkSubresourceLayout pLayout = {};
   vkGetImageSubresourceLayout(reinterpret_cast<VkDevice>(request.vkgetimagesubresourcelayout().device()), reinterpret_cast<VkImage>(request.vkgetimagesubresourcelayout().image()), &pSubresource, &pLayout);
   FillProtoFromStruct(response->mutable_vkgetimagesubresourcelayout()->mutable_playout(), &pLayout);
@@ -1371,138 +2234,7 @@ void UnpackAndExecuteVkCreateRenderPass(vvk::ExecutionContext& context, const vv
   assert(request.method() == "vkCreateRenderPass");
 
   VkRenderPassCreateInfo pCreateInfo = {};
-  pCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
-  if (request.vkcreaterenderpass().pcreateinfo().has_flags()) {
-    pCreateInfo.flags = static_cast<VkRenderPassCreateFlags>(request.vkcreaterenderpass().pcreateinfo().flags());
-  } else {
-    pCreateInfo.flags = VkRenderPassCreateFlags{};
-  }
-  if (request.vkcreaterenderpass().pcreateinfo().has_attachmentcount()) {
-    pCreateInfo.attachmentCount = request.vkcreaterenderpass().pcreateinfo().attachmentcount();
-  } else {
-    pCreateInfo.attachmentCount = uint32_t{};
-  }
-  VkAttachmentDescription* pCreateInfo_pAttachments = new VkAttachmentDescription[request.vkcreaterenderpass().pcreateinfo().pattachments_size()]();
-  pCreateInfo.pAttachments = pCreateInfo_pAttachments;
-  for (int pAttachments_indx = 0; pAttachments_indx < request.vkcreaterenderpass().pcreateinfo().pattachments_size(); pAttachments_indx++) {
-    VkAttachmentDescription &pCreateInfo_pAttachments_i = pCreateInfo_pAttachments[pAttachments_indx];
-    if (request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).has_flags()) {
-      pCreateInfo_pAttachments_i.flags = static_cast<VkAttachmentDescriptionFlags>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).flags());
-    } else {
-      pCreateInfo_pAttachments_i.flags = VkAttachmentDescriptionFlags{};
-    }
-    pCreateInfo_pAttachments_i.format = static_cast<VkFormat>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).format());
-    pCreateInfo_pAttachments_i.samples = static_cast<VkSampleCountFlagBits>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).samples());
-    pCreateInfo_pAttachments_i.loadOp = static_cast<VkAttachmentLoadOp>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).loadop());
-    pCreateInfo_pAttachments_i.storeOp = static_cast<VkAttachmentStoreOp>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).storeop());
-    pCreateInfo_pAttachments_i.stencilLoadOp = static_cast<VkAttachmentLoadOp>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).stencilloadop());
-    pCreateInfo_pAttachments_i.stencilStoreOp = static_cast<VkAttachmentStoreOp>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).stencilstoreop());
-    pCreateInfo_pAttachments_i.initialLayout = static_cast<VkImageLayout>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).initiallayout());
-    pCreateInfo_pAttachments_i.finalLayout = static_cast<VkImageLayout>(request.vkcreaterenderpass().pcreateinfo().pattachments(pAttachments_indx).finallayout());
-  }
-  pCreateInfo.subpassCount = request.vkcreaterenderpass().pcreateinfo().subpasscount();
-  VkSubpassDescription* pCreateInfo_pSubpasses = new VkSubpassDescription[request.vkcreaterenderpass().pcreateinfo().psubpasses_size()]();
-  pCreateInfo.pSubpasses = pCreateInfo_pSubpasses;
-  for (int pSubpasses_indx = 0; pSubpasses_indx < request.vkcreaterenderpass().pcreateinfo().psubpasses_size(); pSubpasses_indx++) {
-    VkSubpassDescription &pCreateInfo_pSubpasses_i = pCreateInfo_pSubpasses[pSubpasses_indx];
-    if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_flags()) {
-      pCreateInfo_pSubpasses_i.flags = static_cast<VkSubpassDescriptionFlags>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).flags());
-    } else {
-      pCreateInfo_pSubpasses_i.flags = VkSubpassDescriptionFlags{};
-    }
-    pCreateInfo_pSubpasses_i.pipelineBindPoint = static_cast<VkPipelineBindPoint>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pipelinebindpoint());
-    if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_inputattachmentcount()) {
-      pCreateInfo_pSubpasses_i.inputAttachmentCount = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).inputattachmentcount();
-    } else {
-      pCreateInfo_pSubpasses_i.inputAttachmentCount = uint32_t{};
-    }
-    VkAttachmentReference* pCreateInfo_pSubpasses_i_pInputAttachments = new VkAttachmentReference[request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pinputattachments_size()]();
-    pCreateInfo_pSubpasses_i.pInputAttachments = pCreateInfo_pSubpasses_i_pInputAttachments;
-    for (int pInputAttachments_indx = 0; pInputAttachments_indx < request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pinputattachments_size(); pInputAttachments_indx++) {
-      VkAttachmentReference &pCreateInfo_pSubpasses_i_pInputAttachments_i = pCreateInfo_pSubpasses_i_pInputAttachments[pInputAttachments_indx];
-      pCreateInfo_pSubpasses_i_pInputAttachments_i.attachment = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pinputattachments(pInputAttachments_indx).attachment();
-      pCreateInfo_pSubpasses_i_pInputAttachments_i.layout = static_cast<VkImageLayout>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pinputattachments(pInputAttachments_indx).layout());
-    }
-    if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_colorattachmentcount()) {
-      pCreateInfo_pSubpasses_i.colorAttachmentCount = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).colorattachmentcount();
-    } else {
-      pCreateInfo_pSubpasses_i.colorAttachmentCount = uint32_t{};
-    }
-    VkAttachmentReference* pCreateInfo_pSubpasses_i_pColorAttachments = new VkAttachmentReference[request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pcolorattachments_size()]();
-    pCreateInfo_pSubpasses_i.pColorAttachments = pCreateInfo_pSubpasses_i_pColorAttachments;
-    for (int pColorAttachments_indx = 0; pColorAttachments_indx < request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pcolorattachments_size(); pColorAttachments_indx++) {
-      VkAttachmentReference &pCreateInfo_pSubpasses_i_pColorAttachments_i = pCreateInfo_pSubpasses_i_pColorAttachments[pColorAttachments_indx];
-      pCreateInfo_pSubpasses_i_pColorAttachments_i.attachment = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pcolorattachments(pColorAttachments_indx).attachment();
-      pCreateInfo_pSubpasses_i_pColorAttachments_i.layout = static_cast<VkImageLayout>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pcolorattachments(pColorAttachments_indx).layout());
-    }
-    VkAttachmentReference* pCreateInfo_pSubpasses_i_pResolveAttachments = new VkAttachmentReference[request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).presolveattachments_size()]();
-    pCreateInfo_pSubpasses_i.pResolveAttachments = pCreateInfo_pSubpasses_i_pResolveAttachments;
-    if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).presolveattachments_size()) {
-      for (int pResolveAttachments_indx = 0; pResolveAttachments_indx < request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).presolveattachments_size(); pResolveAttachments_indx++) {
-        VkAttachmentReference &pCreateInfo_pSubpasses_i_pResolveAttachments_i = pCreateInfo_pSubpasses_i_pResolveAttachments[pResolveAttachments_indx];
-        pCreateInfo_pSubpasses_i_pResolveAttachments_i.attachment = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).presolveattachments(pResolveAttachments_indx).attachment();
-        pCreateInfo_pSubpasses_i_pResolveAttachments_i.layout = static_cast<VkImageLayout>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).presolveattachments(pResolveAttachments_indx).layout());
-      }
-    } else {
-      pCreateInfo_pSubpasses_i.pResolveAttachments = nullptr;
-    }
-    VkAttachmentReference pCreateInfo_pSubpasses_i_pDepthStencilAttachment = {};
-    if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_pdepthstencilattachment()) {
-      pCreateInfo_pSubpasses_i_pDepthStencilAttachment.attachment = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pdepthstencilattachment().attachment();
-      pCreateInfo_pSubpasses_i_pDepthStencilAttachment.layout = static_cast<VkImageLayout>(request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).pdepthstencilattachment().layout());
-      pCreateInfo_pSubpasses_i.pDepthStencilAttachment = &pCreateInfo_pSubpasses_i_pDepthStencilAttachment;
-    } else {
-      pCreateInfo_pSubpasses_i.pDepthStencilAttachment = nullptr;
-    }
-    if (request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).has_preserveattachmentcount()) {
-      pCreateInfo_pSubpasses_i.preserveAttachmentCount = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).preserveattachmentcount();
-    } else {
-      pCreateInfo_pSubpasses_i.preserveAttachmentCount = uint32_t{};
-    }
-    uint32_t* pCreateInfo_pSubpasses_i_pPreserveAttachments = new uint32_t[request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).ppreserveattachments_size()]();
-    pCreateInfo_pSubpasses_i.pPreserveAttachments = pCreateInfo_pSubpasses_i_pPreserveAttachments;
-    for (int pPreserveAttachments_indx = 0; pPreserveAttachments_indx < request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).ppreserveattachments_size(); pPreserveAttachments_indx++) {
-      pCreateInfo_pSubpasses_i_pPreserveAttachments[pPreserveAttachments_indx] = request.vkcreaterenderpass().pcreateinfo().psubpasses(pSubpasses_indx).ppreserveattachments(pPreserveAttachments_indx);
-    }
-  }
-  if (request.vkcreaterenderpass().pcreateinfo().has_dependencycount()) {
-    pCreateInfo.dependencyCount = request.vkcreaterenderpass().pcreateinfo().dependencycount();
-  } else {
-    pCreateInfo.dependencyCount = uint32_t{};
-  }
-  VkSubpassDependency* pCreateInfo_pDependencies = new VkSubpassDependency[request.vkcreaterenderpass().pcreateinfo().pdependencies_size()]();
-  pCreateInfo.pDependencies = pCreateInfo_pDependencies;
-  for (int pDependencies_indx = 0; pDependencies_indx < request.vkcreaterenderpass().pcreateinfo().pdependencies_size(); pDependencies_indx++) {
-    VkSubpassDependency &pCreateInfo_pDependencies_i = pCreateInfo_pDependencies[pDependencies_indx];
-    pCreateInfo_pDependencies_i.srcSubpass = request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).srcsubpass();
-    pCreateInfo_pDependencies_i.dstSubpass = request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).dstsubpass();
-    if (request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).has_srcstagemask()) {
-      pCreateInfo_pDependencies_i.srcStageMask = static_cast<VkPipelineStageFlags>(request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).srcstagemask());
-    } else {
-      pCreateInfo_pDependencies_i.srcStageMask = VkPipelineStageFlags{};
-    }
-    if (request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).has_dststagemask()) {
-      pCreateInfo_pDependencies_i.dstStageMask = static_cast<VkPipelineStageFlags>(request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).dststagemask());
-    } else {
-      pCreateInfo_pDependencies_i.dstStageMask = VkPipelineStageFlags{};
-    }
-    if (request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).has_srcaccessmask()) {
-      pCreateInfo_pDependencies_i.srcAccessMask = static_cast<VkAccessFlags>(request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).srcaccessmask());
-    } else {
-      pCreateInfo_pDependencies_i.srcAccessMask = VkAccessFlags{};
-    }
-    if (request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).has_dstaccessmask()) {
-      pCreateInfo_pDependencies_i.dstAccessMask = static_cast<VkAccessFlags>(request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).dstaccessmask());
-    } else {
-      pCreateInfo_pDependencies_i.dstAccessMask = VkAccessFlags{};
-    }
-    if (request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).has_dependencyflags()) {
-      pCreateInfo_pDependencies_i.dependencyFlags = static_cast<VkDependencyFlags>(request.vkcreaterenderpass().pcreateinfo().pdependencies(pDependencies_indx).dependencyflags());
-    } else {
-      pCreateInfo_pDependencies_i.dependencyFlags = VkDependencyFlags{};
-    }
-  }
+  FillStructFromProto(pCreateInfo, request.vkcreaterenderpass().pcreateinfo());
   VkRenderPass client_pRenderPass = reinterpret_cast<VkRenderPass>(request.vkcreaterenderpass().prenderpass());
   VkRenderPass server_pRenderPass;
   VkResult result = vkCreateRenderPass(reinterpret_cast<VkDevice>(request.vkcreaterenderpass().device()), &pCreateInfo, nullptr, &server_pRenderPass);
@@ -1529,32 +2261,7 @@ void UnpackAndExecuteVkCreatePipelineLayout(vvk::ExecutionContext& context, cons
   assert(request.method() == "vkCreatePipelineLayout");
 
   VkPipelineLayoutCreateInfo pCreateInfo = {};
-  pCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
-  if (request.vkcreatepipelinelayout().pcreateinfo().has_flags()) {
-    pCreateInfo.flags = static_cast<VkPipelineLayoutCreateFlags>(request.vkcreatepipelinelayout().pcreateinfo().flags());
-  } else {
-    pCreateInfo.flags = VkPipelineLayoutCreateFlags{};
-  }
-  if (request.vkcreatepipelinelayout().pcreateinfo().has_setlayoutcount()) {
-    pCreateInfo.setLayoutCount = request.vkcreatepipelinelayout().pcreateinfo().setlayoutcount();
-  } else {
-    pCreateInfo.setLayoutCount = uint32_t{};
-  }
-  pCreateInfo.pSetLayouts = reinterpret_cast<const VkDescriptorSetLayout*>(request.vkcreatepipelinelayout().pcreateinfo().psetlayouts().data());
-  if (request.vkcreatepipelinelayout().pcreateinfo().has_pushconstantrangecount()) {
-    pCreateInfo.pushConstantRangeCount = request.vkcreatepipelinelayout().pcreateinfo().pushconstantrangecount();
-  } else {
-    pCreateInfo.pushConstantRangeCount = uint32_t{};
-  }
-  VkPushConstantRange* pCreateInfo_pPushConstantRanges = new VkPushConstantRange[request.vkcreatepipelinelayout().pcreateinfo().ppushconstantranges_size()]();
-  pCreateInfo.pPushConstantRanges = pCreateInfo_pPushConstantRanges;
-  for (int pPushConstantRanges_indx = 0; pPushConstantRanges_indx < request.vkcreatepipelinelayout().pcreateinfo().ppushconstantranges_size(); pPushConstantRanges_indx++) {
-    VkPushConstantRange &pCreateInfo_pPushConstantRanges_i = pCreateInfo_pPushConstantRanges[pPushConstantRanges_indx];
-    pCreateInfo_pPushConstantRanges_i.stageFlags = static_cast<VkShaderStageFlags>(request.vkcreatepipelinelayout().pcreateinfo().ppushconstantranges(pPushConstantRanges_indx).stageflags());
-    pCreateInfo_pPushConstantRanges_i.offset = request.vkcreatepipelinelayout().pcreateinfo().ppushconstantranges(pPushConstantRanges_indx).offset();
-    pCreateInfo_pPushConstantRanges_i.size = request.vkcreatepipelinelayout().pcreateinfo().ppushconstantranges(pPushConstantRanges_indx).size();
-  }
+  FillStructFromProto(pCreateInfo, request.vkcreatepipelinelayout().pcreateinfo());
   VkPipelineLayout client_pPipelineLayout = reinterpret_cast<VkPipelineLayout>(request.vkcreatepipelinelayout().ppipelinelayout());
   VkPipelineLayout server_pPipelineLayout;
   VkResult result = vkCreatePipelineLayout(reinterpret_cast<VkDevice>(request.vkcreatepipelinelayout().device()), &pCreateInfo, nullptr, &server_pPipelineLayout);
@@ -1572,19 +2279,7 @@ void UnpackAndExecuteVkCreateShaderModule(vvk::ExecutionContext& context, const 
   assert(request.method() == "vkCreateShaderModule");
 
   VkShaderModuleCreateInfo pCreateInfo = {};
-  pCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
-  if (request.vkcreateshadermodule().pcreateinfo().has_flags()) {
-    pCreateInfo.flags = static_cast<VkShaderModuleCreateFlags>(request.vkcreateshadermodule().pcreateinfo().flags());
-  } else {
-    pCreateInfo.flags = VkShaderModuleCreateFlags{};
-  }
-  pCreateInfo.codeSize = request.vkcreateshadermodule().pcreateinfo().codesize();
-  uint32_t* pCreateInfo_pCode = new uint32_t[request.vkcreateshadermodule().pcreateinfo().pcode_size()]();
-  pCreateInfo.pCode = pCreateInfo_pCode;
-  for (int pCode_indx = 0; pCode_indx < request.vkcreateshadermodule().pcreateinfo().pcode_size(); pCode_indx++) {
-    pCreateInfo_pCode[pCode_indx] = request.vkcreateshadermodule().pcreateinfo().pcode(pCode_indx);
-  }
+  FillStructFromProto(pCreateInfo, request.vkcreateshadermodule().pcreateinfo());
   VkShaderModule client_pShaderModule = reinterpret_cast<VkShaderModule>(request.vkcreateshadermodule().pshadermodule());
   VkShaderModule server_pShaderModule;
   VkResult result = vkCreateShaderModule(reinterpret_cast<VkDevice>(request.vkcreateshadermodule().device()), &pCreateInfo, nullptr, &server_pShaderModule);
@@ -1603,359 +2298,7 @@ void UnpackAndExecuteVkCreateGraphicsPipelines(vvk::ExecutionContext& context, c
 
   std::vector<VkGraphicsPipelineCreateInfo> pCreateInfos(request.vkcreategraphicspipelines().createinfocount());
   for (int i = 0; i < pCreateInfos.size(); i++) {
-    VkGraphicsPipelineCreateInfo& pCreateInfos_ref = pCreateInfos[i];
-    pCreateInfos_ref.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pCreateInfos_ref.pNext = nullptr; // pNext chains are currently unsupported
-    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_flags()) {
-      pCreateInfos_ref.flags = static_cast<VkPipelineCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).flags());
-    } else {
-      pCreateInfos_ref.flags = VkPipelineCreateFlags{};
-    }
-    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_stagecount()) {
-      pCreateInfos_ref.stageCount = request.vkcreategraphicspipelines().pcreateinfos(i).stagecount();
-    } else {
-      pCreateInfos_ref.stageCount = uint32_t{};
-    }
-    VkPipelineShaderStageCreateInfo* pCreateInfos_ref_pStages = new VkPipelineShaderStageCreateInfo[request.vkcreategraphicspipelines().pcreateinfos(i).pstages_size()]();
-    pCreateInfos_ref.pStages = pCreateInfos_ref_pStages;
-    if (request.vkcreategraphicspipelines().pcreateinfos(i).pstages_size()) {
-      for (int pStages_indx = 0; pStages_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pstages_size(); pStages_indx++) {
-        VkPipelineShaderStageCreateInfo &pCreateInfos_ref_pStages_i = pCreateInfos_ref_pStages[pStages_indx];
-        pCreateInfos_ref_pStages_i.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        pCreateInfos_ref_pStages_i.pNext = nullptr; // pNext chains are currently unsupported
-        if (request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).has_flags()) {
-          pCreateInfos_ref_pStages_i.flags = static_cast<VkPipelineShaderStageCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).flags());
-        } else {
-          pCreateInfos_ref_pStages_i.flags = VkPipelineShaderStageCreateFlags{};
-        }
-        pCreateInfos_ref_pStages_i.stage = static_cast<VkShaderStageFlagBits>(request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).stage());
-        if (request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).has_module()) {
-          pCreateInfos_ref_pStages_i.module = reinterpret_cast<VkShaderModule>(request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).module());
-        } else {
-          pCreateInfos_ref_pStages_i.module = VkShaderModule{};
-        }
-        pCreateInfos_ref_pStages_i.pName = request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pname().data();
-        VkSpecializationInfo pCreateInfos_ref_pStages_i_pSpecializationInfo = {};
-        if (request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).has_pspecializationinfo()) {
-          if (request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().has_mapentrycount()) {
-            pCreateInfos_ref_pStages_i_pSpecializationInfo.mapEntryCount = request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().mapentrycount();
-          } else {
-            pCreateInfos_ref_pStages_i_pSpecializationInfo.mapEntryCount = uint32_t{};
-          }
-          VkSpecializationMapEntry* pCreateInfos_ref_pStages_i_pSpecializationInfo_pMapEntries = new VkSpecializationMapEntry[request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().pmapentries_size()]();
-          pCreateInfos_ref_pStages_i_pSpecializationInfo.pMapEntries = pCreateInfos_ref_pStages_i_pSpecializationInfo_pMapEntries;
-          for (int pMapEntries_indx = 0; pMapEntries_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().pmapentries_size(); pMapEntries_indx++) {
-            VkSpecializationMapEntry &pCreateInfos_ref_pStages_i_pSpecializationInfo_pMapEntries_i = pCreateInfos_ref_pStages_i_pSpecializationInfo_pMapEntries[pMapEntries_indx];
-            pCreateInfos_ref_pStages_i_pSpecializationInfo_pMapEntries_i.constantID = request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().pmapentries(pMapEntries_indx).constantid();
-            pCreateInfos_ref_pStages_i_pSpecializationInfo_pMapEntries_i.offset = request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().pmapentries(pMapEntries_indx).offset();
-            pCreateInfos_ref_pStages_i_pSpecializationInfo_pMapEntries_i.size = request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().pmapentries(pMapEntries_indx).size();
-          }
-          if (request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().has_datasize()) {
-            pCreateInfos_ref_pStages_i_pSpecializationInfo.dataSize = request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().datasize();
-          } else {
-            pCreateInfos_ref_pStages_i_pSpecializationInfo.dataSize = size_t{};
-          }
-          pCreateInfos_ref_pStages_i_pSpecializationInfo.pData = request.vkcreategraphicspipelines().pcreateinfos(i).pstages(pStages_indx).pspecializationinfo().pdata().data();
-          pCreateInfos_ref_pStages_i.pSpecializationInfo = &pCreateInfos_ref_pStages_i_pSpecializationInfo;
-        } else {
-          pCreateInfos_ref_pStages_i.pSpecializationInfo = nullptr;
-        }
-      }
-    } else {
-      pCreateInfos_ref.pStages = nullptr;
-    }
-    VkPipelineVertexInputStateCreateInfo pCreateInfos_ref_pVertexInputState = {};
-    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pvertexinputstate()) {
-      pCreateInfos_ref_pVertexInputState.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-      pCreateInfos_ref_pVertexInputState.pNext = nullptr; // pNext chains are currently unsupported
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().has_flags()) {
-        pCreateInfos_ref_pVertexInputState.flags = static_cast<VkPipelineVertexInputStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().flags());
-      } else {
-        pCreateInfos_ref_pVertexInputState.flags = VkPipelineVertexInputStateCreateFlags{};
-      }
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().has_vertexbindingdescriptioncount()) {
-        pCreateInfos_ref_pVertexInputState.vertexBindingDescriptionCount = request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().vertexbindingdescriptioncount();
-      } else {
-        pCreateInfos_ref_pVertexInputState.vertexBindingDescriptionCount = uint32_t{};
-      }
-      VkVertexInputBindingDescription* pCreateInfos_ref_pVertexInputState_pVertexBindingDescriptions = new VkVertexInputBindingDescription[request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexbindingdescriptions_size()]();
-      pCreateInfos_ref_pVertexInputState.pVertexBindingDescriptions = pCreateInfos_ref_pVertexInputState_pVertexBindingDescriptions;
-      for (int pVertexBindingDescriptions_indx = 0; pVertexBindingDescriptions_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexbindingdescriptions_size(); pVertexBindingDescriptions_indx++) {
-        VkVertexInputBindingDescription &pCreateInfos_ref_pVertexInputState_pVertexBindingDescriptions_i = pCreateInfos_ref_pVertexInputState_pVertexBindingDescriptions[pVertexBindingDescriptions_indx];
-        pCreateInfos_ref_pVertexInputState_pVertexBindingDescriptions_i.binding = request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexbindingdescriptions(pVertexBindingDescriptions_indx).binding();
-        pCreateInfos_ref_pVertexInputState_pVertexBindingDescriptions_i.stride = request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexbindingdescriptions(pVertexBindingDescriptions_indx).stride();
-        pCreateInfos_ref_pVertexInputState_pVertexBindingDescriptions_i.inputRate = static_cast<VkVertexInputRate>(request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexbindingdescriptions(pVertexBindingDescriptions_indx).inputrate());
-      }
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().has_vertexattributedescriptioncount()) {
-        pCreateInfos_ref_pVertexInputState.vertexAttributeDescriptionCount = request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().vertexattributedescriptioncount();
-      } else {
-        pCreateInfos_ref_pVertexInputState.vertexAttributeDescriptionCount = uint32_t{};
-      }
-      VkVertexInputAttributeDescription* pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions = new VkVertexInputAttributeDescription[request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexattributedescriptions_size()]();
-      pCreateInfos_ref_pVertexInputState.pVertexAttributeDescriptions = pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions;
-      for (int pVertexAttributeDescriptions_indx = 0; pVertexAttributeDescriptions_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexattributedescriptions_size(); pVertexAttributeDescriptions_indx++) {
-        VkVertexInputAttributeDescription &pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions_i = pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions[pVertexAttributeDescriptions_indx];
-        pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions_i.location = request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexattributedescriptions(pVertexAttributeDescriptions_indx).location();
-        pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions_i.binding = request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexattributedescriptions(pVertexAttributeDescriptions_indx).binding();
-        pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions_i.format = static_cast<VkFormat>(request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexattributedescriptions(pVertexAttributeDescriptions_indx).format());
-        pCreateInfos_ref_pVertexInputState_pVertexAttributeDescriptions_i.offset = request.vkcreategraphicspipelines().pcreateinfos(i).pvertexinputstate().pvertexattributedescriptions(pVertexAttributeDescriptions_indx).offset();
-      }
-      pCreateInfos_ref.pVertexInputState = &pCreateInfos_ref_pVertexInputState;
-    } else {
-      pCreateInfos_ref.pVertexInputState = nullptr;
-    }
-    VkPipelineInputAssemblyStateCreateInfo pCreateInfos_ref_pInputAssemblyState = {};
-    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pinputassemblystate()) {
-      pCreateInfos_ref_pInputAssemblyState.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-      pCreateInfos_ref_pInputAssemblyState.pNext = nullptr; // pNext chains are currently unsupported
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pinputassemblystate().has_flags()) {
-        pCreateInfos_ref_pInputAssemblyState.flags = static_cast<VkPipelineInputAssemblyStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pinputassemblystate().flags());
-      } else {
-        pCreateInfos_ref_pInputAssemblyState.flags = VkPipelineInputAssemblyStateCreateFlags{};
-      }
-      pCreateInfos_ref_pInputAssemblyState.topology = static_cast<VkPrimitiveTopology>(request.vkcreategraphicspipelines().pcreateinfos(i).pinputassemblystate().topology());
-      pCreateInfos_ref_pInputAssemblyState.primitiveRestartEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pinputassemblystate().primitiverestartenable();
-      pCreateInfos_ref.pInputAssemblyState = &pCreateInfos_ref_pInputAssemblyState;
-    } else {
-      pCreateInfos_ref.pInputAssemblyState = nullptr;
-    }
-    VkPipelineTessellationStateCreateInfo pCreateInfos_ref_pTessellationState = {};
-    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_ptessellationstate()) {
-      pCreateInfos_ref_pTessellationState.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
-      pCreateInfos_ref_pTessellationState.pNext = nullptr; // pNext chains are currently unsupported
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).ptessellationstate().has_flags()) {
-        pCreateInfos_ref_pTessellationState.flags = static_cast<VkPipelineTessellationStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).ptessellationstate().flags());
-      } else {
-        pCreateInfos_ref_pTessellationState.flags = VkPipelineTessellationStateCreateFlags{};
-      }
-      pCreateInfos_ref_pTessellationState.patchControlPoints = request.vkcreategraphicspipelines().pcreateinfos(i).ptessellationstate().patchcontrolpoints();
-      pCreateInfos_ref.pTessellationState = &pCreateInfos_ref_pTessellationState;
-    } else {
-      pCreateInfos_ref.pTessellationState = nullptr;
-    }
-    VkPipelineViewportStateCreateInfo pCreateInfos_ref_pViewportState = {};
-    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pviewportstate()) {
-      pCreateInfos_ref_pViewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-      pCreateInfos_ref_pViewportState.pNext = nullptr; // pNext chains are currently unsupported
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().has_flags()) {
-        pCreateInfos_ref_pViewportState.flags = static_cast<VkPipelineViewportStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().flags());
-      } else {
-        pCreateInfos_ref_pViewportState.flags = VkPipelineViewportStateCreateFlags{};
-      }
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().has_viewportcount()) {
-        pCreateInfos_ref_pViewportState.viewportCount = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().viewportcount();
-      } else {
-        pCreateInfos_ref_pViewportState.viewportCount = uint32_t{};
-      }
-      VkViewport* pCreateInfos_ref_pViewportState_pViewports = new VkViewport[request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports_size()]();
-      pCreateInfos_ref_pViewportState.pViewports = pCreateInfos_ref_pViewportState_pViewports;
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports_size()) {
-        for (int pViewports_indx = 0; pViewports_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports_size(); pViewports_indx++) {
-          VkViewport &pCreateInfos_ref_pViewportState_pViewports_i = pCreateInfos_ref_pViewportState_pViewports[pViewports_indx];
-          pCreateInfos_ref_pViewportState_pViewports_i.x = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports(pViewports_indx).x();
-          pCreateInfos_ref_pViewportState_pViewports_i.y = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports(pViewports_indx).y();
-          pCreateInfos_ref_pViewportState_pViewports_i.width = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports(pViewports_indx).width();
-          pCreateInfos_ref_pViewportState_pViewports_i.height = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports(pViewports_indx).height();
-          pCreateInfos_ref_pViewportState_pViewports_i.minDepth = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports(pViewports_indx).mindepth();
-          pCreateInfos_ref_pViewportState_pViewports_i.maxDepth = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pviewports(pViewports_indx).maxdepth();
-        }
-      } else {
-        pCreateInfos_ref_pViewportState.pViewports = nullptr;
-      }
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().has_scissorcount()) {
-        pCreateInfos_ref_pViewportState.scissorCount = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().scissorcount();
-      } else {
-        pCreateInfos_ref_pViewportState.scissorCount = uint32_t{};
-      }
-      VkRect2D* pCreateInfos_ref_pViewportState_pScissors = new VkRect2D[request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pscissors_size()]();
-      pCreateInfos_ref_pViewportState.pScissors = pCreateInfos_ref_pViewportState_pScissors;
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pscissors_size()) {
-        for (int pScissors_indx = 0; pScissors_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pscissors_size(); pScissors_indx++) {
-          VkRect2D &pCreateInfos_ref_pViewportState_pScissors_i = pCreateInfos_ref_pViewportState_pScissors[pScissors_indx];
-          VkOffset2D &pCreateInfos_ref_pViewportState_pScissors_i_offset = pCreateInfos_ref_pViewportState_pScissors_i.offset;
-          pCreateInfos_ref_pViewportState_pScissors_i_offset.x = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pscissors(pScissors_indx).offset().x();
-          pCreateInfos_ref_pViewportState_pScissors_i_offset.y = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pscissors(pScissors_indx).offset().y();
-          VkExtent2D &pCreateInfos_ref_pViewportState_pScissors_i_extent = pCreateInfos_ref_pViewportState_pScissors_i.extent;
-          pCreateInfos_ref_pViewportState_pScissors_i_extent.width = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pscissors(pScissors_indx).extent().width();
-          pCreateInfos_ref_pViewportState_pScissors_i_extent.height = request.vkcreategraphicspipelines().pcreateinfos(i).pviewportstate().pscissors(pScissors_indx).extent().height();
-        }
-      } else {
-        pCreateInfos_ref_pViewportState.pScissors = nullptr;
-      }
-      pCreateInfos_ref.pViewportState = &pCreateInfos_ref_pViewportState;
-    } else {
-      pCreateInfos_ref.pViewportState = nullptr;
-    }
-    VkPipelineRasterizationStateCreateInfo pCreateInfos_ref_pRasterizationState = {};
-    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_prasterizationstate()) {
-      pCreateInfos_ref_pRasterizationState.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-      pCreateInfos_ref_pRasterizationState.pNext = nullptr; // pNext chains are currently unsupported
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().has_flags()) {
-        pCreateInfos_ref_pRasterizationState.flags = static_cast<VkPipelineRasterizationStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().flags());
-      } else {
-        pCreateInfos_ref_pRasterizationState.flags = VkPipelineRasterizationStateCreateFlags{};
-      }
-      pCreateInfos_ref_pRasterizationState.depthClampEnable = request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().depthclampenable();
-      pCreateInfos_ref_pRasterizationState.rasterizerDiscardEnable = request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().rasterizerdiscardenable();
-      pCreateInfos_ref_pRasterizationState.polygonMode = static_cast<VkPolygonMode>(request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().polygonmode());
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().has_cullmode()) {
-        pCreateInfos_ref_pRasterizationState.cullMode = static_cast<VkCullModeFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().cullmode());
-      } else {
-        pCreateInfos_ref_pRasterizationState.cullMode = VkCullModeFlags{};
-      }
-      pCreateInfos_ref_pRasterizationState.frontFace = static_cast<VkFrontFace>(request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().frontface());
-      pCreateInfos_ref_pRasterizationState.depthBiasEnable = request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().depthbiasenable();
-      pCreateInfos_ref_pRasterizationState.depthBiasConstantFactor = request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().depthbiasconstantfactor();
-      pCreateInfos_ref_pRasterizationState.depthBiasClamp = request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().depthbiasclamp();
-      pCreateInfos_ref_pRasterizationState.depthBiasSlopeFactor = request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().depthbiasslopefactor();
-      pCreateInfos_ref_pRasterizationState.lineWidth = request.vkcreategraphicspipelines().pcreateinfos(i).prasterizationstate().linewidth();
-      pCreateInfos_ref.pRasterizationState = &pCreateInfos_ref_pRasterizationState;
-    } else {
-      pCreateInfos_ref.pRasterizationState = nullptr;
-    }
-    VkPipelineMultisampleStateCreateInfo pCreateInfos_ref_pMultisampleState = {};
-    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pmultisamplestate()) {
-      pCreateInfos_ref_pMultisampleState.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-      pCreateInfos_ref_pMultisampleState.pNext = nullptr; // pNext chains are currently unsupported
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().has_flags()) {
-        pCreateInfos_ref_pMultisampleState.flags = static_cast<VkPipelineMultisampleStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().flags());
-      } else {
-        pCreateInfos_ref_pMultisampleState.flags = VkPipelineMultisampleStateCreateFlags{};
-      }
-      pCreateInfos_ref_pMultisampleState.rasterizationSamples = static_cast<VkSampleCountFlagBits>(request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().rasterizationsamples());
-      pCreateInfos_ref_pMultisampleState.sampleShadingEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().sampleshadingenable();
-      pCreateInfos_ref_pMultisampleState.minSampleShading = request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().minsampleshading();
-      VkSampleMask* pCreateInfos_ref_pMultisampleState_pSampleMask = new VkSampleMask[request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().psamplemask_size()]();
-      pCreateInfos_ref_pMultisampleState.pSampleMask = pCreateInfos_ref_pMultisampleState_pSampleMask;
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().psamplemask_size()) {
-        for (int pSampleMask_indx = 0; pSampleMask_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().psamplemask_size(); pSampleMask_indx++) {
-          pCreateInfos_ref_pMultisampleState_pSampleMask[pSampleMask_indx] = request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().psamplemask(pSampleMask_indx);
-        }
-      } else {
-        pCreateInfos_ref_pMultisampleState.pSampleMask = nullptr;
-      }
-      pCreateInfos_ref_pMultisampleState.alphaToCoverageEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().alphatocoverageenable();
-      pCreateInfos_ref_pMultisampleState.alphaToOneEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pmultisamplestate().alphatooneenable();
-      pCreateInfos_ref.pMultisampleState = &pCreateInfos_ref_pMultisampleState;
-    } else {
-      pCreateInfos_ref.pMultisampleState = nullptr;
-    }
-    VkPipelineDepthStencilStateCreateInfo pCreateInfos_ref_pDepthStencilState = {};
-    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pdepthstencilstate()) {
-      pCreateInfos_ref_pDepthStencilState.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-      pCreateInfos_ref_pDepthStencilState.pNext = nullptr; // pNext chains are currently unsupported
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().has_flags()) {
-        pCreateInfos_ref_pDepthStencilState.flags = static_cast<VkPipelineDepthStencilStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().flags());
-      } else {
-        pCreateInfos_ref_pDepthStencilState.flags = VkPipelineDepthStencilStateCreateFlags{};
-      }
-      pCreateInfos_ref_pDepthStencilState.depthTestEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().depthtestenable();
-      pCreateInfos_ref_pDepthStencilState.depthWriteEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().depthwriteenable();
-      pCreateInfos_ref_pDepthStencilState.depthCompareOp = static_cast<VkCompareOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().depthcompareop());
-      pCreateInfos_ref_pDepthStencilState.depthBoundsTestEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().depthboundstestenable();
-      pCreateInfos_ref_pDepthStencilState.stencilTestEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().stenciltestenable();
-      VkStencilOpState &pCreateInfos_ref_pDepthStencilState_front = pCreateInfos_ref_pDepthStencilState.front;
-      pCreateInfos_ref_pDepthStencilState_front.failOp = static_cast<VkStencilOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().front().failop());
-      pCreateInfos_ref_pDepthStencilState_front.passOp = static_cast<VkStencilOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().front().passop());
-      pCreateInfos_ref_pDepthStencilState_front.depthFailOp = static_cast<VkStencilOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().front().depthfailop());
-      pCreateInfos_ref_pDepthStencilState_front.compareOp = static_cast<VkCompareOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().front().compareop());
-      pCreateInfos_ref_pDepthStencilState_front.compareMask = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().front().comparemask();
-      pCreateInfos_ref_pDepthStencilState_front.writeMask = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().front().writemask();
-      pCreateInfos_ref_pDepthStencilState_front.reference = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().front().reference();
-      VkStencilOpState &pCreateInfos_ref_pDepthStencilState_back = pCreateInfos_ref_pDepthStencilState.back;
-      pCreateInfos_ref_pDepthStencilState_back.failOp = static_cast<VkStencilOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().back().failop());
-      pCreateInfos_ref_pDepthStencilState_back.passOp = static_cast<VkStencilOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().back().passop());
-      pCreateInfos_ref_pDepthStencilState_back.depthFailOp = static_cast<VkStencilOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().back().depthfailop());
-      pCreateInfos_ref_pDepthStencilState_back.compareOp = static_cast<VkCompareOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().back().compareop());
-      pCreateInfos_ref_pDepthStencilState_back.compareMask = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().back().comparemask();
-      pCreateInfos_ref_pDepthStencilState_back.writeMask = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().back().writemask();
-      pCreateInfos_ref_pDepthStencilState_back.reference = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().back().reference();
-      pCreateInfos_ref_pDepthStencilState.minDepthBounds = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().mindepthbounds();
-      pCreateInfos_ref_pDepthStencilState.maxDepthBounds = request.vkcreategraphicspipelines().pcreateinfos(i).pdepthstencilstate().maxdepthbounds();
-      pCreateInfos_ref.pDepthStencilState = &pCreateInfos_ref_pDepthStencilState;
-    } else {
-      pCreateInfos_ref.pDepthStencilState = nullptr;
-    }
-    VkPipelineColorBlendStateCreateInfo pCreateInfos_ref_pColorBlendState = {};
-    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pcolorblendstate()) {
-      pCreateInfos_ref_pColorBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-      pCreateInfos_ref_pColorBlendState.pNext = nullptr; // pNext chains are currently unsupported
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().has_flags()) {
-        pCreateInfos_ref_pColorBlendState.flags = static_cast<VkPipelineColorBlendStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().flags());
-      } else {
-        pCreateInfos_ref_pColorBlendState.flags = VkPipelineColorBlendStateCreateFlags{};
-      }
-      pCreateInfos_ref_pColorBlendState.logicOpEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().logicopenable();
-      pCreateInfos_ref_pColorBlendState.logicOp = static_cast<VkLogicOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().logicop());
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().has_attachmentcount()) {
-        pCreateInfos_ref_pColorBlendState.attachmentCount = request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().attachmentcount();
-      } else {
-        pCreateInfos_ref_pColorBlendState.attachmentCount = uint32_t{};
-      }
-      VkPipelineColorBlendAttachmentState* pCreateInfos_ref_pColorBlendState_pAttachments = new VkPipelineColorBlendAttachmentState[request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments_size()]();
-      pCreateInfos_ref_pColorBlendState.pAttachments = pCreateInfos_ref_pColorBlendState_pAttachments;
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments_size()) {
-        for (int pAttachments_indx = 0; pAttachments_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments_size(); pAttachments_indx++) {
-          VkPipelineColorBlendAttachmentState &pCreateInfos_ref_pColorBlendState_pAttachments_i = pCreateInfos_ref_pColorBlendState_pAttachments[pAttachments_indx];
-          pCreateInfos_ref_pColorBlendState_pAttachments_i.blendEnable = request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).blendenable();
-          pCreateInfos_ref_pColorBlendState_pAttachments_i.srcColorBlendFactor = static_cast<VkBlendFactor>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).srccolorblendfactor());
-          pCreateInfos_ref_pColorBlendState_pAttachments_i.dstColorBlendFactor = static_cast<VkBlendFactor>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).dstcolorblendfactor());
-          pCreateInfos_ref_pColorBlendState_pAttachments_i.colorBlendOp = static_cast<VkBlendOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).colorblendop());
-          pCreateInfos_ref_pColorBlendState_pAttachments_i.srcAlphaBlendFactor = static_cast<VkBlendFactor>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).srcalphablendfactor());
-          pCreateInfos_ref_pColorBlendState_pAttachments_i.dstAlphaBlendFactor = static_cast<VkBlendFactor>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).dstalphablendfactor());
-          pCreateInfos_ref_pColorBlendState_pAttachments_i.alphaBlendOp = static_cast<VkBlendOp>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).alphablendop());
-          if (request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).has_colorwritemask()) {
-            pCreateInfos_ref_pColorBlendState_pAttachments_i.colorWriteMask = static_cast<VkColorComponentFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().pattachments(pAttachments_indx).colorwritemask());
-          } else {
-            pCreateInfos_ref_pColorBlendState_pAttachments_i.colorWriteMask = VkColorComponentFlags{};
-          }
-        }
-      } else {
-        pCreateInfos_ref_pColorBlendState.pAttachments = nullptr;
-      }
-      for (int blendConstants_indx = 0; blendConstants_indx < 4; blendConstants_indx++) {
-        pCreateInfos_ref_pColorBlendState.blendConstants[blendConstants_indx] = request.vkcreategraphicspipelines().pcreateinfos(i).pcolorblendstate().blendconstants(blendConstants_indx);
-      }
-      pCreateInfos_ref.pColorBlendState = &pCreateInfos_ref_pColorBlendState;
-    } else {
-      pCreateInfos_ref.pColorBlendState = nullptr;
-    }
-    VkPipelineDynamicStateCreateInfo pCreateInfos_ref_pDynamicState = {};
-    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_pdynamicstate()) {
-      pCreateInfos_ref_pDynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-      pCreateInfos_ref_pDynamicState.pNext = nullptr; // pNext chains are currently unsupported
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pdynamicstate().has_flags()) {
-        pCreateInfos_ref_pDynamicState.flags = static_cast<VkPipelineDynamicStateCreateFlags>(request.vkcreategraphicspipelines().pcreateinfos(i).pdynamicstate().flags());
-      } else {
-        pCreateInfos_ref_pDynamicState.flags = VkPipelineDynamicStateCreateFlags{};
-      }
-      if (request.vkcreategraphicspipelines().pcreateinfos(i).pdynamicstate().has_dynamicstatecount()) {
-        pCreateInfos_ref_pDynamicState.dynamicStateCount = request.vkcreategraphicspipelines().pcreateinfos(i).pdynamicstate().dynamicstatecount();
-      } else {
-        pCreateInfos_ref_pDynamicState.dynamicStateCount = uint32_t{};
-      }
-      pCreateInfos_ref_pDynamicState.pDynamicStates = reinterpret_cast<const VkDynamicState*>(request.vkcreategraphicspipelines().pcreateinfos(i).pdynamicstate().pdynamicstates().data());
-      pCreateInfos_ref.pDynamicState = &pCreateInfos_ref_pDynamicState;
-    } else {
-      pCreateInfos_ref.pDynamicState = nullptr;
-    }
-    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_layout()) {
-      pCreateInfos_ref.layout = reinterpret_cast<VkPipelineLayout>(request.vkcreategraphicspipelines().pcreateinfos(i).layout());
-    } else {
-      pCreateInfos_ref.layout = VkPipelineLayout{};
-    }
-    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_renderpass()) {
-      pCreateInfos_ref.renderPass = reinterpret_cast<VkRenderPass>(request.vkcreategraphicspipelines().pcreateinfos(i).renderpass());
-    } else {
-      pCreateInfos_ref.renderPass = VkRenderPass{};
-    }
-    pCreateInfos_ref.subpass = request.vkcreategraphicspipelines().pcreateinfos(i).subpass();
-    if (request.vkcreategraphicspipelines().pcreateinfos(i).has_basepipelinehandle()) {
-      pCreateInfos_ref.basePipelineHandle = reinterpret_cast<VkPipeline>(request.vkcreategraphicspipelines().pcreateinfos(i).basepipelinehandle());
-    } else {
-      pCreateInfos_ref.basePipelineHandle = VkPipeline{};
-    }
-    pCreateInfos_ref.basePipelineIndex = request.vkcreategraphicspipelines().pcreateinfos(i).basepipelineindex();
+    FillStructFromProto(pCreateInfos[i], request.vkcreategraphicspipelines().pcreateinfos(i));
   }
   std::vector<VkPipeline> pPipelines(request.vkcreategraphicspipelines().createinfocount());
   VkResult result = vkCreateGraphicsPipelines(reinterpret_cast<VkDevice>(request.vkcreategraphicspipelines().device()), reinterpret_cast<VkPipelineCache>(request.vkcreategraphicspipelines().pipelinecache()), request.vkcreategraphicspipelines().createinfocount(), pCreateInfos.data(), nullptr, pPipelines.data());
@@ -2003,23 +2346,7 @@ void UnpackAndExecuteVkCreateFramebuffer(vvk::ExecutionContext& context, const v
   assert(request.method() == "vkCreateFramebuffer");
 
   VkFramebufferCreateInfo pCreateInfo = {};
-  pCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-  pCreateInfo.pNext = nullptr; // pNext chains are currently unsupported
-  if (request.vkcreateframebuffer().pcreateinfo().has_flags()) {
-    pCreateInfo.flags = static_cast<VkFramebufferCreateFlags>(request.vkcreateframebuffer().pcreateinfo().flags());
-  } else {
-    pCreateInfo.flags = VkFramebufferCreateFlags{};
-  }
-  pCreateInfo.renderPass = reinterpret_cast<VkRenderPass>(request.vkcreateframebuffer().pcreateinfo().renderpass());
-  if (request.vkcreateframebuffer().pcreateinfo().has_attachmentcount()) {
-    pCreateInfo.attachmentCount = request.vkcreateframebuffer().pcreateinfo().attachmentcount();
-  } else {
-    pCreateInfo.attachmentCount = uint32_t{};
-  }
-  pCreateInfo.pAttachments = reinterpret_cast<const VkImageView*>(request.vkcreateframebuffer().pcreateinfo().pattachments().data());
-  pCreateInfo.width = request.vkcreateframebuffer().pcreateinfo().width();
-  pCreateInfo.height = request.vkcreateframebuffer().pcreateinfo().height();
-  pCreateInfo.layers = request.vkcreateframebuffer().pcreateinfo().layers();
+  FillStructFromProto(pCreateInfo, request.vkcreateframebuffer().pcreateinfo());
   VkFramebuffer client_pFramebuffer = reinterpret_cast<VkFramebuffer>(request.vkcreateframebuffer().pframebuffer());
   VkFramebuffer server_pFramebuffer;
   VkResult result = vkCreateFramebuffer(reinterpret_cast<VkDevice>(request.vkcreateframebuffer().device()), &pCreateInfo, nullptr, &server_pFramebuffer);
@@ -2054,40 +2381,7 @@ void UnpackAndExecuteVkCmdBeginRenderPass(vvk::ExecutionContext& context, const 
   assert(request.method() == "vkCmdBeginRenderPass");
 
   VkRenderPassBeginInfo pRenderPassBegin = {};
-  pRenderPassBegin.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-  pRenderPassBegin.pNext = nullptr; // pNext chains are currently unsupported
-  pRenderPassBegin.renderPass = reinterpret_cast<VkRenderPass>(request.vkcmdbeginrenderpass().prenderpassbegin().renderpass());
-  pRenderPassBegin.framebuffer = reinterpret_cast<VkFramebuffer>(request.vkcmdbeginrenderpass().prenderpassbegin().framebuffer());
-  VkRect2D &pRenderPassBegin_renderArea = pRenderPassBegin.renderArea;
-  VkOffset2D &pRenderPassBegin_renderArea_offset = pRenderPassBegin_renderArea.offset;
-  pRenderPassBegin_renderArea_offset.x = request.vkcmdbeginrenderpass().prenderpassbegin().renderarea().offset().x();
-  pRenderPassBegin_renderArea_offset.y = request.vkcmdbeginrenderpass().prenderpassbegin().renderarea().offset().y();
-  VkExtent2D &pRenderPassBegin_renderArea_extent = pRenderPassBegin_renderArea.extent;
-  pRenderPassBegin_renderArea_extent.width = request.vkcmdbeginrenderpass().prenderpassbegin().renderarea().extent().width();
-  pRenderPassBegin_renderArea_extent.height = request.vkcmdbeginrenderpass().prenderpassbegin().renderarea().extent().height();
-  if (request.vkcmdbeginrenderpass().prenderpassbegin().has_clearvaluecount()) {
-    pRenderPassBegin.clearValueCount = request.vkcmdbeginrenderpass().prenderpassbegin().clearvaluecount();
-  } else {
-    pRenderPassBegin.clearValueCount = uint32_t{};
-  }
-  VkClearValue* pRenderPassBegin_pClearValues = new VkClearValue[request.vkcmdbeginrenderpass().prenderpassbegin().pclearvalues_size()]();
-  pRenderPassBegin.pClearValues = pRenderPassBegin_pClearValues;
-  for (int pClearValues_indx = 0; pClearValues_indx < request.vkcmdbeginrenderpass().prenderpassbegin().pclearvalues_size(); pClearValues_indx++) {
-    VkClearValue &pRenderPassBegin_pClearValues_i = pRenderPassBegin_pClearValues[pClearValues_indx];
-    VkClearColorValue &pRenderPassBegin_pClearValues_i_color = pRenderPassBegin_pClearValues_i.color;
-    for (int float32_indx = 0; float32_indx < 4; float32_indx++) {
-      pRenderPassBegin_pClearValues_i_color.float32[float32_indx] = request.vkcmdbeginrenderpass().prenderpassbegin().pclearvalues(pClearValues_indx).color().float32(float32_indx);
-    }
-    for (int int32_indx = 0; int32_indx < 4; int32_indx++) {
-      pRenderPassBegin_pClearValues_i_color.int32[int32_indx] = request.vkcmdbeginrenderpass().prenderpassbegin().pclearvalues(pClearValues_indx).color().int32(int32_indx);
-    }
-    for (int uint32_indx = 0; uint32_indx < 4; uint32_indx++) {
-      pRenderPassBegin_pClearValues_i_color.uint32[uint32_indx] = request.vkcmdbeginrenderpass().prenderpassbegin().pclearvalues(pClearValues_indx).color().uint32(uint32_indx);
-    }
-    VkClearDepthStencilValue &pRenderPassBegin_pClearValues_i_depthStencil = pRenderPassBegin_pClearValues_i.depthStencil;
-    pRenderPassBegin_pClearValues_i_depthStencil.depth = request.vkcmdbeginrenderpass().prenderpassbegin().pclearvalues(pClearValues_indx).depthstencil().depth();
-    pRenderPassBegin_pClearValues_i_depthStencil.stencil = request.vkcmdbeginrenderpass().prenderpassbegin().pclearvalues(pClearValues_indx).depthstencil().stencil();
-  }
+  FillStructFromProto(pRenderPassBegin, request.vkcmdbeginrenderpass().prenderpassbegin());
   vkCmdBeginRenderPass(reinterpret_cast<VkCommandBuffer>(request.vkcmdbeginrenderpass().commandbuffer()), &pRenderPassBegin, static_cast<VkSubpassContents>(request.vkcmdbeginrenderpass().contents()));
   response->set_result(VK_SUCCESS);
   delete[] pRenderPassBegin.pClearValues;
@@ -2109,13 +2403,7 @@ void UnpackAndExecuteVkCmdSetViewport(vvk::ExecutionContext& context, const vvk:
 
   std::vector<VkViewport> pViewports(request.vkcmdsetviewport().viewportcount());
   for (int i = 0; i < pViewports.size(); i++) {
-    VkViewport& pViewports_ref = pViewports[i];
-    pViewports_ref.x = request.vkcmdsetviewport().pviewports(i).x();
-    pViewports_ref.y = request.vkcmdsetviewport().pviewports(i).y();
-    pViewports_ref.width = request.vkcmdsetviewport().pviewports(i).width();
-    pViewports_ref.height = request.vkcmdsetviewport().pviewports(i).height();
-    pViewports_ref.minDepth = request.vkcmdsetviewport().pviewports(i).mindepth();
-    pViewports_ref.maxDepth = request.vkcmdsetviewport().pviewports(i).maxdepth();
+    FillStructFromProto(pViewports[i], request.vkcmdsetviewport().pviewports(i));
   }
   vkCmdSetViewport(reinterpret_cast<VkCommandBuffer>(request.vkcmdsetviewport().commandbuffer()), request.vkcmdsetviewport().firstviewport(), request.vkcmdsetviewport().viewportcount(), pViewports.data());
   response->set_result(VK_SUCCESS);
@@ -2125,13 +2413,7 @@ void UnpackAndExecuteVkCmdSetScissor(vvk::ExecutionContext& context, const vvk::
 
   std::vector<VkRect2D> pScissors(request.vkcmdsetscissor().scissorcount());
   for (int i = 0; i < pScissors.size(); i++) {
-    VkRect2D& pScissors_ref = pScissors[i];
-    VkOffset2D &pScissors_ref_offset = pScissors_ref.offset;
-    pScissors_ref_offset.x = request.vkcmdsetscissor().pscissors(i).offset().x();
-    pScissors_ref_offset.y = request.vkcmdsetscissor().pscissors(i).offset().y();
-    VkExtent2D &pScissors_ref_extent = pScissors_ref.extent;
-    pScissors_ref_extent.width = request.vkcmdsetscissor().pscissors(i).extent().width();
-    pScissors_ref_extent.height = request.vkcmdsetscissor().pscissors(i).extent().height();
+    FillStructFromProto(pScissors[i], request.vkcmdsetscissor().pscissors(i));
   }
   vkCmdSetScissor(reinterpret_cast<VkCommandBuffer>(request.vkcmdsetscissor().commandbuffer()), request.vkcmdsetscissor().firstscissor(), request.vkcmdsetscissor().scissorcount(), pScissors.data());
   response->set_result(VK_SUCCESS);
@@ -2147,32 +2429,7 @@ void UnpackAndExecuteVkQueueSubmit(vvk::ExecutionContext& context, const vvk::se
 
   std::vector<VkSubmitInfo> pSubmits(request.vkqueuesubmit().submitcount());
   for (int i = 0; i < pSubmits.size(); i++) {
-    VkSubmitInfo& pSubmits_ref = pSubmits[i];
-    pSubmits_ref.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    pSubmits_ref.pNext = nullptr; // pNext chains are currently unsupported
-    if (request.vkqueuesubmit().psubmits(i).has_waitsemaphorecount()) {
-      pSubmits_ref.waitSemaphoreCount = request.vkqueuesubmit().psubmits(i).waitsemaphorecount();
-    } else {
-      pSubmits_ref.waitSemaphoreCount = uint32_t{};
-    }
-    pSubmits_ref.pWaitSemaphores = reinterpret_cast<const VkSemaphore*>(request.vkqueuesubmit().psubmits(i).pwaitsemaphores().data());
-    VkPipelineStageFlags* pSubmits_ref_pWaitDstStageMask = new VkPipelineStageFlags[request.vkqueuesubmit().psubmits(i).pwaitdststagemask_size()]();
-    pSubmits_ref.pWaitDstStageMask = pSubmits_ref_pWaitDstStageMask;
-    for (int pWaitDstStageMask_indx = 0; pWaitDstStageMask_indx < request.vkqueuesubmit().psubmits(i).pwaitdststagemask_size(); pWaitDstStageMask_indx++) {
-      pSubmits_ref_pWaitDstStageMask[pWaitDstStageMask_indx] = static_cast<VkPipelineStageFlags>(request.vkqueuesubmit().psubmits(i).pwaitdststagemask(pWaitDstStageMask_indx));
-    }
-    if (request.vkqueuesubmit().psubmits(i).has_commandbuffercount()) {
-      pSubmits_ref.commandBufferCount = request.vkqueuesubmit().psubmits(i).commandbuffercount();
-    } else {
-      pSubmits_ref.commandBufferCount = uint32_t{};
-    }
-    pSubmits_ref.pCommandBuffers = reinterpret_cast<const VkCommandBuffer*>(request.vkqueuesubmit().psubmits(i).pcommandbuffers().data());
-    if (request.vkqueuesubmit().psubmits(i).has_signalsemaphorecount()) {
-      pSubmits_ref.signalSemaphoreCount = request.vkqueuesubmit().psubmits(i).signalsemaphorecount();
-    } else {
-      pSubmits_ref.signalSemaphoreCount = uint32_t{};
-    }
-    pSubmits_ref.pSignalSemaphores = reinterpret_cast<const VkSemaphore*>(request.vkqueuesubmit().psubmits(i).psignalsemaphores().data());
+    FillStructFromProto(pSubmits[i], request.vkqueuesubmit().psubmits(i));
   }
   VkResult result = vkQueueSubmit(reinterpret_cast<VkQueue>(request.vkqueuesubmit().queue()), request.vkqueuesubmit().submitcount(), pSubmits.data(), reinterpret_cast<VkFence>(request.vkqueuesubmit().fence()));
   response->set_result(result);
@@ -2198,51 +2455,15 @@ void UnpackAndExecuteVkCmdPipelineBarrier(vvk::ExecutionContext& context, const 
 
   std::vector<VkMemoryBarrier> pMemoryBarriers(request.vkcmdpipelinebarrier().memorybarriercount());
   for (int i = 0; i < pMemoryBarriers.size(); i++) {
-    VkMemoryBarrier& pMemoryBarriers_ref = pMemoryBarriers[i];
-    pMemoryBarriers_ref.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
-    pMemoryBarriers_ref.pNext = nullptr; // pNext chains are currently unsupported
-    if (request.vkcmdpipelinebarrier().pmemorybarriers(i).has_srcaccessmask()) {
-      pMemoryBarriers_ref.srcAccessMask = static_cast<VkAccessFlags>(request.vkcmdpipelinebarrier().pmemorybarriers(i).srcaccessmask());
-    } else {
-      pMemoryBarriers_ref.srcAccessMask = VkAccessFlags{};
-    }
-    if (request.vkcmdpipelinebarrier().pmemorybarriers(i).has_dstaccessmask()) {
-      pMemoryBarriers_ref.dstAccessMask = static_cast<VkAccessFlags>(request.vkcmdpipelinebarrier().pmemorybarriers(i).dstaccessmask());
-    } else {
-      pMemoryBarriers_ref.dstAccessMask = VkAccessFlags{};
-    }
+    FillStructFromProto(pMemoryBarriers[i], request.vkcmdpipelinebarrier().pmemorybarriers(i));
   }
   std::vector<VkBufferMemoryBarrier> pBufferMemoryBarriers(request.vkcmdpipelinebarrier().buffermemorybarriercount());
   for (int i = 0; i < pBufferMemoryBarriers.size(); i++) {
-    VkBufferMemoryBarrier& pBufferMemoryBarriers_ref = pBufferMemoryBarriers[i];
-    pBufferMemoryBarriers_ref.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
-    pBufferMemoryBarriers_ref.pNext = nullptr; // pNext chains are currently unsupported
-    pBufferMemoryBarriers_ref.srcAccessMask = static_cast<VkAccessFlags>(request.vkcmdpipelinebarrier().pbuffermemorybarriers(i).srcaccessmask());
-    pBufferMemoryBarriers_ref.dstAccessMask = static_cast<VkAccessFlags>(request.vkcmdpipelinebarrier().pbuffermemorybarriers(i).dstaccessmask());
-    pBufferMemoryBarriers_ref.srcQueueFamilyIndex = request.vkcmdpipelinebarrier().pbuffermemorybarriers(i).srcqueuefamilyindex();
-    pBufferMemoryBarriers_ref.dstQueueFamilyIndex = request.vkcmdpipelinebarrier().pbuffermemorybarriers(i).dstqueuefamilyindex();
-    pBufferMemoryBarriers_ref.buffer = reinterpret_cast<VkBuffer>(request.vkcmdpipelinebarrier().pbuffermemorybarriers(i).buffer());
-    pBufferMemoryBarriers_ref.offset = static_cast<VkDeviceSize>(request.vkcmdpipelinebarrier().pbuffermemorybarriers(i).offset());
-    pBufferMemoryBarriers_ref.size = static_cast<VkDeviceSize>(request.vkcmdpipelinebarrier().pbuffermemorybarriers(i).size());
+    FillStructFromProto(pBufferMemoryBarriers[i], request.vkcmdpipelinebarrier().pbuffermemorybarriers(i));
   }
   std::vector<VkImageMemoryBarrier> pImageMemoryBarriers(request.vkcmdpipelinebarrier().imagememorybarriercount());
   for (int i = 0; i < pImageMemoryBarriers.size(); i++) {
-    VkImageMemoryBarrier& pImageMemoryBarriers_ref = pImageMemoryBarriers[i];
-    pImageMemoryBarriers_ref.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-    pImageMemoryBarriers_ref.pNext = nullptr; // pNext chains are currently unsupported
-    pImageMemoryBarriers_ref.srcAccessMask = static_cast<VkAccessFlags>(request.vkcmdpipelinebarrier().pimagememorybarriers(i).srcaccessmask());
-    pImageMemoryBarriers_ref.dstAccessMask = static_cast<VkAccessFlags>(request.vkcmdpipelinebarrier().pimagememorybarriers(i).dstaccessmask());
-    pImageMemoryBarriers_ref.oldLayout = static_cast<VkImageLayout>(request.vkcmdpipelinebarrier().pimagememorybarriers(i).oldlayout());
-    pImageMemoryBarriers_ref.newLayout = static_cast<VkImageLayout>(request.vkcmdpipelinebarrier().pimagememorybarriers(i).newlayout());
-    pImageMemoryBarriers_ref.srcQueueFamilyIndex = request.vkcmdpipelinebarrier().pimagememorybarriers(i).srcqueuefamilyindex();
-    pImageMemoryBarriers_ref.dstQueueFamilyIndex = request.vkcmdpipelinebarrier().pimagememorybarriers(i).dstqueuefamilyindex();
-    pImageMemoryBarriers_ref.image = reinterpret_cast<VkImage>(request.vkcmdpipelinebarrier().pimagememorybarriers(i).image());
-    VkImageSubresourceRange &pImageMemoryBarriers_ref_subresourceRange = pImageMemoryBarriers_ref.subresourceRange;
-    pImageMemoryBarriers_ref_subresourceRange.aspectMask = static_cast<VkImageAspectFlags>(request.vkcmdpipelinebarrier().pimagememorybarriers(i).subresourcerange().aspectmask());
-    pImageMemoryBarriers_ref_subresourceRange.baseMipLevel = request.vkcmdpipelinebarrier().pimagememorybarriers(i).subresourcerange().basemiplevel();
-    pImageMemoryBarriers_ref_subresourceRange.levelCount = request.vkcmdpipelinebarrier().pimagememorybarriers(i).subresourcerange().levelcount();
-    pImageMemoryBarriers_ref_subresourceRange.baseArrayLayer = request.vkcmdpipelinebarrier().pimagememorybarriers(i).subresourcerange().basearraylayer();
-    pImageMemoryBarriers_ref_subresourceRange.layerCount = request.vkcmdpipelinebarrier().pimagememorybarriers(i).subresourcerange().layercount();
+    FillStructFromProto(pImageMemoryBarriers[i], request.vkcmdpipelinebarrier().pimagememorybarriers(i));
   }
   vkCmdPipelineBarrier(reinterpret_cast<VkCommandBuffer>(request.vkcmdpipelinebarrier().commandbuffer()), static_cast<VkPipelineStageFlags>(request.vkcmdpipelinebarrier().srcstagemask()), static_cast<VkPipelineStageFlags>(request.vkcmdpipelinebarrier().dststagemask()), static_cast<VkDependencyFlags>(request.vkcmdpipelinebarrier().dependencyflags()), request.vkcmdpipelinebarrier().memorybarriercount(), pMemoryBarriers.data(), request.vkcmdpipelinebarrier().buffermemorybarriercount(), pBufferMemoryBarriers.data(), request.vkcmdpipelinebarrier().imagememorybarriercount(), pImageMemoryBarriers.data());
   response->set_result(VK_SUCCESS);
@@ -2252,23 +2473,7 @@ void UnpackAndExecuteVkCmdCopyImageToBuffer(vvk::ExecutionContext& context, cons
 
   std::vector<VkBufferImageCopy> pRegions(request.vkcmdcopyimagetobuffer().regioncount());
   for (int i = 0; i < pRegions.size(); i++) {
-    VkBufferImageCopy& pRegions_ref = pRegions[i];
-    pRegions_ref.bufferOffset = static_cast<VkDeviceSize>(request.vkcmdcopyimagetobuffer().pregions(i).bufferoffset());
-    pRegions_ref.bufferRowLength = request.vkcmdcopyimagetobuffer().pregions(i).bufferrowlength();
-    pRegions_ref.bufferImageHeight = request.vkcmdcopyimagetobuffer().pregions(i).bufferimageheight();
-    VkImageSubresourceLayers &pRegions_ref_imageSubresource = pRegions_ref.imageSubresource;
-    pRegions_ref_imageSubresource.aspectMask = static_cast<VkImageAspectFlags>(request.vkcmdcopyimagetobuffer().pregions(i).imagesubresource().aspectmask());
-    pRegions_ref_imageSubresource.mipLevel = request.vkcmdcopyimagetobuffer().pregions(i).imagesubresource().miplevel();
-    pRegions_ref_imageSubresource.baseArrayLayer = request.vkcmdcopyimagetobuffer().pregions(i).imagesubresource().basearraylayer();
-    pRegions_ref_imageSubresource.layerCount = request.vkcmdcopyimagetobuffer().pregions(i).imagesubresource().layercount();
-    VkOffset3D &pRegions_ref_imageOffset = pRegions_ref.imageOffset;
-    pRegions_ref_imageOffset.x = request.vkcmdcopyimagetobuffer().pregions(i).imageoffset().x();
-    pRegions_ref_imageOffset.y = request.vkcmdcopyimagetobuffer().pregions(i).imageoffset().y();
-    pRegions_ref_imageOffset.z = request.vkcmdcopyimagetobuffer().pregions(i).imageoffset().z();
-    VkExtent3D &pRegions_ref_imageExtent = pRegions_ref.imageExtent;
-    pRegions_ref_imageExtent.width = request.vkcmdcopyimagetobuffer().pregions(i).imageextent().width();
-    pRegions_ref_imageExtent.height = request.vkcmdcopyimagetobuffer().pregions(i).imageextent().height();
-    pRegions_ref_imageExtent.depth = request.vkcmdcopyimagetobuffer().pregions(i).imageextent().depth();
+    FillStructFromProto(pRegions[i], request.vkcmdcopyimagetobuffer().pregions(i));
   }
   vkCmdCopyImageToBuffer(reinterpret_cast<VkCommandBuffer>(request.vkcmdcopyimagetobuffer().commandbuffer()), reinterpret_cast<VkImage>(request.vkcmdcopyimagetobuffer().srcimage()), static_cast<VkImageLayout>(request.vkcmdcopyimagetobuffer().srcimagelayout()), reinterpret_cast<VkBuffer>(request.vkcmdcopyimagetobuffer().dstbuffer()), request.vkcmdcopyimagetobuffer().regioncount(), pRegions.data());
   response->set_result(VK_SUCCESS);

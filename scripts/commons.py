@@ -194,9 +194,12 @@ def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, n
             aux_var = f'{name}_{member.name}'
             pre_fill_declarations.append(
                 f'  {member.type} {aux_var} = {{}};\n')
-            out_, after_ = fill_struct_from_proto(generator,
-                                                  member.type, aux_var, f'{proto_accessor}.{member.name.lower()}()')
-            out.append(out_)
+            _, after_ = fill_struct_from_proto(generator,
+                                               member.type, aux_var, f'{proto_accessor}.{member.name.lower()}()')
+            out.append(
+                f'  FillStructFromProto({aux_var}, {proto_accessor}.{member.name.lower()}());\n')
+            generator.required_functions.add(
+                f'FillStructFromProto/{member.type}')
             out.append(
                 f'  {name}.{member.name} = &{aux_var};\n')
             if after_:
@@ -214,9 +217,12 @@ def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, n
             out.append(' {\n')
             out.append(
                 f'    {member.type} &{name}_{member.name}_i = {name}_{member.name}[{index_name}];\n')
-            out_, after_ = fill_struct_from_proto(
+            _, after_ = fill_struct_from_proto(
                 generator, member.type, f'{name}_{member.name}_i', f'{proto_accessor}.{member.name.lower()}({index_name})')
-            out.append(indent(out_, 2))
+            out.append(
+                f'    FillStructFromProto({name}_{member.name}_i, {proto_accessor}.{member.name.lower()}({index_name}));\n')
+            generator.required_functions.add(
+                f'FillStructFromProto/{member.type}')
             out.append('  }\n')
             if after_:
                 after.append(
@@ -232,9 +238,12 @@ def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, n
             aux_var = f'{name}_{member.name}'
             pre_fill_declarations.append(
                 f'  {member.type} &{aux_var} = {name}.{member.name};\n')
-            out_, after_ = fill_struct_from_proto(generator, member.type,
-                                                  aux_var, f'{proto_accessor}.{member.name.lower()}()')
-            out.append(out_)
+            _, after_ = fill_struct_from_proto(generator, member.type,
+                                               aux_var, f'{proto_accessor}.{member.name.lower()}()')
+            out.append(
+                f'  FillStructFromProto({aux_var}, {proto_accessor}.{member.name.lower()}());\n')
+            generator.required_functions.add(
+                f'FillStructFromProto/{member.type}')
             if after_:
                 after.append(
                     f'  const {member.type} &{aux_var} = {name}.{member.name};\n')
@@ -246,11 +255,12 @@ def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, n
             out.append(
                 f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
             out.append(' {\n')
-            out.append(
-                f'    {member.type} &{name}_{member.name}_i = {name}.{member.name}[{index_name}];\n')
-            out_, after_ = fill_struct_from_proto(
+            _, after_ = fill_struct_from_proto(
                 generator, member.type, f'{name}_{member.name}_i', f'{proto_accessor}.{member.name.lower()}({index_name})')
-            out.append(indent(out_, 2))
+            out.append(
+                f'    FillStructFromProto({name}.{member.name}[{index_name}], {proto_accessor}.{member.name.lower()}({index_name}));\n')
+            generator.required_functions.add(
+                f'FillStructFromProto/{member.type}')
             out.append('  }\n')
             after.append(after_)
     elif member.pointer and member.type in generator.vk.handles:
@@ -539,6 +549,14 @@ def __get_function_definition(generator: VvkGenerator, func: str) -> str:
             f'void FillProtoFromStruct(vvk::server::{type_name}* proto, const {type_name}* original_struct) {{\n')
         out.append(fill_proto_from_struct(
             generator, type_name, 'proto', 'original_struct'))
+        out.append("}\n")
+        return "".join(out)
+    if func_name == "FillStructFromProto":
+        out: list[str] = []
+        out.append(
+            f'void FillStructFromProto({type_name}& original_struct, const vvk::server::{type_name}& proto) {{\n')
+        out.append(fill_struct_from_proto(
+            generator, type_name, 'original_struct', 'proto')[0])
         out.append("}\n")
         return "".join(out)
     return 'static_assert(false, "Unkown function type");\n'

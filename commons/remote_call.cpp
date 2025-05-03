@@ -102,6 +102,14 @@ void FillProtoFromStruct(vvk::server::VkTimelineSemaphoreSubmitInfo* proto, cons
 void FillProtoFromStruct(vvk::server::VkVertexInputAttributeDescription* proto, const VkVertexInputAttributeDescription* original_struct);
 void FillProtoFromStruct(vvk::server::VkVertexInputBindingDescription* proto, const VkVertexInputBindingDescription* original_struct);
 void FillProtoFromStruct(vvk::server::VkViewport* proto, const VkViewport* original_struct);
+void FillStructFromProto(VkExtent3D& original_struct, const vvk::server::VkExtent3D& proto);
+void FillStructFromProto(VkMemoryHeap& original_struct, const vvk::server::VkMemoryHeap& proto);
+void FillStructFromProto(VkMemoryRequirements& original_struct, const vvk::server::VkMemoryRequirements& proto);
+void FillStructFromProto(VkMemoryType& original_struct, const vvk::server::VkMemoryType& proto);
+void FillStructFromProto(VkPhysicalDeviceFeatures& original_struct, const vvk::server::VkPhysicalDeviceFeatures& proto);
+void FillStructFromProto(VkPhysicalDeviceLimits& original_struct, const vvk::server::VkPhysicalDeviceLimits& proto);
+void FillStructFromProto(VkPhysicalDeviceProperties& original_struct, const vvk::server::VkPhysicalDeviceProperties& proto);
+void FillStructFromProto(VkPhysicalDeviceSparseProperties& original_struct, const vvk::server::VkPhysicalDeviceSparseProperties& proto);
 void FillProtoFromStruct(vvk::server::VkApplicationInfo* proto, const VkApplicationInfo* original_struct) {
   if (original_struct->pNext) {
     // Empty pNext chain
@@ -1682,6 +1690,267 @@ void FillProtoFromStruct(vvk::server::VkViewport* proto, const VkViewport* origi
   proto->set_mindepth(original_struct->minDepth);
   proto->set_maxdepth(original_struct->maxDepth);
 }
+void FillStructFromProto(VkExtent3D& original_struct, const vvk::server::VkExtent3D& proto) {
+  original_struct.width = proto.width();
+  original_struct.height = proto.height();
+  original_struct.depth = proto.depth();
+}
+void FillStructFromProto(VkMemoryHeap& original_struct, const vvk::server::VkMemoryHeap& proto) {
+  original_struct.size = static_cast<VkDeviceSize>(proto.size());
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkMemoryHeapFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkMemoryHeapFlags{};
+  }
+}
+void FillStructFromProto(VkMemoryRequirements& original_struct, const vvk::server::VkMemoryRequirements& proto) {
+  original_struct.size = static_cast<VkDeviceSize>(proto.size());
+  original_struct.alignment = static_cast<VkDeviceSize>(proto.alignment());
+  original_struct.memoryTypeBits = proto.memorytypebits();
+}
+void FillStructFromProto(VkMemoryType& original_struct, const vvk::server::VkMemoryType& proto) {
+  if (proto.has_propertyflags()) {
+    original_struct.propertyFlags = static_cast<VkMemoryPropertyFlags>(proto.propertyflags());
+  } else {
+    original_struct.propertyFlags = VkMemoryPropertyFlags{};
+  }
+  original_struct.heapIndex = proto.heapindex();
+}
+void FillStructFromProto(VkPhysicalDeviceFeatures& original_struct, const vvk::server::VkPhysicalDeviceFeatures& proto) {
+  original_struct.robustBufferAccess = proto.robustbufferaccess();
+  original_struct.fullDrawIndexUint32 = proto.fulldrawindexuint32();
+  original_struct.imageCubeArray = proto.imagecubearray();
+  original_struct.independentBlend = proto.independentblend();
+  original_struct.geometryShader = proto.geometryshader();
+  original_struct.tessellationShader = proto.tessellationshader();
+  original_struct.sampleRateShading = proto.samplerateshading();
+  original_struct.dualSrcBlend = proto.dualsrcblend();
+  original_struct.logicOp = proto.logicop();
+  original_struct.multiDrawIndirect = proto.multidrawindirect();
+  original_struct.drawIndirectFirstInstance = proto.drawindirectfirstinstance();
+  original_struct.depthClamp = proto.depthclamp();
+  original_struct.depthBiasClamp = proto.depthbiasclamp();
+  original_struct.fillModeNonSolid = proto.fillmodenonsolid();
+  original_struct.depthBounds = proto.depthbounds();
+  original_struct.wideLines = proto.widelines();
+  original_struct.largePoints = proto.largepoints();
+  original_struct.alphaToOne = proto.alphatoone();
+  original_struct.multiViewport = proto.multiviewport();
+  original_struct.samplerAnisotropy = proto.sampleranisotropy();
+  original_struct.textureCompressionETC2 = proto.texturecompressionetc2();
+  original_struct.textureCompressionASTC_LDR = proto.texturecompressionastc_ldr();
+  original_struct.textureCompressionBC = proto.texturecompressionbc();
+  original_struct.occlusionQueryPrecise = proto.occlusionqueryprecise();
+  original_struct.pipelineStatisticsQuery = proto.pipelinestatisticsquery();
+  original_struct.vertexPipelineStoresAndAtomics = proto.vertexpipelinestoresandatomics();
+  original_struct.fragmentStoresAndAtomics = proto.fragmentstoresandatomics();
+  original_struct.shaderTessellationAndGeometryPointSize = proto.shadertessellationandgeometrypointsize();
+  original_struct.shaderImageGatherExtended = proto.shaderimagegatherextended();
+  original_struct.shaderStorageImageExtendedFormats = proto.shaderstorageimageextendedformats();
+  original_struct.shaderStorageImageMultisample = proto.shaderstorageimagemultisample();
+  original_struct.shaderStorageImageReadWithoutFormat = proto.shaderstorageimagereadwithoutformat();
+  original_struct.shaderStorageImageWriteWithoutFormat = proto.shaderstorageimagewritewithoutformat();
+  original_struct.shaderUniformBufferArrayDynamicIndexing = proto.shaderuniformbufferarraydynamicindexing();
+  original_struct.shaderSampledImageArrayDynamicIndexing = proto.shadersampledimagearraydynamicindexing();
+  original_struct.shaderStorageBufferArrayDynamicIndexing = proto.shaderstoragebufferarraydynamicindexing();
+  original_struct.shaderStorageImageArrayDynamicIndexing = proto.shaderstorageimagearraydynamicindexing();
+  original_struct.shaderClipDistance = proto.shaderclipdistance();
+  original_struct.shaderCullDistance = proto.shaderculldistance();
+  original_struct.shaderFloat64 = proto.shaderfloat64();
+  original_struct.shaderInt64 = proto.shaderint64();
+  original_struct.shaderInt16 = proto.shaderint16();
+  original_struct.shaderResourceResidency = proto.shaderresourceresidency();
+  original_struct.shaderResourceMinLod = proto.shaderresourceminlod();
+  original_struct.sparseBinding = proto.sparsebinding();
+  original_struct.sparseResidencyBuffer = proto.sparseresidencybuffer();
+  original_struct.sparseResidencyImage2D = proto.sparseresidencyimage2d();
+  original_struct.sparseResidencyImage3D = proto.sparseresidencyimage3d();
+  original_struct.sparseResidency2Samples = proto.sparseresidency2samples();
+  original_struct.sparseResidency4Samples = proto.sparseresidency4samples();
+  original_struct.sparseResidency8Samples = proto.sparseresidency8samples();
+  original_struct.sparseResidency16Samples = proto.sparseresidency16samples();
+  original_struct.sparseResidencyAliased = proto.sparseresidencyaliased();
+  original_struct.variableMultisampleRate = proto.variablemultisamplerate();
+  original_struct.inheritedQueries = proto.inheritedqueries();
+}
+void FillStructFromProto(VkPhysicalDeviceLimits& original_struct, const vvk::server::VkPhysicalDeviceLimits& proto) {
+  original_struct.maxImageDimension1D = proto.maximagedimension1d();
+  original_struct.maxImageDimension2D = proto.maximagedimension2d();
+  original_struct.maxImageDimension3D = proto.maximagedimension3d();
+  original_struct.maxImageDimensionCube = proto.maximagedimensioncube();
+  original_struct.maxImageArrayLayers = proto.maximagearraylayers();
+  original_struct.maxTexelBufferElements = proto.maxtexelbufferelements();
+  original_struct.maxUniformBufferRange = proto.maxuniformbufferrange();
+  original_struct.maxStorageBufferRange = proto.maxstoragebufferrange();
+  original_struct.maxPushConstantsSize = proto.maxpushconstantssize();
+  original_struct.maxMemoryAllocationCount = proto.maxmemoryallocationcount();
+  original_struct.maxSamplerAllocationCount = proto.maxsamplerallocationcount();
+  original_struct.bufferImageGranularity = static_cast<VkDeviceSize>(proto.bufferimagegranularity());
+  original_struct.sparseAddressSpaceSize = static_cast<VkDeviceSize>(proto.sparseaddressspacesize());
+  original_struct.maxBoundDescriptorSets = proto.maxbounddescriptorsets();
+  original_struct.maxPerStageDescriptorSamplers = proto.maxperstagedescriptorsamplers();
+  original_struct.maxPerStageDescriptorUniformBuffers = proto.maxperstagedescriptoruniformbuffers();
+  original_struct.maxPerStageDescriptorStorageBuffers = proto.maxperstagedescriptorstoragebuffers();
+  original_struct.maxPerStageDescriptorSampledImages = proto.maxperstagedescriptorsampledimages();
+  original_struct.maxPerStageDescriptorStorageImages = proto.maxperstagedescriptorstorageimages();
+  original_struct.maxPerStageDescriptorInputAttachments = proto.maxperstagedescriptorinputattachments();
+  original_struct.maxPerStageResources = proto.maxperstageresources();
+  original_struct.maxDescriptorSetSamplers = proto.maxdescriptorsetsamplers();
+  original_struct.maxDescriptorSetUniformBuffers = proto.maxdescriptorsetuniformbuffers();
+  original_struct.maxDescriptorSetUniformBuffersDynamic = proto.maxdescriptorsetuniformbuffersdynamic();
+  original_struct.maxDescriptorSetStorageBuffers = proto.maxdescriptorsetstoragebuffers();
+  original_struct.maxDescriptorSetStorageBuffersDynamic = proto.maxdescriptorsetstoragebuffersdynamic();
+  original_struct.maxDescriptorSetSampledImages = proto.maxdescriptorsetsampledimages();
+  original_struct.maxDescriptorSetStorageImages = proto.maxdescriptorsetstorageimages();
+  original_struct.maxDescriptorSetInputAttachments = proto.maxdescriptorsetinputattachments();
+  original_struct.maxVertexInputAttributes = proto.maxvertexinputattributes();
+  original_struct.maxVertexInputBindings = proto.maxvertexinputbindings();
+  original_struct.maxVertexInputAttributeOffset = proto.maxvertexinputattributeoffset();
+  original_struct.maxVertexInputBindingStride = proto.maxvertexinputbindingstride();
+  original_struct.maxVertexOutputComponents = proto.maxvertexoutputcomponents();
+  original_struct.maxTessellationGenerationLevel = proto.maxtessellationgenerationlevel();
+  original_struct.maxTessellationPatchSize = proto.maxtessellationpatchsize();
+  original_struct.maxTessellationControlPerVertexInputComponents = proto.maxtessellationcontrolpervertexinputcomponents();
+  original_struct.maxTessellationControlPerVertexOutputComponents = proto.maxtessellationcontrolpervertexoutputcomponents();
+  original_struct.maxTessellationControlPerPatchOutputComponents = proto.maxtessellationcontrolperpatchoutputcomponents();
+  original_struct.maxTessellationControlTotalOutputComponents = proto.maxtessellationcontroltotaloutputcomponents();
+  original_struct.maxTessellationEvaluationInputComponents = proto.maxtessellationevaluationinputcomponents();
+  original_struct.maxTessellationEvaluationOutputComponents = proto.maxtessellationevaluationoutputcomponents();
+  original_struct.maxGeometryShaderInvocations = proto.maxgeometryshaderinvocations();
+  original_struct.maxGeometryInputComponents = proto.maxgeometryinputcomponents();
+  original_struct.maxGeometryOutputComponents = proto.maxgeometryoutputcomponents();
+  original_struct.maxGeometryOutputVertices = proto.maxgeometryoutputvertices();
+  original_struct.maxGeometryTotalOutputComponents = proto.maxgeometrytotaloutputcomponents();
+  original_struct.maxFragmentInputComponents = proto.maxfragmentinputcomponents();
+  original_struct.maxFragmentOutputAttachments = proto.maxfragmentoutputattachments();
+  original_struct.maxFragmentDualSrcAttachments = proto.maxfragmentdualsrcattachments();
+  original_struct.maxFragmentCombinedOutputResources = proto.maxfragmentcombinedoutputresources();
+  original_struct.maxComputeSharedMemorySize = proto.maxcomputesharedmemorysize();
+  for (int maxComputeWorkGroupCount_indx = 0; maxComputeWorkGroupCount_indx < 3; maxComputeWorkGroupCount_indx++) {
+    original_struct.maxComputeWorkGroupCount[maxComputeWorkGroupCount_indx] = proto.maxcomputeworkgroupcount(maxComputeWorkGroupCount_indx);
+  }
+  original_struct.maxComputeWorkGroupInvocations = proto.maxcomputeworkgroupinvocations();
+  for (int maxComputeWorkGroupSize_indx = 0; maxComputeWorkGroupSize_indx < 3; maxComputeWorkGroupSize_indx++) {
+    original_struct.maxComputeWorkGroupSize[maxComputeWorkGroupSize_indx] = proto.maxcomputeworkgroupsize(maxComputeWorkGroupSize_indx);
+  }
+  original_struct.subPixelPrecisionBits = proto.subpixelprecisionbits();
+  original_struct.subTexelPrecisionBits = proto.subtexelprecisionbits();
+  original_struct.mipmapPrecisionBits = proto.mipmapprecisionbits();
+  original_struct.maxDrawIndexedIndexValue = proto.maxdrawindexedindexvalue();
+  original_struct.maxDrawIndirectCount = proto.maxdrawindirectcount();
+  original_struct.maxSamplerLodBias = proto.maxsamplerlodbias();
+  original_struct.maxSamplerAnisotropy = proto.maxsampleranisotropy();
+  original_struct.maxViewports = proto.maxviewports();
+  for (int maxViewportDimensions_indx = 0; maxViewportDimensions_indx < 2; maxViewportDimensions_indx++) {
+    original_struct.maxViewportDimensions[maxViewportDimensions_indx] = proto.maxviewportdimensions(maxViewportDimensions_indx);
+  }
+  for (int viewportBoundsRange_indx = 0; viewportBoundsRange_indx < 2; viewportBoundsRange_indx++) {
+    original_struct.viewportBoundsRange[viewportBoundsRange_indx] = proto.viewportboundsrange(viewportBoundsRange_indx);
+  }
+  original_struct.viewportSubPixelBits = proto.viewportsubpixelbits();
+  original_struct.minMemoryMapAlignment = proto.minmemorymapalignment();
+  original_struct.minTexelBufferOffsetAlignment = static_cast<VkDeviceSize>(proto.mintexelbufferoffsetalignment());
+  original_struct.minUniformBufferOffsetAlignment = static_cast<VkDeviceSize>(proto.minuniformbufferoffsetalignment());
+  original_struct.minStorageBufferOffsetAlignment = static_cast<VkDeviceSize>(proto.minstoragebufferoffsetalignment());
+  original_struct.minTexelOffset = proto.mintexeloffset();
+  original_struct.maxTexelOffset = proto.maxtexeloffset();
+  original_struct.minTexelGatherOffset = proto.mintexelgatheroffset();
+  original_struct.maxTexelGatherOffset = proto.maxtexelgatheroffset();
+  original_struct.minInterpolationOffset = proto.mininterpolationoffset();
+  original_struct.maxInterpolationOffset = proto.maxinterpolationoffset();
+  original_struct.subPixelInterpolationOffsetBits = proto.subpixelinterpolationoffsetbits();
+  original_struct.maxFramebufferWidth = proto.maxframebufferwidth();
+  original_struct.maxFramebufferHeight = proto.maxframebufferheight();
+  original_struct.maxFramebufferLayers = proto.maxframebufferlayers();
+  if (proto.has_framebuffercolorsamplecounts()) {
+    original_struct.framebufferColorSampleCounts = static_cast<VkSampleCountFlags>(proto.framebuffercolorsamplecounts());
+  } else {
+    original_struct.framebufferColorSampleCounts = VkSampleCountFlags{};
+  }
+  if (proto.has_framebufferdepthsamplecounts()) {
+    original_struct.framebufferDepthSampleCounts = static_cast<VkSampleCountFlags>(proto.framebufferdepthsamplecounts());
+  } else {
+    original_struct.framebufferDepthSampleCounts = VkSampleCountFlags{};
+  }
+  if (proto.has_framebufferstencilsamplecounts()) {
+    original_struct.framebufferStencilSampleCounts = static_cast<VkSampleCountFlags>(proto.framebufferstencilsamplecounts());
+  } else {
+    original_struct.framebufferStencilSampleCounts = VkSampleCountFlags{};
+  }
+  if (proto.has_framebuffernoattachmentssamplecounts()) {
+    original_struct.framebufferNoAttachmentsSampleCounts = static_cast<VkSampleCountFlags>(proto.framebuffernoattachmentssamplecounts());
+  } else {
+    original_struct.framebufferNoAttachmentsSampleCounts = VkSampleCountFlags{};
+  }
+  original_struct.maxColorAttachments = proto.maxcolorattachments();
+  if (proto.has_sampledimagecolorsamplecounts()) {
+    original_struct.sampledImageColorSampleCounts = static_cast<VkSampleCountFlags>(proto.sampledimagecolorsamplecounts());
+  } else {
+    original_struct.sampledImageColorSampleCounts = VkSampleCountFlags{};
+  }
+  if (proto.has_sampledimageintegersamplecounts()) {
+    original_struct.sampledImageIntegerSampleCounts = static_cast<VkSampleCountFlags>(proto.sampledimageintegersamplecounts());
+  } else {
+    original_struct.sampledImageIntegerSampleCounts = VkSampleCountFlags{};
+  }
+  if (proto.has_sampledimagedepthsamplecounts()) {
+    original_struct.sampledImageDepthSampleCounts = static_cast<VkSampleCountFlags>(proto.sampledimagedepthsamplecounts());
+  } else {
+    original_struct.sampledImageDepthSampleCounts = VkSampleCountFlags{};
+  }
+  if (proto.has_sampledimagestencilsamplecounts()) {
+    original_struct.sampledImageStencilSampleCounts = static_cast<VkSampleCountFlags>(proto.sampledimagestencilsamplecounts());
+  } else {
+    original_struct.sampledImageStencilSampleCounts = VkSampleCountFlags{};
+  }
+  if (proto.has_storageimagesamplecounts()) {
+    original_struct.storageImageSampleCounts = static_cast<VkSampleCountFlags>(proto.storageimagesamplecounts());
+  } else {
+    original_struct.storageImageSampleCounts = VkSampleCountFlags{};
+  }
+  original_struct.maxSampleMaskWords = proto.maxsamplemaskwords();
+  original_struct.timestampComputeAndGraphics = proto.timestampcomputeandgraphics();
+  original_struct.timestampPeriod = proto.timestampperiod();
+  original_struct.maxClipDistances = proto.maxclipdistances();
+  original_struct.maxCullDistances = proto.maxculldistances();
+  original_struct.maxCombinedClipAndCullDistances = proto.maxcombinedclipandculldistances();
+  original_struct.discreteQueuePriorities = proto.discretequeuepriorities();
+  for (int pointSizeRange_indx = 0; pointSizeRange_indx < 2; pointSizeRange_indx++) {
+    original_struct.pointSizeRange[pointSizeRange_indx] = proto.pointsizerange(pointSizeRange_indx);
+  }
+  for (int lineWidthRange_indx = 0; lineWidthRange_indx < 2; lineWidthRange_indx++) {
+    original_struct.lineWidthRange[lineWidthRange_indx] = proto.linewidthrange(lineWidthRange_indx);
+  }
+  original_struct.pointSizeGranularity = proto.pointsizegranularity();
+  original_struct.lineWidthGranularity = proto.linewidthgranularity();
+  original_struct.strictLines = proto.strictlines();
+  original_struct.standardSampleLocations = proto.standardsamplelocations();
+  original_struct.optimalBufferCopyOffsetAlignment = static_cast<VkDeviceSize>(proto.optimalbuffercopyoffsetalignment());
+  original_struct.optimalBufferCopyRowPitchAlignment = static_cast<VkDeviceSize>(proto.optimalbuffercopyrowpitchalignment());
+  original_struct.nonCoherentAtomSize = static_cast<VkDeviceSize>(proto.noncoherentatomsize());
+}
+void FillStructFromProto(VkPhysicalDeviceProperties& original_struct, const vvk::server::VkPhysicalDeviceProperties& proto) {
+  original_struct.apiVersion = proto.apiversion();
+  original_struct.driverVersion = proto.driverversion();
+  original_struct.vendorID = proto.vendorid();
+  original_struct.deviceID = proto.deviceid();
+  original_struct.deviceType = static_cast<VkPhysicalDeviceType>(proto.devicetype());
+  strncpy(original_struct.deviceName, proto.devicename().c_str(), VK_MAX_PHYSICAL_DEVICE_NAME_SIZE);
+  for (int pipelineCacheUUID_indx = 0; pipelineCacheUUID_indx < VK_UUID_SIZE; pipelineCacheUUID_indx++) {
+    original_struct.pipelineCacheUUID[pipelineCacheUUID_indx] = static_cast<uint8_t>(proto.pipelinecacheuuid(pipelineCacheUUID_indx));
+  }
+  VkPhysicalDeviceLimits &original_struct_limits = original_struct.limits;
+  FillStructFromProto(original_struct_limits, proto.limits());
+  VkPhysicalDeviceSparseProperties &original_struct_sparseProperties = original_struct.sparseProperties;
+  FillStructFromProto(original_struct_sparseProperties, proto.sparseproperties());
+}
+void FillStructFromProto(VkPhysicalDeviceSparseProperties& original_struct, const vvk::server::VkPhysicalDeviceSparseProperties& proto) {
+  original_struct.residencyStandard2DBlockShape = proto.residencystandard2dblockshape();
+  original_struct.residencyStandard2DMultisampleBlockShape = proto.residencystandard2dmultisampleblockshape();
+  original_struct.residencyStandard3DBlockShape = proto.residencystandard3dblockshape();
+  original_struct.residencyAlignedMipSize = proto.residencyalignedmipsize();
+  original_struct.residencyNonResidentStrict = proto.residencynonresidentstrict();
+}
 }
 VkResult PackAndCallVkCreateInstance(VvkCommandClientBidiStream& stream, const VkInstanceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkInstance* pInstance) {
   vvk::server::VvkRequest request;
@@ -1770,166 +2039,9 @@ void PackAndCallVkGetPhysicalDeviceProperties(VvkCommandClientBidiStream& stream
     pProperties_ref.pipelineCacheUUID[pipelineCacheUUID_indx] = static_cast<uint8_t>(response.vkgetphysicaldeviceproperties().pproperties().pipelinecacheuuid(pipelineCacheUUID_indx));
   }
   VkPhysicalDeviceLimits &pProperties_ref_limits = pProperties_ref.limits;
-  pProperties_ref_limits.maxImageDimension1D = response.vkgetphysicaldeviceproperties().pproperties().limits().maximagedimension1d();
-  pProperties_ref_limits.maxImageDimension2D = response.vkgetphysicaldeviceproperties().pproperties().limits().maximagedimension2d();
-  pProperties_ref_limits.maxImageDimension3D = response.vkgetphysicaldeviceproperties().pproperties().limits().maximagedimension3d();
-  pProperties_ref_limits.maxImageDimensionCube = response.vkgetphysicaldeviceproperties().pproperties().limits().maximagedimensioncube();
-  pProperties_ref_limits.maxImageArrayLayers = response.vkgetphysicaldeviceproperties().pproperties().limits().maximagearraylayers();
-  pProperties_ref_limits.maxTexelBufferElements = response.vkgetphysicaldeviceproperties().pproperties().limits().maxtexelbufferelements();
-  pProperties_ref_limits.maxUniformBufferRange = response.vkgetphysicaldeviceproperties().pproperties().limits().maxuniformbufferrange();
-  pProperties_ref_limits.maxStorageBufferRange = response.vkgetphysicaldeviceproperties().pproperties().limits().maxstoragebufferrange();
-  pProperties_ref_limits.maxPushConstantsSize = response.vkgetphysicaldeviceproperties().pproperties().limits().maxpushconstantssize();
-  pProperties_ref_limits.maxMemoryAllocationCount = response.vkgetphysicaldeviceproperties().pproperties().limits().maxmemoryallocationcount();
-  pProperties_ref_limits.maxSamplerAllocationCount = response.vkgetphysicaldeviceproperties().pproperties().limits().maxsamplerallocationcount();
-  pProperties_ref_limits.bufferImageGranularity = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties().pproperties().limits().bufferimagegranularity());
-  pProperties_ref_limits.sparseAddressSpaceSize = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties().pproperties().limits().sparseaddressspacesize());
-  pProperties_ref_limits.maxBoundDescriptorSets = response.vkgetphysicaldeviceproperties().pproperties().limits().maxbounddescriptorsets();
-  pProperties_ref_limits.maxPerStageDescriptorSamplers = response.vkgetphysicaldeviceproperties().pproperties().limits().maxperstagedescriptorsamplers();
-  pProperties_ref_limits.maxPerStageDescriptorUniformBuffers = response.vkgetphysicaldeviceproperties().pproperties().limits().maxperstagedescriptoruniformbuffers();
-  pProperties_ref_limits.maxPerStageDescriptorStorageBuffers = response.vkgetphysicaldeviceproperties().pproperties().limits().maxperstagedescriptorstoragebuffers();
-  pProperties_ref_limits.maxPerStageDescriptorSampledImages = response.vkgetphysicaldeviceproperties().pproperties().limits().maxperstagedescriptorsampledimages();
-  pProperties_ref_limits.maxPerStageDescriptorStorageImages = response.vkgetphysicaldeviceproperties().pproperties().limits().maxperstagedescriptorstorageimages();
-  pProperties_ref_limits.maxPerStageDescriptorInputAttachments = response.vkgetphysicaldeviceproperties().pproperties().limits().maxperstagedescriptorinputattachments();
-  pProperties_ref_limits.maxPerStageResources = response.vkgetphysicaldeviceproperties().pproperties().limits().maxperstageresources();
-  pProperties_ref_limits.maxDescriptorSetSamplers = response.vkgetphysicaldeviceproperties().pproperties().limits().maxdescriptorsetsamplers();
-  pProperties_ref_limits.maxDescriptorSetUniformBuffers = response.vkgetphysicaldeviceproperties().pproperties().limits().maxdescriptorsetuniformbuffers();
-  pProperties_ref_limits.maxDescriptorSetUniformBuffersDynamic = response.vkgetphysicaldeviceproperties().pproperties().limits().maxdescriptorsetuniformbuffersdynamic();
-  pProperties_ref_limits.maxDescriptorSetStorageBuffers = response.vkgetphysicaldeviceproperties().pproperties().limits().maxdescriptorsetstoragebuffers();
-  pProperties_ref_limits.maxDescriptorSetStorageBuffersDynamic = response.vkgetphysicaldeviceproperties().pproperties().limits().maxdescriptorsetstoragebuffersdynamic();
-  pProperties_ref_limits.maxDescriptorSetSampledImages = response.vkgetphysicaldeviceproperties().pproperties().limits().maxdescriptorsetsampledimages();
-  pProperties_ref_limits.maxDescriptorSetStorageImages = response.vkgetphysicaldeviceproperties().pproperties().limits().maxdescriptorsetstorageimages();
-  pProperties_ref_limits.maxDescriptorSetInputAttachments = response.vkgetphysicaldeviceproperties().pproperties().limits().maxdescriptorsetinputattachments();
-  pProperties_ref_limits.maxVertexInputAttributes = response.vkgetphysicaldeviceproperties().pproperties().limits().maxvertexinputattributes();
-  pProperties_ref_limits.maxVertexInputBindings = response.vkgetphysicaldeviceproperties().pproperties().limits().maxvertexinputbindings();
-  pProperties_ref_limits.maxVertexInputAttributeOffset = response.vkgetphysicaldeviceproperties().pproperties().limits().maxvertexinputattributeoffset();
-  pProperties_ref_limits.maxVertexInputBindingStride = response.vkgetphysicaldeviceproperties().pproperties().limits().maxvertexinputbindingstride();
-  pProperties_ref_limits.maxVertexOutputComponents = response.vkgetphysicaldeviceproperties().pproperties().limits().maxvertexoutputcomponents();
-  pProperties_ref_limits.maxTessellationGenerationLevel = response.vkgetphysicaldeviceproperties().pproperties().limits().maxtessellationgenerationlevel();
-  pProperties_ref_limits.maxTessellationPatchSize = response.vkgetphysicaldeviceproperties().pproperties().limits().maxtessellationpatchsize();
-  pProperties_ref_limits.maxTessellationControlPerVertexInputComponents = response.vkgetphysicaldeviceproperties().pproperties().limits().maxtessellationcontrolpervertexinputcomponents();
-  pProperties_ref_limits.maxTessellationControlPerVertexOutputComponents = response.vkgetphysicaldeviceproperties().pproperties().limits().maxtessellationcontrolpervertexoutputcomponents();
-  pProperties_ref_limits.maxTessellationControlPerPatchOutputComponents = response.vkgetphysicaldeviceproperties().pproperties().limits().maxtessellationcontrolperpatchoutputcomponents();
-  pProperties_ref_limits.maxTessellationControlTotalOutputComponents = response.vkgetphysicaldeviceproperties().pproperties().limits().maxtessellationcontroltotaloutputcomponents();
-  pProperties_ref_limits.maxTessellationEvaluationInputComponents = response.vkgetphysicaldeviceproperties().pproperties().limits().maxtessellationevaluationinputcomponents();
-  pProperties_ref_limits.maxTessellationEvaluationOutputComponents = response.vkgetphysicaldeviceproperties().pproperties().limits().maxtessellationevaluationoutputcomponents();
-  pProperties_ref_limits.maxGeometryShaderInvocations = response.vkgetphysicaldeviceproperties().pproperties().limits().maxgeometryshaderinvocations();
-  pProperties_ref_limits.maxGeometryInputComponents = response.vkgetphysicaldeviceproperties().pproperties().limits().maxgeometryinputcomponents();
-  pProperties_ref_limits.maxGeometryOutputComponents = response.vkgetphysicaldeviceproperties().pproperties().limits().maxgeometryoutputcomponents();
-  pProperties_ref_limits.maxGeometryOutputVertices = response.vkgetphysicaldeviceproperties().pproperties().limits().maxgeometryoutputvertices();
-  pProperties_ref_limits.maxGeometryTotalOutputComponents = response.vkgetphysicaldeviceproperties().pproperties().limits().maxgeometrytotaloutputcomponents();
-  pProperties_ref_limits.maxFragmentInputComponents = response.vkgetphysicaldeviceproperties().pproperties().limits().maxfragmentinputcomponents();
-  pProperties_ref_limits.maxFragmentOutputAttachments = response.vkgetphysicaldeviceproperties().pproperties().limits().maxfragmentoutputattachments();
-  pProperties_ref_limits.maxFragmentDualSrcAttachments = response.vkgetphysicaldeviceproperties().pproperties().limits().maxfragmentdualsrcattachments();
-  pProperties_ref_limits.maxFragmentCombinedOutputResources = response.vkgetphysicaldeviceproperties().pproperties().limits().maxfragmentcombinedoutputresources();
-  pProperties_ref_limits.maxComputeSharedMemorySize = response.vkgetphysicaldeviceproperties().pproperties().limits().maxcomputesharedmemorysize();
-  for (int maxComputeWorkGroupCount_indx = 0; maxComputeWorkGroupCount_indx < 3; maxComputeWorkGroupCount_indx++) {
-    pProperties_ref_limits.maxComputeWorkGroupCount[maxComputeWorkGroupCount_indx] = response.vkgetphysicaldeviceproperties().pproperties().limits().maxcomputeworkgroupcount(maxComputeWorkGroupCount_indx);
-  }
-  pProperties_ref_limits.maxComputeWorkGroupInvocations = response.vkgetphysicaldeviceproperties().pproperties().limits().maxcomputeworkgroupinvocations();
-  for (int maxComputeWorkGroupSize_indx = 0; maxComputeWorkGroupSize_indx < 3; maxComputeWorkGroupSize_indx++) {
-    pProperties_ref_limits.maxComputeWorkGroupSize[maxComputeWorkGroupSize_indx] = response.vkgetphysicaldeviceproperties().pproperties().limits().maxcomputeworkgroupsize(maxComputeWorkGroupSize_indx);
-  }
-  pProperties_ref_limits.subPixelPrecisionBits = response.vkgetphysicaldeviceproperties().pproperties().limits().subpixelprecisionbits();
-  pProperties_ref_limits.subTexelPrecisionBits = response.vkgetphysicaldeviceproperties().pproperties().limits().subtexelprecisionbits();
-  pProperties_ref_limits.mipmapPrecisionBits = response.vkgetphysicaldeviceproperties().pproperties().limits().mipmapprecisionbits();
-  pProperties_ref_limits.maxDrawIndexedIndexValue = response.vkgetphysicaldeviceproperties().pproperties().limits().maxdrawindexedindexvalue();
-  pProperties_ref_limits.maxDrawIndirectCount = response.vkgetphysicaldeviceproperties().pproperties().limits().maxdrawindirectcount();
-  pProperties_ref_limits.maxSamplerLodBias = response.vkgetphysicaldeviceproperties().pproperties().limits().maxsamplerlodbias();
-  pProperties_ref_limits.maxSamplerAnisotropy = response.vkgetphysicaldeviceproperties().pproperties().limits().maxsampleranisotropy();
-  pProperties_ref_limits.maxViewports = response.vkgetphysicaldeviceproperties().pproperties().limits().maxviewports();
-  for (int maxViewportDimensions_indx = 0; maxViewportDimensions_indx < 2; maxViewportDimensions_indx++) {
-    pProperties_ref_limits.maxViewportDimensions[maxViewportDimensions_indx] = response.vkgetphysicaldeviceproperties().pproperties().limits().maxviewportdimensions(maxViewportDimensions_indx);
-  }
-  for (int viewportBoundsRange_indx = 0; viewportBoundsRange_indx < 2; viewportBoundsRange_indx++) {
-    pProperties_ref_limits.viewportBoundsRange[viewportBoundsRange_indx] = response.vkgetphysicaldeviceproperties().pproperties().limits().viewportboundsrange(viewportBoundsRange_indx);
-  }
-  pProperties_ref_limits.viewportSubPixelBits = response.vkgetphysicaldeviceproperties().pproperties().limits().viewportsubpixelbits();
-  pProperties_ref_limits.minMemoryMapAlignment = response.vkgetphysicaldeviceproperties().pproperties().limits().minmemorymapalignment();
-  pProperties_ref_limits.minTexelBufferOffsetAlignment = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties().pproperties().limits().mintexelbufferoffsetalignment());
-  pProperties_ref_limits.minUniformBufferOffsetAlignment = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties().pproperties().limits().minuniformbufferoffsetalignment());
-  pProperties_ref_limits.minStorageBufferOffsetAlignment = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties().pproperties().limits().minstoragebufferoffsetalignment());
-  pProperties_ref_limits.minTexelOffset = response.vkgetphysicaldeviceproperties().pproperties().limits().mintexeloffset();
-  pProperties_ref_limits.maxTexelOffset = response.vkgetphysicaldeviceproperties().pproperties().limits().maxtexeloffset();
-  pProperties_ref_limits.minTexelGatherOffset = response.vkgetphysicaldeviceproperties().pproperties().limits().mintexelgatheroffset();
-  pProperties_ref_limits.maxTexelGatherOffset = response.vkgetphysicaldeviceproperties().pproperties().limits().maxtexelgatheroffset();
-  pProperties_ref_limits.minInterpolationOffset = response.vkgetphysicaldeviceproperties().pproperties().limits().mininterpolationoffset();
-  pProperties_ref_limits.maxInterpolationOffset = response.vkgetphysicaldeviceproperties().pproperties().limits().maxinterpolationoffset();
-  pProperties_ref_limits.subPixelInterpolationOffsetBits = response.vkgetphysicaldeviceproperties().pproperties().limits().subpixelinterpolationoffsetbits();
-  pProperties_ref_limits.maxFramebufferWidth = response.vkgetphysicaldeviceproperties().pproperties().limits().maxframebufferwidth();
-  pProperties_ref_limits.maxFramebufferHeight = response.vkgetphysicaldeviceproperties().pproperties().limits().maxframebufferheight();
-  pProperties_ref_limits.maxFramebufferLayers = response.vkgetphysicaldeviceproperties().pproperties().limits().maxframebufferlayers();
-  if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_framebuffercolorsamplecounts()) {
-    pProperties_ref_limits.framebufferColorSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().framebuffercolorsamplecounts());
-  } else {
-    pProperties_ref_limits.framebufferColorSampleCounts = VkSampleCountFlags{};
-  }
-  if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_framebufferdepthsamplecounts()) {
-    pProperties_ref_limits.framebufferDepthSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().framebufferdepthsamplecounts());
-  } else {
-    pProperties_ref_limits.framebufferDepthSampleCounts = VkSampleCountFlags{};
-  }
-  if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_framebufferstencilsamplecounts()) {
-    pProperties_ref_limits.framebufferStencilSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().framebufferstencilsamplecounts());
-  } else {
-    pProperties_ref_limits.framebufferStencilSampleCounts = VkSampleCountFlags{};
-  }
-  if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_framebuffernoattachmentssamplecounts()) {
-    pProperties_ref_limits.framebufferNoAttachmentsSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().framebuffernoattachmentssamplecounts());
-  } else {
-    pProperties_ref_limits.framebufferNoAttachmentsSampleCounts = VkSampleCountFlags{};
-  }
-  pProperties_ref_limits.maxColorAttachments = response.vkgetphysicaldeviceproperties().pproperties().limits().maxcolorattachments();
-  if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_sampledimagecolorsamplecounts()) {
-    pProperties_ref_limits.sampledImageColorSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimagecolorsamplecounts());
-  } else {
-    pProperties_ref_limits.sampledImageColorSampleCounts = VkSampleCountFlags{};
-  }
-  if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_sampledimageintegersamplecounts()) {
-    pProperties_ref_limits.sampledImageIntegerSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimageintegersamplecounts());
-  } else {
-    pProperties_ref_limits.sampledImageIntegerSampleCounts = VkSampleCountFlags{};
-  }
-  if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_sampledimagedepthsamplecounts()) {
-    pProperties_ref_limits.sampledImageDepthSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimagedepthsamplecounts());
-  } else {
-    pProperties_ref_limits.sampledImageDepthSampleCounts = VkSampleCountFlags{};
-  }
-  if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_sampledimagestencilsamplecounts()) {
-    pProperties_ref_limits.sampledImageStencilSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().sampledimagestencilsamplecounts());
-  } else {
-    pProperties_ref_limits.sampledImageStencilSampleCounts = VkSampleCountFlags{};
-  }
-  if (response.vkgetphysicaldeviceproperties().pproperties().limits().has_storageimagesamplecounts()) {
-    pProperties_ref_limits.storageImageSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties().pproperties().limits().storageimagesamplecounts());
-  } else {
-    pProperties_ref_limits.storageImageSampleCounts = VkSampleCountFlags{};
-  }
-  pProperties_ref_limits.maxSampleMaskWords = response.vkgetphysicaldeviceproperties().pproperties().limits().maxsamplemaskwords();
-  pProperties_ref_limits.timestampComputeAndGraphics = response.vkgetphysicaldeviceproperties().pproperties().limits().timestampcomputeandgraphics();
-  pProperties_ref_limits.timestampPeriod = response.vkgetphysicaldeviceproperties().pproperties().limits().timestampperiod();
-  pProperties_ref_limits.maxClipDistances = response.vkgetphysicaldeviceproperties().pproperties().limits().maxclipdistances();
-  pProperties_ref_limits.maxCullDistances = response.vkgetphysicaldeviceproperties().pproperties().limits().maxculldistances();
-  pProperties_ref_limits.maxCombinedClipAndCullDistances = response.vkgetphysicaldeviceproperties().pproperties().limits().maxcombinedclipandculldistances();
-  pProperties_ref_limits.discreteQueuePriorities = response.vkgetphysicaldeviceproperties().pproperties().limits().discretequeuepriorities();
-  for (int pointSizeRange_indx = 0; pointSizeRange_indx < 2; pointSizeRange_indx++) {
-    pProperties_ref_limits.pointSizeRange[pointSizeRange_indx] = response.vkgetphysicaldeviceproperties().pproperties().limits().pointsizerange(pointSizeRange_indx);
-  }
-  for (int lineWidthRange_indx = 0; lineWidthRange_indx < 2; lineWidthRange_indx++) {
-    pProperties_ref_limits.lineWidthRange[lineWidthRange_indx] = response.vkgetphysicaldeviceproperties().pproperties().limits().linewidthrange(lineWidthRange_indx);
-  }
-  pProperties_ref_limits.pointSizeGranularity = response.vkgetphysicaldeviceproperties().pproperties().limits().pointsizegranularity();
-  pProperties_ref_limits.lineWidthGranularity = response.vkgetphysicaldeviceproperties().pproperties().limits().linewidthgranularity();
-  pProperties_ref_limits.strictLines = response.vkgetphysicaldeviceproperties().pproperties().limits().strictlines();
-  pProperties_ref_limits.standardSampleLocations = response.vkgetphysicaldeviceproperties().pproperties().limits().standardsamplelocations();
-  pProperties_ref_limits.optimalBufferCopyOffsetAlignment = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties().pproperties().limits().optimalbuffercopyoffsetalignment());
-  pProperties_ref_limits.optimalBufferCopyRowPitchAlignment = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties().pproperties().limits().optimalbuffercopyrowpitchalignment());
-  pProperties_ref_limits.nonCoherentAtomSize = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties().pproperties().limits().noncoherentatomsize());
+  FillStructFromProto(pProperties_ref_limits, response.vkgetphysicaldeviceproperties().pproperties().limits());
   VkPhysicalDeviceSparseProperties &pProperties_ref_sparseProperties = pProperties_ref.sparseProperties;
-  pProperties_ref_sparseProperties.residencyStandard2DBlockShape = response.vkgetphysicaldeviceproperties().pproperties().sparseproperties().residencystandard2dblockshape();
-  pProperties_ref_sparseProperties.residencyStandard2DMultisampleBlockShape = response.vkgetphysicaldeviceproperties().pproperties().sparseproperties().residencystandard2dmultisampleblockshape();
-  pProperties_ref_sparseProperties.residencyStandard3DBlockShape = response.vkgetphysicaldeviceproperties().pproperties().sparseproperties().residencystandard3dblockshape();
-  pProperties_ref_sparseProperties.residencyAlignedMipSize = response.vkgetphysicaldeviceproperties().pproperties().sparseproperties().residencyalignedmipsize();
-  pProperties_ref_sparseProperties.residencyNonResidentStrict = response.vkgetphysicaldeviceproperties().pproperties().sparseproperties().residencynonresidentstrict();
+  FillStructFromProto(pProperties_ref_sparseProperties, response.vkgetphysicaldeviceproperties().pproperties().sparseproperties());
 }
 void PackAndCallVkGetPhysicalDeviceFormatProperties(VvkCommandClientBidiStream& stream, VkPhysicalDevice physicalDevice, VkFormat format, VkFormatProperties* pFormatProperties) {
   vvk::server::VvkRequest request;
@@ -2077,23 +2189,11 @@ void PackAndCallVkGetPhysicalDeviceMemoryProperties(VvkCommandClientBidiStream& 
   VkPhysicalDeviceMemoryProperties& pMemoryProperties_ref = *pMemoryProperties;
   pMemoryProperties_ref.memoryTypeCount = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypecount();
   for (int memoryTypes_indx = 0; memoryTypes_indx < response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes_size(); memoryTypes_indx++) {
-    VkMemoryType &pMemoryProperties_ref_memoryTypes_i = pMemoryProperties_ref.memoryTypes[memoryTypes_indx];
-    if (response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).has_propertyflags()) {
-      pMemoryProperties_ref_memoryTypes_i.propertyFlags = static_cast<VkMemoryPropertyFlags>(response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).propertyflags());
-    } else {
-      pMemoryProperties_ref_memoryTypes_i.propertyFlags = VkMemoryPropertyFlags{};
-    }
-    pMemoryProperties_ref_memoryTypes_i.heapIndex = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx).heapindex();
+    FillStructFromProto(pMemoryProperties_ref.memoryTypes[memoryTypes_indx], response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memorytypes(memoryTypes_indx));
   }
   pMemoryProperties_ref.memoryHeapCount = response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheapcount();
   for (int memoryHeaps_indx = 0; memoryHeaps_indx < response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps_size(); memoryHeaps_indx++) {
-    VkMemoryHeap &pMemoryProperties_ref_memoryHeaps_i = pMemoryProperties_ref.memoryHeaps[memoryHeaps_indx];
-    pMemoryProperties_ref_memoryHeaps_i.size = static_cast<VkDeviceSize>(response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx).size());
-    if (response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx).has_flags()) {
-      pMemoryProperties_ref_memoryHeaps_i.flags = static_cast<VkMemoryHeapFlags>(response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx).flags());
-    } else {
-      pMemoryProperties_ref_memoryHeaps_i.flags = VkMemoryHeapFlags{};
-    }
+    FillStructFromProto(pMemoryProperties_ref.memoryHeaps[memoryHeaps_indx], response.vkgetphysicaldevicememoryproperties().pmemoryproperties().memoryheaps(memoryHeaps_indx));
   }
 }
 void PackAndCallVkGetPhysicalDeviceFeatures(VvkCommandClientBidiStream& stream, VkPhysicalDevice physicalDevice, VkPhysicalDeviceFeatures* pFeatures) {
@@ -2200,9 +2300,7 @@ void PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(VvkCommandClientBidiStr
       pQueueFamilyProperties_ref.queueCount = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).queuecount();
       pQueueFamilyProperties_ref.timestampValidBits = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).timestampvalidbits();
       VkExtent3D &pQueueFamilyProperties_ref_minImageTransferGranularity = pQueueFamilyProperties_ref.minImageTransferGranularity;
-      pQueueFamilyProperties_ref_minImageTransferGranularity.width = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).minimagetransfergranularity().width();
-      pQueueFamilyProperties_ref_minImageTransferGranularity.height = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).minimagetransfergranularity().height();
-      pQueueFamilyProperties_ref_minImageTransferGranularity.depth = response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).minimagetransfergranularity().depth();
+      FillStructFromProto(pQueueFamilyProperties_ref_minImageTransferGranularity, response.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilyproperties(pQueueFamilyProperties_indx).minimagetransfergranularity());
     }
   }
 }
@@ -2440,9 +2538,7 @@ void PackAndCallVkGetImageMemoryRequirements2(VvkCommandClientBidiStream& stream
   pMemoryRequirements_ref.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
   pMemoryRequirements_ref.pNext = nullptr; // pNext chains are currently unsupported
   VkMemoryRequirements &pMemoryRequirements_ref_memoryRequirements = pMemoryRequirements_ref.memoryRequirements;
-  pMemoryRequirements_ref_memoryRequirements.size = static_cast<VkDeviceSize>(response.vkgetimagememoryrequirements2().pmemoryrequirements().memoryrequirements().size());
-  pMemoryRequirements_ref_memoryRequirements.alignment = static_cast<VkDeviceSize>(response.vkgetimagememoryrequirements2().pmemoryrequirements().memoryrequirements().alignment());
-  pMemoryRequirements_ref_memoryRequirements.memoryTypeBits = response.vkgetimagememoryrequirements2().pmemoryrequirements().memoryrequirements().memorytypebits();
+  FillStructFromProto(pMemoryRequirements_ref_memoryRequirements, response.vkgetimagememoryrequirements2().pmemoryrequirements().memoryrequirements());
 }
 VkResult PackAndCallVkCreateImageView(VvkCommandClientBidiStream& stream, VkDevice device, const VkImageViewCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkImageView* pView) {
   vvk::server::VvkRequest request;
@@ -3083,176 +3179,7 @@ void PackAndCallVkGetPhysicalDeviceProperties2(VvkCommandClientBidiStream& strea
   pProperties_ref.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
   pProperties_ref.pNext = nullptr; // pNext chains are currently unsupported
   VkPhysicalDeviceProperties &pProperties_ref_properties = pProperties_ref.properties;
-  pProperties_ref_properties.apiVersion = response.vkgetphysicaldeviceproperties2().pproperties().properties().apiversion();
-  pProperties_ref_properties.driverVersion = response.vkgetphysicaldeviceproperties2().pproperties().properties().driverversion();
-  pProperties_ref_properties.vendorID = response.vkgetphysicaldeviceproperties2().pproperties().properties().vendorid();
-  pProperties_ref_properties.deviceID = response.vkgetphysicaldeviceproperties2().pproperties().properties().deviceid();
-  pProperties_ref_properties.deviceType = static_cast<VkPhysicalDeviceType>(response.vkgetphysicaldeviceproperties2().pproperties().properties().devicetype());
-  strncpy(pProperties_ref_properties.deviceName, response.vkgetphysicaldeviceproperties2().pproperties().properties().devicename().c_str(), VK_MAX_PHYSICAL_DEVICE_NAME_SIZE);
-  for (int pipelineCacheUUID_indx = 0; pipelineCacheUUID_indx < VK_UUID_SIZE; pipelineCacheUUID_indx++) {
-    pProperties_ref_properties.pipelineCacheUUID[pipelineCacheUUID_indx] = static_cast<uint8_t>(response.vkgetphysicaldeviceproperties2().pproperties().properties().pipelinecacheuuid(pipelineCacheUUID_indx));
-  }
-  VkPhysicalDeviceLimits &pProperties_ref_properties_limits = pProperties_ref_properties.limits;
-  pProperties_ref_properties_limits.maxImageDimension1D = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maximagedimension1d();
-  pProperties_ref_properties_limits.maxImageDimension2D = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maximagedimension2d();
-  pProperties_ref_properties_limits.maxImageDimension3D = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maximagedimension3d();
-  pProperties_ref_properties_limits.maxImageDimensionCube = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maximagedimensioncube();
-  pProperties_ref_properties_limits.maxImageArrayLayers = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maximagearraylayers();
-  pProperties_ref_properties_limits.maxTexelBufferElements = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxtexelbufferelements();
-  pProperties_ref_properties_limits.maxUniformBufferRange = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxuniformbufferrange();
-  pProperties_ref_properties_limits.maxStorageBufferRange = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxstoragebufferrange();
-  pProperties_ref_properties_limits.maxPushConstantsSize = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxpushconstantssize();
-  pProperties_ref_properties_limits.maxMemoryAllocationCount = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxmemoryallocationcount();
-  pProperties_ref_properties_limits.maxSamplerAllocationCount = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxsamplerallocationcount();
-  pProperties_ref_properties_limits.bufferImageGranularity = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().bufferimagegranularity());
-  pProperties_ref_properties_limits.sparseAddressSpaceSize = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().sparseaddressspacesize());
-  pProperties_ref_properties_limits.maxBoundDescriptorSets = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxbounddescriptorsets();
-  pProperties_ref_properties_limits.maxPerStageDescriptorSamplers = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxperstagedescriptorsamplers();
-  pProperties_ref_properties_limits.maxPerStageDescriptorUniformBuffers = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxperstagedescriptoruniformbuffers();
-  pProperties_ref_properties_limits.maxPerStageDescriptorStorageBuffers = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxperstagedescriptorstoragebuffers();
-  pProperties_ref_properties_limits.maxPerStageDescriptorSampledImages = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxperstagedescriptorsampledimages();
-  pProperties_ref_properties_limits.maxPerStageDescriptorStorageImages = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxperstagedescriptorstorageimages();
-  pProperties_ref_properties_limits.maxPerStageDescriptorInputAttachments = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxperstagedescriptorinputattachments();
-  pProperties_ref_properties_limits.maxPerStageResources = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxperstageresources();
-  pProperties_ref_properties_limits.maxDescriptorSetSamplers = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxdescriptorsetsamplers();
-  pProperties_ref_properties_limits.maxDescriptorSetUniformBuffers = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxdescriptorsetuniformbuffers();
-  pProperties_ref_properties_limits.maxDescriptorSetUniformBuffersDynamic = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxdescriptorsetuniformbuffersdynamic();
-  pProperties_ref_properties_limits.maxDescriptorSetStorageBuffers = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxdescriptorsetstoragebuffers();
-  pProperties_ref_properties_limits.maxDescriptorSetStorageBuffersDynamic = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxdescriptorsetstoragebuffersdynamic();
-  pProperties_ref_properties_limits.maxDescriptorSetSampledImages = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxdescriptorsetsampledimages();
-  pProperties_ref_properties_limits.maxDescriptorSetStorageImages = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxdescriptorsetstorageimages();
-  pProperties_ref_properties_limits.maxDescriptorSetInputAttachments = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxdescriptorsetinputattachments();
-  pProperties_ref_properties_limits.maxVertexInputAttributes = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxvertexinputattributes();
-  pProperties_ref_properties_limits.maxVertexInputBindings = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxvertexinputbindings();
-  pProperties_ref_properties_limits.maxVertexInputAttributeOffset = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxvertexinputattributeoffset();
-  pProperties_ref_properties_limits.maxVertexInputBindingStride = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxvertexinputbindingstride();
-  pProperties_ref_properties_limits.maxVertexOutputComponents = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxvertexoutputcomponents();
-  pProperties_ref_properties_limits.maxTessellationGenerationLevel = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxtessellationgenerationlevel();
-  pProperties_ref_properties_limits.maxTessellationPatchSize = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxtessellationpatchsize();
-  pProperties_ref_properties_limits.maxTessellationControlPerVertexInputComponents = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxtessellationcontrolpervertexinputcomponents();
-  pProperties_ref_properties_limits.maxTessellationControlPerVertexOutputComponents = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxtessellationcontrolpervertexoutputcomponents();
-  pProperties_ref_properties_limits.maxTessellationControlPerPatchOutputComponents = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxtessellationcontrolperpatchoutputcomponents();
-  pProperties_ref_properties_limits.maxTessellationControlTotalOutputComponents = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxtessellationcontroltotaloutputcomponents();
-  pProperties_ref_properties_limits.maxTessellationEvaluationInputComponents = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxtessellationevaluationinputcomponents();
-  pProperties_ref_properties_limits.maxTessellationEvaluationOutputComponents = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxtessellationevaluationoutputcomponents();
-  pProperties_ref_properties_limits.maxGeometryShaderInvocations = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxgeometryshaderinvocations();
-  pProperties_ref_properties_limits.maxGeometryInputComponents = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxgeometryinputcomponents();
-  pProperties_ref_properties_limits.maxGeometryOutputComponents = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxgeometryoutputcomponents();
-  pProperties_ref_properties_limits.maxGeometryOutputVertices = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxgeometryoutputvertices();
-  pProperties_ref_properties_limits.maxGeometryTotalOutputComponents = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxgeometrytotaloutputcomponents();
-  pProperties_ref_properties_limits.maxFragmentInputComponents = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxfragmentinputcomponents();
-  pProperties_ref_properties_limits.maxFragmentOutputAttachments = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxfragmentoutputattachments();
-  pProperties_ref_properties_limits.maxFragmentDualSrcAttachments = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxfragmentdualsrcattachments();
-  pProperties_ref_properties_limits.maxFragmentCombinedOutputResources = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxfragmentcombinedoutputresources();
-  pProperties_ref_properties_limits.maxComputeSharedMemorySize = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxcomputesharedmemorysize();
-  for (int maxComputeWorkGroupCount_indx = 0; maxComputeWorkGroupCount_indx < 3; maxComputeWorkGroupCount_indx++) {
-    pProperties_ref_properties_limits.maxComputeWorkGroupCount[maxComputeWorkGroupCount_indx] = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxcomputeworkgroupcount(maxComputeWorkGroupCount_indx);
-  }
-  pProperties_ref_properties_limits.maxComputeWorkGroupInvocations = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxcomputeworkgroupinvocations();
-  for (int maxComputeWorkGroupSize_indx = 0; maxComputeWorkGroupSize_indx < 3; maxComputeWorkGroupSize_indx++) {
-    pProperties_ref_properties_limits.maxComputeWorkGroupSize[maxComputeWorkGroupSize_indx] = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxcomputeworkgroupsize(maxComputeWorkGroupSize_indx);
-  }
-  pProperties_ref_properties_limits.subPixelPrecisionBits = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().subpixelprecisionbits();
-  pProperties_ref_properties_limits.subTexelPrecisionBits = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().subtexelprecisionbits();
-  pProperties_ref_properties_limits.mipmapPrecisionBits = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().mipmapprecisionbits();
-  pProperties_ref_properties_limits.maxDrawIndexedIndexValue = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxdrawindexedindexvalue();
-  pProperties_ref_properties_limits.maxDrawIndirectCount = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxdrawindirectcount();
-  pProperties_ref_properties_limits.maxSamplerLodBias = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxsamplerlodbias();
-  pProperties_ref_properties_limits.maxSamplerAnisotropy = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxsampleranisotropy();
-  pProperties_ref_properties_limits.maxViewports = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxviewports();
-  for (int maxViewportDimensions_indx = 0; maxViewportDimensions_indx < 2; maxViewportDimensions_indx++) {
-    pProperties_ref_properties_limits.maxViewportDimensions[maxViewportDimensions_indx] = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxviewportdimensions(maxViewportDimensions_indx);
-  }
-  for (int viewportBoundsRange_indx = 0; viewportBoundsRange_indx < 2; viewportBoundsRange_indx++) {
-    pProperties_ref_properties_limits.viewportBoundsRange[viewportBoundsRange_indx] = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().viewportboundsrange(viewportBoundsRange_indx);
-  }
-  pProperties_ref_properties_limits.viewportSubPixelBits = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().viewportsubpixelbits();
-  pProperties_ref_properties_limits.minMemoryMapAlignment = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().minmemorymapalignment();
-  pProperties_ref_properties_limits.minTexelBufferOffsetAlignment = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().mintexelbufferoffsetalignment());
-  pProperties_ref_properties_limits.minUniformBufferOffsetAlignment = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().minuniformbufferoffsetalignment());
-  pProperties_ref_properties_limits.minStorageBufferOffsetAlignment = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().minstoragebufferoffsetalignment());
-  pProperties_ref_properties_limits.minTexelOffset = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().mintexeloffset();
-  pProperties_ref_properties_limits.maxTexelOffset = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxtexeloffset();
-  pProperties_ref_properties_limits.minTexelGatherOffset = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().mintexelgatheroffset();
-  pProperties_ref_properties_limits.maxTexelGatherOffset = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxtexelgatheroffset();
-  pProperties_ref_properties_limits.minInterpolationOffset = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().mininterpolationoffset();
-  pProperties_ref_properties_limits.maxInterpolationOffset = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxinterpolationoffset();
-  pProperties_ref_properties_limits.subPixelInterpolationOffsetBits = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().subpixelinterpolationoffsetbits();
-  pProperties_ref_properties_limits.maxFramebufferWidth = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxframebufferwidth();
-  pProperties_ref_properties_limits.maxFramebufferHeight = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxframebufferheight();
-  pProperties_ref_properties_limits.maxFramebufferLayers = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxframebufferlayers();
-  if (response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().has_framebuffercolorsamplecounts()) {
-    pProperties_ref_properties_limits.framebufferColorSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().framebuffercolorsamplecounts());
-  } else {
-    pProperties_ref_properties_limits.framebufferColorSampleCounts = VkSampleCountFlags{};
-  }
-  if (response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().has_framebufferdepthsamplecounts()) {
-    pProperties_ref_properties_limits.framebufferDepthSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().framebufferdepthsamplecounts());
-  } else {
-    pProperties_ref_properties_limits.framebufferDepthSampleCounts = VkSampleCountFlags{};
-  }
-  if (response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().has_framebufferstencilsamplecounts()) {
-    pProperties_ref_properties_limits.framebufferStencilSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().framebufferstencilsamplecounts());
-  } else {
-    pProperties_ref_properties_limits.framebufferStencilSampleCounts = VkSampleCountFlags{};
-  }
-  if (response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().has_framebuffernoattachmentssamplecounts()) {
-    pProperties_ref_properties_limits.framebufferNoAttachmentsSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().framebuffernoattachmentssamplecounts());
-  } else {
-    pProperties_ref_properties_limits.framebufferNoAttachmentsSampleCounts = VkSampleCountFlags{};
-  }
-  pProperties_ref_properties_limits.maxColorAttachments = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxcolorattachments();
-  if (response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().has_sampledimagecolorsamplecounts()) {
-    pProperties_ref_properties_limits.sampledImageColorSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().sampledimagecolorsamplecounts());
-  } else {
-    pProperties_ref_properties_limits.sampledImageColorSampleCounts = VkSampleCountFlags{};
-  }
-  if (response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().has_sampledimageintegersamplecounts()) {
-    pProperties_ref_properties_limits.sampledImageIntegerSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().sampledimageintegersamplecounts());
-  } else {
-    pProperties_ref_properties_limits.sampledImageIntegerSampleCounts = VkSampleCountFlags{};
-  }
-  if (response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().has_sampledimagedepthsamplecounts()) {
-    pProperties_ref_properties_limits.sampledImageDepthSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().sampledimagedepthsamplecounts());
-  } else {
-    pProperties_ref_properties_limits.sampledImageDepthSampleCounts = VkSampleCountFlags{};
-  }
-  if (response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().has_sampledimagestencilsamplecounts()) {
-    pProperties_ref_properties_limits.sampledImageStencilSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().sampledimagestencilsamplecounts());
-  } else {
-    pProperties_ref_properties_limits.sampledImageStencilSampleCounts = VkSampleCountFlags{};
-  }
-  if (response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().has_storageimagesamplecounts()) {
-    pProperties_ref_properties_limits.storageImageSampleCounts = static_cast<VkSampleCountFlags>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().storageimagesamplecounts());
-  } else {
-    pProperties_ref_properties_limits.storageImageSampleCounts = VkSampleCountFlags{};
-  }
-  pProperties_ref_properties_limits.maxSampleMaskWords = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxsamplemaskwords();
-  pProperties_ref_properties_limits.timestampComputeAndGraphics = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().timestampcomputeandgraphics();
-  pProperties_ref_properties_limits.timestampPeriod = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().timestampperiod();
-  pProperties_ref_properties_limits.maxClipDistances = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxclipdistances();
-  pProperties_ref_properties_limits.maxCullDistances = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxculldistances();
-  pProperties_ref_properties_limits.maxCombinedClipAndCullDistances = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().maxcombinedclipandculldistances();
-  pProperties_ref_properties_limits.discreteQueuePriorities = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().discretequeuepriorities();
-  for (int pointSizeRange_indx = 0; pointSizeRange_indx < 2; pointSizeRange_indx++) {
-    pProperties_ref_properties_limits.pointSizeRange[pointSizeRange_indx] = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().pointsizerange(pointSizeRange_indx);
-  }
-  for (int lineWidthRange_indx = 0; lineWidthRange_indx < 2; lineWidthRange_indx++) {
-    pProperties_ref_properties_limits.lineWidthRange[lineWidthRange_indx] = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().linewidthrange(lineWidthRange_indx);
-  }
-  pProperties_ref_properties_limits.pointSizeGranularity = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().pointsizegranularity();
-  pProperties_ref_properties_limits.lineWidthGranularity = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().linewidthgranularity();
-  pProperties_ref_properties_limits.strictLines = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().strictlines();
-  pProperties_ref_properties_limits.standardSampleLocations = response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().standardsamplelocations();
-  pProperties_ref_properties_limits.optimalBufferCopyOffsetAlignment = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().optimalbuffercopyoffsetalignment());
-  pProperties_ref_properties_limits.optimalBufferCopyRowPitchAlignment = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().optimalbuffercopyrowpitchalignment());
-  pProperties_ref_properties_limits.nonCoherentAtomSize = static_cast<VkDeviceSize>(response.vkgetphysicaldeviceproperties2().pproperties().properties().limits().noncoherentatomsize());
-  VkPhysicalDeviceSparseProperties &pProperties_ref_properties_sparseProperties = pProperties_ref_properties.sparseProperties;
-  pProperties_ref_properties_sparseProperties.residencyStandard2DBlockShape = response.vkgetphysicaldeviceproperties2().pproperties().properties().sparseproperties().residencystandard2dblockshape();
-  pProperties_ref_properties_sparseProperties.residencyStandard2DMultisampleBlockShape = response.vkgetphysicaldeviceproperties2().pproperties().properties().sparseproperties().residencystandard2dmultisampleblockshape();
-  pProperties_ref_properties_sparseProperties.residencyStandard3DBlockShape = response.vkgetphysicaldeviceproperties2().pproperties().properties().sparseproperties().residencystandard3dblockshape();
-  pProperties_ref_properties_sparseProperties.residencyAlignedMipSize = response.vkgetphysicaldeviceproperties2().pproperties().properties().sparseproperties().residencyalignedmipsize();
-  pProperties_ref_properties_sparseProperties.residencyNonResidentStrict = response.vkgetphysicaldeviceproperties2().pproperties().properties().sparseproperties().residencynonresidentstrict();
+  FillStructFromProto(pProperties_ref_properties, response.vkgetphysicaldeviceproperties2().pproperties().properties());
 }
 void PackAndCallVkGetPhysicalDeviceFeatures2(VvkCommandClientBidiStream& stream, VkPhysicalDevice physicalDevice, VkPhysicalDeviceFeatures2* pFeatures) {
   vvk::server::VvkRequest request;
@@ -3272,61 +3199,7 @@ void PackAndCallVkGetPhysicalDeviceFeatures2(VvkCommandClientBidiStream& stream,
   pFeatures_ref.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
   pFeatures_ref.pNext = nullptr; // pNext chains are currently unsupported
   VkPhysicalDeviceFeatures &pFeatures_ref_features = pFeatures_ref.features;
-  pFeatures_ref_features.robustBufferAccess = response.vkgetphysicaldevicefeatures2().pfeatures().features().robustbufferaccess();
-  pFeatures_ref_features.fullDrawIndexUint32 = response.vkgetphysicaldevicefeatures2().pfeatures().features().fulldrawindexuint32();
-  pFeatures_ref_features.imageCubeArray = response.vkgetphysicaldevicefeatures2().pfeatures().features().imagecubearray();
-  pFeatures_ref_features.independentBlend = response.vkgetphysicaldevicefeatures2().pfeatures().features().independentblend();
-  pFeatures_ref_features.geometryShader = response.vkgetphysicaldevicefeatures2().pfeatures().features().geometryshader();
-  pFeatures_ref_features.tessellationShader = response.vkgetphysicaldevicefeatures2().pfeatures().features().tessellationshader();
-  pFeatures_ref_features.sampleRateShading = response.vkgetphysicaldevicefeatures2().pfeatures().features().samplerateshading();
-  pFeatures_ref_features.dualSrcBlend = response.vkgetphysicaldevicefeatures2().pfeatures().features().dualsrcblend();
-  pFeatures_ref_features.logicOp = response.vkgetphysicaldevicefeatures2().pfeatures().features().logicop();
-  pFeatures_ref_features.multiDrawIndirect = response.vkgetphysicaldevicefeatures2().pfeatures().features().multidrawindirect();
-  pFeatures_ref_features.drawIndirectFirstInstance = response.vkgetphysicaldevicefeatures2().pfeatures().features().drawindirectfirstinstance();
-  pFeatures_ref_features.depthClamp = response.vkgetphysicaldevicefeatures2().pfeatures().features().depthclamp();
-  pFeatures_ref_features.depthBiasClamp = response.vkgetphysicaldevicefeatures2().pfeatures().features().depthbiasclamp();
-  pFeatures_ref_features.fillModeNonSolid = response.vkgetphysicaldevicefeatures2().pfeatures().features().fillmodenonsolid();
-  pFeatures_ref_features.depthBounds = response.vkgetphysicaldevicefeatures2().pfeatures().features().depthbounds();
-  pFeatures_ref_features.wideLines = response.vkgetphysicaldevicefeatures2().pfeatures().features().widelines();
-  pFeatures_ref_features.largePoints = response.vkgetphysicaldevicefeatures2().pfeatures().features().largepoints();
-  pFeatures_ref_features.alphaToOne = response.vkgetphysicaldevicefeatures2().pfeatures().features().alphatoone();
-  pFeatures_ref_features.multiViewport = response.vkgetphysicaldevicefeatures2().pfeatures().features().multiviewport();
-  pFeatures_ref_features.samplerAnisotropy = response.vkgetphysicaldevicefeatures2().pfeatures().features().sampleranisotropy();
-  pFeatures_ref_features.textureCompressionETC2 = response.vkgetphysicaldevicefeatures2().pfeatures().features().texturecompressionetc2();
-  pFeatures_ref_features.textureCompressionASTC_LDR = response.vkgetphysicaldevicefeatures2().pfeatures().features().texturecompressionastc_ldr();
-  pFeatures_ref_features.textureCompressionBC = response.vkgetphysicaldevicefeatures2().pfeatures().features().texturecompressionbc();
-  pFeatures_ref_features.occlusionQueryPrecise = response.vkgetphysicaldevicefeatures2().pfeatures().features().occlusionqueryprecise();
-  pFeatures_ref_features.pipelineStatisticsQuery = response.vkgetphysicaldevicefeatures2().pfeatures().features().pipelinestatisticsquery();
-  pFeatures_ref_features.vertexPipelineStoresAndAtomics = response.vkgetphysicaldevicefeatures2().pfeatures().features().vertexpipelinestoresandatomics();
-  pFeatures_ref_features.fragmentStoresAndAtomics = response.vkgetphysicaldevicefeatures2().pfeatures().features().fragmentstoresandatomics();
-  pFeatures_ref_features.shaderTessellationAndGeometryPointSize = response.vkgetphysicaldevicefeatures2().pfeatures().features().shadertessellationandgeometrypointsize();
-  pFeatures_ref_features.shaderImageGatherExtended = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderimagegatherextended();
-  pFeatures_ref_features.shaderStorageImageExtendedFormats = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderstorageimageextendedformats();
-  pFeatures_ref_features.shaderStorageImageMultisample = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderstorageimagemultisample();
-  pFeatures_ref_features.shaderStorageImageReadWithoutFormat = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderstorageimagereadwithoutformat();
-  pFeatures_ref_features.shaderStorageImageWriteWithoutFormat = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderstorageimagewritewithoutformat();
-  pFeatures_ref_features.shaderUniformBufferArrayDynamicIndexing = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderuniformbufferarraydynamicindexing();
-  pFeatures_ref_features.shaderSampledImageArrayDynamicIndexing = response.vkgetphysicaldevicefeatures2().pfeatures().features().shadersampledimagearraydynamicindexing();
-  pFeatures_ref_features.shaderStorageBufferArrayDynamicIndexing = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderstoragebufferarraydynamicindexing();
-  pFeatures_ref_features.shaderStorageImageArrayDynamicIndexing = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderstorageimagearraydynamicindexing();
-  pFeatures_ref_features.shaderClipDistance = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderclipdistance();
-  pFeatures_ref_features.shaderCullDistance = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderculldistance();
-  pFeatures_ref_features.shaderFloat64 = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderfloat64();
-  pFeatures_ref_features.shaderInt64 = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderint64();
-  pFeatures_ref_features.shaderInt16 = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderint16();
-  pFeatures_ref_features.shaderResourceResidency = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderresourceresidency();
-  pFeatures_ref_features.shaderResourceMinLod = response.vkgetphysicaldevicefeatures2().pfeatures().features().shaderresourceminlod();
-  pFeatures_ref_features.sparseBinding = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparsebinding();
-  pFeatures_ref_features.sparseResidencyBuffer = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidencybuffer();
-  pFeatures_ref_features.sparseResidencyImage2D = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidencyimage2d();
-  pFeatures_ref_features.sparseResidencyImage3D = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidencyimage3d();
-  pFeatures_ref_features.sparseResidency2Samples = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidency2samples();
-  pFeatures_ref_features.sparseResidency4Samples = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidency4samples();
-  pFeatures_ref_features.sparseResidency8Samples = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidency8samples();
-  pFeatures_ref_features.sparseResidency16Samples = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidency16samples();
-  pFeatures_ref_features.sparseResidencyAliased = response.vkgetphysicaldevicefeatures2().pfeatures().features().sparseresidencyaliased();
-  pFeatures_ref_features.variableMultisampleRate = response.vkgetphysicaldevicefeatures2().pfeatures().features().variablemultisamplerate();
-  pFeatures_ref_features.inheritedQueries = response.vkgetphysicaldevicefeatures2().pfeatures().features().inheritedqueries();
+  FillStructFromProto(pFeatures_ref_features, response.vkgetphysicaldevicefeatures2().pfeatures().features());
 }
 }  // namespace vvk
 
