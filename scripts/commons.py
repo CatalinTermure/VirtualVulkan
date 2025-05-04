@@ -158,8 +158,11 @@ def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, n
         type_info = TRIVIAL_TYPES[member.type]
         if member.fixedSizeArray:
             index_name = f'{member.name}_indx'
+            out.append(f'  // {name}\n')
+            out.append(access_length_member_from_struct(
+                generator, struct_type, name, name, member))
             out.append(
-                f'  for (int {index_name} = 0; {index_name} < {member.length}; {index_name}++) {{\n')
+                f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
             if type_info.cast_to is None:
                 out.append(
                     f'    {name}.{member.name}[{index_name}] = {proto_accessor}.{member.name.lower()}({index_name});\n')
@@ -358,6 +361,8 @@ def access_length_member_from_struct(generator: VvkGenerator, struct_type: str, 
         if struct is not None and word in [m.name for m in struct.members]:
             length = str.replace(member.length, word,
                                  f'{struct_accessor}->{word}')
+    if member.fixedSizeArray:
+        length = f'std::min({length}, {member.fixedSizeArray[0]})'
     return f'  const size_t {name}_{member.name}_length = {length};\n'
 
 
@@ -560,14 +565,6 @@ def __get_function_definition(generator: VvkGenerator, func: str) -> str:
             f'void FillStructFromProto({type_name}& original_struct, const vvk::server::{type_name}& proto) {{\n')
         out.append(fill_struct_from_proto(
             generator, type_name, 'original_struct', 'proto')[0])
-        out.append("}\n")
-        return "".join(out)
-    if func_name == "FillPNextChainToProto":
-        out: list[str] = []
-        out.append(
-            f'void FillPNextChainToProto(vvk::server::{type_name}* proto, const {type_name}* original_struct) {{\n')
-        out.append(fill_proto_from_struct(
-            generator, type_name, 'proto', 'original_struct', member_filter={'pNext'}))
         out.append("}\n")
         return "".join(out)
     return 'static_assert(false, "Unkown function type");\n'
