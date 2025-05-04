@@ -57,6 +57,7 @@ void FillStructFromProto(VkCommandBufferBeginInfo& original_struct, const vvk::s
 void FillStructFromProto(VkCommandBufferInheritanceInfo& original_struct, const vvk::server::VkCommandBufferInheritanceInfo& proto);
 void FillStructFromProto(VkCommandPoolCreateInfo& original_struct, const vvk::server::VkCommandPoolCreateInfo& proto);
 void FillStructFromProto(VkComponentMapping& original_struct, const vvk::server::VkComponentMapping& proto);
+void FillStructFromProto(VkConformanceVersion& original_struct, const vvk::server::VkConformanceVersion& proto);
 void FillStructFromProto(VkDeviceCreateInfo& original_struct, const vvk::server::VkDeviceCreateInfo& proto);
 void FillStructFromProto(VkDeviceQueueCreateInfo& original_struct, const vvk::server::VkDeviceQueueCreateInfo& proto);
 void FillStructFromProto(VkExtent2D& original_struct, const vvk::server::VkExtent2D& proto);
@@ -116,6 +117,24 @@ void FillStructFromProto(VkSubresourceLayout& original_struct, const vvk::server
 void FillStructFromProto(VkVertexInputAttributeDescription& original_struct, const vvk::server::VkVertexInputAttributeDescription& proto);
 void FillStructFromProto(VkVertexInputBindingDescription& original_struct, const vvk::server::VkVertexInputBindingDescription& proto);
 void FillStructFromProto(VkViewport& original_struct, const vvk::server::VkViewport& proto);
+void FillStructFromProtoNoPNext(VkPhysicalDeviceProtectedMemoryFeatures& original_struct, const vvk::server::VkPhysicalDeviceProtectedMemoryFeatures& proto);
+void FillStructFromProtoNoPNext(VkPhysicalDeviceProtectedMemoryProperties& original_struct, const vvk::server::VkPhysicalDeviceProtectedMemoryProperties& proto);
+void FillStructFromProtoNoPNext(VkPhysicalDeviceShaderDrawParametersFeatures& original_struct, const vvk::server::VkPhysicalDeviceShaderDrawParametersFeatures& proto);
+void FillStructFromProtoNoPNext(VkPhysicalDeviceSubgroupProperties& original_struct, const vvk::server::VkPhysicalDeviceSubgroupProperties& proto);
+void FillStructFromProtoNoPNext(VkPhysicalDeviceTimelineSemaphoreFeatures& original_struct, const vvk::server::VkPhysicalDeviceTimelineSemaphoreFeatures& proto);
+void FillStructFromProtoNoPNext(VkPhysicalDeviceTimelineSemaphoreProperties& original_struct, const vvk::server::VkPhysicalDeviceTimelineSemaphoreProperties& proto);
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan11Features& original_struct, const vvk::server::VkPhysicalDeviceVulkan11Features& proto);
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan11Properties& original_struct, const vvk::server::VkPhysicalDeviceVulkan11Properties& proto);
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan12Features& original_struct, const vvk::server::VkPhysicalDeviceVulkan12Features& proto);
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan12Properties& original_struct, const vvk::server::VkPhysicalDeviceVulkan12Properties& proto);
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan13Features& original_struct, const vvk::server::VkPhysicalDeviceVulkan13Features& proto);
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan13Properties& original_struct, const vvk::server::VkPhysicalDeviceVulkan13Properties& proto);
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan14Features& original_struct, const vvk::server::VkPhysicalDeviceVulkan14Features& proto);
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan14Properties& original_struct, const vvk::server::VkPhysicalDeviceVulkan14Properties& proto);
+void FillStructFromProtoNoPNext(VkProtectedSubmitInfo& original_struct, const vvk::server::VkProtectedSubmitInfo& proto);
+void FillStructFromProtoNoPNext(VkSemaphoreTypeCreateInfo& original_struct, const vvk::server::VkSemaphoreTypeCreateInfo& proto);
+void FillStructFromProtoNoPNext(VkShaderModuleCreateInfo& original_struct, const vvk::server::VkShaderModuleCreateInfo& proto);
+void FillStructFromProtoNoPNext(VkTimelineSemaphoreSubmitInfo& original_struct, const vvk::server::VkTimelineSemaphoreSubmitInfo& proto);
 void FillProtoFromStruct(vvk::server::VkConformanceVersion* proto, const VkConformanceVersion* original_struct) {
   proto->set_major(static_cast<uint32_t>(original_struct->major));
   proto->set_minor(static_cast<uint32_t>(original_struct->minor));
@@ -819,7 +838,7 @@ void FillProtoFromStruct(vvk::server::VkSubresourceLayout* proto, const VkSubres
 }
 void FillStructFromProto(VkApplicationInfo& original_struct, const vvk::server::VkApplicationInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_papplicationname()) {
     original_struct.pApplicationName = proto.papplicationname().data();
   } else {
@@ -855,7 +874,7 @@ void FillStructFromProto(VkAttachmentReference& original_struct, const vvk::serv
 }
 void FillStructFromProto(VkBindImageMemoryInfo& original_struct, const vvk::server::VkBindImageMemoryInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   original_struct.image = reinterpret_cast<VkImage>(proto.image());
   original_struct.memory = reinterpret_cast<VkDeviceMemory>(proto.memory());
   original_struct.memoryOffset = static_cast<VkDeviceSize>(proto.memoryoffset());
@@ -873,7 +892,7 @@ void FillStructFromProto(VkBufferImageCopy& original_struct, const vvk::server::
 }
 void FillStructFromProto(VkBufferMemoryBarrier& original_struct, const vvk::server::VkBufferMemoryBarrier& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   original_struct.srcAccessMask = static_cast<VkAccessFlags>(proto.srcaccessmask());
   original_struct.dstAccessMask = static_cast<VkAccessFlags>(proto.dstaccessmask());
   original_struct.srcQueueFamilyIndex = proto.srcqueuefamilyindex();
@@ -883,17 +902,14 @@ void FillStructFromProto(VkBufferMemoryBarrier& original_struct, const vvk::serv
   original_struct.size = static_cast<VkDeviceSize>(proto.size());
 }
 void FillStructFromProto(VkClearColorValue& original_struct, const vvk::server::VkClearColorValue& proto) {
-  // original_struct
   const size_t original_struct_float32_length = std::min(4, 4);
   for (int float32_indx = 0; float32_indx < original_struct_float32_length; float32_indx++) {
     original_struct.float32[float32_indx] = proto.float32(float32_indx);
   }
-  // original_struct
   const size_t original_struct_int32_length = std::min(4, 4);
   for (int int32_indx = 0; int32_indx < original_struct_int32_length; int32_indx++) {
     original_struct.int32[int32_indx] = proto.int32(int32_indx);
   }
-  // original_struct
   const size_t original_struct_uint32_length = std::min(4, 4);
   for (int uint32_indx = 0; uint32_indx < original_struct_uint32_length; uint32_indx++) {
     original_struct.uint32[uint32_indx] = proto.uint32(uint32_indx);
@@ -911,14 +927,14 @@ void FillStructFromProto(VkClearValue& original_struct, const vvk::server::VkCle
 }
 void FillStructFromProto(VkCommandBufferAllocateInfo& original_struct, const vvk::server::VkCommandBufferAllocateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   original_struct.commandPool = reinterpret_cast<VkCommandPool>(proto.commandpool());
   original_struct.level = static_cast<VkCommandBufferLevel>(proto.level());
   original_struct.commandBufferCount = proto.commandbuffercount();
 }
 void FillStructFromProto(VkCommandBufferBeginInfo& original_struct, const vvk::server::VkCommandBufferBeginInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkCommandBufferUsageFlags>(proto.flags());
   } else {
@@ -934,7 +950,7 @@ void FillStructFromProto(VkCommandBufferBeginInfo& original_struct, const vvk::s
 }
 void FillStructFromProto(VkCommandBufferInheritanceInfo& original_struct, const vvk::server::VkCommandBufferInheritanceInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_renderpass()) {
     original_struct.renderPass = reinterpret_cast<VkRenderPass>(proto.renderpass());
   } else {
@@ -960,7 +976,7 @@ void FillStructFromProto(VkCommandBufferInheritanceInfo& original_struct, const 
 }
 void FillStructFromProto(VkCommandPoolCreateInfo& original_struct, const vvk::server::VkCommandPoolCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkCommandPoolCreateFlags>(proto.flags());
   } else {
@@ -974,9 +990,47 @@ void FillStructFromProto(VkComponentMapping& original_struct, const vvk::server:
   original_struct.b = static_cast<VkComponentSwizzle>(proto.b());
   original_struct.a = static_cast<VkComponentSwizzle>(proto.a());
 }
+void FillStructFromProto(VkConformanceVersion& original_struct, const vvk::server::VkConformanceVersion& proto) {
+  original_struct.major = static_cast<uint8_t>(proto.major());
+  original_struct.minor = static_cast<uint8_t>(proto.minor());
+  original_struct.subminor = static_cast<uint8_t>(proto.subminor());
+  original_struct.patch = static_cast<uint8_t>(proto.patch());
+}
 void FillStructFromProto(VkDeviceCreateInfo& original_struct, const vvk::server::VkDeviceCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  VkBaseOutStructure* base = reinterpret_cast<VkBaseOutStructure*>(&original_struct);
+  for (const auto& pnext : proto.pnext()) {
+    if (pnext.has_vkphysicaldeviceprotectedmemoryfeatures_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceProtectedMemoryFeatures);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceProtectedMemoryFeatures*>(base->pNext), pnext.vkphysicaldeviceprotectedmemoryfeatures_chain_elem());
+    }
+    if (pnext.has_vkphysicaldeviceshaderdrawparametersfeatures_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceShaderDrawParametersFeatures);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceShaderDrawParametersFeatures*>(base->pNext), pnext.vkphysicaldeviceshaderdrawparametersfeatures_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicetimelinesemaphorefeatures_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceTimelineSemaphoreFeatures);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceTimelineSemaphoreFeatures*>(base->pNext), pnext.vkphysicaldevicetimelinesemaphorefeatures_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicevulkan11features_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceVulkan11Features);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceVulkan11Features*>(base->pNext), pnext.vkphysicaldevicevulkan11features_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicevulkan12features_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceVulkan12Features);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceVulkan12Features*>(base->pNext), pnext.vkphysicaldevicevulkan12features_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicevulkan13features_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceVulkan13Features);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceVulkan13Features*>(base->pNext), pnext.vkphysicaldevicevulkan13features_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicevulkan14features_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceVulkan14Features);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceVulkan14Features*>(base->pNext), pnext.vkphysicaldevicevulkan14features_chain_elem());
+    }
+    base = base->pNext;
+  }
+  base->pNext = nullptr;
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkDeviceCreateFlags>(proto.flags());
   } else {
@@ -1019,7 +1073,7 @@ void FillStructFromProto(VkDeviceCreateInfo& original_struct, const vvk::server:
 }
 void FillStructFromProto(VkDeviceQueueCreateInfo& original_struct, const vvk::server::VkDeviceQueueCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkDeviceQueueCreateFlags>(proto.flags());
   } else {
@@ -1044,7 +1098,7 @@ void FillStructFromProto(VkExtent3D& original_struct, const vvk::server::VkExten
 }
 void FillStructFromProto(VkFenceCreateInfo& original_struct, const vvk::server::VkFenceCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkFenceCreateFlags>(proto.flags());
   } else {
@@ -1070,7 +1124,7 @@ void FillStructFromProto(VkFormatProperties& original_struct, const vvk::server:
 }
 void FillStructFromProto(VkFramebufferCreateInfo& original_struct, const vvk::server::VkFramebufferCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkFramebufferCreateFlags>(proto.flags());
   } else {
@@ -1089,7 +1143,7 @@ void FillStructFromProto(VkFramebufferCreateInfo& original_struct, const vvk::se
 }
 void FillStructFromProto(VkGraphicsPipelineCreateInfo& original_struct, const vvk::server::VkGraphicsPipelineCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkPipelineCreateFlags>(proto.flags());
   } else {
@@ -1193,7 +1247,7 @@ void FillStructFromProto(VkGraphicsPipelineCreateInfo& original_struct, const vv
 }
 void FillStructFromProto(VkImageCreateInfo& original_struct, const vvk::server::VkImageCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkImageCreateFlags>(proto.flags());
   } else {
@@ -1223,7 +1277,7 @@ void FillStructFromProto(VkImageCreateInfo& original_struct, const vvk::server::
 }
 void FillStructFromProto(VkImageMemoryBarrier& original_struct, const vvk::server::VkImageMemoryBarrier& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   original_struct.srcAccessMask = static_cast<VkAccessFlags>(proto.srcaccessmask());
   original_struct.dstAccessMask = static_cast<VkAccessFlags>(proto.dstaccessmask());
   original_struct.oldLayout = static_cast<VkImageLayout>(proto.oldlayout());
@@ -1236,7 +1290,7 @@ void FillStructFromProto(VkImageMemoryBarrier& original_struct, const vvk::serve
 }
 void FillStructFromProto(VkImageMemoryRequirementsInfo2& original_struct, const vvk::server::VkImageMemoryRequirementsInfo2& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   original_struct.image = reinterpret_cast<VkImage>(proto.image());
 }
 void FillStructFromProto(VkImageSubresource& original_struct, const vvk::server::VkImageSubresource& proto) {
@@ -1259,7 +1313,7 @@ void FillStructFromProto(VkImageSubresourceRange& original_struct, const vvk::se
 }
 void FillStructFromProto(VkImageViewCreateInfo& original_struct, const vvk::server::VkImageViewCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkImageViewCreateFlags>(proto.flags());
   } else {
@@ -1275,7 +1329,7 @@ void FillStructFromProto(VkImageViewCreateInfo& original_struct, const vvk::serv
 }
 void FillStructFromProto(VkInstanceCreateInfo& original_struct, const vvk::server::VkInstanceCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkInstanceCreateFlags>(proto.flags());
   } else {
@@ -1311,13 +1365,13 @@ void FillStructFromProto(VkInstanceCreateInfo& original_struct, const vvk::serve
 }
 void FillStructFromProto(VkMemoryAllocateInfo& original_struct, const vvk::server::VkMemoryAllocateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   original_struct.allocationSize = static_cast<VkDeviceSize>(proto.allocationsize());
   original_struct.memoryTypeIndex = proto.memorytypeindex();
 }
 void FillStructFromProto(VkMemoryBarrier& original_struct, const vvk::server::VkMemoryBarrier& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_srcaccessmask()) {
     original_struct.srcAccessMask = static_cast<VkAccessFlags>(proto.srcaccessmask());
   } else {
@@ -1344,7 +1398,7 @@ void FillStructFromProto(VkMemoryRequirements& original_struct, const vvk::serve
 }
 void FillStructFromProto(VkMemoryRequirements2& original_struct, const vvk::server::VkMemoryRequirements2& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   VkMemoryRequirements &original_struct_memoryRequirements = original_struct.memoryRequirements;
   FillStructFromProto(original_struct_memoryRequirements, proto.memoryrequirements());
 }
@@ -1424,7 +1478,39 @@ void FillStructFromProto(VkPhysicalDeviceFeatures& original_struct, const vvk::s
 }
 void FillStructFromProto(VkPhysicalDeviceFeatures2& original_struct, const vvk::server::VkPhysicalDeviceFeatures2& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  VkBaseOutStructure* base = reinterpret_cast<VkBaseOutStructure*>(&original_struct);
+  for (const auto& pnext : proto.pnext()) {
+    if (pnext.has_vkphysicaldeviceprotectedmemoryfeatures_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceProtectedMemoryFeatures);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceProtectedMemoryFeatures*>(base->pNext), pnext.vkphysicaldeviceprotectedmemoryfeatures_chain_elem());
+    }
+    if (pnext.has_vkphysicaldeviceshaderdrawparametersfeatures_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceShaderDrawParametersFeatures);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceShaderDrawParametersFeatures*>(base->pNext), pnext.vkphysicaldeviceshaderdrawparametersfeatures_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicetimelinesemaphorefeatures_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceTimelineSemaphoreFeatures);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceTimelineSemaphoreFeatures*>(base->pNext), pnext.vkphysicaldevicetimelinesemaphorefeatures_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicevulkan11features_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceVulkan11Features);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceVulkan11Features*>(base->pNext), pnext.vkphysicaldevicevulkan11features_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicevulkan12features_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceVulkan12Features);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceVulkan12Features*>(base->pNext), pnext.vkphysicaldevicevulkan12features_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicevulkan13features_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceVulkan13Features);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceVulkan13Features*>(base->pNext), pnext.vkphysicaldevicevulkan13features_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicevulkan14features_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceVulkan14Features);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceVulkan14Features*>(base->pNext), pnext.vkphysicaldevicevulkan14features_chain_elem());
+    }
+    base = base->pNext;
+  }
+  base->pNext = nullptr;
   VkPhysicalDeviceFeatures &original_struct_features = original_struct.features;
   FillStructFromProto(original_struct_features, proto.features());
 }
@@ -1481,13 +1567,11 @@ void FillStructFromProto(VkPhysicalDeviceLimits& original_struct, const vvk::ser
   original_struct.maxFragmentDualSrcAttachments = proto.maxfragmentdualsrcattachments();
   original_struct.maxFragmentCombinedOutputResources = proto.maxfragmentcombinedoutputresources();
   original_struct.maxComputeSharedMemorySize = proto.maxcomputesharedmemorysize();
-  // original_struct
   const size_t original_struct_maxComputeWorkGroupCount_length = std::min(3, 3);
   for (int maxComputeWorkGroupCount_indx = 0; maxComputeWorkGroupCount_indx < original_struct_maxComputeWorkGroupCount_length; maxComputeWorkGroupCount_indx++) {
     original_struct.maxComputeWorkGroupCount[maxComputeWorkGroupCount_indx] = proto.maxcomputeworkgroupcount(maxComputeWorkGroupCount_indx);
   }
   original_struct.maxComputeWorkGroupInvocations = proto.maxcomputeworkgroupinvocations();
-  // original_struct
   const size_t original_struct_maxComputeWorkGroupSize_length = std::min(3, 3);
   for (int maxComputeWorkGroupSize_indx = 0; maxComputeWorkGroupSize_indx < original_struct_maxComputeWorkGroupSize_length; maxComputeWorkGroupSize_indx++) {
     original_struct.maxComputeWorkGroupSize[maxComputeWorkGroupSize_indx] = proto.maxcomputeworkgroupsize(maxComputeWorkGroupSize_indx);
@@ -1500,12 +1584,10 @@ void FillStructFromProto(VkPhysicalDeviceLimits& original_struct, const vvk::ser
   original_struct.maxSamplerLodBias = proto.maxsamplerlodbias();
   original_struct.maxSamplerAnisotropy = proto.maxsampleranisotropy();
   original_struct.maxViewports = proto.maxviewports();
-  // original_struct
   const size_t original_struct_maxViewportDimensions_length = std::min(2, 2);
   for (int maxViewportDimensions_indx = 0; maxViewportDimensions_indx < original_struct_maxViewportDimensions_length; maxViewportDimensions_indx++) {
     original_struct.maxViewportDimensions[maxViewportDimensions_indx] = proto.maxviewportdimensions(maxViewportDimensions_indx);
   }
-  // original_struct
   const size_t original_struct_viewportBoundsRange_length = std::min(2, 2);
   for (int viewportBoundsRange_indx = 0; viewportBoundsRange_indx < original_struct_viewportBoundsRange_length; viewportBoundsRange_indx++) {
     original_struct.viewportBoundsRange[viewportBoundsRange_indx] = proto.viewportboundsrange(viewportBoundsRange_indx);
@@ -1578,12 +1660,10 @@ void FillStructFromProto(VkPhysicalDeviceLimits& original_struct, const vvk::ser
   original_struct.maxCullDistances = proto.maxculldistances();
   original_struct.maxCombinedClipAndCullDistances = proto.maxcombinedclipandculldistances();
   original_struct.discreteQueuePriorities = proto.discretequeuepriorities();
-  // original_struct
   const size_t original_struct_pointSizeRange_length = std::min(2, 2);
   for (int pointSizeRange_indx = 0; pointSizeRange_indx < original_struct_pointSizeRange_length; pointSizeRange_indx++) {
     original_struct.pointSizeRange[pointSizeRange_indx] = proto.pointsizerange(pointSizeRange_indx);
   }
-  // original_struct
   const size_t original_struct_lineWidthRange_length = std::min(2, 2);
   for (int lineWidthRange_indx = 0; lineWidthRange_indx < original_struct_lineWidthRange_length; lineWidthRange_indx++) {
     original_struct.lineWidthRange[lineWidthRange_indx] = proto.linewidthrange(lineWidthRange_indx);
@@ -1613,7 +1693,6 @@ void FillStructFromProto(VkPhysicalDeviceProperties& original_struct, const vvk:
   original_struct.deviceID = proto.deviceid();
   original_struct.deviceType = static_cast<VkPhysicalDeviceType>(proto.devicetype());
   strncpy(original_struct.deviceName, proto.devicename().c_str(), VK_MAX_PHYSICAL_DEVICE_NAME_SIZE);
-  // original_struct
   const size_t original_struct_pipelineCacheUUID_length = std::min(VK_UUID_SIZE, VK_UUID_SIZE);
   for (int pipelineCacheUUID_indx = 0; pipelineCacheUUID_indx < original_struct_pipelineCacheUUID_length; pipelineCacheUUID_indx++) {
     original_struct.pipelineCacheUUID[pipelineCacheUUID_indx] = static_cast<uint8_t>(proto.pipelinecacheuuid(pipelineCacheUUID_indx));
@@ -1625,7 +1704,39 @@ void FillStructFromProto(VkPhysicalDeviceProperties& original_struct, const vvk:
 }
 void FillStructFromProto(VkPhysicalDeviceProperties2& original_struct, const vvk::server::VkPhysicalDeviceProperties2& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  VkBaseOutStructure* base = reinterpret_cast<VkBaseOutStructure*>(&original_struct);
+  for (const auto& pnext : proto.pnext()) {
+    if (pnext.has_vkphysicaldeviceprotectedmemoryproperties_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceProtectedMemoryProperties);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceProtectedMemoryProperties*>(base->pNext), pnext.vkphysicaldeviceprotectedmemoryproperties_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicesubgroupproperties_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceSubgroupProperties);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceSubgroupProperties*>(base->pNext), pnext.vkphysicaldevicesubgroupproperties_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicetimelinesemaphoreproperties_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceTimelineSemaphoreProperties);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceTimelineSemaphoreProperties*>(base->pNext), pnext.vkphysicaldevicetimelinesemaphoreproperties_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicevulkan11properties_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceVulkan11Properties);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceVulkan11Properties*>(base->pNext), pnext.vkphysicaldevicevulkan11properties_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicevulkan12properties_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceVulkan12Properties);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceVulkan12Properties*>(base->pNext), pnext.vkphysicaldevicevulkan12properties_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicevulkan13properties_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceVulkan13Properties);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceVulkan13Properties*>(base->pNext), pnext.vkphysicaldevicevulkan13properties_chain_elem());
+    }
+    if (pnext.has_vkphysicaldevicevulkan14properties_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkPhysicalDeviceVulkan14Properties);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkPhysicalDeviceVulkan14Properties*>(base->pNext), pnext.vkphysicaldevicevulkan14properties_chain_elem());
+    }
+    base = base->pNext;
+  }
+  base->pNext = nullptr;
   VkPhysicalDeviceProperties &original_struct_properties = original_struct.properties;
   FillStructFromProto(original_struct_properties, proto.properties());
 }
@@ -1652,7 +1763,7 @@ void FillStructFromProto(VkPipelineColorBlendAttachmentState& original_struct, c
 }
 void FillStructFromProto(VkPipelineColorBlendStateCreateInfo& original_struct, const vvk::server::VkPipelineColorBlendStateCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkPipelineColorBlendStateCreateFlags>(proto.flags());
   } else {
@@ -1675,7 +1786,6 @@ void FillStructFromProto(VkPipelineColorBlendStateCreateInfo& original_struct, c
   } else {
     original_struct.pAttachments = nullptr;
   }
-  // original_struct
   const size_t original_struct_blendConstants_length = std::min(4, 4);
   for (int blendConstants_indx = 0; blendConstants_indx < original_struct_blendConstants_length; blendConstants_indx++) {
     original_struct.blendConstants[blendConstants_indx] = proto.blendconstants(blendConstants_indx);
@@ -1683,7 +1793,7 @@ void FillStructFromProto(VkPipelineColorBlendStateCreateInfo& original_struct, c
 }
 void FillStructFromProto(VkPipelineDepthStencilStateCreateInfo& original_struct, const vvk::server::VkPipelineDepthStencilStateCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkPipelineDepthStencilStateCreateFlags>(proto.flags());
   } else {
@@ -1703,7 +1813,7 @@ void FillStructFromProto(VkPipelineDepthStencilStateCreateInfo& original_struct,
 }
 void FillStructFromProto(VkPipelineDynamicStateCreateInfo& original_struct, const vvk::server::VkPipelineDynamicStateCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkPipelineDynamicStateCreateFlags>(proto.flags());
   } else {
@@ -1714,11 +1824,11 @@ void FillStructFromProto(VkPipelineDynamicStateCreateInfo& original_struct, cons
   } else {
     original_struct.dynamicStateCount = uint32_t{};
   }
-  original_struct.pDynamicStates = reinterpret_cast<const VkDynamicState*>(proto.pdynamicstates().data());
+  original_struct.pDynamicStates = reinterpret_cast<VkDynamicState*>(const_cast<vvk::server::VkPipelineDynamicStateCreateInfo&>(proto).mutable_pdynamicstates()->mutable_data());
 }
 void FillStructFromProto(VkPipelineInputAssemblyStateCreateInfo& original_struct, const vvk::server::VkPipelineInputAssemblyStateCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkPipelineInputAssemblyStateCreateFlags>(proto.flags());
   } else {
@@ -1729,7 +1839,7 @@ void FillStructFromProto(VkPipelineInputAssemblyStateCreateInfo& original_struct
 }
 void FillStructFromProto(VkPipelineLayoutCreateInfo& original_struct, const vvk::server::VkPipelineLayoutCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkPipelineLayoutCreateFlags>(proto.flags());
   } else {
@@ -1755,7 +1865,7 @@ void FillStructFromProto(VkPipelineLayoutCreateInfo& original_struct, const vvk:
 }
 void FillStructFromProto(VkPipelineMultisampleStateCreateInfo& original_struct, const vvk::server::VkPipelineMultisampleStateCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkPipelineMultisampleStateCreateFlags>(proto.flags());
   } else {
@@ -1778,7 +1888,7 @@ void FillStructFromProto(VkPipelineMultisampleStateCreateInfo& original_struct, 
 }
 void FillStructFromProto(VkPipelineRasterizationStateCreateInfo& original_struct, const vvk::server::VkPipelineRasterizationStateCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkPipelineRasterizationStateCreateFlags>(proto.flags());
   } else {
@@ -1801,7 +1911,15 @@ void FillStructFromProto(VkPipelineRasterizationStateCreateInfo& original_struct
 }
 void FillStructFromProto(VkPipelineShaderStageCreateInfo& original_struct, const vvk::server::VkPipelineShaderStageCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  VkBaseOutStructure* base = reinterpret_cast<VkBaseOutStructure*>(&original_struct);
+  for (const auto& pnext : proto.pnext()) {
+    if (pnext.has_vkshadermodulecreateinfo_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkShaderModuleCreateInfo);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkShaderModuleCreateInfo*>(base->pNext), pnext.vkshadermodulecreateinfo_chain_elem());
+    }
+    base = base->pNext;
+  }
+  base->pNext = nullptr;
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkPipelineShaderStageCreateFlags>(proto.flags());
   } else {
@@ -1824,7 +1942,7 @@ void FillStructFromProto(VkPipelineShaderStageCreateInfo& original_struct, const
 }
 void FillStructFromProto(VkPipelineTessellationStateCreateInfo& original_struct, const vvk::server::VkPipelineTessellationStateCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkPipelineTessellationStateCreateFlags>(proto.flags());
   } else {
@@ -1834,7 +1952,7 @@ void FillStructFromProto(VkPipelineTessellationStateCreateInfo& original_struct,
 }
 void FillStructFromProto(VkPipelineVertexInputStateCreateInfo& original_struct, const vvk::server::VkPipelineVertexInputStateCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkPipelineVertexInputStateCreateFlags>(proto.flags());
   } else {
@@ -1865,7 +1983,7 @@ void FillStructFromProto(VkPipelineVertexInputStateCreateInfo& original_struct, 
 }
 void FillStructFromProto(VkPipelineViewportStateCreateInfo& original_struct, const vvk::server::VkPipelineViewportStateCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkPipelineViewportStateCreateFlags>(proto.flags());
   } else {
@@ -1915,7 +2033,7 @@ void FillStructFromProto(VkRect2D& original_struct, const vvk::server::VkRect2D&
 }
 void FillStructFromProto(VkRenderPassBeginInfo& original_struct, const vvk::server::VkRenderPassBeginInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   original_struct.renderPass = reinterpret_cast<VkRenderPass>(proto.renderpass());
   original_struct.framebuffer = reinterpret_cast<VkFramebuffer>(proto.framebuffer());
   VkRect2D &original_struct_renderArea = original_struct.renderArea;
@@ -1934,7 +2052,7 @@ void FillStructFromProto(VkRenderPassBeginInfo& original_struct, const vvk::serv
 }
 void FillStructFromProto(VkRenderPassCreateInfo& original_struct, const vvk::server::VkRenderPassCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkRenderPassCreateFlags>(proto.flags());
   } else {
@@ -1972,7 +2090,15 @@ void FillStructFromProto(VkRenderPassCreateInfo& original_struct, const vvk::ser
 }
 void FillStructFromProto(VkSemaphoreCreateInfo& original_struct, const vvk::server::VkSemaphoreCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  VkBaseOutStructure* base = reinterpret_cast<VkBaseOutStructure*>(&original_struct);
+  for (const auto& pnext : proto.pnext()) {
+    if (pnext.has_vksemaphoretypecreateinfo_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkSemaphoreTypeCreateInfo);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkSemaphoreTypeCreateInfo*>(base->pNext), pnext.vksemaphoretypecreateinfo_chain_elem());
+    }
+    base = base->pNext;
+  }
+  base->pNext = nullptr;
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkSemaphoreCreateFlags>(proto.flags());
   } else {
@@ -1981,7 +2107,7 @@ void FillStructFromProto(VkSemaphoreCreateInfo& original_struct, const vvk::serv
 }
 void FillStructFromProto(VkShaderModuleCreateInfo& original_struct, const vvk::server::VkShaderModuleCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  original_struct.pNext = nullptr;  // Empty pNext chain
   if (proto.has_flags()) {
     original_struct.flags = static_cast<VkShaderModuleCreateFlags>(proto.flags());
   } else {
@@ -2029,7 +2155,19 @@ void FillStructFromProto(VkStencilOpState& original_struct, const vvk::server::V
 }
 void FillStructFromProto(VkSubmitInfo& original_struct, const vvk::server::VkSubmitInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  VkBaseOutStructure* base = reinterpret_cast<VkBaseOutStructure*>(&original_struct);
+  for (const auto& pnext : proto.pnext()) {
+    if (pnext.has_vkprotectedsubmitinfo_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkProtectedSubmitInfo);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkProtectedSubmitInfo*>(base->pNext), pnext.vkprotectedsubmitinfo_chain_elem());
+    }
+    if (pnext.has_vktimelinesemaphoresubmitinfo_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkTimelineSemaphoreSubmitInfo);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkTimelineSemaphoreSubmitInfo*>(base->pNext), pnext.vktimelinesemaphoresubmitinfo_chain_elem());
+    }
+    base = base->pNext;
+  }
+  base->pNext = nullptr;
   if (proto.has_waitsemaphorecount()) {
     original_struct.waitSemaphoreCount = proto.waitsemaphorecount();
   } else {
@@ -2165,6 +2303,381 @@ void FillStructFromProto(VkViewport& original_struct, const vvk::server::VkViewp
   original_struct.height = proto.height();
   original_struct.minDepth = proto.mindepth();
   original_struct.maxDepth = proto.maxdepth();
+}
+void FillStructFromProtoNoPNext(VkPhysicalDeviceProtectedMemoryFeatures& original_struct, const vvk::server::VkPhysicalDeviceProtectedMemoryFeatures& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_FEATURES;
+  original_struct.protectedMemory = proto.protectedmemory();
+}
+void FillStructFromProtoNoPNext(VkPhysicalDeviceProtectedMemoryProperties& original_struct, const vvk::server::VkPhysicalDeviceProtectedMemoryProperties& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_PROPERTIES;
+  original_struct.protectedNoFault = proto.protectednofault();
+}
+void FillStructFromProtoNoPNext(VkPhysicalDeviceShaderDrawParametersFeatures& original_struct, const vvk::server::VkPhysicalDeviceShaderDrawParametersFeatures& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES;
+  original_struct.shaderDrawParameters = proto.shaderdrawparameters();
+}
+void FillStructFromProtoNoPNext(VkPhysicalDeviceSubgroupProperties& original_struct, const vvk::server::VkPhysicalDeviceSubgroupProperties& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES;
+  original_struct.subgroupSize = proto.subgroupsize();
+  original_struct.supportedStages = static_cast<VkShaderStageFlags>(proto.supportedstages());
+  original_struct.supportedOperations = static_cast<VkSubgroupFeatureFlags>(proto.supportedoperations());
+  original_struct.quadOperationsInAllStages = proto.quadoperationsinallstages();
+}
+void FillStructFromProtoNoPNext(VkPhysicalDeviceTimelineSemaphoreFeatures& original_struct, const vvk::server::VkPhysicalDeviceTimelineSemaphoreFeatures& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES;
+  original_struct.timelineSemaphore = proto.timelinesemaphore();
+}
+void FillStructFromProtoNoPNext(VkPhysicalDeviceTimelineSemaphoreProperties& original_struct, const vvk::server::VkPhysicalDeviceTimelineSemaphoreProperties& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_PROPERTIES;
+  original_struct.maxTimelineSemaphoreValueDifference = proto.maxtimelinesemaphorevaluedifference();
+}
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan11Features& original_struct, const vvk::server::VkPhysicalDeviceVulkan11Features& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
+  original_struct.storageBuffer16BitAccess = proto.storagebuffer16bitaccess();
+  original_struct.uniformAndStorageBuffer16BitAccess = proto.uniformandstoragebuffer16bitaccess();
+  original_struct.storagePushConstant16 = proto.storagepushconstant16();
+  original_struct.storageInputOutput16 = proto.storageinputoutput16();
+  original_struct.multiview = proto.multiview();
+  original_struct.multiviewGeometryShader = proto.multiviewgeometryshader();
+  original_struct.multiviewTessellationShader = proto.multiviewtessellationshader();
+  original_struct.variablePointersStorageBuffer = proto.variablepointersstoragebuffer();
+  original_struct.variablePointers = proto.variablepointers();
+  original_struct.protectedMemory = proto.protectedmemory();
+  original_struct.samplerYcbcrConversion = proto.samplerycbcrconversion();
+  original_struct.shaderDrawParameters = proto.shaderdrawparameters();
+}
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan11Properties& original_struct, const vvk::server::VkPhysicalDeviceVulkan11Properties& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_PROPERTIES;
+  const size_t original_struct_deviceUUID_length = std::min(VK_UUID_SIZE, VK_UUID_SIZE);
+  for (int deviceUUID_indx = 0; deviceUUID_indx < original_struct_deviceUUID_length; deviceUUID_indx++) {
+    original_struct.deviceUUID[deviceUUID_indx] = static_cast<uint8_t>(proto.deviceuuid(deviceUUID_indx));
+  }
+  const size_t original_struct_driverUUID_length = std::min(VK_UUID_SIZE, VK_UUID_SIZE);
+  for (int driverUUID_indx = 0; driverUUID_indx < original_struct_driverUUID_length; driverUUID_indx++) {
+    original_struct.driverUUID[driverUUID_indx] = static_cast<uint8_t>(proto.driveruuid(driverUUID_indx));
+  }
+  const size_t original_struct_deviceLUID_length = std::min(VK_LUID_SIZE, VK_LUID_SIZE);
+  for (int deviceLUID_indx = 0; deviceLUID_indx < original_struct_deviceLUID_length; deviceLUID_indx++) {
+    original_struct.deviceLUID[deviceLUID_indx] = static_cast<uint8_t>(proto.deviceluid(deviceLUID_indx));
+  }
+  original_struct.deviceNodeMask = proto.devicenodemask();
+  original_struct.deviceLUIDValid = proto.deviceluidvalid();
+  original_struct.subgroupSize = proto.subgroupsize();
+  original_struct.subgroupSupportedStages = static_cast<VkShaderStageFlags>(proto.subgroupsupportedstages());
+  original_struct.subgroupSupportedOperations = static_cast<VkSubgroupFeatureFlags>(proto.subgroupsupportedoperations());
+  original_struct.subgroupQuadOperationsInAllStages = proto.subgroupquadoperationsinallstages();
+  original_struct.pointClippingBehavior = static_cast<VkPointClippingBehavior>(proto.pointclippingbehavior());
+  original_struct.maxMultiviewViewCount = proto.maxmultiviewviewcount();
+  original_struct.maxMultiviewInstanceIndex = proto.maxmultiviewinstanceindex();
+  original_struct.protectedNoFault = proto.protectednofault();
+  original_struct.maxPerSetDescriptors = proto.maxpersetdescriptors();
+  original_struct.maxMemoryAllocationSize = static_cast<VkDeviceSize>(proto.maxmemoryallocationsize());
+}
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan12Features& original_struct, const vvk::server::VkPhysicalDeviceVulkan12Features& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+  original_struct.samplerMirrorClampToEdge = proto.samplermirrorclamptoedge();
+  original_struct.drawIndirectCount = proto.drawindirectcount();
+  original_struct.storageBuffer8BitAccess = proto.storagebuffer8bitaccess();
+  original_struct.uniformAndStorageBuffer8BitAccess = proto.uniformandstoragebuffer8bitaccess();
+  original_struct.storagePushConstant8 = proto.storagepushconstant8();
+  original_struct.shaderBufferInt64Atomics = proto.shaderbufferint64atomics();
+  original_struct.shaderSharedInt64Atomics = proto.shadersharedint64atomics();
+  original_struct.shaderFloat16 = proto.shaderfloat16();
+  original_struct.shaderInt8 = proto.shaderint8();
+  original_struct.descriptorIndexing = proto.descriptorindexing();
+  original_struct.shaderInputAttachmentArrayDynamicIndexing = proto.shaderinputattachmentarraydynamicindexing();
+  original_struct.shaderUniformTexelBufferArrayDynamicIndexing = proto.shaderuniformtexelbufferarraydynamicindexing();
+  original_struct.shaderStorageTexelBufferArrayDynamicIndexing = proto.shaderstoragetexelbufferarraydynamicindexing();
+  original_struct.shaderUniformBufferArrayNonUniformIndexing = proto.shaderuniformbufferarraynonuniformindexing();
+  original_struct.shaderSampledImageArrayNonUniformIndexing = proto.shadersampledimagearraynonuniformindexing();
+  original_struct.shaderStorageBufferArrayNonUniformIndexing = proto.shaderstoragebufferarraynonuniformindexing();
+  original_struct.shaderStorageImageArrayNonUniformIndexing = proto.shaderstorageimagearraynonuniformindexing();
+  original_struct.shaderInputAttachmentArrayNonUniformIndexing = proto.shaderinputattachmentarraynonuniformindexing();
+  original_struct.shaderUniformTexelBufferArrayNonUniformIndexing = proto.shaderuniformtexelbufferarraynonuniformindexing();
+  original_struct.shaderStorageTexelBufferArrayNonUniformIndexing = proto.shaderstoragetexelbufferarraynonuniformindexing();
+  original_struct.descriptorBindingUniformBufferUpdateAfterBind = proto.descriptorbindinguniformbufferupdateafterbind();
+  original_struct.descriptorBindingSampledImageUpdateAfterBind = proto.descriptorbindingsampledimageupdateafterbind();
+  original_struct.descriptorBindingStorageImageUpdateAfterBind = proto.descriptorbindingstorageimageupdateafterbind();
+  original_struct.descriptorBindingStorageBufferUpdateAfterBind = proto.descriptorbindingstoragebufferupdateafterbind();
+  original_struct.descriptorBindingUniformTexelBufferUpdateAfterBind = proto.descriptorbindinguniformtexelbufferupdateafterbind();
+  original_struct.descriptorBindingStorageTexelBufferUpdateAfterBind = proto.descriptorbindingstoragetexelbufferupdateafterbind();
+  original_struct.descriptorBindingUpdateUnusedWhilePending = proto.descriptorbindingupdateunusedwhilepending();
+  original_struct.descriptorBindingPartiallyBound = proto.descriptorbindingpartiallybound();
+  original_struct.descriptorBindingVariableDescriptorCount = proto.descriptorbindingvariabledescriptorcount();
+  original_struct.runtimeDescriptorArray = proto.runtimedescriptorarray();
+  original_struct.samplerFilterMinmax = proto.samplerfilterminmax();
+  original_struct.scalarBlockLayout = proto.scalarblocklayout();
+  original_struct.imagelessFramebuffer = proto.imagelessframebuffer();
+  original_struct.uniformBufferStandardLayout = proto.uniformbufferstandardlayout();
+  original_struct.shaderSubgroupExtendedTypes = proto.shadersubgroupextendedtypes();
+  original_struct.separateDepthStencilLayouts = proto.separatedepthstencillayouts();
+  original_struct.hostQueryReset = proto.hostqueryreset();
+  original_struct.timelineSemaphore = proto.timelinesemaphore();
+  original_struct.bufferDeviceAddress = proto.bufferdeviceaddress();
+  original_struct.bufferDeviceAddressCaptureReplay = proto.bufferdeviceaddresscapturereplay();
+  original_struct.bufferDeviceAddressMultiDevice = proto.bufferdeviceaddressmultidevice();
+  original_struct.vulkanMemoryModel = proto.vulkanmemorymodel();
+  original_struct.vulkanMemoryModelDeviceScope = proto.vulkanmemorymodeldevicescope();
+  original_struct.vulkanMemoryModelAvailabilityVisibilityChains = proto.vulkanmemorymodelavailabilityvisibilitychains();
+  original_struct.shaderOutputViewportIndex = proto.shaderoutputviewportindex();
+  original_struct.shaderOutputLayer = proto.shaderoutputlayer();
+  original_struct.subgroupBroadcastDynamicId = proto.subgroupbroadcastdynamicid();
+}
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan12Properties& original_struct, const vvk::server::VkPhysicalDeviceVulkan12Properties& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_PROPERTIES;
+  original_struct.driverID = static_cast<VkDriverId>(proto.driverid());
+  strncpy(original_struct.driverName, proto.drivername().c_str(), VK_MAX_DRIVER_NAME_SIZE);
+  strncpy(original_struct.driverInfo, proto.driverinfo().c_str(), VK_MAX_DRIVER_INFO_SIZE);
+  VkConformanceVersion &original_struct_conformanceVersion = original_struct.conformanceVersion;
+  FillStructFromProto(original_struct_conformanceVersion, proto.conformanceversion());
+  original_struct.denormBehaviorIndependence = static_cast<VkShaderFloatControlsIndependence>(proto.denormbehaviorindependence());
+  original_struct.roundingModeIndependence = static_cast<VkShaderFloatControlsIndependence>(proto.roundingmodeindependence());
+  original_struct.shaderSignedZeroInfNanPreserveFloat16 = proto.shadersignedzeroinfnanpreservefloat16();
+  original_struct.shaderSignedZeroInfNanPreserveFloat32 = proto.shadersignedzeroinfnanpreservefloat32();
+  original_struct.shaderSignedZeroInfNanPreserveFloat64 = proto.shadersignedzeroinfnanpreservefloat64();
+  original_struct.shaderDenormPreserveFloat16 = proto.shaderdenormpreservefloat16();
+  original_struct.shaderDenormPreserveFloat32 = proto.shaderdenormpreservefloat32();
+  original_struct.shaderDenormPreserveFloat64 = proto.shaderdenormpreservefloat64();
+  original_struct.shaderDenormFlushToZeroFloat16 = proto.shaderdenormflushtozerofloat16();
+  original_struct.shaderDenormFlushToZeroFloat32 = proto.shaderdenormflushtozerofloat32();
+  original_struct.shaderDenormFlushToZeroFloat64 = proto.shaderdenormflushtozerofloat64();
+  original_struct.shaderRoundingModeRTEFloat16 = proto.shaderroundingmodertefloat16();
+  original_struct.shaderRoundingModeRTEFloat32 = proto.shaderroundingmodertefloat32();
+  original_struct.shaderRoundingModeRTEFloat64 = proto.shaderroundingmodertefloat64();
+  original_struct.shaderRoundingModeRTZFloat16 = proto.shaderroundingmodertzfloat16();
+  original_struct.shaderRoundingModeRTZFloat32 = proto.shaderroundingmodertzfloat32();
+  original_struct.shaderRoundingModeRTZFloat64 = proto.shaderroundingmodertzfloat64();
+  original_struct.maxUpdateAfterBindDescriptorsInAllPools = proto.maxupdateafterbinddescriptorsinallpools();
+  original_struct.shaderUniformBufferArrayNonUniformIndexingNative = proto.shaderuniformbufferarraynonuniformindexingnative();
+  original_struct.shaderSampledImageArrayNonUniformIndexingNative = proto.shadersampledimagearraynonuniformindexingnative();
+  original_struct.shaderStorageBufferArrayNonUniformIndexingNative = proto.shaderstoragebufferarraynonuniformindexingnative();
+  original_struct.shaderStorageImageArrayNonUniformIndexingNative = proto.shaderstorageimagearraynonuniformindexingnative();
+  original_struct.shaderInputAttachmentArrayNonUniformIndexingNative = proto.shaderinputattachmentarraynonuniformindexingnative();
+  original_struct.robustBufferAccessUpdateAfterBind = proto.robustbufferaccessupdateafterbind();
+  original_struct.quadDivergentImplicitLod = proto.quaddivergentimplicitlod();
+  original_struct.maxPerStageDescriptorUpdateAfterBindSamplers = proto.maxperstagedescriptorupdateafterbindsamplers();
+  original_struct.maxPerStageDescriptorUpdateAfterBindUniformBuffers = proto.maxperstagedescriptorupdateafterbinduniformbuffers();
+  original_struct.maxPerStageDescriptorUpdateAfterBindStorageBuffers = proto.maxperstagedescriptorupdateafterbindstoragebuffers();
+  original_struct.maxPerStageDescriptorUpdateAfterBindSampledImages = proto.maxperstagedescriptorupdateafterbindsampledimages();
+  original_struct.maxPerStageDescriptorUpdateAfterBindStorageImages = proto.maxperstagedescriptorupdateafterbindstorageimages();
+  original_struct.maxPerStageDescriptorUpdateAfterBindInputAttachments = proto.maxperstagedescriptorupdateafterbindinputattachments();
+  original_struct.maxPerStageUpdateAfterBindResources = proto.maxperstageupdateafterbindresources();
+  original_struct.maxDescriptorSetUpdateAfterBindSamplers = proto.maxdescriptorsetupdateafterbindsamplers();
+  original_struct.maxDescriptorSetUpdateAfterBindUniformBuffers = proto.maxdescriptorsetupdateafterbinduniformbuffers();
+  original_struct.maxDescriptorSetUpdateAfterBindUniformBuffersDynamic = proto.maxdescriptorsetupdateafterbinduniformbuffersdynamic();
+  original_struct.maxDescriptorSetUpdateAfterBindStorageBuffers = proto.maxdescriptorsetupdateafterbindstoragebuffers();
+  original_struct.maxDescriptorSetUpdateAfterBindStorageBuffersDynamic = proto.maxdescriptorsetupdateafterbindstoragebuffersdynamic();
+  original_struct.maxDescriptorSetUpdateAfterBindSampledImages = proto.maxdescriptorsetupdateafterbindsampledimages();
+  original_struct.maxDescriptorSetUpdateAfterBindStorageImages = proto.maxdescriptorsetupdateafterbindstorageimages();
+  original_struct.maxDescriptorSetUpdateAfterBindInputAttachments = proto.maxdescriptorsetupdateafterbindinputattachments();
+  original_struct.supportedDepthResolveModes = static_cast<VkResolveModeFlags>(proto.supporteddepthresolvemodes());
+  original_struct.supportedStencilResolveModes = static_cast<VkResolveModeFlags>(proto.supportedstencilresolvemodes());
+  original_struct.independentResolveNone = proto.independentresolvenone();
+  original_struct.independentResolve = proto.independentresolve();
+  original_struct.filterMinmaxSingleComponentFormats = proto.filterminmaxsinglecomponentformats();
+  original_struct.filterMinmaxImageComponentMapping = proto.filterminmaximagecomponentmapping();
+  original_struct.maxTimelineSemaphoreValueDifference = proto.maxtimelinesemaphorevaluedifference();
+  if (proto.has_framebufferintegercolorsamplecounts()) {
+    original_struct.framebufferIntegerColorSampleCounts = static_cast<VkSampleCountFlags>(proto.framebufferintegercolorsamplecounts());
+  } else {
+    original_struct.framebufferIntegerColorSampleCounts = VkSampleCountFlags{};
+  }
+}
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan13Features& original_struct, const vvk::server::VkPhysicalDeviceVulkan13Features& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+  original_struct.robustImageAccess = proto.robustimageaccess();
+  original_struct.inlineUniformBlock = proto.inlineuniformblock();
+  original_struct.descriptorBindingInlineUniformBlockUpdateAfterBind = proto.descriptorbindinginlineuniformblockupdateafterbind();
+  original_struct.pipelineCreationCacheControl = proto.pipelinecreationcachecontrol();
+  original_struct.privateData = proto.privatedata();
+  original_struct.shaderDemoteToHelperInvocation = proto.shaderdemotetohelperinvocation();
+  original_struct.shaderTerminateInvocation = proto.shaderterminateinvocation();
+  original_struct.subgroupSizeControl = proto.subgroupsizecontrol();
+  original_struct.computeFullSubgroups = proto.computefullsubgroups();
+  original_struct.synchronization2 = proto.synchronization2();
+  original_struct.textureCompressionASTC_HDR = proto.texturecompressionastc_hdr();
+  original_struct.shaderZeroInitializeWorkgroupMemory = proto.shaderzeroinitializeworkgroupmemory();
+  original_struct.dynamicRendering = proto.dynamicrendering();
+  original_struct.shaderIntegerDotProduct = proto.shaderintegerdotproduct();
+  original_struct.maintenance4 = proto.maintenance4();
+}
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan13Properties& original_struct, const vvk::server::VkPhysicalDeviceVulkan13Properties& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_PROPERTIES;
+  original_struct.minSubgroupSize = proto.minsubgroupsize();
+  original_struct.maxSubgroupSize = proto.maxsubgroupsize();
+  original_struct.maxComputeWorkgroupSubgroups = proto.maxcomputeworkgroupsubgroups();
+  original_struct.requiredSubgroupSizeStages = static_cast<VkShaderStageFlags>(proto.requiredsubgroupsizestages());
+  original_struct.maxInlineUniformBlockSize = proto.maxinlineuniformblocksize();
+  original_struct.maxPerStageDescriptorInlineUniformBlocks = proto.maxperstagedescriptorinlineuniformblocks();
+  original_struct.maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks = proto.maxperstagedescriptorupdateafterbindinlineuniformblocks();
+  original_struct.maxDescriptorSetInlineUniformBlocks = proto.maxdescriptorsetinlineuniformblocks();
+  original_struct.maxDescriptorSetUpdateAfterBindInlineUniformBlocks = proto.maxdescriptorsetupdateafterbindinlineuniformblocks();
+  original_struct.maxInlineUniformTotalSize = proto.maxinlineuniformtotalsize();
+  original_struct.integerDotProduct8BitUnsignedAccelerated = proto.integerdotproduct8bitunsignedaccelerated();
+  original_struct.integerDotProduct8BitSignedAccelerated = proto.integerdotproduct8bitsignedaccelerated();
+  original_struct.integerDotProduct8BitMixedSignednessAccelerated = proto.integerdotproduct8bitmixedsignednessaccelerated();
+  original_struct.integerDotProduct4x8BitPackedUnsignedAccelerated = proto.integerdotproduct4x8bitpackedunsignedaccelerated();
+  original_struct.integerDotProduct4x8BitPackedSignedAccelerated = proto.integerdotproduct4x8bitpackedsignedaccelerated();
+  original_struct.integerDotProduct4x8BitPackedMixedSignednessAccelerated = proto.integerdotproduct4x8bitpackedmixedsignednessaccelerated();
+  original_struct.integerDotProduct16BitUnsignedAccelerated = proto.integerdotproduct16bitunsignedaccelerated();
+  original_struct.integerDotProduct16BitSignedAccelerated = proto.integerdotproduct16bitsignedaccelerated();
+  original_struct.integerDotProduct16BitMixedSignednessAccelerated = proto.integerdotproduct16bitmixedsignednessaccelerated();
+  original_struct.integerDotProduct32BitUnsignedAccelerated = proto.integerdotproduct32bitunsignedaccelerated();
+  original_struct.integerDotProduct32BitSignedAccelerated = proto.integerdotproduct32bitsignedaccelerated();
+  original_struct.integerDotProduct32BitMixedSignednessAccelerated = proto.integerdotproduct32bitmixedsignednessaccelerated();
+  original_struct.integerDotProduct64BitUnsignedAccelerated = proto.integerdotproduct64bitunsignedaccelerated();
+  original_struct.integerDotProduct64BitSignedAccelerated = proto.integerdotproduct64bitsignedaccelerated();
+  original_struct.integerDotProduct64BitMixedSignednessAccelerated = proto.integerdotproduct64bitmixedsignednessaccelerated();
+  original_struct.integerDotProductAccumulatingSaturating8BitUnsignedAccelerated = proto.integerdotproductaccumulatingsaturating8bitunsignedaccelerated();
+  original_struct.integerDotProductAccumulatingSaturating8BitSignedAccelerated = proto.integerdotproductaccumulatingsaturating8bitsignedaccelerated();
+  original_struct.integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated = proto.integerdotproductaccumulatingsaturating8bitmixedsignednessaccelerated();
+  original_struct.integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated = proto.integerdotproductaccumulatingsaturating4x8bitpackedunsignedaccelerated();
+  original_struct.integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated = proto.integerdotproductaccumulatingsaturating4x8bitpackedsignedaccelerated();
+  original_struct.integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated = proto.integerdotproductaccumulatingsaturating4x8bitpackedmixedsignednessaccelerated();
+  original_struct.integerDotProductAccumulatingSaturating16BitUnsignedAccelerated = proto.integerdotproductaccumulatingsaturating16bitunsignedaccelerated();
+  original_struct.integerDotProductAccumulatingSaturating16BitSignedAccelerated = proto.integerdotproductaccumulatingsaturating16bitsignedaccelerated();
+  original_struct.integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated = proto.integerdotproductaccumulatingsaturating16bitmixedsignednessaccelerated();
+  original_struct.integerDotProductAccumulatingSaturating32BitUnsignedAccelerated = proto.integerdotproductaccumulatingsaturating32bitunsignedaccelerated();
+  original_struct.integerDotProductAccumulatingSaturating32BitSignedAccelerated = proto.integerdotproductaccumulatingsaturating32bitsignedaccelerated();
+  original_struct.integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated = proto.integerdotproductaccumulatingsaturating32bitmixedsignednessaccelerated();
+  original_struct.integerDotProductAccumulatingSaturating64BitUnsignedAccelerated = proto.integerdotproductaccumulatingsaturating64bitunsignedaccelerated();
+  original_struct.integerDotProductAccumulatingSaturating64BitSignedAccelerated = proto.integerdotproductaccumulatingsaturating64bitsignedaccelerated();
+  original_struct.integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated = proto.integerdotproductaccumulatingsaturating64bitmixedsignednessaccelerated();
+  original_struct.storageTexelBufferOffsetAlignmentBytes = static_cast<VkDeviceSize>(proto.storagetexelbufferoffsetalignmentbytes());
+  original_struct.storageTexelBufferOffsetSingleTexelAlignment = proto.storagetexelbufferoffsetsingletexelalignment();
+  original_struct.uniformTexelBufferOffsetAlignmentBytes = static_cast<VkDeviceSize>(proto.uniformtexelbufferoffsetalignmentbytes());
+  original_struct.uniformTexelBufferOffsetSingleTexelAlignment = proto.uniformtexelbufferoffsetsingletexelalignment();
+  original_struct.maxBufferSize = static_cast<VkDeviceSize>(proto.maxbuffersize());
+}
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan14Features& original_struct, const vvk::server::VkPhysicalDeviceVulkan14Features& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES;
+  original_struct.globalPriorityQuery = proto.globalpriorityquery();
+  original_struct.shaderSubgroupRotate = proto.shadersubgrouprotate();
+  original_struct.shaderSubgroupRotateClustered = proto.shadersubgrouprotateclustered();
+  original_struct.shaderFloatControls2 = proto.shaderfloatcontrols2();
+  original_struct.shaderExpectAssume = proto.shaderexpectassume();
+  original_struct.rectangularLines = proto.rectangularlines();
+  original_struct.bresenhamLines = proto.bresenhamlines();
+  original_struct.smoothLines = proto.smoothlines();
+  original_struct.stippledRectangularLines = proto.stippledrectangularlines();
+  original_struct.stippledBresenhamLines = proto.stippledbresenhamlines();
+  original_struct.stippledSmoothLines = proto.stippledsmoothlines();
+  original_struct.vertexAttributeInstanceRateDivisor = proto.vertexattributeinstanceratedivisor();
+  original_struct.vertexAttributeInstanceRateZeroDivisor = proto.vertexattributeinstanceratezerodivisor();
+  original_struct.indexTypeUint8 = proto.indextypeuint8();
+  original_struct.dynamicRenderingLocalRead = proto.dynamicrenderinglocalread();
+  original_struct.maintenance5 = proto.maintenance5();
+  original_struct.maintenance6 = proto.maintenance6();
+  original_struct.pipelineProtectedAccess = proto.pipelineprotectedaccess();
+  original_struct.pipelineRobustness = proto.pipelinerobustness();
+  original_struct.hostImageCopy = proto.hostimagecopy();
+  original_struct.pushDescriptor = proto.pushdescriptor();
+}
+void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan14Properties& original_struct, const vvk::server::VkPhysicalDeviceVulkan14Properties& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_PROPERTIES;
+  original_struct.lineSubPixelPrecisionBits = proto.linesubpixelprecisionbits();
+  original_struct.maxVertexAttribDivisor = proto.maxvertexattribdivisor();
+  original_struct.supportsNonZeroFirstInstance = proto.supportsnonzerofirstinstance();
+  original_struct.maxPushDescriptors = proto.maxpushdescriptors();
+  original_struct.dynamicRenderingLocalReadDepthStencilAttachments = proto.dynamicrenderinglocalreaddepthstencilattachments();
+  original_struct.dynamicRenderingLocalReadMultisampledAttachments = proto.dynamicrenderinglocalreadmultisampledattachments();
+  original_struct.earlyFragmentMultisampleCoverageAfterSampleCounting = proto.earlyfragmentmultisamplecoverageaftersamplecounting();
+  original_struct.earlyFragmentSampleMaskTestBeforeSampleCounting = proto.earlyfragmentsamplemasktestbeforesamplecounting();
+  original_struct.depthStencilSwizzleOneSupport = proto.depthstencilswizzleonesupport();
+  original_struct.polygonModePointSize = proto.polygonmodepointsize();
+  original_struct.nonStrictSinglePixelWideLinesUseParallelogram = proto.nonstrictsinglepixelwidelinesuseparallelogram();
+  original_struct.nonStrictWideLinesUseParallelogram = proto.nonstrictwidelinesuseparallelogram();
+  original_struct.blockTexelViewCompatibleMultipleLayers = proto.blocktexelviewcompatiblemultiplelayers();
+  original_struct.maxCombinedImageSamplerDescriptorCount = proto.maxcombinedimagesamplerdescriptorcount();
+  original_struct.fragmentShadingRateClampCombinerInputs = proto.fragmentshadingrateclampcombinerinputs();
+  original_struct.defaultRobustnessStorageBuffers = static_cast<VkPipelineRobustnessBufferBehavior>(proto.defaultrobustnessstoragebuffers());
+  original_struct.defaultRobustnessUniformBuffers = static_cast<VkPipelineRobustnessBufferBehavior>(proto.defaultrobustnessuniformbuffers());
+  original_struct.defaultRobustnessVertexInputs = static_cast<VkPipelineRobustnessBufferBehavior>(proto.defaultrobustnessvertexinputs());
+  original_struct.defaultRobustnessImages = static_cast<VkPipelineRobustnessImageBehavior>(proto.defaultrobustnessimages());
+  if (proto.has_copysrclayoutcount()) {
+    original_struct.copySrcLayoutCount = proto.copysrclayoutcount();
+  } else {
+    original_struct.copySrcLayoutCount = uint32_t{};
+  }
+  if (proto.pcopysrclayouts_size()) {
+    original_struct.pCopySrcLayouts = reinterpret_cast<VkImageLayout*>(const_cast<vvk::server::VkPhysicalDeviceVulkan14Properties&>(proto).mutable_pcopysrclayouts()->mutable_data());
+  } else {
+    original_struct.pCopySrcLayouts = nullptr;
+  }
+  if (proto.has_copydstlayoutcount()) {
+    original_struct.copyDstLayoutCount = proto.copydstlayoutcount();
+  } else {
+    original_struct.copyDstLayoutCount = uint32_t{};
+  }
+  if (proto.pcopydstlayouts_size()) {
+    original_struct.pCopyDstLayouts = reinterpret_cast<VkImageLayout*>(const_cast<vvk::server::VkPhysicalDeviceVulkan14Properties&>(proto).mutable_pcopydstlayouts()->mutable_data());
+  } else {
+    original_struct.pCopyDstLayouts = nullptr;
+  }
+  if (proto.optimaltilinglayoutuuid_size()) {
+    const size_t original_struct_optimalTilingLayoutUUID_length = std::min(VK_UUID_SIZE, VK_UUID_SIZE);
+    for (int optimalTilingLayoutUUID_indx = 0; optimalTilingLayoutUUID_indx < original_struct_optimalTilingLayoutUUID_length; optimalTilingLayoutUUID_indx++) {
+      original_struct.optimalTilingLayoutUUID[optimalTilingLayoutUUID_indx] = static_cast<uint8_t>(proto.optimaltilinglayoutuuid(optimalTilingLayoutUUID_indx));
+    }
+  } else {
+    // this should not be reached
+    std::exit(EXIT_FAILURE);
+  }
+  original_struct.identicalMemoryTypeRequirements = proto.identicalmemorytyperequirements();
+}
+void FillStructFromProtoNoPNext(VkProtectedSubmitInfo& original_struct, const vvk::server::VkProtectedSubmitInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PROTECTED_SUBMIT_INFO;
+  original_struct.protectedSubmit = proto.protectedsubmit();
+}
+void FillStructFromProtoNoPNext(VkSemaphoreTypeCreateInfo& original_struct, const vvk::server::VkSemaphoreTypeCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO;
+  original_struct.semaphoreType = static_cast<VkSemaphoreType>(proto.semaphoretype());
+  original_struct.initialValue = proto.initialvalue();
+}
+void FillStructFromProtoNoPNext(VkShaderModuleCreateInfo& original_struct, const vvk::server::VkShaderModuleCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkShaderModuleCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkShaderModuleCreateFlags{};
+  }
+  original_struct.codeSize = proto.codesize();
+  uint32_t* original_struct_pCode = new uint32_t[proto.pcode_size()]();
+  original_struct.pCode = original_struct_pCode;
+  for (int pCode_indx = 0; pCode_indx < proto.pcode_size(); pCode_indx++) {
+    original_struct_pCode[pCode_indx] = proto.pcode(pCode_indx);
+  }
+}
+void FillStructFromProtoNoPNext(VkTimelineSemaphoreSubmitInfo& original_struct, const vvk::server::VkTimelineSemaphoreSubmitInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO;
+  if (proto.has_waitsemaphorevaluecount()) {
+    original_struct.waitSemaphoreValueCount = proto.waitsemaphorevaluecount();
+  } else {
+    original_struct.waitSemaphoreValueCount = uint32_t{};
+  }
+  uint64_t* original_struct_pWaitSemaphoreValues = new uint64_t[proto.pwaitsemaphorevalues_size()]();
+  original_struct.pWaitSemaphoreValues = original_struct_pWaitSemaphoreValues;
+  if (proto.pwaitsemaphorevalues_size()) {
+    for (int pWaitSemaphoreValues_indx = 0; pWaitSemaphoreValues_indx < proto.pwaitsemaphorevalues_size(); pWaitSemaphoreValues_indx++) {
+      original_struct_pWaitSemaphoreValues[pWaitSemaphoreValues_indx] = proto.pwaitsemaphorevalues(pWaitSemaphoreValues_indx);
+    }
+  } else {
+    original_struct.pWaitSemaphoreValues = nullptr;
+  }
+  if (proto.has_signalsemaphorevaluecount()) {
+    original_struct.signalSemaphoreValueCount = proto.signalsemaphorevaluecount();
+  } else {
+    original_struct.signalSemaphoreValueCount = uint32_t{};
+  }
+  uint64_t* original_struct_pSignalSemaphoreValues = new uint64_t[proto.psignalsemaphorevalues_size()]();
+  original_struct.pSignalSemaphoreValues = original_struct_pSignalSemaphoreValues;
+  if (proto.psignalsemaphorevalues_size()) {
+    for (int pSignalSemaphoreValues_indx = 0; pSignalSemaphoreValues_indx < proto.psignalsemaphorevalues_size(); pSignalSemaphoreValues_indx++) {
+      original_struct_pSignalSemaphoreValues[pSignalSemaphoreValues_indx] = proto.psignalsemaphorevalues(pSignalSemaphoreValues_indx);
+    }
+  } else {
+    original_struct.pSignalSemaphoreValues = nullptr;
+  }
 }
 }
 void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){

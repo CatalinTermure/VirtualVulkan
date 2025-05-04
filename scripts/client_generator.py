@@ -120,7 +120,7 @@ class ClientSrcGenerator(VvkGenerator):
                 after_call_code.append(
                     f'  {param.type}& {param.name}_ref = *{param.name};\n')
                 struct_fill_, unused = fill_struct_from_proto(
-                    self, param.type, f'{param.name}_ref', f'{response_accessor}.{param.name.lower()}()')
+                    self, param.type, f'{param.name}_ref', f'{response_accessor}.{param.name.lower()}()', allow_alloc=False)
                 assert (unused == "")
                 after_call_code.append(struct_fill_)
             else:
@@ -148,7 +148,7 @@ class ClientSrcGenerator(VvkGenerator):
                 after_call_code.append(
                     f'      {param.type}& {param.name}_ref = {param.name}[{index_name}];\n')
                 struct_fill_, unused = fill_struct_from_proto(
-                    self, param.type, f'{param.name}_ref', f'{response_accessor}.{param.name.lower()}({index_name})')
+                    self, param.type, f'{param.name}_ref', f'{response_accessor}.{param.name.lower()}({index_name})', allow_alloc=False)
                 assert (unused == "")
                 after_call_code.append(indent(struct_fill_, 4))
                 after_call_code.append("    }\n")

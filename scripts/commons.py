@@ -118,7 +118,7 @@ def indent(text: str, spaces: int) -> str:
     return '\n'.join(' ' * spaces + line for line in lines) + '\n'
 
 
-def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member) -> tuple[str, str, str]:
+def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
     pre_fill_declarations = []
     out = []
     after = []
@@ -133,6 +133,7 @@ def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, n
             out.append(
                 f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
         else:
+            assert (allow_alloc)
             aux_var = f'{name}_{member.name}'
             index_name = f'{member.name}_indx'
             pre_fill_declarations.append(
@@ -151,14 +152,14 @@ def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, n
             out.append(
                 f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
         else:
-            assert (member.const and member.pointer)
+            assert (member.fixedSizeArray or member.pointer)
+            # TODO: this const_cast is not really elegant, but it should be fine
             out.append(
-                f'  {name}.{member.name} = reinterpret_cast<const {member.type}*>({proto_accessor}.{member.name.lower()}().data());\n')
+                f'  {name}.{member.name} = reinterpret_cast<{member.type}*>(const_cast<vvk::server::{struct_type}&>({proto_accessor}).mutable_{member.name.lower()}()->mutable_data());\n')
     elif member.type in TRIVIAL_TYPES:
         type_info = TRIVIAL_TYPES[member.type]
         if member.fixedSizeArray:
             index_name = f'{member.name}_indx'
-            out.append(f'  // {name}\n')
             out.append(access_length_member_from_struct(
                 generator, struct_type, name, name, member))
             out.append(
@@ -178,6 +179,7 @@ def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, n
                 out.append(
                     f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
         else:
+            assert (allow_alloc)
             aux_var = f'{name}_{member.name}'
             index_name = f'{member.name}_indx'
             # we use the aux_var because the members have const qualifiers
@@ -194,6 +196,7 @@ def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, n
             after.append(f'  delete[] {name}.{member.name};\n')
     elif member.pointer and member.const and member.type in generator.vk.structs:
         if member.length is None:
+            assert (allow_alloc)
             aux_var = f'{name}_{member.name}'
             _, after_ = fill_struct_from_proto(generator,
                                                member.type, aux_var, f'{proto_accessor}.{member.name.lower()}()')
@@ -209,6 +212,7 @@ def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, n
                 after.append(after_)
             after.append(f'  delete {name}.{member.name};\n')
         else:
+            assert (allow_alloc)
             index_name = f'{member.name}_indx'
             pre_fill_declarations.append(
                 f'  {member.type}* {name}_{member.name} = new {member.type}[{proto_accessor}.{member.name.lower()}_size()]();\n')
@@ -273,6 +277,7 @@ def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, n
         out.append(
             f'  {name}.{member.name} = reinterpret_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
     elif 'const char* const*' in member.cDeclaration:
+        assert (allow_alloc)
         aux_var = f'{name}_{member.name}'
         pre_fill_declarations.append(
             f'  const char** {aux_var} = new const char*[{proto_accessor}.{member.name.lower()}_size()]();\n')
@@ -295,18 +300,58 @@ def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, n
     return "".join(pre_fill_declarations), "".join(out), "".join(after)
 
 
-def fill_struct_from_proto(generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str) -> tuple[str, str]:
+def fill_struct_from_proto(generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, allow_alloc: bool = True, skip_pnext: bool = False) -> tuple[str, str]:
     out = []
     after = []
     struct = generator.vk.structs[struct_type]
     for member in struct.members:
         if member.optional:
             if member.name == "pNext":
+                if skip_pnext:
+                    continue
+                if not struct.extendedBy:
+                    out.append(
+                        f'  {name}.{member.name} = nullptr;  // Empty pNext chain\n')
+                    continue
+
+                extended_by_list = [
+                    extended_by for extended_by in struct.extendedBy if is_struct_allowed(generator.vk.structs[extended_by])]
+                if not extended_by_list:
+                    out.append(
+                        f'  {name}.{member.name} = nullptr;  // Empty pNext chain\n')
+                    continue
+
+                after_: list[str] = []
                 out.append(
-                    f'  {name}.pNext = nullptr; // pNext chains are currently unsupported\n')
+                    f'  VkBaseOutStructure* base = reinterpret_cast<VkBaseOutStructure*>(&{name});\n')
+                out.append(
+                    f'  for (const auto& pnext : {proto_accessor}.pnext()) {{\n')
+                for extended_by in extended_by_list:
+                    out.append(
+                        f'    if (pnext.has_{extended_by.lower()}_chain_elem()) {{\n')
+                    if allow_alloc:
+                        out.append(
+                            f'      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new {extended_by});\n')
+
+                    _, deletions = fill_struct_from_proto(
+                        generator, extended_by, f'base->pNext', f'pnext.{extended_by.lower()}_chain_elem()', allow_alloc)
+                    after_.append(deletions)
+
+                    out.append(
+                        f'      FillStructFromProtoNoPNext(*reinterpret_cast<{extended_by}*>(base->pNext), pnext.{extended_by.lower()}_chain_elem());\n')
+                    generator.required_functions.add(
+                        f'FillStructFromProtoNoPNext/{extended_by}')
+                    out.append('    }\n')
+
+                out.append(
+                    f'    base = base->pNext;\n')
+                out.append('  }\n')
+                out.append('  base->pNext = nullptr;\n')
+
+                # TODO: fix memory leak
             else:
                 declarations_, out_, after_ = __fill_struct_member_from_proto(
-                    generator, struct_type, name, proto_accessor, member)
+                    generator, struct_type, name, proto_accessor, member, allow_alloc)
                 out.append(declarations_)
                 if member.length is None:
                     out.append(
@@ -321,8 +366,12 @@ def fill_struct_from_proto(generator: VvkGenerator, struct_type: str, name: str,
                     out.append(
                         f'    {name}.{member.name} = nullptr;\n')
                 else:
-                    out.append(
-                        f'    {name}.{member.name} = {member.type}{{}};\n')
+                    if member.fixedSizeArray:
+                        out.append('    // this should not be reached\n')
+                        out.append('    std::exit(EXIT_FAILURE);\n')
+                    else:
+                        out.append(
+                            f'    {name}.{member.name} = {member.type}{{}};\n')
                 out.append('  }\n')
                 if after_:
                     # if the member is an array, then we always allocate it, even if it's empty
@@ -336,7 +385,7 @@ def fill_struct_from_proto(generator: VvkGenerator, struct_type: str, name: str,
                         after.append(after_)
         else:
             out1_, out2_, after_ = __fill_struct_member_from_proto(
-                generator, struct_type, name, proto_accessor, member)
+                generator, struct_type, name, proto_accessor, member, allow_alloc)
             out.append(out1_)
             out.append(out2_)
             after.append(after_)
@@ -565,6 +614,14 @@ def __get_function_definition(generator: VvkGenerator, func: str) -> str:
             f'void FillStructFromProto({type_name}& original_struct, const vvk::server::{type_name}& proto) {{\n')
         out.append(fill_struct_from_proto(
             generator, type_name, 'original_struct', 'proto')[0])
+        out.append("}\n")
+        return "".join(out)
+    if func_name == "FillStructFromProtoNoPNext":
+        out: list[str] = []
+        out.append(
+            f'void FillStructFromProtoNoPNext({type_name}& original_struct, const vvk::server::{type_name}& proto) {{\n')
+        out.append(fill_struct_from_proto(
+            generator, type_name, 'original_struct', 'proto', skip_pnext=True)[0])
         out.append("}\n")
         return "".join(out)
     return 'static_assert(false, "Unkown function type");\n'
