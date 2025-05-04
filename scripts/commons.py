@@ -562,10 +562,10 @@ def __get_function_definition(generator: VvkGenerator, func: str) -> str:
             generator, type_name, 'original_struct', 'proto')[0])
         out.append("}\n")
         return "".join(out)
-    if func_name == "FillPNextChain":
+    if func_name == "FillPNextChainToProto":
         out: list[str] = []
         out.append(
-            f'void FillPNextChain(vvk::server::{type_name}* proto, const {type_name}* original_struct) {{\n')
+            f'void FillPNextChainToProto(vvk::server::{type_name}* proto, const {type_name}* original_struct) {{\n')
         out.append(fill_proto_from_struct(
             generator, type_name, 'proto', 'original_struct', member_filter={'pNext'}))
         out.append("}\n")

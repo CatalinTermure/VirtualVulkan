@@ -11,9 +11,9 @@
 
 namespace vvk {
 namespace {
-void FillPNextChain(vvk::server::VkMemoryRequirements2* proto, const VkMemoryRequirements2* original_struct);
-void FillPNextChain(vvk::server::VkPhysicalDeviceFeatures2* proto, const VkPhysicalDeviceFeatures2* original_struct);
-void FillPNextChain(vvk::server::VkPhysicalDeviceProperties2* proto, const VkPhysicalDeviceProperties2* original_struct);
+void FillPNextChainToProto(vvk::server::VkMemoryRequirements2* proto, const VkMemoryRequirements2* original_struct);
+void FillPNextChainToProto(vvk::server::VkPhysicalDeviceFeatures2* proto, const VkPhysicalDeviceFeatures2* original_struct);
+void FillPNextChainToProto(vvk::server::VkPhysicalDeviceProperties2* proto, const VkPhysicalDeviceProperties2* original_struct);
 void FillProtoFromStruct(vvk::server::VkApplicationInfo* proto, const VkApplicationInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkAttachmentDescription* proto, const VkAttachmentDescription* original_struct);
 void FillProtoFromStruct(vvk::server::VkAttachmentReference* proto, const VkAttachmentReference* original_struct);
@@ -101,12 +101,12 @@ void FillStructFromProto(VkPhysicalDeviceFeatures& original_struct, const vvk::s
 void FillStructFromProto(VkPhysicalDeviceLimits& original_struct, const vvk::server::VkPhysicalDeviceLimits& proto);
 void FillStructFromProto(VkPhysicalDeviceProperties& original_struct, const vvk::server::VkPhysicalDeviceProperties& proto);
 void FillStructFromProto(VkPhysicalDeviceSparseProperties& original_struct, const vvk::server::VkPhysicalDeviceSparseProperties& proto);
-void FillPNextChain(vvk::server::VkMemoryRequirements2* proto, const VkMemoryRequirements2* original_struct) {
+void FillPNextChainToProto(vvk::server::VkMemoryRequirements2* proto, const VkMemoryRequirements2* original_struct) {
   if (original_struct->pNext) {
     // Empty pNext chain
   }
 }
-void FillPNextChain(vvk::server::VkPhysicalDeviceFeatures2* proto, const VkPhysicalDeviceFeatures2* original_struct) {
+void FillPNextChainToProto(vvk::server::VkPhysicalDeviceFeatures2* proto, const VkPhysicalDeviceFeatures2* original_struct) {
   if (original_struct->pNext) {
     const void* pNext = original_struct->pNext;
     while (pNext) {
@@ -136,7 +136,7 @@ void FillPNextChain(vvk::server::VkPhysicalDeviceFeatures2* proto, const VkPhysi
     }
   }
 }
-void FillPNextChain(vvk::server::VkPhysicalDeviceProperties2* proto, const VkPhysicalDeviceProperties2* original_struct) {
+void FillPNextChainToProto(vvk::server::VkPhysicalDeviceProperties2* proto, const VkPhysicalDeviceProperties2* original_struct) {
   if (original_struct->pNext) {
     const void* pNext = original_struct->pNext;
     while (pNext) {
@@ -2295,7 +2295,7 @@ void PackAndCallVkGetImageMemoryRequirements2(VvkCommandClientBidiStream& stream
   request.set_method("vkGetImageMemoryRequirements2");
   request.mutable_vkgetimagememoryrequirements2()->set_device(reinterpret_cast<uint64_t>(device));
   FillProtoFromStruct(request.mutable_vkgetimagememoryrequirements2()->mutable_pinfo(), pInfo);
-  FillPNextChain(request.mutable_vkgetimagememoryrequirements2()->mutable_pmemoryrequirements(), pMemoryRequirements);
+  FillPNextChainToProto(request.mutable_vkgetimagememoryrequirements2()->mutable_pmemoryrequirements(), pMemoryRequirements);
   vvk::server::VvkResponse response;
 
   if (!stream.Write(request)) {
@@ -2935,7 +2935,7 @@ void PackAndCallVkGetPhysicalDeviceProperties2(VvkCommandClientBidiStream& strea
   vvk::server::VvkRequest request;
   request.set_method("vkGetPhysicalDeviceProperties2");
   request.mutable_vkgetphysicaldeviceproperties2()->set_physicaldevice(reinterpret_cast<uint64_t>(physicalDevice));
-  FillPNextChain(request.mutable_vkgetphysicaldeviceproperties2()->mutable_pproperties(), pProperties);
+  FillPNextChainToProto(request.mutable_vkgetphysicaldeviceproperties2()->mutable_pproperties(), pProperties);
   vvk::server::VvkResponse response;
 
   if (!stream.Write(request)) {
@@ -2955,7 +2955,7 @@ void PackAndCallVkGetPhysicalDeviceFeatures2(VvkCommandClientBidiStream& stream,
   vvk::server::VvkRequest request;
   request.set_method("vkGetPhysicalDeviceFeatures2");
   request.mutable_vkgetphysicaldevicefeatures2()->set_physicaldevice(reinterpret_cast<uint64_t>(physicalDevice));
-  FillPNextChain(request.mutable_vkgetphysicaldevicefeatures2()->mutable_pfeatures(), pFeatures);
+  FillPNextChainToProto(request.mutable_vkgetphysicaldevicefeatures2()->mutable_pfeatures(), pFeatures);
   vvk::server::VvkResponse response;
 
   if (!stream.Write(request)) {

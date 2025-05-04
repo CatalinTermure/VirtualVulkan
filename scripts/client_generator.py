@@ -115,9 +115,9 @@ class ClientSrcGenerator(VvkGenerator):
                     # TODO: this is a hack to support functions such as vkGetPhysicalDeviceFeatures2
                     # but in the generic case, we may need to fill more than the pNext chain
                     out.append(
-                        f'  FillPNextChain(request.mutable_{cmd_name.lower()}()->mutable_{param.name.lower()}(), {param.name});\n')
+                        f'  FillPNextChainToProto(request.mutable_{cmd_name.lower()}()->mutable_{param.name.lower()}(), {param.name});\n')
                     self.required_functions.add(
-                        f'FillPNextChain/{param.type}')
+                        f'FillPNextChainToProto/{param.type}')
 
                 after_call_code.append(
                     f'  {param.type}& {param.name}_ref = *{param.name};\n')
