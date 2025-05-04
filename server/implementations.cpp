@@ -62,6 +62,7 @@ void FillStructFromProto(VkDeviceQueueCreateInfo& original_struct, const vvk::se
 void FillStructFromProto(VkExtent2D& original_struct, const vvk::server::VkExtent2D& proto);
 void FillStructFromProto(VkExtent3D& original_struct, const vvk::server::VkExtent3D& proto);
 void FillStructFromProto(VkFenceCreateInfo& original_struct, const vvk::server::VkFenceCreateInfo& proto);
+void FillStructFromProto(VkFormatProperties& original_struct, const vvk::server::VkFormatProperties& proto);
 void FillStructFromProto(VkFramebufferCreateInfo& original_struct, const vvk::server::VkFramebufferCreateInfo& proto);
 void FillStructFromProto(VkGraphicsPipelineCreateInfo& original_struct, const vvk::server::VkGraphicsPipelineCreateInfo& proto);
 void FillStructFromProto(VkImageCreateInfo& original_struct, const vvk::server::VkImageCreateInfo& proto);
@@ -74,9 +75,19 @@ void FillStructFromProto(VkImageViewCreateInfo& original_struct, const vvk::serv
 void FillStructFromProto(VkInstanceCreateInfo& original_struct, const vvk::server::VkInstanceCreateInfo& proto);
 void FillStructFromProto(VkMemoryAllocateInfo& original_struct, const vvk::server::VkMemoryAllocateInfo& proto);
 void FillStructFromProto(VkMemoryBarrier& original_struct, const vvk::server::VkMemoryBarrier& proto);
+void FillStructFromProto(VkMemoryHeap& original_struct, const vvk::server::VkMemoryHeap& proto);
+void FillStructFromProto(VkMemoryRequirements& original_struct, const vvk::server::VkMemoryRequirements& proto);
+void FillStructFromProto(VkMemoryRequirements2& original_struct, const vvk::server::VkMemoryRequirements2& proto);
+void FillStructFromProto(VkMemoryType& original_struct, const vvk::server::VkMemoryType& proto);
 void FillStructFromProto(VkOffset2D& original_struct, const vvk::server::VkOffset2D& proto);
 void FillStructFromProto(VkOffset3D& original_struct, const vvk::server::VkOffset3D& proto);
 void FillStructFromProto(VkPhysicalDeviceFeatures& original_struct, const vvk::server::VkPhysicalDeviceFeatures& proto);
+void FillStructFromProto(VkPhysicalDeviceFeatures2& original_struct, const vvk::server::VkPhysicalDeviceFeatures2& proto);
+void FillStructFromProto(VkPhysicalDeviceLimits& original_struct, const vvk::server::VkPhysicalDeviceLimits& proto);
+void FillStructFromProto(VkPhysicalDeviceMemoryProperties& original_struct, const vvk::server::VkPhysicalDeviceMemoryProperties& proto);
+void FillStructFromProto(VkPhysicalDeviceProperties& original_struct, const vvk::server::VkPhysicalDeviceProperties& proto);
+void FillStructFromProto(VkPhysicalDeviceProperties2& original_struct, const vvk::server::VkPhysicalDeviceProperties2& proto);
+void FillStructFromProto(VkPhysicalDeviceSparseProperties& original_struct, const vvk::server::VkPhysicalDeviceSparseProperties& proto);
 void FillStructFromProto(VkPipelineColorBlendAttachmentState& original_struct, const vvk::server::VkPipelineColorBlendAttachmentState& proto);
 void FillStructFromProto(VkPipelineColorBlendStateCreateInfo& original_struct, const vvk::server::VkPipelineColorBlendStateCreateInfo& proto);
 void FillStructFromProto(VkPipelineDepthStencilStateCreateInfo& original_struct, const vvk::server::VkPipelineDepthStencilStateCreateInfo& proto);
@@ -101,6 +112,7 @@ void FillStructFromProto(VkStencilOpState& original_struct, const vvk::server::V
 void FillStructFromProto(VkSubmitInfo& original_struct, const vvk::server::VkSubmitInfo& proto);
 void FillStructFromProto(VkSubpassDependency& original_struct, const vvk::server::VkSubpassDependency& proto);
 void FillStructFromProto(VkSubpassDescription& original_struct, const vvk::server::VkSubpassDescription& proto);
+void FillStructFromProto(VkSubresourceLayout& original_struct, const vvk::server::VkSubresourceLayout& proto);
 void FillStructFromProto(VkVertexInputAttributeDescription& original_struct, const vvk::server::VkVertexInputAttributeDescription& proto);
 void FillStructFromProto(VkVertexInputBindingDescription& original_struct, const vvk::server::VkVertexInputBindingDescription& proto);
 void FillStructFromProto(VkViewport& original_struct, const vvk::server::VkViewport& proto);
@@ -1039,6 +1051,23 @@ void FillStructFromProto(VkFenceCreateInfo& original_struct, const vvk::server::
     original_struct.flags = VkFenceCreateFlags{};
   }
 }
+void FillStructFromProto(VkFormatProperties& original_struct, const vvk::server::VkFormatProperties& proto) {
+  if (proto.has_lineartilingfeatures()) {
+    original_struct.linearTilingFeatures = static_cast<VkFormatFeatureFlags>(proto.lineartilingfeatures());
+  } else {
+    original_struct.linearTilingFeatures = VkFormatFeatureFlags{};
+  }
+  if (proto.has_optimaltilingfeatures()) {
+    original_struct.optimalTilingFeatures = static_cast<VkFormatFeatureFlags>(proto.optimaltilingfeatures());
+  } else {
+    original_struct.optimalTilingFeatures = VkFormatFeatureFlags{};
+  }
+  if (proto.has_bufferfeatures()) {
+    original_struct.bufferFeatures = static_cast<VkFormatFeatureFlags>(proto.bufferfeatures());
+  } else {
+    original_struct.bufferFeatures = VkFormatFeatureFlags{};
+  }
+}
 void FillStructFromProto(VkFramebufferCreateInfo& original_struct, const vvk::server::VkFramebufferCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
   original_struct.pNext = nullptr; // pNext chains are currently unsupported
@@ -1300,6 +1329,33 @@ void FillStructFromProto(VkMemoryBarrier& original_struct, const vvk::server::Vk
     original_struct.dstAccessMask = VkAccessFlags{};
   }
 }
+void FillStructFromProto(VkMemoryHeap& original_struct, const vvk::server::VkMemoryHeap& proto) {
+  original_struct.size = static_cast<VkDeviceSize>(proto.size());
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkMemoryHeapFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkMemoryHeapFlags{};
+  }
+}
+void FillStructFromProto(VkMemoryRequirements& original_struct, const vvk::server::VkMemoryRequirements& proto) {
+  original_struct.size = static_cast<VkDeviceSize>(proto.size());
+  original_struct.alignment = static_cast<VkDeviceSize>(proto.alignment());
+  original_struct.memoryTypeBits = proto.memorytypebits();
+}
+void FillStructFromProto(VkMemoryRequirements2& original_struct, const vvk::server::VkMemoryRequirements2& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  VkMemoryRequirements &original_struct_memoryRequirements = original_struct.memoryRequirements;
+  FillStructFromProto(original_struct_memoryRequirements, proto.memoryrequirements());
+}
+void FillStructFromProto(VkMemoryType& original_struct, const vvk::server::VkMemoryType& proto) {
+  if (proto.has_propertyflags()) {
+    original_struct.propertyFlags = static_cast<VkMemoryPropertyFlags>(proto.propertyflags());
+  } else {
+    original_struct.propertyFlags = VkMemoryPropertyFlags{};
+  }
+  original_struct.heapIndex = proto.heapindex();
+}
 void FillStructFromProto(VkOffset2D& original_struct, const vvk::server::VkOffset2D& proto) {
   original_struct.x = proto.x();
   original_struct.y = proto.y();
@@ -1365,6 +1421,220 @@ void FillStructFromProto(VkPhysicalDeviceFeatures& original_struct, const vvk::s
   original_struct.sparseResidencyAliased = proto.sparseresidencyaliased();
   original_struct.variableMultisampleRate = proto.variablemultisamplerate();
   original_struct.inheritedQueries = proto.inheritedqueries();
+}
+void FillStructFromProto(VkPhysicalDeviceFeatures2& original_struct, const vvk::server::VkPhysicalDeviceFeatures2& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  VkPhysicalDeviceFeatures &original_struct_features = original_struct.features;
+  FillStructFromProto(original_struct_features, proto.features());
+}
+void FillStructFromProto(VkPhysicalDeviceLimits& original_struct, const vvk::server::VkPhysicalDeviceLimits& proto) {
+  original_struct.maxImageDimension1D = proto.maximagedimension1d();
+  original_struct.maxImageDimension2D = proto.maximagedimension2d();
+  original_struct.maxImageDimension3D = proto.maximagedimension3d();
+  original_struct.maxImageDimensionCube = proto.maximagedimensioncube();
+  original_struct.maxImageArrayLayers = proto.maximagearraylayers();
+  original_struct.maxTexelBufferElements = proto.maxtexelbufferelements();
+  original_struct.maxUniformBufferRange = proto.maxuniformbufferrange();
+  original_struct.maxStorageBufferRange = proto.maxstoragebufferrange();
+  original_struct.maxPushConstantsSize = proto.maxpushconstantssize();
+  original_struct.maxMemoryAllocationCount = proto.maxmemoryallocationcount();
+  original_struct.maxSamplerAllocationCount = proto.maxsamplerallocationcount();
+  original_struct.bufferImageGranularity = static_cast<VkDeviceSize>(proto.bufferimagegranularity());
+  original_struct.sparseAddressSpaceSize = static_cast<VkDeviceSize>(proto.sparseaddressspacesize());
+  original_struct.maxBoundDescriptorSets = proto.maxbounddescriptorsets();
+  original_struct.maxPerStageDescriptorSamplers = proto.maxperstagedescriptorsamplers();
+  original_struct.maxPerStageDescriptorUniformBuffers = proto.maxperstagedescriptoruniformbuffers();
+  original_struct.maxPerStageDescriptorStorageBuffers = proto.maxperstagedescriptorstoragebuffers();
+  original_struct.maxPerStageDescriptorSampledImages = proto.maxperstagedescriptorsampledimages();
+  original_struct.maxPerStageDescriptorStorageImages = proto.maxperstagedescriptorstorageimages();
+  original_struct.maxPerStageDescriptorInputAttachments = proto.maxperstagedescriptorinputattachments();
+  original_struct.maxPerStageResources = proto.maxperstageresources();
+  original_struct.maxDescriptorSetSamplers = proto.maxdescriptorsetsamplers();
+  original_struct.maxDescriptorSetUniformBuffers = proto.maxdescriptorsetuniformbuffers();
+  original_struct.maxDescriptorSetUniformBuffersDynamic = proto.maxdescriptorsetuniformbuffersdynamic();
+  original_struct.maxDescriptorSetStorageBuffers = proto.maxdescriptorsetstoragebuffers();
+  original_struct.maxDescriptorSetStorageBuffersDynamic = proto.maxdescriptorsetstoragebuffersdynamic();
+  original_struct.maxDescriptorSetSampledImages = proto.maxdescriptorsetsampledimages();
+  original_struct.maxDescriptorSetStorageImages = proto.maxdescriptorsetstorageimages();
+  original_struct.maxDescriptorSetInputAttachments = proto.maxdescriptorsetinputattachments();
+  original_struct.maxVertexInputAttributes = proto.maxvertexinputattributes();
+  original_struct.maxVertexInputBindings = proto.maxvertexinputbindings();
+  original_struct.maxVertexInputAttributeOffset = proto.maxvertexinputattributeoffset();
+  original_struct.maxVertexInputBindingStride = proto.maxvertexinputbindingstride();
+  original_struct.maxVertexOutputComponents = proto.maxvertexoutputcomponents();
+  original_struct.maxTessellationGenerationLevel = proto.maxtessellationgenerationlevel();
+  original_struct.maxTessellationPatchSize = proto.maxtessellationpatchsize();
+  original_struct.maxTessellationControlPerVertexInputComponents = proto.maxtessellationcontrolpervertexinputcomponents();
+  original_struct.maxTessellationControlPerVertexOutputComponents = proto.maxtessellationcontrolpervertexoutputcomponents();
+  original_struct.maxTessellationControlPerPatchOutputComponents = proto.maxtessellationcontrolperpatchoutputcomponents();
+  original_struct.maxTessellationControlTotalOutputComponents = proto.maxtessellationcontroltotaloutputcomponents();
+  original_struct.maxTessellationEvaluationInputComponents = proto.maxtessellationevaluationinputcomponents();
+  original_struct.maxTessellationEvaluationOutputComponents = proto.maxtessellationevaluationoutputcomponents();
+  original_struct.maxGeometryShaderInvocations = proto.maxgeometryshaderinvocations();
+  original_struct.maxGeometryInputComponents = proto.maxgeometryinputcomponents();
+  original_struct.maxGeometryOutputComponents = proto.maxgeometryoutputcomponents();
+  original_struct.maxGeometryOutputVertices = proto.maxgeometryoutputvertices();
+  original_struct.maxGeometryTotalOutputComponents = proto.maxgeometrytotaloutputcomponents();
+  original_struct.maxFragmentInputComponents = proto.maxfragmentinputcomponents();
+  original_struct.maxFragmentOutputAttachments = proto.maxfragmentoutputattachments();
+  original_struct.maxFragmentDualSrcAttachments = proto.maxfragmentdualsrcattachments();
+  original_struct.maxFragmentCombinedOutputResources = proto.maxfragmentcombinedoutputresources();
+  original_struct.maxComputeSharedMemorySize = proto.maxcomputesharedmemorysize();
+  // original_struct
+  const size_t original_struct_maxComputeWorkGroupCount_length = std::min(3, 3);
+  for (int maxComputeWorkGroupCount_indx = 0; maxComputeWorkGroupCount_indx < original_struct_maxComputeWorkGroupCount_length; maxComputeWorkGroupCount_indx++) {
+    original_struct.maxComputeWorkGroupCount[maxComputeWorkGroupCount_indx] = proto.maxcomputeworkgroupcount(maxComputeWorkGroupCount_indx);
+  }
+  original_struct.maxComputeWorkGroupInvocations = proto.maxcomputeworkgroupinvocations();
+  // original_struct
+  const size_t original_struct_maxComputeWorkGroupSize_length = std::min(3, 3);
+  for (int maxComputeWorkGroupSize_indx = 0; maxComputeWorkGroupSize_indx < original_struct_maxComputeWorkGroupSize_length; maxComputeWorkGroupSize_indx++) {
+    original_struct.maxComputeWorkGroupSize[maxComputeWorkGroupSize_indx] = proto.maxcomputeworkgroupsize(maxComputeWorkGroupSize_indx);
+  }
+  original_struct.subPixelPrecisionBits = proto.subpixelprecisionbits();
+  original_struct.subTexelPrecisionBits = proto.subtexelprecisionbits();
+  original_struct.mipmapPrecisionBits = proto.mipmapprecisionbits();
+  original_struct.maxDrawIndexedIndexValue = proto.maxdrawindexedindexvalue();
+  original_struct.maxDrawIndirectCount = proto.maxdrawindirectcount();
+  original_struct.maxSamplerLodBias = proto.maxsamplerlodbias();
+  original_struct.maxSamplerAnisotropy = proto.maxsampleranisotropy();
+  original_struct.maxViewports = proto.maxviewports();
+  // original_struct
+  const size_t original_struct_maxViewportDimensions_length = std::min(2, 2);
+  for (int maxViewportDimensions_indx = 0; maxViewportDimensions_indx < original_struct_maxViewportDimensions_length; maxViewportDimensions_indx++) {
+    original_struct.maxViewportDimensions[maxViewportDimensions_indx] = proto.maxviewportdimensions(maxViewportDimensions_indx);
+  }
+  // original_struct
+  const size_t original_struct_viewportBoundsRange_length = std::min(2, 2);
+  for (int viewportBoundsRange_indx = 0; viewportBoundsRange_indx < original_struct_viewportBoundsRange_length; viewportBoundsRange_indx++) {
+    original_struct.viewportBoundsRange[viewportBoundsRange_indx] = proto.viewportboundsrange(viewportBoundsRange_indx);
+  }
+  original_struct.viewportSubPixelBits = proto.viewportsubpixelbits();
+  original_struct.minMemoryMapAlignment = proto.minmemorymapalignment();
+  original_struct.minTexelBufferOffsetAlignment = static_cast<VkDeviceSize>(proto.mintexelbufferoffsetalignment());
+  original_struct.minUniformBufferOffsetAlignment = static_cast<VkDeviceSize>(proto.minuniformbufferoffsetalignment());
+  original_struct.minStorageBufferOffsetAlignment = static_cast<VkDeviceSize>(proto.minstoragebufferoffsetalignment());
+  original_struct.minTexelOffset = proto.mintexeloffset();
+  original_struct.maxTexelOffset = proto.maxtexeloffset();
+  original_struct.minTexelGatherOffset = proto.mintexelgatheroffset();
+  original_struct.maxTexelGatherOffset = proto.maxtexelgatheroffset();
+  original_struct.minInterpolationOffset = proto.mininterpolationoffset();
+  original_struct.maxInterpolationOffset = proto.maxinterpolationoffset();
+  original_struct.subPixelInterpolationOffsetBits = proto.subpixelinterpolationoffsetbits();
+  original_struct.maxFramebufferWidth = proto.maxframebufferwidth();
+  original_struct.maxFramebufferHeight = proto.maxframebufferheight();
+  original_struct.maxFramebufferLayers = proto.maxframebufferlayers();
+  if (proto.has_framebuffercolorsamplecounts()) {
+    original_struct.framebufferColorSampleCounts = static_cast<VkSampleCountFlags>(proto.framebuffercolorsamplecounts());
+  } else {
+    original_struct.framebufferColorSampleCounts = VkSampleCountFlags{};
+  }
+  if (proto.has_framebufferdepthsamplecounts()) {
+    original_struct.framebufferDepthSampleCounts = static_cast<VkSampleCountFlags>(proto.framebufferdepthsamplecounts());
+  } else {
+    original_struct.framebufferDepthSampleCounts = VkSampleCountFlags{};
+  }
+  if (proto.has_framebufferstencilsamplecounts()) {
+    original_struct.framebufferStencilSampleCounts = static_cast<VkSampleCountFlags>(proto.framebufferstencilsamplecounts());
+  } else {
+    original_struct.framebufferStencilSampleCounts = VkSampleCountFlags{};
+  }
+  if (proto.has_framebuffernoattachmentssamplecounts()) {
+    original_struct.framebufferNoAttachmentsSampleCounts = static_cast<VkSampleCountFlags>(proto.framebuffernoattachmentssamplecounts());
+  } else {
+    original_struct.framebufferNoAttachmentsSampleCounts = VkSampleCountFlags{};
+  }
+  original_struct.maxColorAttachments = proto.maxcolorattachments();
+  if (proto.has_sampledimagecolorsamplecounts()) {
+    original_struct.sampledImageColorSampleCounts = static_cast<VkSampleCountFlags>(proto.sampledimagecolorsamplecounts());
+  } else {
+    original_struct.sampledImageColorSampleCounts = VkSampleCountFlags{};
+  }
+  if (proto.has_sampledimageintegersamplecounts()) {
+    original_struct.sampledImageIntegerSampleCounts = static_cast<VkSampleCountFlags>(proto.sampledimageintegersamplecounts());
+  } else {
+    original_struct.sampledImageIntegerSampleCounts = VkSampleCountFlags{};
+  }
+  if (proto.has_sampledimagedepthsamplecounts()) {
+    original_struct.sampledImageDepthSampleCounts = static_cast<VkSampleCountFlags>(proto.sampledimagedepthsamplecounts());
+  } else {
+    original_struct.sampledImageDepthSampleCounts = VkSampleCountFlags{};
+  }
+  if (proto.has_sampledimagestencilsamplecounts()) {
+    original_struct.sampledImageStencilSampleCounts = static_cast<VkSampleCountFlags>(proto.sampledimagestencilsamplecounts());
+  } else {
+    original_struct.sampledImageStencilSampleCounts = VkSampleCountFlags{};
+  }
+  if (proto.has_storageimagesamplecounts()) {
+    original_struct.storageImageSampleCounts = static_cast<VkSampleCountFlags>(proto.storageimagesamplecounts());
+  } else {
+    original_struct.storageImageSampleCounts = VkSampleCountFlags{};
+  }
+  original_struct.maxSampleMaskWords = proto.maxsamplemaskwords();
+  original_struct.timestampComputeAndGraphics = proto.timestampcomputeandgraphics();
+  original_struct.timestampPeriod = proto.timestampperiod();
+  original_struct.maxClipDistances = proto.maxclipdistances();
+  original_struct.maxCullDistances = proto.maxculldistances();
+  original_struct.maxCombinedClipAndCullDistances = proto.maxcombinedclipandculldistances();
+  original_struct.discreteQueuePriorities = proto.discretequeuepriorities();
+  // original_struct
+  const size_t original_struct_pointSizeRange_length = std::min(2, 2);
+  for (int pointSizeRange_indx = 0; pointSizeRange_indx < original_struct_pointSizeRange_length; pointSizeRange_indx++) {
+    original_struct.pointSizeRange[pointSizeRange_indx] = proto.pointsizerange(pointSizeRange_indx);
+  }
+  // original_struct
+  const size_t original_struct_lineWidthRange_length = std::min(2, 2);
+  for (int lineWidthRange_indx = 0; lineWidthRange_indx < original_struct_lineWidthRange_length; lineWidthRange_indx++) {
+    original_struct.lineWidthRange[lineWidthRange_indx] = proto.linewidthrange(lineWidthRange_indx);
+  }
+  original_struct.pointSizeGranularity = proto.pointsizegranularity();
+  original_struct.lineWidthGranularity = proto.linewidthgranularity();
+  original_struct.strictLines = proto.strictlines();
+  original_struct.standardSampleLocations = proto.standardsamplelocations();
+  original_struct.optimalBufferCopyOffsetAlignment = static_cast<VkDeviceSize>(proto.optimalbuffercopyoffsetalignment());
+  original_struct.optimalBufferCopyRowPitchAlignment = static_cast<VkDeviceSize>(proto.optimalbuffercopyrowpitchalignment());
+  original_struct.nonCoherentAtomSize = static_cast<VkDeviceSize>(proto.noncoherentatomsize());
+}
+void FillStructFromProto(VkPhysicalDeviceMemoryProperties& original_struct, const vvk::server::VkPhysicalDeviceMemoryProperties& proto) {
+  original_struct.memoryTypeCount = proto.memorytypecount();
+  for (int memoryTypes_indx = 0; memoryTypes_indx < proto.memorytypes_size(); memoryTypes_indx++) {
+    FillStructFromProto(original_struct.memoryTypes[memoryTypes_indx], proto.memorytypes(memoryTypes_indx));
+  }
+  original_struct.memoryHeapCount = proto.memoryheapcount();
+  for (int memoryHeaps_indx = 0; memoryHeaps_indx < proto.memoryheaps_size(); memoryHeaps_indx++) {
+    FillStructFromProto(original_struct.memoryHeaps[memoryHeaps_indx], proto.memoryheaps(memoryHeaps_indx));
+  }
+}
+void FillStructFromProto(VkPhysicalDeviceProperties& original_struct, const vvk::server::VkPhysicalDeviceProperties& proto) {
+  original_struct.apiVersion = proto.apiversion();
+  original_struct.driverVersion = proto.driverversion();
+  original_struct.vendorID = proto.vendorid();
+  original_struct.deviceID = proto.deviceid();
+  original_struct.deviceType = static_cast<VkPhysicalDeviceType>(proto.devicetype());
+  strncpy(original_struct.deviceName, proto.devicename().c_str(), VK_MAX_PHYSICAL_DEVICE_NAME_SIZE);
+  // original_struct
+  const size_t original_struct_pipelineCacheUUID_length = std::min(VK_UUID_SIZE, VK_UUID_SIZE);
+  for (int pipelineCacheUUID_indx = 0; pipelineCacheUUID_indx < original_struct_pipelineCacheUUID_length; pipelineCacheUUID_indx++) {
+    original_struct.pipelineCacheUUID[pipelineCacheUUID_indx] = static_cast<uint8_t>(proto.pipelinecacheuuid(pipelineCacheUUID_indx));
+  }
+  VkPhysicalDeviceLimits &original_struct_limits = original_struct.limits;
+  FillStructFromProto(original_struct_limits, proto.limits());
+  VkPhysicalDeviceSparseProperties &original_struct_sparseProperties = original_struct.sparseProperties;
+  FillStructFromProto(original_struct_sparseProperties, proto.sparseproperties());
+}
+void FillStructFromProto(VkPhysicalDeviceProperties2& original_struct, const vvk::server::VkPhysicalDeviceProperties2& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+  original_struct.pNext = nullptr; // pNext chains are currently unsupported
+  VkPhysicalDeviceProperties &original_struct_properties = original_struct.properties;
+  FillStructFromProto(original_struct_properties, proto.properties());
+}
+void FillStructFromProto(VkPhysicalDeviceSparseProperties& original_struct, const vvk::server::VkPhysicalDeviceSparseProperties& proto) {
+  original_struct.residencyStandard2DBlockShape = proto.residencystandard2dblockshape();
+  original_struct.residencyStandard2DMultisampleBlockShape = proto.residencystandard2dmultisampleblockshape();
+  original_struct.residencyStandard3DBlockShape = proto.residencystandard3dblockshape();
+  original_struct.residencyAlignedMipSize = proto.residencyalignedmipsize();
+  original_struct.residencyNonResidentStrict = proto.residencynonresidentstrict();
 }
 void FillStructFromProto(VkPipelineColorBlendAttachmentState& original_struct, const vvk::server::VkPipelineColorBlendAttachmentState& proto) {
   original_struct.blendEnable = proto.blendenable();
@@ -1870,6 +2140,13 @@ void FillStructFromProto(VkSubpassDescription& original_struct, const vvk::serve
     original_struct_pPreserveAttachments[pPreserveAttachments_indx] = proto.ppreserveattachments(pPreserveAttachments_indx);
   }
 }
+void FillStructFromProto(VkSubresourceLayout& original_struct, const vvk::server::VkSubresourceLayout& proto) {
+  original_struct.offset = static_cast<VkDeviceSize>(proto.offset());
+  original_struct.size = static_cast<VkDeviceSize>(proto.size());
+  original_struct.rowPitch = static_cast<VkDeviceSize>(proto.rowpitch());
+  original_struct.arrayPitch = static_cast<VkDeviceSize>(proto.arraypitch());
+  original_struct.depthPitch = static_cast<VkDeviceSize>(proto.depthpitch());
+}
 void FillStructFromProto(VkVertexInputAttributeDescription& original_struct, const vvk::server::VkVertexInputAttributeDescription& proto) {
   original_struct.location = proto.location();
   original_struct.binding = proto.binding();
@@ -1938,6 +2215,7 @@ void UnpackAndExecuteVkGetPhysicalDeviceProperties(vvk::ExecutionContext& contex
   assert(request.method() == "vkGetPhysicalDeviceProperties");
 
   VkPhysicalDeviceProperties pProperties = {};
+  FillStructFromProto(pProperties, request.vkgetphysicaldeviceproperties().pproperties());
   vkGetPhysicalDeviceProperties(context.physical_device(), &pProperties);
   FillProtoFromStruct(response->mutable_vkgetphysicaldeviceproperties()->mutable_pproperties(), &pProperties);
   response->set_result(VK_SUCCESS);
@@ -1946,6 +2224,7 @@ void UnpackAndExecuteVkGetPhysicalDeviceFormatProperties(vvk::ExecutionContext& 
   assert(request.method() == "vkGetPhysicalDeviceFormatProperties");
 
   VkFormatProperties pFormatProperties = {};
+  FillStructFromProto(pFormatProperties, request.vkgetphysicaldeviceformatproperties().pformatproperties());
   vkGetPhysicalDeviceFormatProperties(context.physical_device(), static_cast<VkFormat>(request.vkgetphysicaldeviceformatproperties().format()), &pFormatProperties);
   FillProtoFromStruct(response->mutable_vkgetphysicaldeviceformatproperties()->mutable_pformatproperties(), &pFormatProperties);
   response->set_result(VK_SUCCESS);
@@ -2024,6 +2303,7 @@ void UnpackAndExecuteVkGetPhysicalDeviceMemoryProperties(vvk::ExecutionContext& 
   assert(request.method() == "vkGetPhysicalDeviceMemoryProperties");
 
   VkPhysicalDeviceMemoryProperties pMemoryProperties = {};
+  FillStructFromProto(pMemoryProperties, request.vkgetphysicaldevicememoryproperties().pmemoryproperties());
   vkGetPhysicalDeviceMemoryProperties(context.physical_device(), &pMemoryProperties);
   FillProtoFromStruct(response->mutable_vkgetphysicaldevicememoryproperties()->mutable_pmemoryproperties(), &pMemoryProperties);
   response->set_result(VK_SUCCESS);
@@ -2032,6 +2312,7 @@ void UnpackAndExecuteVkGetPhysicalDeviceFeatures(vvk::ExecutionContext& context,
   assert(request.method() == "vkGetPhysicalDeviceFeatures");
 
   VkPhysicalDeviceFeatures pFeatures = {};
+  FillStructFromProto(pFeatures, request.vkgetphysicaldevicefeatures().pfeatures());
   vkGetPhysicalDeviceFeatures(context.physical_device(), &pFeatures);
   FillProtoFromStruct(response->mutable_vkgetphysicaldevicefeatures()->mutable_pfeatures(), &pFeatures);
   response->set_result(VK_SUCCESS);
@@ -2155,6 +2436,7 @@ void UnpackAndExecuteVkGetImageMemoryRequirements(vvk::ExecutionContext& context
   assert(request.method() == "vkGetImageMemoryRequirements");
 
   VkMemoryRequirements pMemoryRequirements = {};
+  FillStructFromProto(pMemoryRequirements, request.vkgetimagememoryrequirements().pmemoryrequirements());
   vkGetImageMemoryRequirements(reinterpret_cast<VkDevice>(request.vkgetimagememoryrequirements().device()), reinterpret_cast<VkImage>(request.vkgetimagememoryrequirements().image()), &pMemoryRequirements);
   FillProtoFromStruct(response->mutable_vkgetimagememoryrequirements()->mutable_pmemoryrequirements(), &pMemoryRequirements);
   response->set_result(VK_SUCCESS);
@@ -2165,7 +2447,7 @@ void UnpackAndExecuteVkGetImageMemoryRequirements2(vvk::ExecutionContext& contex
   VkImageMemoryRequirementsInfo2 pInfo = {};
   FillStructFromProto(pInfo, request.vkgetimagememoryrequirements2().pinfo());
   VkMemoryRequirements2 pMemoryRequirements = {};
-  pMemoryRequirements.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
+  FillStructFromProto(pMemoryRequirements, request.vkgetimagememoryrequirements2().pmemoryrequirements());
   vkGetImageMemoryRequirements2(reinterpret_cast<VkDevice>(request.vkgetimagememoryrequirements2().device()), &pInfo, &pMemoryRequirements);
   FillProtoFromStruct(response->mutable_vkgetimagememoryrequirements2()->mutable_pmemoryrequirements(), &pMemoryRequirements);
   response->set_result(VK_SUCCESS);
@@ -2246,6 +2528,7 @@ void UnpackAndExecuteVkGetImageSubresourceLayout(vvk::ExecutionContext& context,
   VkImageSubresource pSubresource = {};
   FillStructFromProto(pSubresource, request.vkgetimagesubresourcelayout().psubresource());
   VkSubresourceLayout pLayout = {};
+  FillStructFromProto(pLayout, request.vkgetimagesubresourcelayout().playout());
   vkGetImageSubresourceLayout(reinterpret_cast<VkDevice>(request.vkgetimagesubresourcelayout().device()), reinterpret_cast<VkImage>(request.vkgetimagesubresourcelayout().image()), &pSubresource, &pLayout);
   FillProtoFromStruct(response->mutable_vkgetimagesubresourcelayout()->mutable_playout(), &pLayout);
   response->set_result(VK_SUCCESS);
@@ -2531,7 +2814,7 @@ void UnpackAndExecuteVkGetPhysicalDeviceProperties2(vvk::ExecutionContext& conte
   assert(request.method() == "vkGetPhysicalDeviceProperties2");
 
   VkPhysicalDeviceProperties2 pProperties = {};
-  pProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+  FillStructFromProto(pProperties, request.vkgetphysicaldeviceproperties2().pproperties());
   vkGetPhysicalDeviceProperties2(context.physical_device(), &pProperties);
   FillProtoFromStruct(response->mutable_vkgetphysicaldeviceproperties2()->mutable_pproperties(), &pProperties);
   response->set_result(VK_SUCCESS);
@@ -2540,7 +2823,7 @@ void UnpackAndExecuteVkGetPhysicalDeviceFeatures2(vvk::ExecutionContext& context
   assert(request.method() == "vkGetPhysicalDeviceFeatures2");
 
   VkPhysicalDeviceFeatures2 pFeatures = {};
-  pFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+  FillStructFromProto(pFeatures, request.vkgetphysicaldevicefeatures2().pfeatures());
   vkGetPhysicalDeviceFeatures2(context.physical_device(), &pFeatures);
   FillProtoFromStruct(response->mutable_vkgetphysicaldevicefeatures2()->mutable_pfeatures(), &pFeatures);
   response->set_result(VK_SUCCESS);

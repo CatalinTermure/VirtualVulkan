@@ -158,10 +158,10 @@ class ServerSrcGenerator(VvkGenerator):
                         actual_parameters.append(f'&{param.name}')
 
                         out.append(f'  {param.type} {param.name} = {{}};\n')
-                        struct_type = self.vk.structs[param.type]
-                        if struct_type.sType is not None:
-                            out.append(
-                                f'  {param.name}.sType = {self.vk.structs[param.type].sType};\n')
+                        out.append(
+                            f'  FillStructFromProto({param.name}, {param_accessor}.{param.name.lower()}());\n')
+                        self.required_functions.add(
+                            f'FillStructFromProto/{param.type}')
 
                         after_call_code.append(
                             f'  FillProtoFromStruct(response->mutable_{cmd_name.lower()}()->mutable_{param.name.lower()}(), &{param.name});\n')
