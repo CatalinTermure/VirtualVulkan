@@ -54,19 +54,25 @@ T* FindLayerLinkInfo(const void* p_next_chain) {
   return const_cast<T*>(layer_info);
 }
 
-void RemoveStructsFromChain(VkBaseInStructure* base_struct, VkStructureType sType) {
-  VkBaseInStructure* next_struct = const_cast<VkBaseInStructure*>(base_struct->pNext);
-  VkBaseInStructure* curr_struct = base_struct;
+void RemoveStructsFromChain(VkBaseOutStructure* base_struct, VkStructureType sType) {
+  VkBaseOutStructure* next_struct = base_struct->pNext;
+  VkBaseOutStructure* curr_struct = base_struct;
   while (next_struct) {
     spdlog::trace("next_struct->sType: {}", static_cast<int>(next_struct->sType));
     if (next_struct->sType == sType) {
       curr_struct->pNext = next_struct->pNext;
-      next_struct = const_cast<VkBaseInStructure*>(next_struct->pNext);
+      next_struct = next_struct->pNext;
     } else {
       curr_struct = next_struct;
-      next_struct = const_cast<VkBaseInStructure*>(next_struct->pNext);
+      next_struct = next_struct->pNext;
     }
   }
+}
+
+void AddStructToChain(VkBaseOutStructure* base_struct, VkBaseOutStructure* new_struct) {
+  VkBaseOutStructure* next_struct = base_struct->pNext;
+  base_struct->pNext = new_struct;
+  new_struct->pNext = next_struct;
 }
 
 void* AllocateHandle() {
@@ -390,7 +396,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
     // the loader seems to insert these structs at the beginning of the pNext chain
     // so we can remove it by copying the instance create info and skipping the loader instance create info structs
     VkInstanceCreateInfo remote_create_info = *pCreateInfo;
-    RemoveStructsFromChain(reinterpret_cast<VkBaseInStructure*>(&remote_create_info),
+    RemoveStructsFromChain(reinterpret_cast<VkBaseOutStructure*>(&remote_create_info),
                            VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO);
 
     auto& reader_writer = instance_info.command_stream();
@@ -592,9 +598,18 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 
   {
     VkDeviceCreateInfo remote_create_info = *pCreateInfo;
-    RemoveStructsFromChain(reinterpret_cast<VkBaseInStructure*>(&remote_create_info),
+    RemoveStructsFromChain(reinterpret_cast<VkBaseOutStructure*>(&remote_create_info),
                            VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO);
     VkDevice remote_device = *pDevice;
+
+    VkPhysicalDeviceTimelineSemaphoreFeatures timeline_semaphore_features = {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES,
+        .pNext = nullptr,
+        .timelineSemaphore = VK_TRUE,
+    };
+
+    AddStructToChain(reinterpret_cast<VkBaseOutStructure*>(&remote_create_info),
+                     reinterpret_cast<VkBaseOutStructure*>(&timeline_semaphore_features));
 
     PackAndCallVkCreateDevice(instance_info.command_stream(), physicalDevice, &remote_create_info, pAllocator,
                               &remote_device);
