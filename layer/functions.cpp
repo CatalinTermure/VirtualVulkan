@@ -396,6 +396,9 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
     VkInstanceCreateInfo remote_create_info = *pCreateInfo;
     RemoveStructsFromChain(reinterpret_cast<VkBaseOutStructure*>(&remote_create_info),
                            VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO);
+    VkApplicationInfo remote_app_info = *pCreateInfo->pApplicationInfo;
+    remote_app_info.apiVersion = std::max(remote_app_info.apiVersion, VK_API_VERSION_1_2);
+    remote_create_info.pApplicationInfo = &remote_app_info;
 
     auto& reader_writer = instance_info.command_stream();
 
@@ -599,7 +602,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     RemoveStructsFromChain(reinterpret_cast<VkBaseOutStructure*>(&remote_create_info),
                            VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO);
     VkDevice remote_device = *pDevice;
-
+    // TODO: check if pNext chain contains VkPhysicalDevice12Features
     VkPhysicalDeviceTimelineSemaphoreFeatures timeline_semaphore_features = {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES,
         .pNext = nullptr,
