@@ -24,8 +24,8 @@ enum class SemaphoreState {
 struct VkSemaphore_T {
   VkSemaphore local_handle = VK_NULL_HANDLE;
   VkSemaphore remote_handle = VK_NULL_HANDLE;
+  VkSemaphore remote_timeline_semaphore = VK_NULL_HANDLE;
   std::binary_semaphore remote_to_local_semaphore{0};
-  VkFence remote_fence = VK_NULL_HANDLE;
   SemaphoreState state = SemaphoreState::kUnsignaled;
 };
 
@@ -242,8 +242,6 @@ VKAPI_ATTR VkResult VKAPI_CALL QueuePresentKHR(VkQueue queue, const VkPresentInf
   std::vector<std::binary_semaphore*> remote_semaphores_to_wait;
   std::vector<VkSwapchainKHR> swapchains;
   std::vector<uint32_t> image_indices;
-
-  // TODO: send image data from remote server
 
   VkPresentInfoKHR present_info = *pPresentInfo;
   for (uint32_t i = 0; i < pPresentInfo->waitSemaphoreCount; i++) {
@@ -748,23 +746,40 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphor
       .pNext = nullptr,
       .flags = 0,
   };
-  result = PackAndCallVkCreateFence(instance_info.command_stream(), instance_info.GetRemoteHandle(device),
-                                    &fence_create_info, pAllocator, &(*pSemaphore)->remote_fence);
-  if (result != VK_SUCCESS) {
-    device_info.dispatch_table().DestroySemaphore(device, (*pSemaphore)->local_handle, pAllocator);
-    return result;
-  }
   VkSemaphore remote_semaphore = VK_NULL_HANDLE;
   result = PackAndCallVkCreateSemaphore(device_info.instance_info().command_stream(),
                                         device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator,
                                         &remote_semaphore);
   if (result != VK_SUCCESS) {
     device_info.dispatch_table().DestroySemaphore(device, (*pSemaphore)->local_handle, pAllocator);
-    PackAndCallVkDestroyFence(instance_info.command_stream(), instance_info.GetRemoteHandle(device),
-                              (*pSemaphore)->remote_fence, pAllocator);
     return result;
   }
+  VkSemaphore remote_timeline_semaphore = VK_NULL_HANDLE;
+  {
+    VkSemaphoreTypeCreateInfo timeline_semaphore_type_create_info = {
+        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
+        .pNext = nullptr,
+        .semaphoreType = VK_SEMAPHORE_TYPE_TIMELINE,
+        .initialValue = 0,
+    };
+    VkSemaphoreCreateInfo timeline_semaphore_create_info = {
+        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+        .pNext = &timeline_semaphore_type_create_info,
+        .flags = 0,
+    };
+
+    result = PackAndCallVkCreateSemaphore(device_info.instance_info().command_stream(),
+                                          device_info.instance_info().GetRemoteHandle(device),
+                                          &timeline_semaphore_create_info, pAllocator, &remote_timeline_semaphore);
+    if (result != VK_SUCCESS) {
+      device_info.dispatch_table().DestroySemaphore(device, (*pSemaphore)->local_handle, pAllocator);
+      PackAndCallVkDestroySemaphore(instance_info.command_stream(), instance_info.GetRemoteHandle(device),
+                                    remote_semaphore, pAllocator);
+      return result;
+    }
+  }
   (*pSemaphore)->remote_handle = remote_semaphore;
+  (*pSemaphore)->remote_timeline_semaphore = remote_timeline_semaphore;
   (*pSemaphore)->state = SemaphoreState::kUnsignaled;
   return result;
 }
@@ -774,10 +789,10 @@ VKAPI_ATTR void VKAPI_CALL DestroySemaphore(VkDevice device, VkSemaphore semapho
   DeviceInfo& device_info = GetDeviceInfo(device);
   InstanceInfo& instance_info = device_info.instance_info();
   device_info.dispatch_table().DestroySemaphore(device, semaphore->local_handle, pAllocator);
-  PackAndCallVkDestroyFence(instance_info.command_stream(), instance_info.GetRemoteHandle(device),
-                            semaphore->remote_fence, pAllocator);
   PackAndCallVkDestroySemaphore(instance_info.command_stream(), instance_info.GetRemoteHandle(device),
                                 semaphore->remote_handle, pAllocator);
+  PackAndCallVkDestroySemaphore(instance_info.command_stream(), instance_info.GetRemoteHandle(device),
+                                semaphore->remote_timeline_semaphore, pAllocator);
   delete semaphore;
 }
 
