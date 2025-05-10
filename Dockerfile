@@ -35,3 +35,4 @@ RUN cmake -S . -B build/
 RUN cmake --build build/
 
 EXPOSE 50051
+CMD [ "/src/build/server/VirtualVulkanServer" ]
