@@ -1298,6 +1298,10 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
           if (result != VK_SUCCESS) {
             throw std::runtime_error("Failed to wait for remote fence");
           }
+          result = PackAndCallVkResetFences(command_stream, remote_device, 1, &remote_fence);
+          if (result != VK_SUCCESS) {
+            throw std::runtime_error("Failed to reset remote fences");
+          }
           spdlog::info("VkQueueSubmit: Finished waiting for remote fence");
           dispatch_table.QueueSubmit(present_queue, 0, nullptr, local_fence);
           for (auto* semaphore : semaphores_to_signal) {
