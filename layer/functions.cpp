@@ -236,8 +236,16 @@ VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(VkDevice device, VkSwapchainK
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL QueuePresentKHR(VkQueue queue, const VkPresentInfoKHR* pPresentInfo) {
+  DeviceInfo& device_info = GetDeviceInfo(queue);
+  VkFence aux_fence = device_info.fence_pool().GetFence();
+  VkQueue local_queue = *device_info.present_queue();
+  VkDevice local_device = GetDeviceForQueue(queue);
+  PresentationThread& presentation_thread = *device_info.presentation_thread();
+  InstanceInfo& instance_info = device_info.instance_info();
+  const VkuDeviceDispatchTable& dispatch_table = device_info.dispatch_table();
+
   std::vector<VkSemaphore> local_semaphores_to_wait;
-  std::vector<std::binary_semaphore*> remote_semaphores_to_wait;
+  std::vector<VkSemaphore> remote_semaphores_to_wait;
   std::vector<VkSwapchainKHR> swapchains;
   std::vector<uint32_t> image_indices;
 
@@ -245,7 +253,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueuePresentKHR(VkQueue queue, const VkPresentInf
   for (uint32_t i = 0; i < pPresentInfo->waitSemaphoreCount; i++) {
     VkSemaphore semaphore = pPresentInfo->pWaitSemaphores[i];
     if (semaphore->state == SemaphoreState::kToBeSignaledRemote) {
-      remote_semaphores_to_wait.push_back(&semaphore->remote_to_local_semaphore);
+      remote_semaphores_to_wait.push_back(semaphore);
       semaphore->state = SemaphoreState::kUnsignaled;
     } else if (semaphore->state == SemaphoreState::kToBeSignaledLocal) {
       local_semaphores_to_wait.push_back(semaphore->local_handle);
@@ -269,16 +277,25 @@ VKAPI_ATTR VkResult VKAPI_CALL QueuePresentKHR(VkQueue queue, const VkPresentInf
   }
 
   for (auto* semaphore : remote_semaphores_to_wait) {
-    semaphore->acquire();
+    semaphore->remote_to_local_semaphore.acquire();
+    // Unsignal the semaphore on the remote side
+    {
+      VkPipelineStageFlags wait_dst_stage_mask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+      VkSubmitInfo submit = {
+          .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+          .pNext = nullptr,
+          .waitSemaphoreCount = 1,
+          .pWaitSemaphores = &semaphore->remote_handle,
+          .pWaitDstStageMask = &wait_dst_stage_mask,
+          .commandBufferCount = 0,
+          .pCommandBuffers = nullptr,
+          .signalSemaphoreCount = 0,
+          .pSignalSemaphores = nullptr,
+      };
+      PackAndCallVkQueueSubmit(instance_info.command_stream(), device_info.GetRemoteHandle(queue), 1, &submit, nullptr);
+    }
   }
 
-  DeviceInfo& device_info = GetDeviceInfo(queue);
-  VkFence aux_fence = device_info.fence_pool().GetFence();
-  VkQueue local_queue = *device_info.present_queue();
-  VkDevice local_device = GetDeviceForQueue(queue);
-  PresentationThread& presentation_thread = *device_info.presentation_thread();
-  InstanceInfo& instance_info = device_info.instance_info();
-  const VkuDeviceDispatchTable& dispatch_table = device_info.dispatch_table();
   std::vector<grpc::ClientContext> client_contexts(present_info.swapchainCount);
   std::vector<std::unique_ptr<grpc::ClientReader<vvk::server::VvkGetFrameResponse>>> client_readers;
   client_readers.reserve(present_info.swapchainCount);
