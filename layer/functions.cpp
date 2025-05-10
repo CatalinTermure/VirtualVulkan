@@ -402,8 +402,8 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
 
   VkResult result = nxtCreateInstance(pCreateInfo, pAllocator, pInstance);
 
-  InstanceInfo& instance_info =
-      SetInstanceInfo(*pInstance, nxt_gipa, grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials()));
+  InstanceInfo& instance_info = SetInstanceInfo(
+      *pInstance, nxt_gipa, grpc::CreateChannel(std::getenv("VVK_TARGET_SERVER"), grpc::InsecureChannelCredentials()));
 
   // call remote create instance
   {
