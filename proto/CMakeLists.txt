@@ -1,5 +1,12 @@
-find_package(Protobuf CONFIG REQUIRED)
-find_package(gRPC CONFIG REQUIRED)
+find_library (UPB_LIBRARIES NAMES upb)
+if (UPB_LIBRARIES)
+    add_library(protobuf::libupb STATIC IMPORTED)
+    add_executable(protobuf::protoc-gen-upb IMPORTED)
+    add_executable(protobuf::protoc-gen-upbdefs IMPORTED)
+    add_executable(protobuf::protoc-gen-upb_minitable IMPORTED)
+endif()
+find_package(Protobuf REQUIRED)
+find_package(gRPC REQUIRED)
 
 set(PROTO_FILES vvk_server.proto vvk_types.proto vvk_presentation.proto)
 
