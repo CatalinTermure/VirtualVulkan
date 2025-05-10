@@ -1190,6 +1190,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
   if (fence == VK_NULL_HANDLE) {
     throw std::runtime_error("QueueSubmit with fence == VK_NULL_HANDLE is not supported");
   }
+  device_info.SetFenceLocal(fence);
 
   std::vector<VkSemaphore> semaphores_to_wait_local;
   semaphores_to_wait_local.reserve(submitCount);  // not the exact size but it's a good guess
