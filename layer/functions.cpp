@@ -7,6 +7,7 @@
 #include <vulkan/vk_layer.h>
 
 #include <cassert>
+#include <cstdlib>
 #include <optional>
 #include <vector>
 
@@ -35,6 +36,14 @@ namespace {
 constexpr uint64_t kVkQueueSubmitLocalSemaphoreTimeout = UINT64_MAX - 2;
 constexpr uint64_t kVkQueueSubmitRemoteSemaphoreTimeout = UINT64_MAX - 3;
 constexpr uint64_t kVkQueuePresentFenceTimeout = UINT64_MAX - 4;
+
+const std::unordered_set<std::string> kAllowedExtensions = {
+    VK_KHR_SURFACE_EXTENSION_NAME,
+};
+
+const std::unordered_set<std::string> kAllowedLayers = {
+    "VK_LAYER_KHRONOS_validation",
+};
 
 template <typename T, VkStructureType sType>
 T* FindLayerLinkInfo(const void* p_next_chain) {
@@ -402,8 +411,14 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
 
   VkResult result = nxtCreateInstance(pCreateInfo, pAllocator, pInstance);
 
-  InstanceInfo& instance_info = SetInstanceInfo(
-      *pInstance, nxt_gipa, grpc::CreateChannel(std::getenv("VVK_TARGET_SERVER"), grpc::InsecureChannelCredentials()));
+  std::string server_address = std::getenv("VVK_TARGET_SERVER");
+  if (server_address.empty()) {
+    spdlog::error("VVK_TARGET_SERVER environment variable not set");
+    return VK_ERROR_INITIALIZATION_FAILED;
+  }
+  spdlog::info("Connecting to server at {}", server_address);
+  InstanceInfo& instance_info =
+      SetInstanceInfo(*pInstance, nxt_gipa, grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()));
 
   // call remote create instance
   {
@@ -416,6 +431,24 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
     VkApplicationInfo remote_app_info = *pCreateInfo->pApplicationInfo;
     remote_app_info.apiVersion = std::max(remote_app_info.apiVersion, VK_API_VERSION_1_2);
     remote_create_info.pApplicationInfo = &remote_app_info;
+
+    std::vector<const char*> enabled_extensions;
+    for (uint32_t i = 0; i < remote_create_info.enabledExtensionCount; i++) {
+      if (kAllowedExtensions.contains(remote_create_info.ppEnabledExtensionNames[i])) {
+        enabled_extensions.push_back(remote_create_info.ppEnabledExtensionNames[i]);
+      }
+    }
+    remote_create_info.enabledExtensionCount = enabled_extensions.size();
+    remote_create_info.ppEnabledExtensionNames = enabled_extensions.data();
+
+    std::vector<const char*> enabled_layers;
+    for (uint32_t i = 0; i < remote_create_info.enabledLayerCount; i++) {
+      if (kAllowedLayers.contains(remote_create_info.ppEnabledLayerNames[i])) {
+        enabled_layers.push_back(remote_create_info.ppEnabledLayerNames[i]);
+      }
+    }
+    remote_create_info.enabledLayerCount = enabled_layers.size();
+    remote_create_info.ppEnabledLayerNames = enabled_layers.data();
 
     auto& reader_writer = instance_info.command_stream();
 

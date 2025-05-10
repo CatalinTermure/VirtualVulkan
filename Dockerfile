@@ -11,7 +11,7 @@ RUN apt-get update && \
   # dependencies for VirtualVulkan
   protobuf-compiler-grpc libgrpc++-dev libspdlog-dev libvulkan-memory-allocator-dev \
   # misc
-  vulkan-tools mesa-utils
+  vulkan-tools mesa-utils vulkan-validationlayers
 
 COPY Vulkan-Headers /src/Vulkan-Headers
 WORKDIR /src/Vulkan-Headers
