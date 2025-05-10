@@ -4001,6 +4001,11 @@ message VkTimelineSemaphoreSubmitInfo {
   repeated uint64 pSignalSemaphoreValues = 4; // const uint64_t* pSignalSemaphoreValues
 }
 
+message VkSemaphoreSignalInfo {
+  uint64 semaphore = 1; // VkSemaphore semaphore
+  uint64 value = 2; // uint64_t value
+}
+
 message VkPhysicalDeviceVulkan13Features {
   bool robustImageAccess = 1; // VkBool32 robustImageAccess
   bool inlineUniformBlock = 2; // VkBool32 inlineUniformBlock

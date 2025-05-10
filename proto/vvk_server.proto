@@ -80,6 +80,7 @@ message VvkRequest {
     VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 60;
     VkGetPhysicalDeviceFeatures2Params vkGetPhysicalDeviceFeatures2 = 61;
     VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 62;
+    VkSignalSemaphoreParams vkSignalSemaphore = 63;
   }
 }
 
@@ -612,6 +613,11 @@ message VkGetPhysicalDeviceProperties2Response {
 message VkGetPhysicalDeviceProperties2Params {
   uint64 physicalDevice = 1; // VkPhysicalDevice physicalDevice
   VkPhysicalDeviceProperties2 pProperties = 2; // VkPhysicalDeviceProperties2* pProperties NON-CONST POINTER
+}
+
+message VkSignalSemaphoreParams {
+  uint64 device = 1; // VkDevice device
+  VkSemaphoreSignalInfo pSignalInfo = 2; // const VkSemaphoreSignalInfo* pSignalInfo
 }
 
 

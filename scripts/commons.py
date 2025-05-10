@@ -92,6 +92,7 @@ COMMANDS_TO_GENERATE = [
     "vkCmdCopyImageToBuffer",
     "vkGetPhysicalDeviceProperties2",
     "vkGetPhysicalDeviceFeatures2",
+    "vkSignalSemaphore",
 ]
 
 TRIVIAL_TYPES: dict[str, TypeInfo] = {

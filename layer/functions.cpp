@@ -1360,4 +1360,12 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceFeatures2(VkPhysicalDevice physicalD
   PackAndCallVkGetPhysicalDeviceFeatures2(instance_info.command_stream(), physicalDevice, pFeatures);
 }
 
+VKAPI_ATTR VkResult VKAPI_CALL SignalSemaphore(VkDevice device, const VkSemaphoreSignalInfo* pSignalInfo) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  VkSemaphoreSignalInfo signal_info = *pSignalInfo;
+  signal_info.semaphore = signal_info.semaphore->remote_handle;
+  return PackAndCallVkSignalSemaphore(device_info.instance_info().command_stream(),
+                                      device_info.instance_info().GetRemoteHandle(device), &signal_info);
+}
+
 }  // namespace vvk

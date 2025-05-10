@@ -89,6 +89,7 @@ void FillProtoFromStruct(vvk::server::VkRect2D* proto, const VkRect2D* original_
 void FillProtoFromStruct(vvk::server::VkRenderPassBeginInfo* proto, const VkRenderPassBeginInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkRenderPassCreateInfo* proto, const VkRenderPassCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkSemaphoreCreateInfo* proto, const VkSemaphoreCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkSemaphoreSignalInfo* proto, const VkSemaphoreSignalInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkSemaphoreTypeCreateInfo* proto, const VkSemaphoreTypeCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkShaderModuleCreateInfo* proto, const VkShaderModuleCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkSpecializationInfo* proto, const VkSpecializationInfo* original_struct);
@@ -1512,6 +1513,13 @@ void FillProtoFromStruct(vvk::server::VkSemaphoreCreateInfo* proto, const VkSema
   if (original_struct->flags) {
     proto->set_flags(original_struct->flags);
   }
+}
+void FillProtoFromStruct(vvk::server::VkSemaphoreSignalInfo* proto, const VkSemaphoreSignalInfo* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_semaphore(reinterpret_cast<uint64_t>(original_struct->semaphore));
+  proto->set_value(original_struct->value);
 }
 void FillProtoFromStruct(vvk::server::VkSemaphoreTypeCreateInfo* proto, const VkSemaphoreTypeCreateInfo* original_struct) {
   if (original_struct->pNext) {
@@ -3600,6 +3608,22 @@ void PackAndCallVkGetPhysicalDeviceFeatures2(VvkCommandClientBidiStream& stream,
   base->pNext = nullptr;
   VkPhysicalDeviceFeatures &pFeatures_ref_features = pFeatures_ref.features;
   FillStructFromProto(pFeatures_ref_features, response.vkgetphysicaldevicefeatures2().pfeatures().features());
+}
+VkResult PackAndCallVkSignalSemaphore(VvkCommandClientBidiStream& stream, VkDevice device, const VkSemaphoreSignalInfo* pSignalInfo) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkSignalSemaphore");
+  request.mutable_vksignalsemaphore()->set_device(reinterpret_cast<uint64_t>(device));
+  FillProtoFromStruct(request.mutable_vksignalsemaphore()->mutable_psignalinfo(), pSignalInfo);
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  return static_cast<VkResult>(response.result());
 }
 }  // namespace vvk
 

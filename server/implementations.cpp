@@ -106,6 +106,7 @@ void FillStructFromProto(VkRect2D& original_struct, const vvk::server::VkRect2D&
 void FillStructFromProto(VkRenderPassBeginInfo& original_struct, const vvk::server::VkRenderPassBeginInfo& proto);
 void FillStructFromProto(VkRenderPassCreateInfo& original_struct, const vvk::server::VkRenderPassCreateInfo& proto);
 void FillStructFromProto(VkSemaphoreCreateInfo& original_struct, const vvk::server::VkSemaphoreCreateInfo& proto);
+void FillStructFromProto(VkSemaphoreSignalInfo& original_struct, const vvk::server::VkSemaphoreSignalInfo& proto);
 void FillStructFromProto(VkShaderModuleCreateInfo& original_struct, const vvk::server::VkShaderModuleCreateInfo& proto);
 void FillStructFromProto(VkSpecializationInfo& original_struct, const vvk::server::VkSpecializationInfo& proto);
 void FillStructFromProto(VkSpecializationMapEntry& original_struct, const vvk::server::VkSpecializationMapEntry& proto);
@@ -2105,6 +2106,12 @@ void FillStructFromProto(VkSemaphoreCreateInfo& original_struct, const vvk::serv
     original_struct.flags = VkSemaphoreCreateFlags{};
   }
 }
+void FillStructFromProto(VkSemaphoreSignalInfo& original_struct, const vvk::server::VkSemaphoreSignalInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO;
+  original_struct.pNext = nullptr;  // Empty pNext chain
+  original_struct.semaphore = reinterpret_cast<VkSemaphore>(proto.semaphore());
+  original_struct.value = proto.value();
+}
 void FillStructFromProto(VkShaderModuleCreateInfo& original_struct, const vvk::server::VkShaderModuleCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   original_struct.pNext = nullptr;  // Empty pNext chain
@@ -3340,5 +3347,13 @@ void UnpackAndExecuteVkGetPhysicalDeviceFeatures2(vvk::ExecutionContext& context
   vkGetPhysicalDeviceFeatures2(context.physical_device(), &pFeatures);
   FillProtoFromStruct(response->mutable_vkgetphysicaldevicefeatures2()->mutable_pfeatures(), &pFeatures);
   response->set_result(VK_SUCCESS);
+}
+void UnpackAndExecuteVkSignalSemaphore(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkSignalSemaphore");
+
+  VkSemaphoreSignalInfo pSignalInfo = {};
+  FillStructFromProto(pSignalInfo, request.vksignalsemaphore().psignalinfo());
+  VkResult result = vkSignalSemaphore(reinterpret_cast<VkDevice>(request.vksignalsemaphore().device()), &pSignalInfo);
+  response->set_result(result);
 }
 

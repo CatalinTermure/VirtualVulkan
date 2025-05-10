@@ -73,6 +73,7 @@ const std::unordered_map<
         {"vkCmdCopyImageToBuffer", UnpackAndExecuteVkCmdCopyImageToBuffer},
         {"vkGetPhysicalDeviceProperties2", UnpackAndExecuteVkGetPhysicalDeviceProperties2},
         {"vkGetPhysicalDeviceFeatures2", UnpackAndExecuteVkGetPhysicalDeviceFeatures2},
+        {"vkSignalSemaphore", UnpackAndExecuteVkSignalSemaphore},
 };
 
 }  // namespace
