@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "layer/context/fence_pool.h"
 #include "layer/context/instance.h"
 #include "layer/dispatchable_object.h"
 #include "layer/presentation.h"
@@ -53,6 +54,7 @@ struct DeviceInfo {
   std::optional<uint32_t> present_queue_family_index() const { return present_queue_family_index_; }
   std::optional<VkQueue> present_queue() const { return present_queue_; }
   PresentationThread* presentation_thread() { return presentation_thread_.get(); }
+  FencePool& fence_pool() { return fence_pool_; }
 
   void CreateFakeQueueFamily(uint32_t queue_family_index, uint32_t queue_count);
   VkQueue GetFakeQueue(uint32_t queue_family_index, uint32_t queue_index);
@@ -74,6 +76,7 @@ struct DeviceInfo {
   std::optional<VkQueue> present_queue_ = std::nullopt;
   std::unordered_map<uint32_t, std::list<DispatchableObject>> fake_queue_families_;
   std::unique_ptr<PresentationThread> presentation_thread_;
+  FencePool fence_pool_;
 };
 
 DeviceInfo& GetDeviceInfo(VkDevice device);

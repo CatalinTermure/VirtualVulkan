@@ -18,5 +18,6 @@ foreach(test ${layer_tests})
 
     add_test(NAME ${short_test_name}-runs COMMAND ${test_name})
     set_tests_properties(${short_test_name}-runs PROPERTIES FIXTURES_REQUIRED build-fixture-${short_test_name})
+    set_tests_properties(${short_test_name}-runs PROPERTIES TIMEOUT 10)
   endif()
 endforeach()

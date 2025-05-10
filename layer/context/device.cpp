@@ -13,12 +13,17 @@ std::mutex queue_to_device_lock;
 std::map<VkQueue, VkDevice> g_queue_to_device;
 std::mutex pool_to_command_buffers_lock;
 std::map<VkCommandPool, std::vector<VkCommandBuffer>> g_pool_to_command_buffers;
+
+constexpr size_t kFencePoolSize = 16;
 }  // namespace
 
 DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
                        const VmaAllocatorCreateInfo& remote_allocator_create_info,
                        std::optional<uint32_t> present_queue_family_index, uint32_t remote_graphics_queue_family_index)
-    : nxt_gdpa_(nxt_gdpa), instance_info_(GetInstanceInfo(physical_device)), presentation_thread_(nullptr) {
+    : nxt_gdpa_(nxt_gdpa),
+      instance_info_(GetInstanceInfo(physical_device)),
+      presentation_thread_(nullptr),
+      fence_pool_(device, kFencePoolSize, reinterpret_cast<PFN_vkCreateFence>(nxt_gdpa(device, "vkCreateFence"))) {
   if (vmaCreateAllocator(&remote_allocator_create_info, &remote_allocator_) != VK_SUCCESS) {
     throw std::runtime_error("Failed to create remote VMA allocator");
   }
