@@ -1,6 +1,5 @@
 find_package(spdlog CONFIG REQUIRED)
 find_package(Vulkan REQUIRED)
-find_package(VulkanMemoryAllocator CONFIG REQUIRED)
 
 add_executable(
   VirtualVulkanServer
@@ -14,5 +13,5 @@ add_executable(
   )
 target_include_directories(VirtualVulkanServer PRIVATE ../)
 
-target_link_libraries(VirtualVulkanServer PRIVATE spdlog::spdlog vvkproto vulkan GPUOpen::VulkanMemoryAllocator)
+target_link_libraries(VirtualVulkanServer PRIVATE spdlog::spdlog vvkproto vulkan)
 target_include_directories(VirtualVulkanServer PRIVATE ${Vulkan_INCLUDE_DIRS})
