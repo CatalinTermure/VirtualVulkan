@@ -3397,4 +3397,13 @@ void UnpackAndExecuteVkDestroyBuffer(vvk::ExecutionContext& context, const vvk::
   vkDestroyBuffer(reinterpret_cast<VkDevice>(request.vkdestroybuffer().device()), reinterpret_cast<VkBuffer>(request.vkdestroybuffer().buffer()), nullptr);
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkGetBufferMemoryRequirements(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkGetBufferMemoryRequirements");
+
+  VkMemoryRequirements pMemoryRequirements = {};
+  FillStructFromProto(pMemoryRequirements, request.vkgetbuffermemoryrequirements().pmemoryrequirements());
+  vkGetBufferMemoryRequirements(reinterpret_cast<VkDevice>(request.vkgetbuffermemoryrequirements().device()), reinterpret_cast<VkBuffer>(request.vkgetbuffermemoryrequirements().buffer()), &pMemoryRequirements);
+  FillProtoFromStruct(response->mutable_vkgetbuffermemoryrequirements()->mutable_pmemoryrequirements(), &pMemoryRequirements);
+  response->set_result(VK_SUCCESS);
+}
 

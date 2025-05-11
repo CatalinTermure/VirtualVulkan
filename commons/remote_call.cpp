@@ -3679,5 +3679,25 @@ void PackAndCallVkDestroyBuffer(VvkCommandClientBidiStream& stream, VkDevice dev
     spdlog::error("Failed to read response from server");
   }
 }
+void PackAndCallVkGetBufferMemoryRequirements(VvkCommandClientBidiStream& stream, VkDevice device, VkBuffer buffer, VkMemoryRequirements* pMemoryRequirements) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkGetBufferMemoryRequirements");
+  request.mutable_vkgetbuffermemoryrequirements()->set_device(reinterpret_cast<uint64_t>(device));
+  request.mutable_vkgetbuffermemoryrequirements()->set_buffer(reinterpret_cast<uint64_t>(buffer));
+  FillProtoFromStruct(request.mutable_vkgetbuffermemoryrequirements()->mutable_pmemoryrequirements(), pMemoryRequirements);
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  VkMemoryRequirements& pMemoryRequirements_ref = *pMemoryRequirements;
+  pMemoryRequirements_ref.size = static_cast<VkDeviceSize>(response.vkgetbuffermemoryrequirements().pmemoryrequirements().size());
+  pMemoryRequirements_ref.alignment = static_cast<VkDeviceSize>(response.vkgetbuffermemoryrequirements().pmemoryrequirements().alignment());
+  pMemoryRequirements_ref.memoryTypeBits = response.vkgetbuffermemoryrequirements().pmemoryrequirements().memorytypebits();
+}
 }  // namespace vvk
 

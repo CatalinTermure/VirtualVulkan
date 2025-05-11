@@ -1439,4 +1439,12 @@ VKAPI_ATTR void VKAPI_CALL DestroyBuffer(VkDevice device, VkBuffer buffer, const
                              device_info.instance_info().GetRemoteHandle(device), buffer, pAllocator);
 }
 
+VKAPI_ATTR void VKAPI_CALL GetBufferMemoryRequirements(VkDevice device, VkBuffer buffer,
+                                                       VkMemoryRequirements* pMemoryRequirements) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  PackAndCallVkGetBufferMemoryRequirements(device_info.instance_info().command_stream(),
+                                           device_info.instance_info().GetRemoteHandle(device), buffer,
+                                           pMemoryRequirements);
+}
+
 }  // namespace vvk

@@ -95,6 +95,7 @@ COMMANDS_TO_GENERATE = [
     "vkSignalSemaphore",
     "vkCreateBuffer",
     "vkDestroyBuffer",
+    "vkGetBufferMemoryRequirements",
 ]
 
 TRIVIAL_TYPES: dict[str, TypeInfo] = {

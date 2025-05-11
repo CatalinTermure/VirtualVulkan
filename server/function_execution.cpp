@@ -76,6 +76,7 @@ const std::unordered_map<
         {"vkSignalSemaphore", UnpackAndExecuteVkSignalSemaphore},
         {"vkCreateBuffer", UnpackAndExecuteVkCreateBuffer},
         {"vkDestroyBuffer", UnpackAndExecuteVkDestroyBuffer},
+        {"vkGetBufferMemoryRequirements", UnpackAndExecuteVkGetBufferMemoryRequirements},
 };
 
 }  // namespace
