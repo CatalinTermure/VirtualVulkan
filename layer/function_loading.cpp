@@ -38,6 +38,8 @@ constexpr std::array non_intercepted_functions = {
     "vkDestroyDebugReportCallbackEXT",
     "vkCreateDebugUtilsMessengerEXT",
     "vkDestroyDebugUtilsMessengerEXT",
+    "vkSubmitDebugUtilsMessageEXT",
+
     "vkGetPhysicalDeviceSurfaceFormatsKHR",
     "vkGetPhysicalDeviceSurfaceCapabilitiesKHR",
     "vkGetPhysicalDeviceSurfacePresentModesKHR",
