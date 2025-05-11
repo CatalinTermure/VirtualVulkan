@@ -6,6 +6,8 @@ package vvk.server;
 
 import "vvk_types.proto";
 import "vvk_presentation.proto";
+import "vvk_write_memory.proto";
+import "google/protobuf/empty.proto";
 
 service VvkServer {
   // We will use a single bidirection streaming RPC to call all the Vulkan functions
@@ -14,6 +16,7 @@ service VvkServer {
 
   rpc GetFrameStreamingCapabilities (VvkGetFrameStreamingCapabilitiesRequest) returns (VvkGetFrameStreamingCapabilitiesResponse) {}
   rpc RequestFrame (VvkGetFrameRequest) returns (stream VvkGetFrameResponse) {}
+  rpc WriteMappedMemory (VvkWriteMappedMemoryRequest) returns (google.protobuf.Empty) {}
 }
 
 message VvkRequest {

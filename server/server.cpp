@@ -51,4 +51,13 @@ grpc::Status VvkServerImpl::RequestFrame(grpc::ServerContext* context, const vvk
   return grpc::Status::OK;
 }
 
+grpc::Status VvkServerImpl::WriteMappedMemory(grpc::ServerContext* context,
+                                              const vvk::server::VvkWriteMappedMemoryRequest* request,
+                                              google::protobuf::Empty* response) {
+  // TODO: Check if the memory is mapped
+  spdlog::info("Writing {} bytes at address {}", request->data().size(), request->address());
+  memcpy(reinterpret_cast<void*>(request->address()), request->data().data(), request->data().size());
+  return grpc::Status::OK;
+}
+
 }  // namespace vvk::server

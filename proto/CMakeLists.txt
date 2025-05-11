@@ -8,7 +8,7 @@ endif()
 find_package(Protobuf REQUIRED)
 find_package(gRPC REQUIRED)
 
-set(PROTO_FILES vvk_server.proto vvk_types.proto vvk_presentation.proto)
+set(PROTO_FILES vvk_server.proto vvk_types.proto vvk_presentation.proto vvk_write_memory.proto)
 
 add_library(vvkproto ${PROTO_FILES})
 target_link_libraries(vvkproto
