@@ -1501,4 +1501,12 @@ VKAPI_ATTR void VKAPI_CALL UnmapMemory(VkDevice device, VkDeviceMemory memory) {
   device_info.RemoveMappedMemory(memory);
 }
 
+VKAPI_ATTR void VKAPI_CALL CmdBindVertexBuffers(VkCommandBuffer commandBuffer, uint32_t firstBinding,
+                                                uint32_t bindingCount, const VkBuffer* pBuffers,
+                                                const VkDeviceSize* pOffsets) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdBindVertexBuffers(device_info.instance_info().command_stream(),
+                                    device_info.GetRemoteHandle(commandBuffer), firstBinding, bindingCount, pBuffers,
+                                    pOffsets);
+}
 }  // namespace vvk

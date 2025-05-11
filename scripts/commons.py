@@ -99,6 +99,7 @@ COMMANDS_TO_GENERATE = [
     "vkBindBufferMemory",
     "vkMapMemory",
     "vkUnmapMemory",
+    "vkCmdBindVertexBuffers",
 ]
 
 TRIVIAL_TYPES: dict[str, TypeInfo] = {

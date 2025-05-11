@@ -70,8 +70,22 @@ class ClientSrcGenerator(VvkGenerator):
                 out.append(
                     f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}({param.name});\n')
             else:
-                log("non zero length param:",
-                    cmd_name, param.cDeclaration)
+                if param.type in TRIVIAL_TYPES:
+                    assert (param.length in [
+                        p.name for p in command.params])
+                    type_info = TRIVIAL_TYPES[param.type]
+                    out.append(
+                        f'  for (uint32_t i = 0; i < {param.length}; i++) {{\n')
+                    if type_info.cast_to is None:
+                        out.append(
+                            f'    request.mutable_{cmd_name.lower()}()->add_{param.name.lower()}({param.name}[i]);\n')
+                    else:
+                        out.append(
+                            f'    request.mutable_{cmd_name.lower()}()->add_{param.name.lower()}(static_cast<{type_info.cast_to}>({param.name}[i]));\n')
+                    out.append("  }\n")
+                else:
+                    log("unknown const pointer type with length:",
+                        cmd_name, param.cDeclaration)
         elif param.pointer and not param.const and param.type in self.vk.handles:
             if param.length is None:
                 out.append(

@@ -98,7 +98,8 @@ class ServerSrcGenerator(VvkGenerator):
                         actual_parameters.append(
                             f'{param_accessor}.{param.name.lower()}().data()')
                     else:
-                        assert (param.type in self.vk.handles)
+                        assert (param.type in self.vk.handles) or (
+                            param.type in {"VkDeviceSize"})
                         actual_parameters.append(
                             f'reinterpret_cast<const {param.type}*>({param_accessor}.{param.name.lower()}().data())')
                 elif param.pointer and not param.const and param.type in self.vk.handles:

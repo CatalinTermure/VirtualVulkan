@@ -3755,5 +3755,27 @@ void PackAndCallVkUnmapMemory(VvkCommandClientBidiStream& stream, VkDevice devic
     spdlog::error("Failed to read response from server");
   }
 }
+void PackAndCallVkCmdBindVertexBuffers(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t firstBinding, uint32_t bindingCount, const VkBuffer* pBuffers, const VkDeviceSize* pOffsets) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdBindVertexBuffers");
+  request.mutable_vkcmdbindvertexbuffers()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  request.mutable_vkcmdbindvertexbuffers()->set_firstbinding(firstBinding);
+  request.mutable_vkcmdbindvertexbuffers()->set_bindingcount(bindingCount);
+  for (int i = 0; i < bindingCount; i++) {
+    request.mutable_vkcmdbindvertexbuffers()->add_pbuffers(reinterpret_cast<uint64_t>(pBuffers[i]));
+  }
+  for (uint32_t i = 0; i < bindingCount; i++) {
+    request.mutable_vkcmdbindvertexbuffers()->add_poffsets(static_cast<uint64_t>(pOffsets[i]));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 

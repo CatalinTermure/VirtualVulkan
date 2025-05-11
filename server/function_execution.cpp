@@ -80,6 +80,7 @@ const std::unordered_map<
         {"vkBindBufferMemory", UnpackAndExecuteVkBindBufferMemory},
         {"vkMapMemory", UnpackAndExecuteVkMapMemory},
         {"vkUnmapMemory", UnpackAndExecuteVkUnmapMemory},
+        {"vkCmdBindVertexBuffers", UnpackAndExecuteVkCmdBindVertexBuffers},
 };
 
 }  // namespace

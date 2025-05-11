@@ -3426,4 +3426,10 @@ void UnpackAndExecuteVkUnmapMemory(vvk::ExecutionContext& context, const vvk::se
   vkUnmapMemory(reinterpret_cast<VkDevice>(request.vkunmapmemory().device()), reinterpret_cast<VkDeviceMemory>(request.vkunmapmemory().memory()));
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkCmdBindVertexBuffers(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCmdBindVertexBuffers");
+
+  vkCmdBindVertexBuffers(reinterpret_cast<VkCommandBuffer>(request.vkcmdbindvertexbuffers().commandbuffer()), request.vkcmdbindvertexbuffers().firstbinding(), request.vkcmdbindvertexbuffers().bindingcount(), reinterpret_cast<const VkBuffer*>(request.vkcmdbindvertexbuffers().pbuffers().data()), reinterpret_cast<const VkDeviceSize*>(request.vkcmdbindvertexbuffers().poffsets().data()));
+  response->set_result(VK_SUCCESS);
+}
 

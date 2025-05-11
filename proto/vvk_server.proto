@@ -80,16 +80,17 @@ message VvkRequest {
     VkCmdBindPipelineParams vkCmdBindPipeline = 57;
     VkCmdSetViewportParams vkCmdSetViewport = 58;
     VkCmdSetScissorParams vkCmdSetScissor = 59;
-    VkCmdDrawParams vkCmdDraw = 60;
-    VkCmdCopyImageToBufferParams vkCmdCopyImageToBuffer = 61;
-    VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 62;
-    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 63;
-    VkCmdEndRenderPassParams vkCmdEndRenderPass = 64;
-    VkBindImageMemory2Params vkBindImageMemory2 = 65;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 66;
-    VkGetPhysicalDeviceFeatures2Params vkGetPhysicalDeviceFeatures2 = 67;
-    VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 68;
-    VkSignalSemaphoreParams vkSignalSemaphore = 69;
+    VkCmdBindVertexBuffersParams vkCmdBindVertexBuffers = 60;
+    VkCmdDrawParams vkCmdDraw = 61;
+    VkCmdCopyImageToBufferParams vkCmdCopyImageToBuffer = 62;
+    VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 63;
+    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 64;
+    VkCmdEndRenderPassParams vkCmdEndRenderPass = 65;
+    VkBindImageMemory2Params vkBindImageMemory2 = 66;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 67;
+    VkGetPhysicalDeviceFeatures2Params vkGetPhysicalDeviceFeatures2 = 68;
+    VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 69;
+    VkSignalSemaphoreParams vkSignalSemaphore = 70;
   }
 }
 
@@ -603,6 +604,14 @@ message VkCmdSetScissorParams {
   uint32 firstScissor = 2; // uint32_t firstScissor
   uint32 scissorCount = 3; // uint32_t scissorCount
   repeated VkRect2D pScissors = 4; // const VkRect2D* pScissors
+}
+
+message VkCmdBindVertexBuffersParams {
+  uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+  uint32 firstBinding = 2; // uint32_t firstBinding
+  uint32 bindingCount = 3; // uint32_t bindingCount
+  repeated uint64 pBuffers = 4; // const VkBuffer* pBuffers
+  repeated uint64 pOffsets = 5; // const VkDeviceSize* pOffsets
 }
 
 message VkCmdDrawParams {
