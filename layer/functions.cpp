@@ -356,6 +356,18 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateWaylandSurfaceKHR(VkInstance instance,
   return result;
 }
 
+VKAPI_ATTR VkResult VKAPI_CALL CreateXcbSurfaceKHR(VkInstance instance, const VkXcbSurfaceCreateInfoKHR* pCreateInfo,
+                                                   const VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface) {
+  InstanceInfo& instance_info = GetInstanceInfo(instance);
+  VkResult result = instance_info.dispatch_table().CreateXcbSurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
+  if (result != VK_SUCCESS) {
+    return result;
+  }
+  instance_info.set_surface(*pSurface);
+
+  return result;
+}
+
 VKAPI_ATTR VkResult VKAPI_CALL GetPhysicalDeviceSurfaceSupportKHR(VkPhysicalDevice physicalDevice,
                                                                   uint32_t queueFamilyIndex, VkSurfaceKHR surface,
                                                                   VkBool32* pSupported) {
