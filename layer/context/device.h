@@ -69,10 +69,10 @@ struct DeviceInfo {
   void CreateFakeQueueFamily(uint32_t queue_family_index, uint32_t queue_count);
   VkQueue GetFakeQueue(uint32_t queue_family_index, uint32_t queue_index);
 
-  std::unordered_set<VkImage> swapchain_images;
-  std::unordered_set<VkImageView> swapchain_image_views;
-  std::unordered_set<VkFramebuffer> swapchain_framebuffers;
-  std::unordered_set<VkCommandBuffer> swapchain_render_command_buffers;
+  std::unordered_map<VkImage, uint32_t> swapchain_images;
+  std::unordered_map<VkImageView, uint32_t> swapchain_image_views;
+  std::unordered_map<VkFramebuffer, uint32_t> swapchain_framebuffers;
+  std::unordered_map<VkCommandBuffer, uint32_t> swapchain_render_command_buffers;
 
  private:
   std::map<void*, void*> local_to_remote_handle_;

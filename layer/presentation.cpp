@@ -94,16 +94,22 @@ void PresentationThreadAssociateSwapchain(PresentationThread &presentation_threa
     remote_frame_keys.push_back(response.setuppresentation().uncompressed_stream_info().frame_keys(i));
   }
   presentation_thread.swapchains.push_back(SwapchainPresentationInfo{
-      swapchain, response.setuppresentation().uncompressed_stream_info().session_key(), remote_buffers,
-      remote_frame_keys, swapchain_image_extent, std::numeric_limits<uint32_t>::max()});
+      .swapchain = swapchain,
+      .remote_session_key = response.setuppresentation().uncompressed_stream_info().session_key(),
+      .remote_buffers = remote_buffers,
+      .remote_frame_keys = remote_frame_keys,
+      .image_extent = swapchain_image_extent,
+      .swapchain_image_index = std::numeric_limits<uint32_t>::max(),
+  });
 }
 
-void PresentationThreadSetupFrame(PresentationThread &presentation_thread, VkCommandBuffer remote_command_buffer) {
+void PresentationThreadSetupFrame(PresentationThread &presentation_thread, VkCommandBuffer remote_command_buffer,
+                                  uint32_t swapchain_image_index) {
   auto &command_stream = GetInstanceInfo(presentation_thread.local_instance).command_stream();
 
   for (auto &swapchain_present_info : presentation_thread.swapchains) {
     SwapchainInfo &swapchain_info = GetSwapchainInfo(swapchain_present_info.swapchain);
-    VkImage remote_image = swapchain_info.GetRemoteImages()[swapchain_present_info.swapchain_image_index].first;
+    VkImage remote_image = swapchain_info.GetRemoteImages()[swapchain_image_index].first;
     VkImageMemoryBarrier image_memory_barrier = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
         .pNext = nullptr,
@@ -148,8 +154,7 @@ void PresentationThreadSetupFrame(PresentationThread &presentation_thread, VkCom
     };
     PackAndCallVkCmdCopyImageToBuffer(
         command_stream, remote_command_buffer, remote_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-        reinterpret_cast<VkBuffer>(swapchain_present_info.remote_buffers[swapchain_present_info.swapchain_image_index]),
-        1, &region);
+        reinterpret_cast<VkBuffer>(swapchain_present_info.remote_buffers[swapchain_image_index]), 1, &region);
   }
 }
 

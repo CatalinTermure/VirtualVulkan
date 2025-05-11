@@ -42,7 +42,8 @@ std::unique_ptr<PresentationThread> PresentationThreadCreate(VkInstance local_in
 void PresentationThreadAssociateSwapchain(PresentationThread& presentation_thread, VkSwapchainKHR swapchain,
                                           const VkExtent2D& swapchain_image_extent);
 // Called during command buffer recording for a presentable frame.
-void PresentationThreadSetupFrame(PresentationThread& presentation_thread, VkCommandBuffer remote_command_buffer);
+void PresentationThreadSetupFrame(PresentationThread& presentation_thread, VkCommandBuffer remote_command_buffer,
+                                  uint32_t swapchain_image_index);
 // Called when a frame should be presented.
 void PresentationThreadPresentFrame(PresentationThread& presentation_thread, VkPresentInfoKHR* present_info);
 

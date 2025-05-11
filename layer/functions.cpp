@@ -163,6 +163,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
       .pUserData = nullptr,
       .priority = 0.0f,
   };
+  std::uint32_t image_index = 0;
   for (VkImage client_image : *client_swapchain_images) {
     VkImage server_image;
     server_image = swapchain_info.CreateImageRemote(image_create_info, alloc_create_info);
@@ -171,7 +172,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
       RemoveSwapchainInfo(*pSwapchain);
       return VK_ERROR_INITIALIZATION_FAILED;
     }
-    device_info.swapchain_images.insert(server_image);
+    device_info.swapchain_images.emplace(server_image, image_index++);
     device_info.SetRemoteHandle(client_image, server_image);
   }
 
@@ -922,8 +923,9 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateImageView(VkDevice device, const VkImageVie
                                    device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator, pView);
   if (result != VK_SUCCESS) return result;
 
-  if (device_info.swapchain_images.contains(pCreateInfo->image)) {
-    device_info.swapchain_image_views.insert(*pView);
+  auto it = device_info.swapchain_images.find(pCreateInfo->image);
+  if (it != device_info.swapchain_images.end()) {
+    device_info.swapchain_image_views.emplace(*pView, it->second);
   }
 
   return result;
@@ -1003,8 +1005,10 @@ VKAPI_ATTR VkResult VKAPI_CALL BeginCommandBuffer(VkCommandBuffer commandBuffer,
 VKAPI_ATTR VkResult VKAPI_CALL EndCommandBuffer(VkCommandBuffer commandBuffer) {
   DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
 
-  if (device_info.swapchain_render_command_buffers.contains(commandBuffer)) {
-    PresentationThreadSetupFrame(*device_info.presentation_thread(), device_info.GetRemoteHandle(commandBuffer));
+  auto it = device_info.swapchain_render_command_buffers.find(commandBuffer);
+  if (it != device_info.swapchain_render_command_buffers.end()) {
+    PresentationThreadSetupFrame(*device_info.presentation_thread(), device_info.GetRemoteHandle(commandBuffer),
+                                 it->second);
     device_info.swapchain_render_command_buffers.erase(commandBuffer);
   }
 
@@ -1091,8 +1095,9 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateFramebuffer(VkDevice device, const VkFrameb
   if (result != VK_SUCCESS) return result;
 
   for (uint32_t i = 0; i < pCreateInfo->attachmentCount; i++) {
-    if (device_info.swapchain_image_views.contains(pCreateInfo->pAttachments[i])) {
-      device_info.swapchain_framebuffers.insert(*pFramebuffer);
+    auto it = device_info.swapchain_image_views.find(pCreateInfo->pAttachments[i]);
+    if (it != device_info.swapchain_image_views.end()) {
+      device_info.swapchain_framebuffers.emplace(*pFramebuffer, it->second);
       break;
     }
   }
@@ -1213,8 +1218,9 @@ VKAPI_ATTR void VKAPI_CALL CmdBeginRenderPass(VkCommandBuffer commandBuffer,
   DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
   PackAndCallVkCmdBeginRenderPass(device_info.instance_info().command_stream(),
                                   device_info.GetRemoteHandle(commandBuffer), pRenderPassBegin, contents);
-  if (device_info.swapchain_framebuffers.contains(pRenderPassBegin->framebuffer)) {
-    device_info.swapchain_render_command_buffers.insert(commandBuffer);
+  auto it = device_info.swapchain_framebuffers.find(pRenderPassBegin->framebuffer);
+  if (it != device_info.swapchain_framebuffers.end()) {
+    device_info.swapchain_render_command_buffers.emplace(commandBuffer, it->second);
   }
 }
 VKAPI_ATTR void VKAPI_CALL CmdEndRenderPass(VkCommandBuffer commandBuffer) {
