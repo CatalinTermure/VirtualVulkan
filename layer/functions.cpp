@@ -1447,4 +1447,12 @@ VKAPI_ATTR void VKAPI_CALL GetBufferMemoryRequirements(VkDevice device, VkBuffer
                                            pMemoryRequirements);
 }
 
+VKAPI_ATTR VkResult VKAPI_CALL BindBufferMemory(VkDevice device, VkBuffer buffer, VkDeviceMemory memory,
+                                                VkDeviceSize memoryOffset) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  return PackAndCallVkBindBufferMemory(device_info.instance_info().command_stream(),
+                                       device_info.instance_info().GetRemoteHandle(device), buffer, memory,
+                                       memoryOffset);
+}
+
 }  // namespace vvk

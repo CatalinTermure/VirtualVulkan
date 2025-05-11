@@ -74,6 +74,7 @@ VkResult PackAndCallVkSignalSemaphore(VvkCommandClientBidiStream& stream, VkDevi
 VkResult PackAndCallVkCreateBuffer(VvkCommandClientBidiStream& stream, VkDevice device, const VkBufferCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkBuffer* pBuffer);
 void PackAndCallVkDestroyBuffer(VvkCommandClientBidiStream& stream, VkDevice device, VkBuffer buffer, const VkAllocationCallbacks* pAllocator);
 void PackAndCallVkGetBufferMemoryRequirements(VvkCommandClientBidiStream& stream, VkDevice device, VkBuffer buffer, VkMemoryRequirements* pMemoryRequirements);
+VkResult PackAndCallVkBindBufferMemory(VvkCommandClientBidiStream& stream, VkDevice device, VkBuffer buffer, VkDeviceMemory memory, VkDeviceSize memoryOffset);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

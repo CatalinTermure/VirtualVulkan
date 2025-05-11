@@ -3406,4 +3406,10 @@ void UnpackAndExecuteVkGetBufferMemoryRequirements(vvk::ExecutionContext& contex
   FillProtoFromStruct(response->mutable_vkgetbuffermemoryrequirements()->mutable_pmemoryrequirements(), &pMemoryRequirements);
   response->set_result(VK_SUCCESS);
 }
+void UnpackAndExecuteVkBindBufferMemory(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkBindBufferMemory");
+
+  VkResult result = vkBindBufferMemory(reinterpret_cast<VkDevice>(request.vkbindbuffermemory().device()), reinterpret_cast<VkBuffer>(request.vkbindbuffermemory().buffer()), reinterpret_cast<VkDeviceMemory>(request.vkbindbuffermemory().memory()), static_cast<VkDeviceSize>(request.vkbindbuffermemory().memoryoffset()));
+  response->set_result(result);
+}
 
