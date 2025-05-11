@@ -9,6 +9,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <optional>
+#include <semaphore>
 #include <vector>
 
 #include "commons/remote_call.h"
