@@ -203,10 +203,16 @@ class ServerSrcGenerator(VvkGenerator):
                         after_call_code.append("  }\n")
                 elif param.pointer and not param.const:
                     actual_parameters.append(f'&{param.name}')
-                    out.append(
-                        f'  {param.type} {param.name} = {param_accessor}.{param.name.lower()}();\n')
-                    after_call_code.append(
-                        f'  response->mutable_{cmd_name.lower()}()->set_{param.name.lower()}({param.name});\n')
+                    if param.name.startswith("pp"):
+                        out.append(
+                            f'  {param.type}* {param.name} = reinterpret_cast<{param.type}*>({param_accessor}.{param.name.lower()}());\n')
+                        after_call_code.append(
+                            f'  response->mutable_{cmd_name.lower()}()->set_{param.name.lower()}(reinterpret_cast<uint64_t>({param.name}));\n')
+                    else:
+                        out.append(
+                            f'  {param.type} {param.name} = {param_accessor}.{param.name.lower()}();\n')
+                        after_call_code.append(
+                            f'  response->mutable_{cmd_name.lower()}()->set_{param.name.lower()}({param.name});\n')
                 elif not param.pointer and param.type in self.vk.handles:
                     if param.type == "VkPhysicalDevice":
                         actual_parameters.append("context.physical_device()")

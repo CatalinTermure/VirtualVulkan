@@ -89,6 +89,66 @@ DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhys
   }
 }
 
+void DeviceInfo::AddMappedMemory(void* local_address, void* remote_address, VkDeviceMemory memory_handle,
+                                 std::size_t map_size) {
+  auto it = mapped_memory_infos_.find(memory_handle);
+  if (it != mapped_memory_infos_.end()) {
+    throw std::runtime_error("Mapped memory already exists");
+  }
+  mapped_memory_infos_[memory_handle] = {local_address, remote_address, map_size};
+}
+
+void DeviceInfo::SyncMappedMemory(VkDeviceMemory memory) {
+  grpc::ClientContext context;
+  vvk::server::VvkWriteMappedMemoryRequest request;
+  MappedMemoryInfo& mapped_memory_info = mapped_memory_infos_.at(memory);
+  request.set_address(reinterpret_cast<uint64_t>(mapped_memory_info.remote_memory));
+  request.set_data(reinterpret_cast<const char*>(mapped_memory_info.local_memory), mapped_memory_info.map_size);
+  google::protobuf::Empty empty;
+  instance_info_.stub().WriteMappedMemory(&context, request, &empty);
+}
+
+void DeviceInfo::SyncMappedMemories() {
+  for (auto& [memory, mapped_memory_info] : mapped_memory_infos_) {
+    SyncMappedMemory(memory);
+  }
+}
+
+void DeviceInfo::RemoveMappedMemory(VkDeviceMemory memory_handle) {
+  auto it = mapped_memory_infos_.find(memory_handle);
+  if (it != mapped_memory_infos_.end()) {
+    free(it->second.local_memory);
+    mapped_memory_infos_.erase(it);
+  } else {
+    throw std::runtime_error("Mapped memory not found");
+  }
+}
+
+void DeviceInfo::RegisterMemorySize(VkDeviceMemory memory_handle, std::size_t size) {
+  auto it = memory_sizes_.find(memory_handle);
+  if (it != memory_sizes_.end()) {
+    throw std::runtime_error("Memory size already registered");
+  }
+  memory_sizes_[memory_handle] = size;
+}
+
+std::size_t DeviceInfo::GetMemorySize(VkDeviceMemory memory_handle) {
+  auto it = memory_sizes_.find(memory_handle);
+  if (it == memory_sizes_.end()) {
+    throw std::runtime_error("Memory size not found");
+  }
+  return it->second;
+}
+
+void DeviceInfo::UnregisterMemorySize(VkDeviceMemory memory_handle) {
+  auto it = memory_sizes_.find(memory_handle);
+  if (it != memory_sizes_.end()) {
+    memory_sizes_.erase(it);
+  } else {
+    throw std::runtime_error("Memory size not found");
+  }
+}
+
 void DeviceInfo::CreateFakeQueueFamily(uint32_t queue_family_index, uint32_t queue_count) {
   if (fake_queue_families_.find(queue_family_index) != fake_queue_families_.end()) {
     throw std::runtime_error("Fake queue family already exists");

@@ -155,10 +155,16 @@ class ClientSrcGenerator(VvkGenerator):
                 after_call_code.append("  }\n")
         elif param.pointer and not param.const:
             if param.length is None:
-                out.append(
-                    f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}(*{param.name});\n')
-                after_call_code.append(
-                    f'  *{param.name} = {response_accessor}.{param.name.lower()}();\n')
+                if param.name.startswith("pp"):
+                    out.append(
+                        f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}(reinterpret_cast<uint64_t>(*{param.name}));\n')
+                    after_call_code.append(
+                        f'  *{param.name} = reinterpret_cast<{param.type}*>({response_accessor}.{param.name.lower()}());\n')
+                else:
+                    out.append(
+                        f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}(*{param.name});\n')
+                    after_call_code.append(
+                        f'  *{param.name} = {response_accessor}.{param.name.lower()}();\n')
             else:
                 log("non zero length param:",
                     cmd_name, param.cDeclaration)

@@ -853,15 +853,22 @@ VKAPI_ATTR void VKAPI_CALL DestroySemaphore(VkDevice device, VkSemaphore semapho
 VKAPI_ATTR VkResult VKAPI_CALL AllocateMemory(VkDevice device, const VkMemoryAllocateInfo* pAllocateInfo,
                                               const VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMemory) {
   DeviceInfo& device_info = GetDeviceInfo(device);
-  return PackAndCallVkAllocateMemory(device_info.instance_info().command_stream(),
-                                     device_info.instance_info().GetRemoteHandle(device), pAllocateInfo, pAllocator,
-                                     pMemory);
+  VkResult result = PackAndCallVkAllocateMemory(device_info.instance_info().command_stream(),
+                                                device_info.instance_info().GetRemoteHandle(device), pAllocateInfo,
+                                                pAllocator, pMemory);
+  if (result != VK_SUCCESS) {
+    return result;
+  }
+
+  device_info.RegisterMemorySize(*pMemory, pAllocateInfo->allocationSize);
+  return result;
 }
 
 VKAPI_ATTR void VKAPI_CALL FreeMemory(VkDevice device, VkDeviceMemory memory, const VkAllocationCallbacks* pAllocator) {
   DeviceInfo& device_info = GetDeviceInfo(device);
   PackAndCallVkFreeMemory(device_info.instance_info().command_stream(),
                           device_info.instance_info().GetRemoteHandle(device), memory, pAllocator);
+  device_info.UnregisterMemorySize(memory);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateImage(VkDevice device, const VkImageCreateInfo* pCreateInfo,
@@ -1253,6 +1260,8 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
   }
   device_info.SetFenceLocal(fence);
 
+  device_info.SyncMappedMemories();
+
   std::vector<VkSemaphore> semaphores_to_wait_local;
   semaphores_to_wait_local.reserve(submitCount);  // not the exact size but it's a good guess
   std::vector<std::binary_semaphore*> local_semaphores_to_signal_from_remote;
@@ -1453,6 +1462,43 @@ VKAPI_ATTR VkResult VKAPI_CALL BindBufferMemory(VkDevice device, VkBuffer buffer
   return PackAndCallVkBindBufferMemory(device_info.instance_info().command_stream(),
                                        device_info.instance_info().GetRemoteHandle(device), buffer, memory,
                                        memoryOffset);
+}
+
+VKAPI_ATTR VkResult VKAPI_CALL MapMemory(VkDevice device, VkDeviceMemory memory, VkDeviceSize offset, VkDeviceSize size,
+                                         VkMemoryMapFlags flags, void** ppData) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+
+  if (size == VK_WHOLE_SIZE) {
+    size = device_info.GetMemorySize(memory) - offset;
+  }
+
+  *ppData = malloc(size);
+  if (ppData == nullptr) {
+    return VK_ERROR_OUT_OF_HOST_MEMORY;
+  }
+  void* remote_address = nullptr;
+  VkResult result = PackAndCallVkMapMemory(device_info.instance_info().command_stream(),
+                                           device_info.instance_info().GetRemoteHandle(device), memory, offset, size,
+                                           flags, &remote_address);
+  if (result != VK_SUCCESS) {
+    free(*ppData);
+    return result;
+  }
+
+  device_info.AddMappedMemory(*ppData, remote_address, memory, size);
+
+  return result;
+}
+
+VKAPI_ATTR void VKAPI_CALL UnmapMemory(VkDevice device, VkDeviceMemory memory) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+
+  device_info.SyncMappedMemory(memory);
+
+  PackAndCallVkUnmapMemory(device_info.instance_info().command_stream(),
+                           device_info.instance_info().GetRemoteHandle(device), memory);
+
+  device_info.RemoveMappedMemory(memory);
 }
 
 }  // namespace vvk

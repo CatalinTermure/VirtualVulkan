@@ -3412,4 +3412,18 @@ void UnpackAndExecuteVkBindBufferMemory(vvk::ExecutionContext& context, const vv
   VkResult result = vkBindBufferMemory(reinterpret_cast<VkDevice>(request.vkbindbuffermemory().device()), reinterpret_cast<VkBuffer>(request.vkbindbuffermemory().buffer()), reinterpret_cast<VkDeviceMemory>(request.vkbindbuffermemory().memory()), static_cast<VkDeviceSize>(request.vkbindbuffermemory().memoryoffset()));
   response->set_result(result);
 }
+void UnpackAndExecuteVkMapMemory(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkMapMemory");
+
+  void* ppData = reinterpret_cast<void*>(request.vkmapmemory().ppdata());
+  VkResult result = vkMapMemory(reinterpret_cast<VkDevice>(request.vkmapmemory().device()), reinterpret_cast<VkDeviceMemory>(request.vkmapmemory().memory()), static_cast<VkDeviceSize>(request.vkmapmemory().offset()), static_cast<VkDeviceSize>(request.vkmapmemory().size()), static_cast<VkMemoryMapFlags>(request.vkmapmemory().flags()), &ppData);
+  response->mutable_vkmapmemory()->set_ppdata(reinterpret_cast<uint64_t>(ppData));
+  response->set_result(result);
+}
+void UnpackAndExecuteVkUnmapMemory(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkUnmapMemory");
+
+  vkUnmapMemory(reinterpret_cast<VkDevice>(request.vkunmapmemory().device()), reinterpret_cast<VkDeviceMemory>(request.vkunmapmemory().memory()));
+  response->set_result(VK_SUCCESS);
+}
 

@@ -23,6 +23,7 @@ C_TYPE_TO_PROTO_TYPE = {
     'uint16_t': "uint32",
     'int': 'int32',
     "void*": "bytes",
+    "void**": "uint64",
     "VkSampleMask": "uint32",
 
     "HANDLE": "uint64",
@@ -47,7 +48,11 @@ required_structs: set[str] = set()
 
 
 def get_proto_type(generator: VvkGenerator, param: Param | Member | RetVal) -> str:
-    param_type = param.type + ("*" if param.pointer else "")
+    param_type = param.type
+    if param.name.startswith("pp"):
+        param_type += "**"
+    elif param.pointer:
+        param_type += "*"
     if param_type.startswith("PFN_"):
         return "uint64"
     if "const char* const*" in param.cDeclaration:

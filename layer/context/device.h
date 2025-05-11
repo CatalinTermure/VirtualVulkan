@@ -16,6 +16,7 @@
 
 #include "layer/context/fence_pool.h"
 #include "layer/context/instance.h"
+#include "layer/context/mapped_memory.h"
 #include "layer/dispatchable_object.h"
 #include "layer/presentation.h"
 
@@ -51,6 +52,15 @@ struct DeviceInfo {
   void ResetFenceLocal(VkFence fence) { local_synchronization_primitives_.erase(reinterpret_cast<void*>(fence)); }
   void SetFenceLocal(VkFence fence) { local_synchronization_primitives_.insert(reinterpret_cast<void*>(fence)); }
 
+  void AddMappedMemory(void* local_address, void* remote_address, VkDeviceMemory memory_handle, std::size_t map_size);
+  void SyncMappedMemory(VkDeviceMemory memory);
+  void SyncMappedMemories();
+  void RemoveMappedMemory(VkDeviceMemory memory_handle);
+
+  void RegisterMemorySize(VkDeviceMemory memory_handle, std::size_t size);
+  std::size_t GetMemorySize(VkDeviceMemory memory_handle);
+  void UnregisterMemorySize(VkDeviceMemory memory_handle);
+
   std::optional<uint32_t> present_queue_family_index() const { return present_queue_family_index_; }
   std::optional<VkQueue> present_queue() const { return present_queue_; }
   PresentationThread* presentation_thread() { return presentation_thread_.get(); }
@@ -77,6 +87,8 @@ struct DeviceInfo {
   std::unordered_map<uint32_t, std::list<DispatchableObject>> fake_queue_families_;
   std::unique_ptr<PresentationThread> presentation_thread_;
   FencePool fence_pool_;
+  std::unordered_map<VkDeviceMemory, MappedMemoryInfo> mapped_memory_infos_;
+  std::unordered_map<VkDeviceMemory, std::size_t> memory_sizes_;
 };
 
 DeviceInfo& GetDeviceInfo(VkDevice device);

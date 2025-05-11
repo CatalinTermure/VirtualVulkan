@@ -10,6 +10,7 @@ add_library(
     context/instance.h context/instance.cpp
     context/swapchain.h context/swapchain.cpp
     context/fence_pool.h context/fence_pool.cpp
+    context/mapped_memory.h context/mapped_memory.cpp
     dispatchable_object.h
     presentation.h presentation.cpp
 )

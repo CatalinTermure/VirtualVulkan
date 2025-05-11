@@ -78,6 +78,8 @@ const std::unordered_map<
         {"vkDestroyBuffer", UnpackAndExecuteVkDestroyBuffer},
         {"vkGetBufferMemoryRequirements", UnpackAndExecuteVkGetBufferMemoryRequirements},
         {"vkBindBufferMemory", UnpackAndExecuteVkBindBufferMemory},
+        {"vkMapMemory", UnpackAndExecuteVkMapMemory},
+        {"vkUnmapMemory", UnpackAndExecuteVkUnmapMemory},
 };
 
 }  // namespace

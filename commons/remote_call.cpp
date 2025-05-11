@@ -3717,5 +3717,43 @@ VkResult PackAndCallVkBindBufferMemory(VvkCommandClientBidiStream& stream, VkDev
   }
   return static_cast<VkResult>(response.result());
 }
+VkResult PackAndCallVkMapMemory(VvkCommandClientBidiStream& stream, VkDevice device, VkDeviceMemory memory, VkDeviceSize offset, VkDeviceSize size, VkMemoryMapFlags flags, void** ppData) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkMapMemory");
+  request.mutable_vkmapmemory()->set_device(reinterpret_cast<uint64_t>(device));
+  request.mutable_vkmapmemory()->set_memory(reinterpret_cast<uint64_t>(memory));
+  request.mutable_vkmapmemory()->set_offset(static_cast<uint64_t>(offset));
+  request.mutable_vkmapmemory()->set_size(static_cast<uint64_t>(size));
+  if (flags) {
+    request.mutable_vkmapmemory()->set_flags(flags);
+  }
+  request.mutable_vkmapmemory()->set_ppdata(reinterpret_cast<uint64_t>(*ppData));
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *ppData = reinterpret_cast<void*>(response.vkmapmemory().ppdata());
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkUnmapMemory(VvkCommandClientBidiStream& stream, VkDevice device, VkDeviceMemory memory) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkUnmapMemory");
+  request.mutable_vkunmapmemory()->set_device(reinterpret_cast<uint64_t>(device));
+  request.mutable_vkunmapmemory()->set_memory(reinterpret_cast<uint64_t>(memory));
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 
