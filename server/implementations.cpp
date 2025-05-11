@@ -47,6 +47,7 @@ void FillStructFromProto(VkApplicationInfo& original_struct, const vvk::server::
 void FillStructFromProto(VkAttachmentDescription& original_struct, const vvk::server::VkAttachmentDescription& proto);
 void FillStructFromProto(VkAttachmentReference& original_struct, const vvk::server::VkAttachmentReference& proto);
 void FillStructFromProto(VkBindImageMemoryInfo& original_struct, const vvk::server::VkBindImageMemoryInfo& proto);
+void FillStructFromProto(VkBufferCreateInfo& original_struct, const vvk::server::VkBufferCreateInfo& proto);
 void FillStructFromProto(VkBufferImageCopy& original_struct, const vvk::server::VkBufferImageCopy& proto);
 void FillStructFromProto(VkBufferMemoryBarrier& original_struct, const vvk::server::VkBufferMemoryBarrier& proto);
 void FillStructFromProto(VkClearColorValue& original_struct, const vvk::server::VkClearColorValue& proto);
@@ -879,6 +880,28 @@ void FillStructFromProto(VkBindImageMemoryInfo& original_struct, const vvk::serv
   original_struct.image = reinterpret_cast<VkImage>(proto.image());
   original_struct.memory = reinterpret_cast<VkDeviceMemory>(proto.memory());
   original_struct.memoryOffset = static_cast<VkDeviceSize>(proto.memoryoffset());
+}
+void FillStructFromProto(VkBufferCreateInfo& original_struct, const vvk::server::VkBufferCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+  original_struct.pNext = nullptr;  // Empty pNext chain
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkBufferCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkBufferCreateFlags{};
+  }
+  original_struct.size = static_cast<VkDeviceSize>(proto.size());
+  original_struct.usage = static_cast<VkBufferUsageFlags>(proto.usage());
+  original_struct.sharingMode = static_cast<VkSharingMode>(proto.sharingmode());
+  if (proto.has_queuefamilyindexcount()) {
+    original_struct.queueFamilyIndexCount = proto.queuefamilyindexcount();
+  } else {
+    original_struct.queueFamilyIndexCount = uint32_t{};
+  }
+  uint32_t* original_struct_pQueueFamilyIndices = new uint32_t[proto.pqueuefamilyindices_size()]();
+  original_struct.pQueueFamilyIndices = original_struct_pQueueFamilyIndices;
+  for (int pQueueFamilyIndices_indx = 0; pQueueFamilyIndices_indx < proto.pqueuefamilyindices_size(); pQueueFamilyIndices_indx++) {
+    original_struct_pQueueFamilyIndices[pQueueFamilyIndices_indx] = proto.pqueuefamilyindices(pQueueFamilyIndices_indx);
+  }
 }
 void FillStructFromProto(VkBufferImageCopy& original_struct, const vvk::server::VkBufferImageCopy& proto) {
   original_struct.bufferOffset = static_cast<VkDeviceSize>(proto.bufferoffset());
@@ -3355,5 +3378,23 @@ void UnpackAndExecuteVkSignalSemaphore(vvk::ExecutionContext& context, const vvk
   FillStructFromProto(pSignalInfo, request.vksignalsemaphore().psignalinfo());
   VkResult result = vkSignalSemaphore(reinterpret_cast<VkDevice>(request.vksignalsemaphore().device()), &pSignalInfo);
   response->set_result(result);
+}
+void UnpackAndExecuteVkCreateBuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreateBuffer");
+
+  VkBufferCreateInfo pCreateInfo = {};
+  FillStructFromProto(pCreateInfo, request.vkcreatebuffer().pcreateinfo());
+  VkBuffer client_pBuffer = reinterpret_cast<VkBuffer>(request.vkcreatebuffer().pbuffer());
+  VkBuffer server_pBuffer;
+  VkResult result = vkCreateBuffer(reinterpret_cast<VkDevice>(request.vkcreatebuffer().device()), &pCreateInfo, nullptr, &server_pBuffer);
+  response->mutable_vkcreatebuffer()->set_pbuffer(reinterpret_cast<uint64_t>(server_pBuffer));
+  response->set_result(result);
+  delete[] pCreateInfo.pQueueFamilyIndices;
+}
+void UnpackAndExecuteVkDestroyBuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDestroyBuffer");
+
+  vkDestroyBuffer(reinterpret_cast<VkDevice>(request.vkdestroybuffer().device()), reinterpret_cast<VkBuffer>(request.vkdestroybuffer().buffer()), nullptr);
+  response->set_result(VK_SUCCESS);
 }
 

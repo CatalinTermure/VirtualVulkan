@@ -15,6 +15,7 @@ void FillProtoFromStruct(vvk::server::VkApplicationInfo* proto, const VkApplicat
 void FillProtoFromStruct(vvk::server::VkAttachmentDescription* proto, const VkAttachmentDescription* original_struct);
 void FillProtoFromStruct(vvk::server::VkAttachmentReference* proto, const VkAttachmentReference* original_struct);
 void FillProtoFromStruct(vvk::server::VkBindImageMemoryInfo* proto, const VkBindImageMemoryInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkBufferCreateInfo* proto, const VkBufferCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkBufferImageCopy* proto, const VkBufferImageCopy* original_struct);
 void FillProtoFromStruct(vvk::server::VkBufferMemoryBarrier* proto, const VkBufferMemoryBarrier* original_struct);
 void FillProtoFromStruct(vvk::server::VkClearColorValue* proto, const VkClearColorValue* original_struct);
@@ -164,6 +165,24 @@ void FillProtoFromStruct(vvk::server::VkBindImageMemoryInfo* proto, const VkBind
   proto->set_image(reinterpret_cast<uint64_t>(original_struct->image));
   proto->set_memory(reinterpret_cast<uint64_t>(original_struct->memory));
   proto->set_memoryoffset(static_cast<uint64_t>(original_struct->memoryOffset));
+}
+void FillProtoFromStruct(vvk::server::VkBufferCreateInfo* proto, const VkBufferCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  proto->set_size(static_cast<uint64_t>(original_struct->size));
+  proto->set_usage(original_struct->usage);
+  proto->set_sharingmode(static_cast<vvk::server::VkSharingMode>(original_struct->sharingMode));
+  if (original_struct->queueFamilyIndexCount) {
+    proto->set_queuefamilyindexcount(original_struct->queueFamilyIndexCount);
+  }
+  const size_t proto_pQueueFamilyIndices_length = original_struct->queueFamilyIndexCount;
+  for (int pQueueFamilyIndices_indx = 0; pQueueFamilyIndices_indx < proto_pQueueFamilyIndices_length; pQueueFamilyIndices_indx++) {
+    proto->add_pqueuefamilyindices(original_struct->pQueueFamilyIndices[pQueueFamilyIndices_indx]);
+  }
 }
 void FillProtoFromStruct(vvk::server::VkBufferImageCopy* proto, const VkBufferImageCopy* original_struct) {
   proto->set_bufferoffset(static_cast<uint64_t>(original_struct->bufferOffset));
@@ -3624,6 +3643,41 @@ VkResult PackAndCallVkSignalSemaphore(VvkCommandClientBidiStream& stream, VkDevi
     spdlog::error("Failed to read response from server");
   }
   return static_cast<VkResult>(response.result());
+}
+VkResult PackAndCallVkCreateBuffer(VvkCommandClientBidiStream& stream, VkDevice device, const VkBufferCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkBuffer* pBuffer) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCreateBuffer");
+  request.mutable_vkcreatebuffer()->set_device(reinterpret_cast<uint64_t>(device));
+  FillProtoFromStruct(request.mutable_vkcreatebuffer()->mutable_pcreateinfo(), pCreateInfo);
+  request.mutable_vkcreatebuffer()->set_pbuffer(reinterpret_cast<uint64_t>(*pBuffer));
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pBuffer = reinterpret_cast<VkBuffer>(response.vkcreatebuffer().pbuffer());
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkDestroyBuffer(VvkCommandClientBidiStream& stream, VkDevice device, VkBuffer buffer, const VkAllocationCallbacks* pAllocator) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkDestroyBuffer");
+  request.mutable_vkdestroybuffer()->set_device(reinterpret_cast<uint64_t>(device));
+  if (buffer) {
+    request.mutable_vkdestroybuffer()->set_buffer(reinterpret_cast<uint64_t>(buffer));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
 }
 }  // namespace vvk
 

@@ -74,6 +74,8 @@ const std::unordered_map<
         {"vkGetPhysicalDeviceProperties2", UnpackAndExecuteVkGetPhysicalDeviceProperties2},
         {"vkGetPhysicalDeviceFeatures2", UnpackAndExecuteVkGetPhysicalDeviceFeatures2},
         {"vkSignalSemaphore", UnpackAndExecuteVkSignalSemaphore},
+        {"vkCreateBuffer", UnpackAndExecuteVkCreateBuffer},
+        {"vkDestroyBuffer", UnpackAndExecuteVkDestroyBuffer},
 };
 
 }  // namespace

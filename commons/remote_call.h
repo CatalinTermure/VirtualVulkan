@@ -71,6 +71,8 @@ void PackAndCallVkCmdCopyImageToBuffer(VvkCommandClientBidiStream& stream, VkCom
 void PackAndCallVkGetPhysicalDeviceProperties2(VvkCommandClientBidiStream& stream, VkPhysicalDevice physicalDevice, VkPhysicalDeviceProperties2* pProperties);
 void PackAndCallVkGetPhysicalDeviceFeatures2(VvkCommandClientBidiStream& stream, VkPhysicalDevice physicalDevice, VkPhysicalDeviceFeatures2* pFeatures);
 VkResult PackAndCallVkSignalSemaphore(VvkCommandClientBidiStream& stream, VkDevice device, const VkSemaphoreSignalInfo* pSignalInfo);
+VkResult PackAndCallVkCreateBuffer(VvkCommandClientBidiStream& stream, VkDevice device, const VkBufferCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkBuffer* pBuffer);
+void PackAndCallVkDestroyBuffer(VvkCommandClientBidiStream& stream, VkDevice device, VkBuffer buffer, const VkAllocationCallbacks* pAllocator);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

@@ -276,6 +276,15 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceFeatures2(
 VKAPI_ATTR VkResult VKAPI_CALL SignalSemaphore(
     VkDevice                                    device,
     const VkSemaphoreSignalInfo*                pSignalInfo);
+VKAPI_ATTR VkResult VKAPI_CALL CreateBuffer(
+    VkDevice                                    device,
+    const VkBufferCreateInfo*                   pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkBuffer*                                   pBuffer);
+VKAPI_ATTR void VKAPI_CALL DestroyBuffer(
+    VkDevice                                    device,
+    VkBuffer                                    buffer,
+    const VkAllocationCallbacks*                pAllocator);
 VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(
     VkDevice                                    device,
     const VkSwapchainCreateInfoKHR*             pCreateInfo,
@@ -378,6 +387,8 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkGetPhysicalDeviceProperties2", reinterpret_cast<PFN_vkVoidFunction>(GetPhysicalDeviceProperties2)},
     {"vkGetPhysicalDeviceFeatures2", reinterpret_cast<PFN_vkVoidFunction>(GetPhysicalDeviceFeatures2)},
     {"vkSignalSemaphore", reinterpret_cast<PFN_vkVoidFunction>(SignalSemaphore)},
+    {"vkCreateBuffer", reinterpret_cast<PFN_vkVoidFunction>(CreateBuffer)},
+    {"vkDestroyBuffer", reinterpret_cast<PFN_vkVoidFunction>(DestroyBuffer)},
     {"vkCreateSwapchainKHR", reinterpret_cast<PFN_vkVoidFunction>(CreateSwapchainKHR)},
     {"vkDestroySwapchainKHR", reinterpret_cast<PFN_vkVoidFunction>(DestroySwapchainKHR)},
     {"vkGetSwapchainImagesKHR", reinterpret_cast<PFN_vkVoidFunction>(GetSwapchainImagesKHR)},

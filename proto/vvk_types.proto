@@ -3440,6 +3440,15 @@ message VkSemaphoreCreateInfo {
   optional uint32 flags = 2; // VkSemaphoreCreateFlags flags
 }
 
+message VkBufferCreateInfo {
+  optional uint32 flags = 1; // VkBufferCreateFlags flags
+  uint64 size = 2; // VkDeviceSize size
+  uint32 usage = 3; // VkBufferUsageFlags usage
+  VkSharingMode sharingMode = 4; // VkSharingMode sharingMode
+  optional uint32 queueFamilyIndexCount = 5; // uint32_t queueFamilyIndexCount
+  repeated uint32 pQueueFamilyIndices = 6; // const uint32_t* pQueueFamilyIndices
+}
+
 message VkImageCreateInfo {
   optional uint32 flags = 1; // VkImageCreateFlags flags
   VkImageType imageType = 2; // VkImageType imageType
