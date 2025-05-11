@@ -37,9 +37,7 @@ constexpr uint64_t kVkQueueSubmitLocalSemaphoreTimeout = UINT64_MAX - 2;
 constexpr uint64_t kVkQueueSubmitRemoteSemaphoreTimeout = UINT64_MAX - 3;
 constexpr uint64_t kVkQueuePresentFenceTimeout = UINT64_MAX - 4;
 
-const std::unordered_set<std::string> kAllowedExtensions = {
-    VK_KHR_SURFACE_EXTENSION_NAME,
-};
+const std::unordered_set<std::string> kAllowedExtensions = {};
 
 const std::unordered_set<std::string> kAllowedLayers = {
     "VK_LAYER_KHRONOS_validation",
