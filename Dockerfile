@@ -15,13 +15,13 @@ RUN apt-get update && \
 
 COPY Vulkan-Headers /src/Vulkan-Headers
 WORKDIR /src/Vulkan-Headers
-RUN cmake -S . -B build/
+RUN cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release
 RUN cmake --install build --prefix /usr
 WORKDIR /
 
 COPY Vulkan-Loader /src/Vulkan-Loader
 WORKDIR /src/Vulkan-Loader
-RUN cmake -S . -B build/ -DCMAKE_INSTALL_PREFIX=/usr
+RUN cmake -S . -B build/ -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build build/ --target install
 WORKDIR /
 
@@ -31,7 +31,7 @@ COPY server /src/server
 COPY proto /src/proto
 COPY commons /src/commons
 WORKDIR /src
-RUN cmake -S . -B build/
+RUN cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build build/
 
 EXPOSE 50051
