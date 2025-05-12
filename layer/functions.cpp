@@ -1545,4 +1545,19 @@ VKAPI_ATTR void VKAPI_CALL DestroyDescriptorSetLayout(VkDevice device, VkDescrip
                                           device_info.instance_info().GetRemoteHandle(device), descriptorSetLayout,
                                           pAllocator);
 }
+
+VKAPI_ATTR VkResult VKAPI_CALL CreatePipelineCache(VkDevice device, const VkPipelineCacheCreateInfo* pCreateInfo,
+                                                   const VkAllocationCallbacks* pAllocator,
+                                                   VkPipelineCache* pPipelineCache) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  return PackAndCallVkCreatePipelineCache(device_info.instance_info().command_stream(),
+                                          device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator,
+                                          pPipelineCache);
+}
+VKAPI_ATTR void VKAPI_CALL DestroyPipelineCache(VkDevice device, VkPipelineCache pipelineCache,
+                                                const VkAllocationCallbacks* pAllocator) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  PackAndCallVkDestroyPipelineCache(device_info.instance_info().command_stream(),
+                                    device_info.instance_info().GetRemoteHandle(device), pipelineCache, pAllocator);
+}
 }  // namespace vvk

@@ -82,6 +82,8 @@ VkResult PackAndCallVkCreateSampler(VvkCommandClientBidiStream& stream, VkDevice
 void PackAndCallVkDestroySampler(VvkCommandClientBidiStream& stream, VkDevice device, VkSampler sampler, const VkAllocationCallbacks* pAllocator);
 VkResult PackAndCallVkCreateDescriptorSetLayout(VvkCommandClientBidiStream& stream, VkDevice device, const VkDescriptorSetLayoutCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDescriptorSetLayout* pSetLayout);
 void PackAndCallVkDestroyDescriptorSetLayout(VvkCommandClientBidiStream& stream, VkDevice device, VkDescriptorSetLayout descriptorSetLayout, const VkAllocationCallbacks* pAllocator);
+VkResult PackAndCallVkCreatePipelineCache(VvkCommandClientBidiStream& stream, VkDevice device, const VkPipelineCacheCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkPipelineCache* pPipelineCache);
+void PackAndCallVkDestroyPipelineCache(VvkCommandClientBidiStream& stream, VkDevice device, VkPipelineCache pipelineCache, const VkAllocationCallbacks* pAllocator);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

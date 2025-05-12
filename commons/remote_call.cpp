@@ -74,6 +74,7 @@ void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan13Features* proto, c
 void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan13Properties* proto, const VkPhysicalDeviceVulkan13Properties* original_struct);
 void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan14Features* proto, const VkPhysicalDeviceVulkan14Features* original_struct);
 void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan14Properties* proto, const VkPhysicalDeviceVulkan14Properties* original_struct);
+void FillProtoFromStruct(vvk::server::VkPipelineCacheCreateInfo* proto, const VkPipelineCacheCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkPipelineColorBlendAttachmentState* proto, const VkPipelineColorBlendAttachmentState* original_struct);
 void FillProtoFromStruct(vvk::server::VkPipelineColorBlendStateCreateInfo* proto, const VkPipelineColorBlendStateCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkPipelineDepthStencilStateCreateInfo* proto, const VkPipelineDepthStencilStateCreateInfo* original_struct);
@@ -1274,6 +1275,19 @@ void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan14Properties* proto,
     }
   }
   proto->set_identicalmemorytyperequirements(original_struct->identicalMemoryTypeRequirements);
+}
+void FillProtoFromStruct(vvk::server::VkPipelineCacheCreateInfo* proto, const VkPipelineCacheCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  if (original_struct->initialDataSize) {
+    proto->set_initialdatasize(original_struct->initialDataSize);
+  }
+  const size_t proto_pInitialData_length = original_struct->initialDataSize;
+  proto->set_pinitialdata(original_struct->pInitialData, proto_pInitialData_length);
 }
 void FillProtoFromStruct(vvk::server::VkPipelineColorBlendAttachmentState* proto, const VkPipelineColorBlendAttachmentState* original_struct) {
   proto->set_blendenable(original_struct->blendEnable);
@@ -3891,6 +3905,41 @@ void PackAndCallVkDestroyDescriptorSetLayout(VvkCommandClientBidiStream& stream,
   request.mutable_vkdestroydescriptorsetlayout()->set_device(reinterpret_cast<uint64_t>(device));
   if (descriptorSetLayout) {
     request.mutable_vkdestroydescriptorsetlayout()->set_descriptorsetlayout(reinterpret_cast<uint64_t>(descriptorSetLayout));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
+VkResult PackAndCallVkCreatePipelineCache(VvkCommandClientBidiStream& stream, VkDevice device, const VkPipelineCacheCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkPipelineCache* pPipelineCache) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCreatePipelineCache");
+  request.mutable_vkcreatepipelinecache()->set_device(reinterpret_cast<uint64_t>(device));
+  FillProtoFromStruct(request.mutable_vkcreatepipelinecache()->mutable_pcreateinfo(), pCreateInfo);
+  request.mutable_vkcreatepipelinecache()->set_ppipelinecache(reinterpret_cast<uint64_t>(*pPipelineCache));
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pPipelineCache = reinterpret_cast<VkPipelineCache>(response.vkcreatepipelinecache().ppipelinecache());
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkDestroyPipelineCache(VvkCommandClientBidiStream& stream, VkDevice device, VkPipelineCache pipelineCache, const VkAllocationCallbacks* pAllocator) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkDestroyPipelineCache");
+  request.mutable_vkdestroypipelinecache()->set_device(reinterpret_cast<uint64_t>(device));
+  if (pipelineCache) {
+    request.mutable_vkdestroypipelinecache()->set_pipelinecache(reinterpret_cast<uint64_t>(pipelineCache));
   }
   vvk::server::VvkResponse response;
 

@@ -104,6 +104,8 @@ COMMANDS_TO_GENERATE = [
     "vkDestroySampler",
     "vkCreateDescriptorSetLayout",
     "vkDestroyDescriptorSetLayout",
+    "vkCreatePipelineCache",
+    "vkDestroyPipelineCache",
 ]
 
 TRIVIAL_TYPES: dict[str, TypeInfo] = {

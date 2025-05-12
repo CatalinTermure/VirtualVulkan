@@ -85,6 +85,8 @@ const std::unordered_map<
         {"vkDestroySampler", UnpackAndExecuteVkDestroySampler},
         {"vkCreateDescriptorSetLayout", UnpackAndExecuteVkCreateDescriptorSetLayout},
         {"vkDestroyDescriptorSetLayout", UnpackAndExecuteVkDestroyDescriptorSetLayout},
+        {"vkCreatePipelineCache", UnpackAndExecuteVkCreatePipelineCache},
+        {"vkDestroyPipelineCache", UnpackAndExecuteVkDestroyPipelineCache},
 };
 
 }  // namespace

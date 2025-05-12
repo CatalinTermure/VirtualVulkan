@@ -92,6 +92,7 @@ void FillStructFromProto(VkPhysicalDeviceMemoryProperties& original_struct, cons
 void FillStructFromProto(VkPhysicalDeviceProperties& original_struct, const vvk::server::VkPhysicalDeviceProperties& proto);
 void FillStructFromProto(VkPhysicalDeviceProperties2& original_struct, const vvk::server::VkPhysicalDeviceProperties2& proto);
 void FillStructFromProto(VkPhysicalDeviceSparseProperties& original_struct, const vvk::server::VkPhysicalDeviceSparseProperties& proto);
+void FillStructFromProto(VkPipelineCacheCreateInfo& original_struct, const vvk::server::VkPipelineCacheCreateInfo& proto);
 void FillStructFromProto(VkPipelineColorBlendAttachmentState& original_struct, const vvk::server::VkPipelineColorBlendAttachmentState& proto);
 void FillStructFromProto(VkPipelineColorBlendStateCreateInfo& original_struct, const vvk::server::VkPipelineColorBlendStateCreateInfo& proto);
 void FillStructFromProto(VkPipelineDepthStencilStateCreateInfo& original_struct, const vvk::server::VkPipelineDepthStencilStateCreateInfo& proto);
@@ -1808,6 +1809,21 @@ void FillStructFromProto(VkPhysicalDeviceSparseProperties& original_struct, cons
   original_struct.residencyStandard3DBlockShape = proto.residencystandard3dblockshape();
   original_struct.residencyAlignedMipSize = proto.residencyalignedmipsize();
   original_struct.residencyNonResidentStrict = proto.residencynonresidentstrict();
+}
+void FillStructFromProto(VkPipelineCacheCreateInfo& original_struct, const vvk::server::VkPipelineCacheCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+  original_struct.pNext = nullptr;  // Empty pNext chain
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkPipelineCacheCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkPipelineCacheCreateFlags{};
+  }
+  if (proto.has_initialdatasize()) {
+    original_struct.initialDataSize = proto.initialdatasize();
+  } else {
+    original_struct.initialDataSize = size_t{};
+  }
+  original_struct.pInitialData = proto.pinitialdata().data();
 }
 void FillStructFromProto(VkPipelineColorBlendAttachmentState& original_struct, const vvk::server::VkPipelineColorBlendAttachmentState& proto) {
   original_struct.blendEnable = proto.blendenable();
@@ -3527,6 +3543,23 @@ void UnpackAndExecuteVkDestroyDescriptorSetLayout(vvk::ExecutionContext& context
   assert(request.method() == "vkDestroyDescriptorSetLayout");
 
   vkDestroyDescriptorSetLayout(reinterpret_cast<VkDevice>(request.vkdestroydescriptorsetlayout().device()), reinterpret_cast<VkDescriptorSetLayout>(request.vkdestroydescriptorsetlayout().descriptorsetlayout()), nullptr);
+  response->set_result(VK_SUCCESS);
+}
+void UnpackAndExecuteVkCreatePipelineCache(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreatePipelineCache");
+
+  VkPipelineCacheCreateInfo pCreateInfo = {};
+  FillStructFromProto(pCreateInfo, request.vkcreatepipelinecache().pcreateinfo());
+  VkPipelineCache client_pPipelineCache = reinterpret_cast<VkPipelineCache>(request.vkcreatepipelinecache().ppipelinecache());
+  VkPipelineCache server_pPipelineCache;
+  VkResult result = vkCreatePipelineCache(reinterpret_cast<VkDevice>(request.vkcreatepipelinecache().device()), &pCreateInfo, nullptr, &server_pPipelineCache);
+  response->mutable_vkcreatepipelinecache()->set_ppipelinecache(reinterpret_cast<uint64_t>(server_pPipelineCache));
+  response->set_result(result);
+}
+void UnpackAndExecuteVkDestroyPipelineCache(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDestroyPipelineCache");
+
+  vkDestroyPipelineCache(reinterpret_cast<VkDevice>(request.vkdestroypipelinecache().device()), reinterpret_cast<VkPipelineCache>(request.vkdestroypipelinecache().pipelinecache()), nullptr);
   response->set_result(VK_SUCCESS);
 }
 

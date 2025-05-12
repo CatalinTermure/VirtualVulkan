@@ -3495,6 +3495,12 @@ message VkShaderModuleCreateInfo {
   repeated uint32 pCode = 3; // const uint32_t* pCode
 }
 
+message VkPipelineCacheCreateInfo {
+  optional uint32 flags = 1; // VkPipelineCacheCreateFlags flags
+  optional uint64 initialDataSize = 2; // size_t initialDataSize
+  bytes pInitialData = 3; // const void* pInitialData
+}
+
 message VkSpecializationMapEntry {
   uint32 constantID = 1; // uint32_t constantID
   uint32 offset = 2; // uint32_t offset

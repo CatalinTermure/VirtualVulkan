@@ -328,6 +328,15 @@ VKAPI_ATTR void VKAPI_CALL DestroyDescriptorSetLayout(
     VkDevice                                    device,
     VkDescriptorSetLayout                       descriptorSetLayout,
     const VkAllocationCallbacks*                pAllocator);
+VKAPI_ATTR VkResult VKAPI_CALL CreatePipelineCache(
+    VkDevice                                    device,
+    const VkPipelineCacheCreateInfo*            pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkPipelineCache*                            pPipelineCache);
+VKAPI_ATTR void VKAPI_CALL DestroyPipelineCache(
+    VkDevice                                    device,
+    VkPipelineCache                             pipelineCache,
+    const VkAllocationCallbacks*                pAllocator);
 VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(
     VkDevice                                    device,
     const VkSwapchainCreateInfoKHR*             pCreateInfo,
@@ -441,6 +450,8 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkDestroySampler", reinterpret_cast<PFN_vkVoidFunction>(DestroySampler)},
     {"vkCreateDescriptorSetLayout", reinterpret_cast<PFN_vkVoidFunction>(CreateDescriptorSetLayout)},
     {"vkDestroyDescriptorSetLayout", reinterpret_cast<PFN_vkVoidFunction>(DestroyDescriptorSetLayout)},
+    {"vkCreatePipelineCache", reinterpret_cast<PFN_vkVoidFunction>(CreatePipelineCache)},
+    {"vkDestroyPipelineCache", reinterpret_cast<PFN_vkVoidFunction>(DestroyPipelineCache)},
     {"vkCreateSwapchainKHR", reinterpret_cast<PFN_vkVoidFunction>(CreateSwapchainKHR)},
     {"vkDestroySwapchainKHR", reinterpret_cast<PFN_vkVoidFunction>(DestroySwapchainKHR)},
     {"vkGetSwapchainImagesKHR", reinterpret_cast<PFN_vkVoidFunction>(GetSwapchainImagesKHR)},
