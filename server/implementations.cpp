@@ -59,6 +59,8 @@ void FillStructFromProto(VkCommandBufferInheritanceInfo& original_struct, const 
 void FillStructFromProto(VkCommandPoolCreateInfo& original_struct, const vvk::server::VkCommandPoolCreateInfo& proto);
 void FillStructFromProto(VkComponentMapping& original_struct, const vvk::server::VkComponentMapping& proto);
 void FillStructFromProto(VkConformanceVersion& original_struct, const vvk::server::VkConformanceVersion& proto);
+void FillStructFromProto(VkDescriptorSetLayoutBinding& original_struct, const vvk::server::VkDescriptorSetLayoutBinding& proto);
+void FillStructFromProto(VkDescriptorSetLayoutCreateInfo& original_struct, const vvk::server::VkDescriptorSetLayoutCreateInfo& proto);
 void FillStructFromProto(VkDeviceCreateInfo& original_struct, const vvk::server::VkDeviceCreateInfo& proto);
 void FillStructFromProto(VkDeviceQueueCreateInfo& original_struct, const vvk::server::VkDeviceQueueCreateInfo& proto);
 void FillStructFromProto(VkExtent2D& original_struct, const vvk::server::VkExtent2D& proto);
@@ -1020,6 +1022,41 @@ void FillStructFromProto(VkConformanceVersion& original_struct, const vvk::serve
   original_struct.minor = static_cast<uint8_t>(proto.minor());
   original_struct.subminor = static_cast<uint8_t>(proto.subminor());
   original_struct.patch = static_cast<uint8_t>(proto.patch());
+}
+void FillStructFromProto(VkDescriptorSetLayoutBinding& original_struct, const vvk::server::VkDescriptorSetLayoutBinding& proto) {
+  original_struct.binding = proto.binding();
+  original_struct.descriptorType = static_cast<VkDescriptorType>(proto.descriptortype());
+  if (proto.has_descriptorcount()) {
+    original_struct.descriptorCount = proto.descriptorcount();
+  } else {
+    original_struct.descriptorCount = uint32_t{};
+  }
+  original_struct.stageFlags = static_cast<VkShaderStageFlags>(proto.stageflags());
+  if (proto.pimmutablesamplers_size()) {
+    original_struct.pImmutableSamplers = reinterpret_cast<const VkSampler*>(proto.pimmutablesamplers().data());
+  } else {
+    original_struct.pImmutableSamplers = nullptr;
+  }
+}
+void FillStructFromProto(VkDescriptorSetLayoutCreateInfo& original_struct, const vvk::server::VkDescriptorSetLayoutCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+  original_struct.pNext = nullptr;  // Empty pNext chain
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkDescriptorSetLayoutCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkDescriptorSetLayoutCreateFlags{};
+  }
+  if (proto.has_bindingcount()) {
+    original_struct.bindingCount = proto.bindingcount();
+  } else {
+    original_struct.bindingCount = uint32_t{};
+  }
+  VkDescriptorSetLayoutBinding* original_struct_pBindings = new VkDescriptorSetLayoutBinding[proto.pbindings_size()]();
+  original_struct.pBindings = original_struct_pBindings;
+  for (int pBindings_indx = 0; pBindings_indx < proto.pbindings_size(); pBindings_indx++) {
+    VkDescriptorSetLayoutBinding &original_struct_pBindings_i = original_struct_pBindings[pBindings_indx];
+    FillStructFromProto(original_struct_pBindings_i, proto.pbindings(pBindings_indx));
+  }
 }
 void FillStructFromProto(VkDeviceCreateInfo& original_struct, const vvk::server::VkDeviceCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -3467,5 +3504,23 @@ void UnpackAndExecuteVkCreateSampler(vvk::ExecutionContext& context, const vvk::
   VkResult result = vkCreateSampler(reinterpret_cast<VkDevice>(request.vkcreatesampler().device()), &pCreateInfo, nullptr, &server_pSampler);
   response->mutable_vkcreatesampler()->set_psampler(reinterpret_cast<uint64_t>(server_pSampler));
   response->set_result(result);
+}
+void UnpackAndExecuteVkCreateDescriptorSetLayout(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreateDescriptorSetLayout");
+
+  VkDescriptorSetLayoutCreateInfo pCreateInfo = {};
+  FillStructFromProto(pCreateInfo, request.vkcreatedescriptorsetlayout().pcreateinfo());
+  VkDescriptorSetLayout client_pSetLayout = reinterpret_cast<VkDescriptorSetLayout>(request.vkcreatedescriptorsetlayout().psetlayout());
+  VkDescriptorSetLayout server_pSetLayout;
+  VkResult result = vkCreateDescriptorSetLayout(reinterpret_cast<VkDevice>(request.vkcreatedescriptorsetlayout().device()), &pCreateInfo, nullptr, &server_pSetLayout);
+  response->mutable_vkcreatedescriptorsetlayout()->set_psetlayout(reinterpret_cast<uint64_t>(server_pSetLayout));
+  response->set_result(result);
+  delete[] pCreateInfo.pBindings;
+}
+void UnpackAndExecuteVkDestroyDescriptorSetLayout(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDestroyDescriptorSetLayout");
+
+  vkDestroyDescriptorSetLayout(reinterpret_cast<VkDevice>(request.vkdestroydescriptorsetlayout().device()), reinterpret_cast<VkDescriptorSetLayout>(request.vkdestroydescriptorsetlayout().descriptorsetlayout()), nullptr);
+  response->set_result(VK_SUCCESS);
 }
 

@@ -1523,4 +1523,21 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSampler(VkDevice device, const VkSamplerCre
                                     device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator,
                                     pSampler);
 }
+
+VKAPI_ATTR VkResult VKAPI_CALL CreateDescriptorSetLayout(VkDevice device,
+                                                         const VkDescriptorSetLayoutCreateInfo* pCreateInfo,
+                                                         const VkAllocationCallbacks* pAllocator,
+                                                         VkDescriptorSetLayout* pSetLayout) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  return PackAndCallVkCreateDescriptorSetLayout(device_info.instance_info().command_stream(),
+                                                device_info.instance_info().GetRemoteHandle(device), pCreateInfo,
+                                                pAllocator, pSetLayout);
+}
+VKAPI_ATTR void VKAPI_CALL DestroyDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout,
+                                                      const VkAllocationCallbacks* pAllocator) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  PackAndCallVkDestroyDescriptorSetLayout(device_info.instance_info().command_stream(),
+                                          device_info.instance_info().GetRemoteHandle(device), descriptorSetLayout,
+                                          pAllocator);
+}
 }  // namespace vvk

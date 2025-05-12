@@ -27,6 +27,8 @@ void FillProtoFromStruct(vvk::server::VkCommandBufferInheritanceInfo* proto, con
 void FillProtoFromStruct(vvk::server::VkCommandPoolCreateInfo* proto, const VkCommandPoolCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkComponentMapping* proto, const VkComponentMapping* original_struct);
 void FillProtoFromStruct(vvk::server::VkConformanceVersion* proto, const VkConformanceVersion* original_struct);
+void FillProtoFromStruct(vvk::server::VkDescriptorSetLayoutBinding* proto, const VkDescriptorSetLayoutBinding* original_struct);
+void FillProtoFromStruct(vvk::server::VkDescriptorSetLayoutCreateInfo* proto, const VkDescriptorSetLayoutCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkDeviceCreateInfo* proto, const VkDeviceCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkDeviceQueueCreateInfo* proto, const VkDeviceQueueCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkExtent2D* proto, const VkExtent2D* original_struct);
@@ -285,6 +287,35 @@ void FillProtoFromStruct(vvk::server::VkConformanceVersion* proto, const VkConfo
   proto->set_minor(static_cast<uint32_t>(original_struct->minor));
   proto->set_subminor(static_cast<uint32_t>(original_struct->subminor));
   proto->set_patch(static_cast<uint32_t>(original_struct->patch));
+}
+void FillProtoFromStruct(vvk::server::VkDescriptorSetLayoutBinding* proto, const VkDescriptorSetLayoutBinding* original_struct) {
+  proto->set_binding(original_struct->binding);
+  proto->set_descriptortype(static_cast<vvk::server::VkDescriptorType>(original_struct->descriptorType));
+  if (original_struct->descriptorCount) {
+    proto->set_descriptorcount(original_struct->descriptorCount);
+  }
+  proto->set_stageflags(original_struct->stageFlags);
+  if (original_struct->pImmutableSamplers) {
+    const size_t proto_pImmutableSamplers_length = original_struct->descriptorCount;
+    for (int pImmutableSamplers_indx = 0; pImmutableSamplers_indx < proto_pImmutableSamplers_length; pImmutableSamplers_indx++) {
+      proto->add_pimmutablesamplers(reinterpret_cast<uint64_t>(original_struct->pImmutableSamplers[pImmutableSamplers_indx]));
+    }
+  }
+}
+void FillProtoFromStruct(vvk::server::VkDescriptorSetLayoutCreateInfo* proto, const VkDescriptorSetLayoutCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  if (original_struct->bindingCount) {
+    proto->set_bindingcount(original_struct->bindingCount);
+  }
+  const size_t proto_pBindings_length = original_struct->bindingCount;
+  for (int pBindings_indx = 0; pBindings_indx < proto_pBindings_length; pBindings_indx++) {
+    FillProtoFromStruct(proto->add_pbindings(), (&original_struct->pBindings[pBindings_indx]));
+  }
 }
 void FillProtoFromStruct(vvk::server::VkDeviceCreateInfo* proto, const VkDeviceCreateInfo* original_struct) {
   if (original_struct->pNext) {
@@ -3818,6 +3849,41 @@ VkResult PackAndCallVkCreateSampler(VvkCommandClientBidiStream& stream, VkDevice
   }
   *pSampler = reinterpret_cast<VkSampler>(response.vkcreatesampler().psampler());
   return static_cast<VkResult>(response.result());
+}
+VkResult PackAndCallVkCreateDescriptorSetLayout(VvkCommandClientBidiStream& stream, VkDevice device, const VkDescriptorSetLayoutCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDescriptorSetLayout* pSetLayout) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCreateDescriptorSetLayout");
+  request.mutable_vkcreatedescriptorsetlayout()->set_device(reinterpret_cast<uint64_t>(device));
+  FillProtoFromStruct(request.mutable_vkcreatedescriptorsetlayout()->mutable_pcreateinfo(), pCreateInfo);
+  request.mutable_vkcreatedescriptorsetlayout()->set_psetlayout(reinterpret_cast<uint64_t>(*pSetLayout));
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pSetLayout = reinterpret_cast<VkDescriptorSetLayout>(response.vkcreatedescriptorsetlayout().psetlayout());
+  return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkDestroyDescriptorSetLayout(VvkCommandClientBidiStream& stream, VkDevice device, VkDescriptorSetLayout descriptorSetLayout, const VkAllocationCallbacks* pAllocator) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkDestroyDescriptorSetLayout");
+  request.mutable_vkdestroydescriptorsetlayout()->set_device(reinterpret_cast<uint64_t>(device));
+  if (descriptorSetLayout) {
+    request.mutable_vkdestroydescriptorsetlayout()->set_descriptorsetlayout(reinterpret_cast<uint64_t>(descriptorSetLayout));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
 }
 }  // namespace vvk
 

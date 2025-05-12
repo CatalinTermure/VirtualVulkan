@@ -315,6 +315,15 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSampler(
     const VkSamplerCreateInfo*                  pCreateInfo,
     const VkAllocationCallbacks*                pAllocator,
     VkSampler*                                  pSampler);
+VKAPI_ATTR VkResult VKAPI_CALL CreateDescriptorSetLayout(
+    VkDevice                                    device,
+    const VkDescriptorSetLayoutCreateInfo*      pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkDescriptorSetLayout*                      pSetLayout);
+VKAPI_ATTR void VKAPI_CALL DestroyDescriptorSetLayout(
+    VkDevice                                    device,
+    VkDescriptorSetLayout                       descriptorSetLayout,
+    const VkAllocationCallbacks*                pAllocator);
 VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(
     VkDevice                                    device,
     const VkSwapchainCreateInfoKHR*             pCreateInfo,
@@ -425,6 +434,8 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkUnmapMemory", reinterpret_cast<PFN_vkVoidFunction>(UnmapMemory)},
     {"vkCmdBindVertexBuffers", reinterpret_cast<PFN_vkVoidFunction>(CmdBindVertexBuffers)},
     {"vkCreateSampler", reinterpret_cast<PFN_vkVoidFunction>(CreateSampler)},
+    {"vkCreateDescriptorSetLayout", reinterpret_cast<PFN_vkVoidFunction>(CreateDescriptorSetLayout)},
+    {"vkDestroyDescriptorSetLayout", reinterpret_cast<PFN_vkVoidFunction>(DestroyDescriptorSetLayout)},
     {"vkCreateSwapchainKHR", reinterpret_cast<PFN_vkVoidFunction>(CreateSwapchainKHR)},
     {"vkDestroySwapchainKHR", reinterpret_cast<PFN_vkVoidFunction>(DestroySwapchainKHR)},
     {"vkGetSwapchainImagesKHR", reinterpret_cast<PFN_vkVoidFunction>(GetSwapchainImagesKHR)},

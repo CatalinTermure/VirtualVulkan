@@ -3692,6 +3692,20 @@ message VkSamplerCreateInfo {
   bool unnormalizedCoordinates = 16; // VkBool32 unnormalizedCoordinates
 }
 
+message VkDescriptorSetLayoutBinding {
+  uint32 binding = 1; // uint32_t binding
+  VkDescriptorType descriptorType = 2; // VkDescriptorType descriptorType
+  optional uint32 descriptorCount = 3; // uint32_t descriptorCount
+  uint32 stageFlags = 4; // VkShaderStageFlags stageFlags
+  repeated uint64 pImmutableSamplers = 5; // const VkSampler* pImmutableSamplers
+}
+
+message VkDescriptorSetLayoutCreateInfo {
+  optional uint32 flags = 1; // VkDescriptorSetLayoutCreateFlags flags
+  optional uint32 bindingCount = 2; // uint32_t bindingCount
+  repeated VkDescriptorSetLayoutBinding pBindings = 3; // const VkDescriptorSetLayoutBinding* pBindings
+}
+
 message VkAttachmentDescription {
   optional uint32 flags = 1; // VkAttachmentDescriptionFlags flags
   VkFormat format = 2; // VkFormat format

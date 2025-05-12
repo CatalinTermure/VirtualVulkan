@@ -101,6 +101,8 @@ COMMANDS_TO_GENERATE = [
     "vkUnmapMemory",
     "vkCmdBindVertexBuffers",
     "vkCreateSampler",
+    "vkCreateDescriptorSetLayout",
+    "vkDestroyDescriptorSetLayout",
 ]
 
 TRIVIAL_TYPES: dict[str, TypeInfo] = {
