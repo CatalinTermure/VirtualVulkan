@@ -3698,6 +3698,18 @@ message VkSamplerCreateInfo {
   bool unnormalizedCoordinates = 16; // VkBool32 unnormalizedCoordinates
 }
 
+message VkDescriptorPoolSize {
+  VkDescriptorType type = 1; // VkDescriptorType type
+  uint32 descriptorCount = 2; // uint32_t descriptorCount
+}
+
+message VkDescriptorPoolCreateInfo {
+  optional uint32 flags = 1; // VkDescriptorPoolCreateFlags flags
+  uint32 maxSets = 2; // uint32_t maxSets
+  optional uint32 poolSizeCount = 3; // uint32_t poolSizeCount
+  repeated VkDescriptorPoolSize pPoolSizes = 4; // const VkDescriptorPoolSize* pPoolSizes
+}
+
 message VkDescriptorSetLayoutBinding {
   uint32 binding = 1; // uint32_t binding
   VkDescriptorType descriptorType = 2; // VkDescriptorType descriptorType

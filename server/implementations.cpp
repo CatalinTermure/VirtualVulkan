@@ -59,6 +59,8 @@ void FillStructFromProto(VkCommandBufferInheritanceInfo& original_struct, const 
 void FillStructFromProto(VkCommandPoolCreateInfo& original_struct, const vvk::server::VkCommandPoolCreateInfo& proto);
 void FillStructFromProto(VkComponentMapping& original_struct, const vvk::server::VkComponentMapping& proto);
 void FillStructFromProto(VkConformanceVersion& original_struct, const vvk::server::VkConformanceVersion& proto);
+void FillStructFromProto(VkDescriptorPoolCreateInfo& original_struct, const vvk::server::VkDescriptorPoolCreateInfo& proto);
+void FillStructFromProto(VkDescriptorPoolSize& original_struct, const vvk::server::VkDescriptorPoolSize& proto);
 void FillStructFromProto(VkDescriptorSetLayoutBinding& original_struct, const vvk::server::VkDescriptorSetLayoutBinding& proto);
 void FillStructFromProto(VkDescriptorSetLayoutCreateInfo& original_struct, const vvk::server::VkDescriptorSetLayoutCreateInfo& proto);
 void FillStructFromProto(VkDeviceCreateInfo& original_struct, const vvk::server::VkDeviceCreateInfo& proto);
@@ -1023,6 +1025,31 @@ void FillStructFromProto(VkConformanceVersion& original_struct, const vvk::serve
   original_struct.minor = static_cast<uint8_t>(proto.minor());
   original_struct.subminor = static_cast<uint8_t>(proto.subminor());
   original_struct.patch = static_cast<uint8_t>(proto.patch());
+}
+void FillStructFromProto(VkDescriptorPoolCreateInfo& original_struct, const vvk::server::VkDescriptorPoolCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+  original_struct.pNext = nullptr;  // Empty pNext chain
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkDescriptorPoolCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkDescriptorPoolCreateFlags{};
+  }
+  original_struct.maxSets = proto.maxsets();
+  if (proto.has_poolsizecount()) {
+    original_struct.poolSizeCount = proto.poolsizecount();
+  } else {
+    original_struct.poolSizeCount = uint32_t{};
+  }
+  VkDescriptorPoolSize* original_struct_pPoolSizes = new VkDescriptorPoolSize[proto.ppoolsizes_size()]();
+  original_struct.pPoolSizes = original_struct_pPoolSizes;
+  for (int pPoolSizes_indx = 0; pPoolSizes_indx < proto.ppoolsizes_size(); pPoolSizes_indx++) {
+    VkDescriptorPoolSize &original_struct_pPoolSizes_i = original_struct_pPoolSizes[pPoolSizes_indx];
+    FillStructFromProto(original_struct_pPoolSizes_i, proto.ppoolsizes(pPoolSizes_indx));
+  }
+}
+void FillStructFromProto(VkDescriptorPoolSize& original_struct, const vvk::server::VkDescriptorPoolSize& proto) {
+  original_struct.type = static_cast<VkDescriptorType>(proto.type());
+  original_struct.descriptorCount = proto.descriptorcount();
 }
 void FillStructFromProto(VkDescriptorSetLayoutBinding& original_struct, const vvk::server::VkDescriptorSetLayoutBinding& proto) {
   original_struct.binding = proto.binding();
@@ -3560,6 +3587,24 @@ void UnpackAndExecuteVkDestroyPipelineCache(vvk::ExecutionContext& context, cons
   assert(request.method() == "vkDestroyPipelineCache");
 
   vkDestroyPipelineCache(reinterpret_cast<VkDevice>(request.vkdestroypipelinecache().device()), reinterpret_cast<VkPipelineCache>(request.vkdestroypipelinecache().pipelinecache()), nullptr);
+  response->set_result(VK_SUCCESS);
+}
+void UnpackAndExecuteVkCreateDescriptorPool(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreateDescriptorPool");
+
+  VkDescriptorPoolCreateInfo pCreateInfo = {};
+  FillStructFromProto(pCreateInfo, request.vkcreatedescriptorpool().pcreateinfo());
+  VkDescriptorPool client_pDescriptorPool = reinterpret_cast<VkDescriptorPool>(request.vkcreatedescriptorpool().pdescriptorpool());
+  VkDescriptorPool server_pDescriptorPool;
+  VkResult result = vkCreateDescriptorPool(reinterpret_cast<VkDevice>(request.vkcreatedescriptorpool().device()), &pCreateInfo, nullptr, &server_pDescriptorPool);
+  response->mutable_vkcreatedescriptorpool()->set_pdescriptorpool(reinterpret_cast<uint64_t>(server_pDescriptorPool));
+  response->set_result(result);
+  delete[] pCreateInfo.pPoolSizes;
+}
+void UnpackAndExecuteVkDestroyDescriptorPool(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDestroyDescriptorPool");
+
+  vkDestroyDescriptorPool(reinterpret_cast<VkDevice>(request.vkdestroydescriptorpool().device()), reinterpret_cast<VkDescriptorPool>(request.vkdestroydescriptorpool().descriptorpool()), nullptr);
   response->set_result(VK_SUCCESS);
 }
 
