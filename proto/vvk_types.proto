@@ -3710,6 +3710,12 @@ message VkDescriptorPoolCreateInfo {
   repeated VkDescriptorPoolSize pPoolSizes = 4; // const VkDescriptorPoolSize* pPoolSizes
 }
 
+message VkDescriptorSetAllocateInfo {
+  uint64 descriptorPool = 1; // VkDescriptorPool descriptorPool
+  uint32 descriptorSetCount = 2; // uint32_t descriptorSetCount
+  repeated uint64 pSetLayouts = 3; // const VkDescriptorSetLayout* pSetLayouts
+}
+
 message VkDescriptorSetLayoutBinding {
   uint32 binding = 1; // uint32_t binding
   VkDescriptorType descriptorType = 2; // VkDescriptorType descriptorType

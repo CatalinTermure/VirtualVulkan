@@ -89,6 +89,8 @@ const std::unordered_map<
         {"vkDestroyPipelineCache", UnpackAndExecuteVkDestroyPipelineCache},
         {"vkCreateDescriptorPool", UnpackAndExecuteVkCreateDescriptorPool},
         {"vkDestroyDescriptorPool", UnpackAndExecuteVkDestroyDescriptorPool},
+        {"vkAllocateDescriptorSets", UnpackAndExecuteVkAllocateDescriptorSets},
+        {"vkFreeDescriptorSets", UnpackAndExecuteVkFreeDescriptorSets},
 };
 
 }  // namespace

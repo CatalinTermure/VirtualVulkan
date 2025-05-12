@@ -61,6 +61,7 @@ void FillStructFromProto(VkComponentMapping& original_struct, const vvk::server:
 void FillStructFromProto(VkConformanceVersion& original_struct, const vvk::server::VkConformanceVersion& proto);
 void FillStructFromProto(VkDescriptorPoolCreateInfo& original_struct, const vvk::server::VkDescriptorPoolCreateInfo& proto);
 void FillStructFromProto(VkDescriptorPoolSize& original_struct, const vvk::server::VkDescriptorPoolSize& proto);
+void FillStructFromProto(VkDescriptorSetAllocateInfo& original_struct, const vvk::server::VkDescriptorSetAllocateInfo& proto);
 void FillStructFromProto(VkDescriptorSetLayoutBinding& original_struct, const vvk::server::VkDescriptorSetLayoutBinding& proto);
 void FillStructFromProto(VkDescriptorSetLayoutCreateInfo& original_struct, const vvk::server::VkDescriptorSetLayoutCreateInfo& proto);
 void FillStructFromProto(VkDeviceCreateInfo& original_struct, const vvk::server::VkDeviceCreateInfo& proto);
@@ -1050,6 +1051,13 @@ void FillStructFromProto(VkDescriptorPoolCreateInfo& original_struct, const vvk:
 void FillStructFromProto(VkDescriptorPoolSize& original_struct, const vvk::server::VkDescriptorPoolSize& proto) {
   original_struct.type = static_cast<VkDescriptorType>(proto.type());
   original_struct.descriptorCount = proto.descriptorcount();
+}
+void FillStructFromProto(VkDescriptorSetAllocateInfo& original_struct, const vvk::server::VkDescriptorSetAllocateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+  original_struct.pNext = nullptr;  // Empty pNext chain
+  original_struct.descriptorPool = reinterpret_cast<VkDescriptorPool>(proto.descriptorpool());
+  original_struct.descriptorSetCount = proto.descriptorsetcount();
+  original_struct.pSetLayouts = reinterpret_cast<const VkDescriptorSetLayout*>(proto.psetlayouts().data());
 }
 void FillStructFromProto(VkDescriptorSetLayoutBinding& original_struct, const vvk::server::VkDescriptorSetLayoutBinding& proto) {
   original_struct.binding = proto.binding();
@@ -3606,5 +3614,23 @@ void UnpackAndExecuteVkDestroyDescriptorPool(vvk::ExecutionContext& context, con
 
   vkDestroyDescriptorPool(reinterpret_cast<VkDevice>(request.vkdestroydescriptorpool().device()), reinterpret_cast<VkDescriptorPool>(request.vkdestroydescriptorpool().descriptorpool()), nullptr);
   response->set_result(VK_SUCCESS);
+}
+void UnpackAndExecuteVkAllocateDescriptorSets(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkAllocateDescriptorSets");
+
+  VkDescriptorSetAllocateInfo pAllocateInfo = {};
+  FillStructFromProto(pAllocateInfo, request.vkallocatedescriptorsets().pallocateinfo());
+  std::vector<VkDescriptorSet> pDescriptorSets(request.vkallocatedescriptorsets().pallocateinfo().descriptorsetcount());
+  VkResult result = vkAllocateDescriptorSets(reinterpret_cast<VkDevice>(request.vkallocatedescriptorsets().device()), &pAllocateInfo, pDescriptorSets.data());
+  for (VkDescriptorSet pDescriptorSets_elem : pDescriptorSets) {
+    response->mutable_vkallocatedescriptorsets()->add_pdescriptorsets(reinterpret_cast<uint64_t>(pDescriptorSets_elem));
+  }
+  response->set_result(result);
+}
+void UnpackAndExecuteVkFreeDescriptorSets(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkFreeDescriptorSets");
+
+  VkResult result = vkFreeDescriptorSets(reinterpret_cast<VkDevice>(request.vkfreedescriptorsets().device()), reinterpret_cast<VkDescriptorPool>(request.vkfreedescriptorsets().descriptorpool()), request.vkfreedescriptorsets().descriptorsetcount(), reinterpret_cast<const VkDescriptorSet*>(request.vkfreedescriptorsets().pdescriptorsets().data()));
+  response->set_result(result);
 }
 

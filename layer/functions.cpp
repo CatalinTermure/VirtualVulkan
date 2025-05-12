@@ -1575,4 +1575,19 @@ VKAPI_ATTR void VKAPI_CALL DestroyDescriptorPool(VkDevice device, VkDescriptorPo
   PackAndCallVkDestroyDescriptorPool(device_info.instance_info().command_stream(),
                                      device_info.instance_info().GetRemoteHandle(device), descriptorPool, pAllocator);
 }
+
+VKAPI_ATTR VkResult VKAPI_CALL AllocateDescriptorSets(VkDevice device, const VkDescriptorSetAllocateInfo* pAllocateInfo,
+                                                      VkDescriptorSet* pDescriptorSets) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  return PackAndCallVkAllocateDescriptorSets(device_info.instance_info().command_stream(),
+                                             device_info.instance_info().GetRemoteHandle(device), pAllocateInfo,
+                                             pDescriptorSets);
+}
+VKAPI_ATTR VkResult VKAPI_CALL FreeDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool,
+                                                  uint32_t descriptorSetCount, const VkDescriptorSet* pDescriptorSets) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  return PackAndCallVkFreeDescriptorSets(device_info.instance_info().command_stream(),
+                                         device_info.instance_info().GetRemoteHandle(device), descriptorPool,
+                                         descriptorSetCount, pDescriptorSets);
+}
 }  // namespace vvk

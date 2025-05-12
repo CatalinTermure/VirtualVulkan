@@ -29,6 +29,7 @@ void FillProtoFromStruct(vvk::server::VkComponentMapping* proto, const VkCompone
 void FillProtoFromStruct(vvk::server::VkConformanceVersion* proto, const VkConformanceVersion* original_struct);
 void FillProtoFromStruct(vvk::server::VkDescriptorPoolCreateInfo* proto, const VkDescriptorPoolCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkDescriptorPoolSize* proto, const VkDescriptorPoolSize* original_struct);
+void FillProtoFromStruct(vvk::server::VkDescriptorSetAllocateInfo* proto, const VkDescriptorSetAllocateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkDescriptorSetLayoutBinding* proto, const VkDescriptorSetLayoutBinding* original_struct);
 void FillProtoFromStruct(vvk::server::VkDescriptorSetLayoutCreateInfo* proto, const VkDescriptorSetLayoutCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkDeviceCreateInfo* proto, const VkDeviceCreateInfo* original_struct);
@@ -310,6 +311,17 @@ void FillProtoFromStruct(vvk::server::VkDescriptorPoolCreateInfo* proto, const V
 void FillProtoFromStruct(vvk::server::VkDescriptorPoolSize* proto, const VkDescriptorPoolSize* original_struct) {
   proto->set_type(static_cast<vvk::server::VkDescriptorType>(original_struct->type));
   proto->set_descriptorcount(original_struct->descriptorCount);
+}
+void FillProtoFromStruct(vvk::server::VkDescriptorSetAllocateInfo* proto, const VkDescriptorSetAllocateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_descriptorpool(reinterpret_cast<uint64_t>(original_struct->descriptorPool));
+  proto->set_descriptorsetcount(original_struct->descriptorSetCount);
+  const size_t proto_pSetLayouts_length = original_struct->descriptorSetCount;
+  for (int pSetLayouts_indx = 0; pSetLayouts_indx < proto_pSetLayouts_length; pSetLayouts_indx++) {
+    proto->add_psetlayouts(reinterpret_cast<uint64_t>(original_struct->pSetLayouts[pSetLayouts_indx]));
+  }
 }
 void FillProtoFromStruct(vvk::server::VkDescriptorSetLayoutBinding* proto, const VkDescriptorSetLayoutBinding* original_struct) {
   proto->set_binding(original_struct->binding);
@@ -4007,6 +4019,45 @@ void PackAndCallVkDestroyDescriptorPool(VvkCommandClientBidiStream& stream, VkDe
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
+}
+VkResult PackAndCallVkAllocateDescriptorSets(VvkCommandClientBidiStream& stream, VkDevice device, const VkDescriptorSetAllocateInfo* pAllocateInfo, VkDescriptorSet* pDescriptorSets) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkAllocateDescriptorSets");
+  request.mutable_vkallocatedescriptorsets()->set_device(reinterpret_cast<uint64_t>(device));
+  FillProtoFromStruct(request.mutable_vkallocatedescriptorsets()->mutable_pallocateinfo(), pAllocateInfo);
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  for (int i = 0; i < pAllocateInfo->descriptorSetCount; i++) {
+    pDescriptorSets[i] = reinterpret_cast<VkDescriptorSet>(response.vkallocatedescriptorsets().pdescriptorsets(i));
+  }
+  return static_cast<VkResult>(response.result());
+}
+VkResult PackAndCallVkFreeDescriptorSets(VvkCommandClientBidiStream& stream, VkDevice device, VkDescriptorPool descriptorPool, uint32_t descriptorSetCount, const VkDescriptorSet* pDescriptorSets) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkFreeDescriptorSets");
+  request.mutable_vkfreedescriptorsets()->set_device(reinterpret_cast<uint64_t>(device));
+  request.mutable_vkfreedescriptorsets()->set_descriptorpool(reinterpret_cast<uint64_t>(descriptorPool));
+  request.mutable_vkfreedescriptorsets()->set_descriptorsetcount(descriptorSetCount);
+  for (int i = 0; i < descriptorSetCount; i++) {
+    request.mutable_vkfreedescriptorsets()->add_pdescriptorsets(reinterpret_cast<uint64_t>(pDescriptorSets[i]));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  return static_cast<VkResult>(response.result());
 }
 }  // namespace vvk
 
