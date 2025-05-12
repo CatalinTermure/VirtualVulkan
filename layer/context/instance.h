@@ -38,6 +38,8 @@ class InstanceInfo {
     local_to_remote_handle_.emplace(reinterpret_cast<void*>(local_handle), reinterpret_cast<void*>(remote_handle));
   }
 
+  void RemoveRemoteHandle(void* local_handle) { local_to_remote_handle_.erase(local_handle); }
+
   InstanceInfo(const InstanceInfo&) = delete;
   InstanceInfo& operator=(const InstanceInfo&) = delete;
 

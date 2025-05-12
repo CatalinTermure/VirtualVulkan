@@ -45,6 +45,8 @@ struct DeviceInfo {
     local_to_remote_handle_.emplace(reinterpret_cast<void*>(local_handle), reinterpret_cast<void*>(remote_handle));
   }
 
+  void RemoveRemoteHandle(void* local_handle) { local_to_remote_handle_.erase(local_handle); }
+
   bool IsLocalFence(VkFence fence) const {
     return local_synchronization_primitives_.find(reinterpret_cast<void*>(fence)) !=
            local_synchronization_primitives_.end();

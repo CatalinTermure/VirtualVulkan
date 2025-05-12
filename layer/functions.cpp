@@ -185,6 +185,14 @@ VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(VkDevice device, VkSwapchainKHR s
                                                const VkAllocationCallbacks* pAllocator) {
   RemoveSwapchainInfo(swapchain);
   DeviceInfo& device_info = GetDeviceInfo(device);
+
+  auto local_images = GetLocalImagesForSwapchain(device, swapchain);
+  if (!local_images) {
+    throw std::runtime_error("Failed to get local images for swapchain when destroying it");
+  }
+  for (auto local_image : *local_images) {
+    device_info.RemoveRemoteHandle(local_image);
+  }
   device_info.presentation_thread()->swapchains.erase(
       std::remove_if(device_info.presentation_thread()->swapchains.begin(),
                      device_info.presentation_thread()->swapchains.end(),
@@ -689,6 +697,8 @@ VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCall
   auto& reader_writer = device_info.instance_info().command_stream();
   PackAndCallVkDestroyDevice(reader_writer, device_info.instance_info().GetRemoteHandle(device), pAllocator);
 
+  device_info.instance_info().RemoveRemoteHandle(device);
+
   RemoveDeviceInfo(device);
 }
 
@@ -784,6 +794,7 @@ VKAPI_ATTR void VKAPI_CALL DestroyFence(VkDevice device, VkFence fence, const Vk
   PackAndCallVkDestroyFence(device_info.instance_info().command_stream(),
                             device_info.instance_info().GetRemoteHandle(device), device_info.GetRemoteHandle(fence),
                             pAllocator);
+  device_info.RemoveRemoteHandle(fence);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphoreCreateInfo* pCreateInfo,
@@ -990,6 +1001,7 @@ VKAPI_ATTR void VKAPI_CALL FreeCommandBuffers(VkDevice device, VkCommandPool com
     RemoveCommandBuffer(pCommandBuffers[i]);
     device_info.swapchain_render_command_buffers.erase(pCommandBuffers[i]);
     remote_command_buffers.push_back(device_info.GetRemoteHandle(pCommandBuffers[i]));
+    device_info.RemoveRemoteHandle(pCommandBuffers[i]);
   }
   PackAndCallVkFreeCommandBuffers(device_info.instance_info().command_stream(),
                                   device_info.instance_info().GetRemoteHandle(device), commandPool, commandBufferCount,
