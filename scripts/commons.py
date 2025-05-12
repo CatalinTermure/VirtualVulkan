@@ -101,6 +101,7 @@ COMMANDS_TO_GENERATE = [
     "vkUnmapMemory",
     "vkCmdBindVertexBuffers",
     "vkCreateSampler",
+    "vkDestroySampler",
     "vkCreateDescriptorSetLayout",
     "vkDestroyDescriptorSetLayout",
 ]

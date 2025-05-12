@@ -3505,6 +3505,12 @@ void UnpackAndExecuteVkCreateSampler(vvk::ExecutionContext& context, const vvk::
   response->mutable_vkcreatesampler()->set_psampler(reinterpret_cast<uint64_t>(server_pSampler));
   response->set_result(result);
 }
+void UnpackAndExecuteVkDestroySampler(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkDestroySampler");
+
+  vkDestroySampler(reinterpret_cast<VkDevice>(request.vkdestroysampler().device()), reinterpret_cast<VkSampler>(request.vkdestroysampler().sampler()), nullptr);
+  response->set_result(VK_SUCCESS);
+}
 void UnpackAndExecuteVkCreateDescriptorSetLayout(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateDescriptorSetLayout");
 

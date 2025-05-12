@@ -3850,6 +3850,23 @@ VkResult PackAndCallVkCreateSampler(VvkCommandClientBidiStream& stream, VkDevice
   *pSampler = reinterpret_cast<VkSampler>(response.vkcreatesampler().psampler());
   return static_cast<VkResult>(response.result());
 }
+void PackAndCallVkDestroySampler(VvkCommandClientBidiStream& stream, VkDevice device, VkSampler sampler, const VkAllocationCallbacks* pAllocator) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkDestroySampler");
+  request.mutable_vkdestroysampler()->set_device(reinterpret_cast<uint64_t>(device));
+  if (sampler) {
+    request.mutable_vkdestroysampler()->set_sampler(reinterpret_cast<uint64_t>(sampler));
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 VkResult PackAndCallVkCreateDescriptorSetLayout(VvkCommandClientBidiStream& stream, VkDevice device, const VkDescriptorSetLayoutCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDescriptorSetLayout* pSetLayout) {
   vvk::server::VvkRequest request;
   request.set_method("vkCreateDescriptorSetLayout");
