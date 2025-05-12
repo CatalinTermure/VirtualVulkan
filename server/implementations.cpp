@@ -106,6 +106,7 @@ void FillStructFromProto(VkPushConstantRange& original_struct, const vvk::server
 void FillStructFromProto(VkRect2D& original_struct, const vvk::server::VkRect2D& proto);
 void FillStructFromProto(VkRenderPassBeginInfo& original_struct, const vvk::server::VkRenderPassBeginInfo& proto);
 void FillStructFromProto(VkRenderPassCreateInfo& original_struct, const vvk::server::VkRenderPassCreateInfo& proto);
+void FillStructFromProto(VkSamplerCreateInfo& original_struct, const vvk::server::VkSamplerCreateInfo& proto);
 void FillStructFromProto(VkSemaphoreCreateInfo& original_struct, const vvk::server::VkSemaphoreCreateInfo& proto);
 void FillStructFromProto(VkSemaphoreSignalInfo& original_struct, const vvk::server::VkSemaphoreSignalInfo& proto);
 void FillStructFromProto(VkShaderModuleCreateInfo& original_struct, const vvk::server::VkShaderModuleCreateInfo& proto);
@@ -2112,6 +2113,30 @@ void FillStructFromProto(VkRenderPassCreateInfo& original_struct, const vvk::ser
     FillStructFromProto(original_struct_pDependencies_i, proto.pdependencies(pDependencies_indx));
   }
 }
+void FillStructFromProto(VkSamplerCreateInfo& original_struct, const vvk::server::VkSamplerCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+  original_struct.pNext = nullptr;  // Empty pNext chain
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkSamplerCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkSamplerCreateFlags{};
+  }
+  original_struct.magFilter = static_cast<VkFilter>(proto.magfilter());
+  original_struct.minFilter = static_cast<VkFilter>(proto.minfilter());
+  original_struct.mipmapMode = static_cast<VkSamplerMipmapMode>(proto.mipmapmode());
+  original_struct.addressModeU = static_cast<VkSamplerAddressMode>(proto.addressmodeu());
+  original_struct.addressModeV = static_cast<VkSamplerAddressMode>(proto.addressmodev());
+  original_struct.addressModeW = static_cast<VkSamplerAddressMode>(proto.addressmodew());
+  original_struct.mipLodBias = proto.miplodbias();
+  original_struct.anisotropyEnable = proto.anisotropyenable();
+  original_struct.maxAnisotropy = proto.maxanisotropy();
+  original_struct.compareEnable = proto.compareenable();
+  original_struct.compareOp = static_cast<VkCompareOp>(proto.compareop());
+  original_struct.minLod = proto.minlod();
+  original_struct.maxLod = proto.maxlod();
+  original_struct.borderColor = static_cast<VkBorderColor>(proto.bordercolor());
+  original_struct.unnormalizedCoordinates = proto.unnormalizedcoordinates();
+}
 void FillStructFromProto(VkSemaphoreCreateInfo& original_struct, const vvk::server::VkSemaphoreCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
   VkBaseOutStructure* base = reinterpret_cast<VkBaseOutStructure*>(&original_struct);
@@ -3431,5 +3456,16 @@ void UnpackAndExecuteVkCmdBindVertexBuffers(vvk::ExecutionContext& context, cons
 
   vkCmdBindVertexBuffers(reinterpret_cast<VkCommandBuffer>(request.vkcmdbindvertexbuffers().commandbuffer()), request.vkcmdbindvertexbuffers().firstbinding(), request.vkcmdbindvertexbuffers().bindingcount(), reinterpret_cast<const VkBuffer*>(request.vkcmdbindvertexbuffers().pbuffers().data()), reinterpret_cast<const VkDeviceSize*>(request.vkcmdbindvertexbuffers().poffsets().data()));
   response->set_result(VK_SUCCESS);
+}
+void UnpackAndExecuteVkCreateSampler(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreateSampler");
+
+  VkSamplerCreateInfo pCreateInfo = {};
+  FillStructFromProto(pCreateInfo, request.vkcreatesampler().pcreateinfo());
+  VkSampler client_pSampler = reinterpret_cast<VkSampler>(request.vkcreatesampler().psampler());
+  VkSampler server_pSampler;
+  VkResult result = vkCreateSampler(reinterpret_cast<VkDevice>(request.vkcreatesampler().device()), &pCreateInfo, nullptr, &server_pSampler);
+  response->mutable_vkcreatesampler()->set_psampler(reinterpret_cast<uint64_t>(server_pSampler));
+  response->set_result(result);
 }
 

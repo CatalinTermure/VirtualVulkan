@@ -89,6 +89,7 @@ void FillProtoFromStruct(vvk::server::VkPushConstantRange* proto, const VkPushCo
 void FillProtoFromStruct(vvk::server::VkRect2D* proto, const VkRect2D* original_struct);
 void FillProtoFromStruct(vvk::server::VkRenderPassBeginInfo* proto, const VkRenderPassBeginInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkRenderPassCreateInfo* proto, const VkRenderPassCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkSamplerCreateInfo* proto, const VkSamplerCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkSemaphoreCreateInfo* proto, const VkSemaphoreCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkSemaphoreSignalInfo* proto, const VkSemaphoreSignalInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkSemaphoreTypeCreateInfo* proto, const VkSemaphoreTypeCreateInfo* original_struct);
@@ -1517,6 +1518,29 @@ void FillProtoFromStruct(vvk::server::VkRenderPassCreateInfo* proto, const VkRen
   for (int pDependencies_indx = 0; pDependencies_indx < proto_pDependencies_length; pDependencies_indx++) {
     FillProtoFromStruct(proto->add_pdependencies(), (&original_struct->pDependencies[pDependencies_indx]));
   }
+}
+void FillProtoFromStruct(vvk::server::VkSamplerCreateInfo* proto, const VkSamplerCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  proto->set_magfilter(static_cast<vvk::server::VkFilter>(original_struct->magFilter));
+  proto->set_minfilter(static_cast<vvk::server::VkFilter>(original_struct->minFilter));
+  proto->set_mipmapmode(static_cast<vvk::server::VkSamplerMipmapMode>(original_struct->mipmapMode));
+  proto->set_addressmodeu(static_cast<vvk::server::VkSamplerAddressMode>(original_struct->addressModeU));
+  proto->set_addressmodev(static_cast<vvk::server::VkSamplerAddressMode>(original_struct->addressModeV));
+  proto->set_addressmodew(static_cast<vvk::server::VkSamplerAddressMode>(original_struct->addressModeW));
+  proto->set_miplodbias(original_struct->mipLodBias);
+  proto->set_anisotropyenable(original_struct->anisotropyEnable);
+  proto->set_maxanisotropy(original_struct->maxAnisotropy);
+  proto->set_compareenable(original_struct->compareEnable);
+  proto->set_compareop(static_cast<vvk::server::VkCompareOp>(original_struct->compareOp));
+  proto->set_minlod(original_struct->minLod);
+  proto->set_maxlod(original_struct->maxLod);
+  proto->set_bordercolor(static_cast<vvk::server::VkBorderColor>(original_struct->borderColor));
+  proto->set_unnormalizedcoordinates(original_struct->unnormalizedCoordinates);
 }
 void FillProtoFromStruct(vvk::server::VkSemaphoreCreateInfo* proto, const VkSemaphoreCreateInfo* original_struct) {
   if (original_struct->pNext) {
@@ -3776,6 +3800,24 @@ void PackAndCallVkCmdBindVertexBuffers(VvkCommandClientBidiStream& stream, VkCom
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
+}
+VkResult PackAndCallVkCreateSampler(VvkCommandClientBidiStream& stream, VkDevice device, const VkSamplerCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSampler* pSampler) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCreateSampler");
+  request.mutable_vkcreatesampler()->set_device(reinterpret_cast<uint64_t>(device));
+  FillProtoFromStruct(request.mutable_vkcreatesampler()->mutable_pcreateinfo(), pCreateInfo);
+  request.mutable_vkcreatesampler()->set_psampler(reinterpret_cast<uint64_t>(*pSampler));
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  *pSampler = reinterpret_cast<VkSampler>(response.vkcreatesampler().psampler());
+  return static_cast<VkResult>(response.result());
 }
 }  // namespace vvk
 

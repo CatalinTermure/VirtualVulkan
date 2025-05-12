@@ -3673,6 +3673,25 @@ message VkPipelineLayoutCreateInfo {
   repeated VkPushConstantRange pPushConstantRanges = 5; // const VkPushConstantRange* pPushConstantRanges
 }
 
+message VkSamplerCreateInfo {
+  optional uint32 flags = 1; // VkSamplerCreateFlags flags
+  VkFilter magFilter = 2; // VkFilter magFilter
+  VkFilter minFilter = 3; // VkFilter minFilter
+  VkSamplerMipmapMode mipmapMode = 4; // VkSamplerMipmapMode mipmapMode
+  VkSamplerAddressMode addressModeU = 5; // VkSamplerAddressMode addressModeU
+  VkSamplerAddressMode addressModeV = 6; // VkSamplerAddressMode addressModeV
+  VkSamplerAddressMode addressModeW = 7; // VkSamplerAddressMode addressModeW
+  float mipLodBias = 8; // float mipLodBias
+  bool anisotropyEnable = 9; // VkBool32 anisotropyEnable
+  float maxAnisotropy = 10; // float maxAnisotropy
+  bool compareEnable = 11; // VkBool32 compareEnable
+  VkCompareOp compareOp = 12; // VkCompareOp compareOp
+  float minLod = 13; // float minLod
+  float maxLod = 14; // float maxLod
+  VkBorderColor borderColor = 15; // VkBorderColor borderColor
+  bool unnormalizedCoordinates = 16; // VkBool32 unnormalizedCoordinates
+}
+
 message VkAttachmentDescription {
   optional uint32 flags = 1; // VkAttachmentDescriptionFlags flags
   VkFormat format = 2; // VkFormat format

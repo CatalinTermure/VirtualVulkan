@@ -143,4 +143,6 @@ void UnpackAndExecuteVkUnmapMemory(vvk::ExecutionContext& context,
                                       const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
 void UnpackAndExecuteVkCmdBindVertexBuffers(vvk::ExecutionContext& context,
                                       const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
+void UnpackAndExecuteVkCreateSampler(vvk::ExecutionContext& context,
+                                      const vvk::server::VvkRequest &request, vvk::server::VvkResponse* response);
 #endif  // VVK_SERVER_IMPLEMENTATIONS_H

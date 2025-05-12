@@ -78,6 +78,7 @@ VkResult PackAndCallVkBindBufferMemory(VvkCommandClientBidiStream& stream, VkDev
 VkResult PackAndCallVkMapMemory(VvkCommandClientBidiStream& stream, VkDevice device, VkDeviceMemory memory, VkDeviceSize offset, VkDeviceSize size, VkMemoryMapFlags flags, void** ppData);
 void PackAndCallVkUnmapMemory(VvkCommandClientBidiStream& stream, VkDevice device, VkDeviceMemory memory);
 void PackAndCallVkCmdBindVertexBuffers(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t firstBinding, uint32_t bindingCount, const VkBuffer* pBuffers, const VkDeviceSize* pOffsets);
+VkResult PackAndCallVkCreateSampler(VvkCommandClientBidiStream& stream, VkDevice device, const VkSamplerCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSampler* pSampler);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

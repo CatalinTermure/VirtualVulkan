@@ -1515,4 +1515,12 @@ VKAPI_ATTR void VKAPI_CALL CmdBindVertexBuffers(VkCommandBuffer commandBuffer, u
                                     device_info.GetRemoteHandle(commandBuffer), firstBinding, bindingCount, pBuffers,
                                     pOffsets);
 }
+
+VKAPI_ATTR VkResult VKAPI_CALL CreateSampler(VkDevice device, const VkSamplerCreateInfo* pCreateInfo,
+                                             const VkAllocationCallbacks* pAllocator, VkSampler* pSampler) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  return PackAndCallVkCreateSampler(device_info.instance_info().command_stream(),
+                                    device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator,
+                                    pSampler);
+}
 }  // namespace vvk

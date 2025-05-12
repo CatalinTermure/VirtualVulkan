@@ -310,6 +310,11 @@ VKAPI_ATTR void VKAPI_CALL CmdBindVertexBuffers(
     uint32_t                                    bindingCount,
     const VkBuffer*                             pBuffers,
     const VkDeviceSize*                         pOffsets);
+VKAPI_ATTR VkResult VKAPI_CALL CreateSampler(
+    VkDevice                                    device,
+    const VkSamplerCreateInfo*                  pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkSampler*                                  pSampler);
 VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(
     VkDevice                                    device,
     const VkSwapchainCreateInfoKHR*             pCreateInfo,
@@ -419,6 +424,7 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkMapMemory", reinterpret_cast<PFN_vkVoidFunction>(MapMemory)},
     {"vkUnmapMemory", reinterpret_cast<PFN_vkVoidFunction>(UnmapMemory)},
     {"vkCmdBindVertexBuffers", reinterpret_cast<PFN_vkVoidFunction>(CmdBindVertexBuffers)},
+    {"vkCreateSampler", reinterpret_cast<PFN_vkVoidFunction>(CreateSampler)},
     {"vkCreateSwapchainKHR", reinterpret_cast<PFN_vkVoidFunction>(CreateSwapchainKHR)},
     {"vkDestroySwapchainKHR", reinterpret_cast<PFN_vkVoidFunction>(DestroySwapchainKHR)},
     {"vkGetSwapchainImagesKHR", reinterpret_cast<PFN_vkVoidFunction>(GetSwapchainImagesKHR)},
