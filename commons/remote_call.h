@@ -88,6 +88,7 @@ VkResult PackAndCallVkCreateDescriptorPool(VvkCommandClientBidiStream& stream, V
 void PackAndCallVkDestroyDescriptorPool(VvkCommandClientBidiStream& stream, VkDevice device, VkDescriptorPool descriptorPool, const VkAllocationCallbacks* pAllocator);
 VkResult PackAndCallVkAllocateDescriptorSets(VvkCommandClientBidiStream& stream, VkDevice device, const VkDescriptorSetAllocateInfo* pAllocateInfo, VkDescriptorSet* pDescriptorSets);
 VkResult PackAndCallVkFreeDescriptorSets(VvkCommandClientBidiStream& stream, VkDevice device, VkDescriptorPool descriptorPool, uint32_t descriptorSetCount, const VkDescriptorSet* pDescriptorSets);
+void PackAndCallVkUpdateDescriptorSets(VvkCommandClientBidiStream& stream, VkDevice device, uint32_t descriptorWriteCount, const VkWriteDescriptorSet* pDescriptorWrites, uint32_t descriptorCopyCount, const VkCopyDescriptorSet* pDescriptorCopies);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

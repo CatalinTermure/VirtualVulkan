@@ -27,6 +27,9 @@ void FillProtoFromStruct(vvk::server::VkCommandBufferInheritanceInfo* proto, con
 void FillProtoFromStruct(vvk::server::VkCommandPoolCreateInfo* proto, const VkCommandPoolCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkComponentMapping* proto, const VkComponentMapping* original_struct);
 void FillProtoFromStruct(vvk::server::VkConformanceVersion* proto, const VkConformanceVersion* original_struct);
+void FillProtoFromStruct(vvk::server::VkCopyDescriptorSet* proto, const VkCopyDescriptorSet* original_struct);
+void FillProtoFromStruct(vvk::server::VkDescriptorBufferInfo* proto, const VkDescriptorBufferInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkDescriptorImageInfo* proto, const VkDescriptorImageInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkDescriptorPoolCreateInfo* proto, const VkDescriptorPoolCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkDescriptorPoolSize* proto, const VkDescriptorPoolSize* original_struct);
 void FillProtoFromStruct(vvk::server::VkDescriptorSetAllocateInfo* proto, const VkDescriptorSetAllocateInfo* original_struct);
@@ -111,6 +114,7 @@ void FillProtoFromStruct(vvk::server::VkTimelineSemaphoreSubmitInfo* proto, cons
 void FillProtoFromStruct(vvk::server::VkVertexInputAttributeDescription* proto, const VkVertexInputAttributeDescription* original_struct);
 void FillProtoFromStruct(vvk::server::VkVertexInputBindingDescription* proto, const VkVertexInputBindingDescription* original_struct);
 void FillProtoFromStruct(vvk::server::VkViewport* proto, const VkViewport* original_struct);
+void FillProtoFromStruct(vvk::server::VkWriteDescriptorSet* proto, const VkWriteDescriptorSet* original_struct);
 void FillStructFromProto(VkConformanceVersion& original_struct, const vvk::server::VkConformanceVersion& proto);
 void FillStructFromProto(VkExtent3D& original_struct, const vvk::server::VkExtent3D& proto);
 void FillStructFromProto(VkMemoryHeap& original_struct, const vvk::server::VkMemoryHeap& proto);
@@ -291,6 +295,30 @@ void FillProtoFromStruct(vvk::server::VkConformanceVersion* proto, const VkConfo
   proto->set_minor(static_cast<uint32_t>(original_struct->minor));
   proto->set_subminor(static_cast<uint32_t>(original_struct->subminor));
   proto->set_patch(static_cast<uint32_t>(original_struct->patch));
+}
+void FillProtoFromStruct(vvk::server::VkCopyDescriptorSet* proto, const VkCopyDescriptorSet* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_srcset(reinterpret_cast<uint64_t>(original_struct->srcSet));
+  proto->set_srcbinding(original_struct->srcBinding);
+  proto->set_srcarrayelement(original_struct->srcArrayElement);
+  proto->set_dstset(reinterpret_cast<uint64_t>(original_struct->dstSet));
+  proto->set_dstbinding(original_struct->dstBinding);
+  proto->set_dstarrayelement(original_struct->dstArrayElement);
+  proto->set_descriptorcount(original_struct->descriptorCount);
+}
+void FillProtoFromStruct(vvk::server::VkDescriptorBufferInfo* proto, const VkDescriptorBufferInfo* original_struct) {
+  if (original_struct->buffer) {
+    proto->set_buffer(reinterpret_cast<uint64_t>(original_struct->buffer));
+  }
+  proto->set_offset(static_cast<uint64_t>(original_struct->offset));
+  proto->set_range(static_cast<uint64_t>(original_struct->range));
+}
+void FillProtoFromStruct(vvk::server::VkDescriptorImageInfo* proto, const VkDescriptorImageInfo* original_struct) {
+  proto->set_sampler(reinterpret_cast<uint64_t>(original_struct->sampler));
+  proto->set_imageview(reinterpret_cast<uint64_t>(original_struct->imageView));
+  proto->set_imagelayout(static_cast<vvk::server::VkImageLayout>(original_struct->imageLayout));
 }
 void FillProtoFromStruct(vvk::server::VkDescriptorPoolCreateInfo* proto, const VkDescriptorPoolCreateInfo* original_struct) {
   if (original_struct->pNext) {
@@ -1834,6 +1862,28 @@ void FillProtoFromStruct(vvk::server::VkViewport* proto, const VkViewport* origi
   proto->set_height(original_struct->height);
   proto->set_mindepth(original_struct->minDepth);
   proto->set_maxdepth(original_struct->maxDepth);
+}
+void FillProtoFromStruct(vvk::server::VkWriteDescriptorSet* proto, const VkWriteDescriptorSet* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_dstset(reinterpret_cast<uint64_t>(original_struct->dstSet));
+  proto->set_dstbinding(original_struct->dstBinding);
+  proto->set_dstarrayelement(original_struct->dstArrayElement);
+  proto->set_descriptorcount(original_struct->descriptorCount);
+  proto->set_descriptortype(static_cast<vvk::server::VkDescriptorType>(original_struct->descriptorType));
+  const size_t proto_pImageInfo_length = original_struct->pImageInfo == nullptr ? 0 : original_struct->descriptorCount;
+  for (int pImageInfo_indx = 0; pImageInfo_indx < proto_pImageInfo_length; pImageInfo_indx++) {
+    FillProtoFromStruct(proto->add_pimageinfo(), (&original_struct->pImageInfo[pImageInfo_indx]));
+  }
+  const size_t proto_pBufferInfo_length = original_struct->pBufferInfo == nullptr ? 0 : original_struct->descriptorCount;
+  for (int pBufferInfo_indx = 0; pBufferInfo_indx < proto_pBufferInfo_length; pBufferInfo_indx++) {
+    FillProtoFromStruct(proto->add_pbufferinfo(), (&original_struct->pBufferInfo[pBufferInfo_indx]));
+  }
+  const size_t proto_pTexelBufferView_length = original_struct->pTexelBufferView == nullptr ? 0 : original_struct->descriptorCount;
+  for (int pTexelBufferView_indx = 0; pTexelBufferView_indx < proto_pTexelBufferView_length; pTexelBufferView_indx++) {
+    proto->add_ptexelbufferview(reinterpret_cast<uint64_t>(original_struct->pTexelBufferView[pTexelBufferView_indx]));
+  }
 }
 void FillStructFromProto(VkConformanceVersion& original_struct, const vvk::server::VkConformanceVersion& proto) {
   original_struct.major = static_cast<uint8_t>(proto.major());
@@ -4058,6 +4108,32 @@ VkResult PackAndCallVkFreeDescriptorSets(VvkCommandClientBidiStream& stream, VkD
     spdlog::error("Failed to read response from server");
   }
   return static_cast<VkResult>(response.result());
+}
+void PackAndCallVkUpdateDescriptorSets(VvkCommandClientBidiStream& stream, VkDevice device, uint32_t descriptorWriteCount, const VkWriteDescriptorSet* pDescriptorWrites, uint32_t descriptorCopyCount, const VkCopyDescriptorSet* pDescriptorCopies) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkUpdateDescriptorSets");
+  request.mutable_vkupdatedescriptorsets()->set_device(reinterpret_cast<uint64_t>(device));
+  if (descriptorWriteCount) {
+    request.mutable_vkupdatedescriptorsets()->set_descriptorwritecount(descriptorWriteCount);
+  }
+  for (int pDescriptorWrites_indx = 0; pDescriptorWrites_indx < descriptorWriteCount; pDescriptorWrites_indx++) {
+    FillProtoFromStruct(request.mutable_vkupdatedescriptorsets()->add_pdescriptorwrites(), &pDescriptorWrites[pDescriptorWrites_indx]);
+  }
+  if (descriptorCopyCount) {
+    request.mutable_vkupdatedescriptorsets()->set_descriptorcopycount(descriptorCopyCount);
+  }
+  for (int pDescriptorCopies_indx = 0; pDescriptorCopies_indx < descriptorCopyCount; pDescriptorCopies_indx++) {
+    FillProtoFromStruct(request.mutable_vkupdatedescriptorsets()->add_pdescriptorcopies(), &pDescriptorCopies[pDescriptorCopies_indx]);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
 }
 }  // namespace vvk
 

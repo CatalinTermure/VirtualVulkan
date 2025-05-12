@@ -110,6 +110,7 @@ COMMANDS_TO_GENERATE = [
     "vkDestroyDescriptorPool",
     "vkAllocateDescriptorSets",
     "vkFreeDescriptorSets",
+    "vkUpdateDescriptorSets",
 ]
 
 TRIVIAL_TYPES: dict[str, TypeInfo] = {
@@ -534,9 +535,14 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
             generator.required_functions.add(
                 f'FillProtoFromStruct/{member.type}')
         else:
-            out.append(access_length_member_from_struct(
-                generator, struct_type, name, struct_accessor, member))
             index_name = f'{member.name}_indx'
+            if struct_type == 'VkWriteDescriptorSet':
+                # genuinely a special case, see the Vulkan spec for VkWriteDescriptorSet::descriptorCount
+                out.append(
+                    f'  const size_t {name}_{member.name}_length = {struct_accessor}->{member.name} == nullptr ? 0 : {struct_accessor}->{member.length};\n')
+            else:
+                out.append(access_length_member_from_struct(
+                    generator, struct_type, name, struct_accessor, member))
             out.append(
                 f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
             out.append(
@@ -546,8 +552,13 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
             out.append('  }\n')
     elif member.pointer and member.type in generator.vk.handles:
         assert (member.const)
-        out.append(access_length_member_from_struct(
-            generator, struct_type, name, struct_accessor, member))
+        if struct_type == 'VkWriteDescriptorSet':
+            # genuinely a special case, see the Vulkan spec for VkWriteDescriptorSet::descriptorCount
+            out.append(
+                f'  const size_t {name}_{member.name}_length = {struct_accessor}->{member.name} == nullptr ? 0 : {struct_accessor}->{member.length};\n')
+        else:
+            out.append(access_length_member_from_struct(
+                generator, struct_type, name, struct_accessor, member))
         index_name = f'{member.name}_indx'
         out.append(
             f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')

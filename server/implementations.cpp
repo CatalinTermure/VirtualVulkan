@@ -59,6 +59,9 @@ void FillStructFromProto(VkCommandBufferInheritanceInfo& original_struct, const 
 void FillStructFromProto(VkCommandPoolCreateInfo& original_struct, const vvk::server::VkCommandPoolCreateInfo& proto);
 void FillStructFromProto(VkComponentMapping& original_struct, const vvk::server::VkComponentMapping& proto);
 void FillStructFromProto(VkConformanceVersion& original_struct, const vvk::server::VkConformanceVersion& proto);
+void FillStructFromProto(VkCopyDescriptorSet& original_struct, const vvk::server::VkCopyDescriptorSet& proto);
+void FillStructFromProto(VkDescriptorBufferInfo& original_struct, const vvk::server::VkDescriptorBufferInfo& proto);
+void FillStructFromProto(VkDescriptorImageInfo& original_struct, const vvk::server::VkDescriptorImageInfo& proto);
 void FillStructFromProto(VkDescriptorPoolCreateInfo& original_struct, const vvk::server::VkDescriptorPoolCreateInfo& proto);
 void FillStructFromProto(VkDescriptorPoolSize& original_struct, const vvk::server::VkDescriptorPoolSize& proto);
 void FillStructFromProto(VkDescriptorSetAllocateInfo& original_struct, const vvk::server::VkDescriptorSetAllocateInfo& proto);
@@ -126,6 +129,7 @@ void FillStructFromProto(VkSubresourceLayout& original_struct, const vvk::server
 void FillStructFromProto(VkVertexInputAttributeDescription& original_struct, const vvk::server::VkVertexInputAttributeDescription& proto);
 void FillStructFromProto(VkVertexInputBindingDescription& original_struct, const vvk::server::VkVertexInputBindingDescription& proto);
 void FillStructFromProto(VkViewport& original_struct, const vvk::server::VkViewport& proto);
+void FillStructFromProto(VkWriteDescriptorSet& original_struct, const vvk::server::VkWriteDescriptorSet& proto);
 void FillStructFromProtoNoPNext(VkPhysicalDeviceProtectedMemoryFeatures& original_struct, const vvk::server::VkPhysicalDeviceProtectedMemoryFeatures& proto);
 void FillStructFromProtoNoPNext(VkPhysicalDeviceProtectedMemoryProperties& original_struct, const vvk::server::VkPhysicalDeviceProtectedMemoryProperties& proto);
 void FillStructFromProtoNoPNext(VkPhysicalDeviceShaderDrawParametersFeatures& original_struct, const vvk::server::VkPhysicalDeviceShaderDrawParametersFeatures& proto);
@@ -1026,6 +1030,31 @@ void FillStructFromProto(VkConformanceVersion& original_struct, const vvk::serve
   original_struct.minor = static_cast<uint8_t>(proto.minor());
   original_struct.subminor = static_cast<uint8_t>(proto.subminor());
   original_struct.patch = static_cast<uint8_t>(proto.patch());
+}
+void FillStructFromProto(VkCopyDescriptorSet& original_struct, const vvk::server::VkCopyDescriptorSet& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
+  original_struct.pNext = nullptr;  // Empty pNext chain
+  original_struct.srcSet = reinterpret_cast<VkDescriptorSet>(proto.srcset());
+  original_struct.srcBinding = proto.srcbinding();
+  original_struct.srcArrayElement = proto.srcarrayelement();
+  original_struct.dstSet = reinterpret_cast<VkDescriptorSet>(proto.dstset());
+  original_struct.dstBinding = proto.dstbinding();
+  original_struct.dstArrayElement = proto.dstarrayelement();
+  original_struct.descriptorCount = proto.descriptorcount();
+}
+void FillStructFromProto(VkDescriptorBufferInfo& original_struct, const vvk::server::VkDescriptorBufferInfo& proto) {
+  if (proto.has_buffer()) {
+    original_struct.buffer = reinterpret_cast<VkBuffer>(proto.buffer());
+  } else {
+    original_struct.buffer = VkBuffer{};
+  }
+  original_struct.offset = static_cast<VkDeviceSize>(proto.offset());
+  original_struct.range = static_cast<VkDeviceSize>(proto.range());
+}
+void FillStructFromProto(VkDescriptorImageInfo& original_struct, const vvk::server::VkDescriptorImageInfo& proto) {
+  original_struct.sampler = reinterpret_cast<VkSampler>(proto.sampler());
+  original_struct.imageView = reinterpret_cast<VkImageView>(proto.imageview());
+  original_struct.imageLayout = static_cast<VkImageLayout>(proto.imagelayout());
 }
 void FillStructFromProto(VkDescriptorPoolCreateInfo& original_struct, const vvk::server::VkDescriptorPoolCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -2447,6 +2476,28 @@ void FillStructFromProto(VkViewport& original_struct, const vvk::server::VkViewp
   original_struct.minDepth = proto.mindepth();
   original_struct.maxDepth = proto.maxdepth();
 }
+void FillStructFromProto(VkWriteDescriptorSet& original_struct, const vvk::server::VkWriteDescriptorSet& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  original_struct.pNext = nullptr;  // Empty pNext chain
+  original_struct.dstSet = reinterpret_cast<VkDescriptorSet>(proto.dstset());
+  original_struct.dstBinding = proto.dstbinding();
+  original_struct.dstArrayElement = proto.dstarrayelement();
+  original_struct.descriptorCount = proto.descriptorcount();
+  original_struct.descriptorType = static_cast<VkDescriptorType>(proto.descriptortype());
+  VkDescriptorImageInfo* original_struct_pImageInfo = new VkDescriptorImageInfo[proto.pimageinfo_size()]();
+  original_struct.pImageInfo = original_struct_pImageInfo;
+  for (int pImageInfo_indx = 0; pImageInfo_indx < proto.pimageinfo_size(); pImageInfo_indx++) {
+    VkDescriptorImageInfo &original_struct_pImageInfo_i = original_struct_pImageInfo[pImageInfo_indx];
+    FillStructFromProto(original_struct_pImageInfo_i, proto.pimageinfo(pImageInfo_indx));
+  }
+  VkDescriptorBufferInfo* original_struct_pBufferInfo = new VkDescriptorBufferInfo[proto.pbufferinfo_size()]();
+  original_struct.pBufferInfo = original_struct_pBufferInfo;
+  for (int pBufferInfo_indx = 0; pBufferInfo_indx < proto.pbufferinfo_size(); pBufferInfo_indx++) {
+    VkDescriptorBufferInfo &original_struct_pBufferInfo_i = original_struct_pBufferInfo[pBufferInfo_indx];
+    FillStructFromProto(original_struct_pBufferInfo_i, proto.pbufferinfo(pBufferInfo_indx));
+  }
+  original_struct.pTexelBufferView = reinterpret_cast<const VkBufferView*>(proto.ptexelbufferview().data());
+}
 void FillStructFromProtoNoPNext(VkPhysicalDeviceProtectedMemoryFeatures& original_struct, const vvk::server::VkPhysicalDeviceProtectedMemoryFeatures& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_FEATURES;
   original_struct.protectedMemory = proto.protectedmemory();
@@ -3632,5 +3683,24 @@ void UnpackAndExecuteVkFreeDescriptorSets(vvk::ExecutionContext& context, const 
 
   VkResult result = vkFreeDescriptorSets(reinterpret_cast<VkDevice>(request.vkfreedescriptorsets().device()), reinterpret_cast<VkDescriptorPool>(request.vkfreedescriptorsets().descriptorpool()), request.vkfreedescriptorsets().descriptorsetcount(), reinterpret_cast<const VkDescriptorSet*>(request.vkfreedescriptorsets().pdescriptorsets().data()));
   response->set_result(result);
+}
+void UnpackAndExecuteVkUpdateDescriptorSets(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkUpdateDescriptorSets");
+
+  std::vector<VkWriteDescriptorSet> pDescriptorWrites(request.vkupdatedescriptorsets().descriptorwritecount());
+  for (int i = 0; i < pDescriptorWrites.size(); i++) {
+    FillStructFromProto(pDescriptorWrites[i], request.vkupdatedescriptorsets().pdescriptorwrites(i));
+  }
+  std::vector<VkCopyDescriptorSet> pDescriptorCopies(request.vkupdatedescriptorsets().descriptorcopycount());
+  for (int i = 0; i < pDescriptorCopies.size(); i++) {
+    FillStructFromProto(pDescriptorCopies[i], request.vkupdatedescriptorsets().pdescriptorcopies(i));
+  }
+  vkUpdateDescriptorSets(reinterpret_cast<VkDevice>(request.vkupdatedescriptorsets().device()), request.vkupdatedescriptorsets().descriptorwritecount(), pDescriptorWrites.data(), request.vkupdatedescriptorsets().descriptorcopycount(), pDescriptorCopies.data());
+  response->set_result(VK_SUCCESS);
+  for (int i = 0; i < pDescriptorWrites.size(); i++) {
+    VkWriteDescriptorSet& pDescriptorWrites_ref = pDescriptorWrites[i];
+    delete[] pDescriptorWrites_ref.pImageInfo;
+    delete[] pDescriptorWrites_ref.pBufferInfo;
+  }
 }
 

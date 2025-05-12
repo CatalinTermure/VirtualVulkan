@@ -1590,4 +1590,14 @@ VKAPI_ATTR VkResult VKAPI_CALL FreeDescriptorSets(VkDevice device, VkDescriptorP
                                          device_info.instance_info().GetRemoteHandle(device), descriptorPool,
                                          descriptorSetCount, pDescriptorSets);
 }
+
+VKAPI_ATTR void VKAPI_CALL UpdateDescriptorSets(VkDevice device, uint32_t descriptorWriteCount,
+                                                const VkWriteDescriptorSet* pDescriptorWrites,
+                                                uint32_t descriptorCopyCount,
+                                                const VkCopyDescriptorSet* pDescriptorCopies) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  PackAndCallVkUpdateDescriptorSets(device_info.instance_info().command_stream(),
+                                    device_info.instance_info().GetRemoteHandle(device), descriptorWriteCount,
+                                    pDescriptorWrites, descriptorCopyCount, pDescriptorCopies);
+}
 }  // namespace vvk

@@ -3698,6 +3698,28 @@ message VkSamplerCreateInfo {
   bool unnormalizedCoordinates = 16; // VkBool32 unnormalizedCoordinates
 }
 
+message VkCopyDescriptorSet {
+  uint64 srcSet = 1; // VkDescriptorSet srcSet
+  uint32 srcBinding = 2; // uint32_t srcBinding
+  uint32 srcArrayElement = 3; // uint32_t srcArrayElement
+  uint64 dstSet = 4; // VkDescriptorSet dstSet
+  uint32 dstBinding = 5; // uint32_t dstBinding
+  uint32 dstArrayElement = 6; // uint32_t dstArrayElement
+  uint32 descriptorCount = 7; // uint32_t descriptorCount
+}
+
+message VkDescriptorBufferInfo {
+  optional uint64 buffer = 1; // VkBuffer buffer
+  uint64 offset = 2; // VkDeviceSize offset
+  uint64 range = 3; // VkDeviceSize range
+}
+
+message VkDescriptorImageInfo {
+  uint64 sampler = 1; // VkSampler sampler
+  uint64 imageView = 2; // VkImageView imageView
+  VkImageLayout imageLayout = 3; // VkImageLayout imageLayout
+}
+
 message VkDescriptorPoolSize {
   VkDescriptorType type = 1; // VkDescriptorType type
   uint32 descriptorCount = 2; // uint32_t descriptorCount
@@ -3728,6 +3750,17 @@ message VkDescriptorSetLayoutCreateInfo {
   optional uint32 flags = 1; // VkDescriptorSetLayoutCreateFlags flags
   optional uint32 bindingCount = 2; // uint32_t bindingCount
   repeated VkDescriptorSetLayoutBinding pBindings = 3; // const VkDescriptorSetLayoutBinding* pBindings
+}
+
+message VkWriteDescriptorSet {
+  uint64 dstSet = 1; // VkDescriptorSet dstSet
+  uint32 dstBinding = 2; // uint32_t dstBinding
+  uint32 dstArrayElement = 3; // uint32_t dstArrayElement
+  uint32 descriptorCount = 4; // uint32_t descriptorCount
+  VkDescriptorType descriptorType = 5; // VkDescriptorType descriptorType
+  repeated VkDescriptorImageInfo pImageInfo = 6; // const VkDescriptorImageInfo* pImageInfo
+  repeated VkDescriptorBufferInfo pBufferInfo = 7; // const VkDescriptorBufferInfo* pBufferInfo
+  repeated uint64 pTexelBufferView = 8; // const VkBufferView* pTexelBufferView
 }
 
 message VkAttachmentDescription {
