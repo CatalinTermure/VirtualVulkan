@@ -115,7 +115,7 @@ void PresentationThreadSetupFrame(PresentationThread &presentation_thread, VkCom
         .pNext = nullptr,
         .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
         .dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT,
-        .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        .oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
         .newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
         .srcQueueFamilyIndex = presentation_thread.remote_graphics_queue_family_index,
         .dstQueueFamilyIndex = presentation_thread.remote_graphics_queue_family_index,
