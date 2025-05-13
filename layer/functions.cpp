@@ -107,6 +107,15 @@ std::optional<std::vector<VkImage>> GetLocalImagesForSwapchain(VkDevice device, 
   return client_swapchain_images;
 }
 
+void CleanupSwapchainInfo(DeviceInfo& device_info, VkSwapchainKHR swapchain) {
+  SwapchainInfo& swapchain_info = GetSwapchainInfo(swapchain);
+  auto local_images = swapchain_info.GetLocalSwapchainImages();
+  for (auto local_image : local_images) {
+    device_info.RemoveRemoteHandle(local_image);
+  }
+  RemoveSwapchainInfo(swapchain);
+}
+
 }  // namespace
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapchainCreateInfoKHR* pCreateInfo,
@@ -129,7 +138,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
   }
 
   if (pCreateInfo->oldSwapchain) {
-    RemoveSwapchainInfo(pCreateInfo->oldSwapchain);
+    CleanupSwapchainInfo(device_info, pCreateInfo->oldSwapchain);
   }
 
   SwapchainInfo& swapchain_info = SetSwapchainInfo(*pSwapchain, device, device_info.remote_allocator(),
@@ -183,16 +192,13 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
 
 VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(VkDevice device, VkSwapchainKHR swapchain,
                                                const VkAllocationCallbacks* pAllocator) {
-  RemoveSwapchainInfo(swapchain);
   DeviceInfo& device_info = GetDeviceInfo(device);
+  try {
+    CleanupSwapchainInfo(device_info, swapchain);
+  } catch (std::out_of_range& e) {
+    spdlog::info("Swapchain {} already had the swapchain info removed", (void*)swapchain);
+  }
 
-  auto local_images = GetLocalImagesForSwapchain(device, swapchain);
-  if (!local_images) {
-    throw std::runtime_error("Failed to get local images for swapchain when destroying it");
-  }
-  for (auto local_image : *local_images) {
-    device_info.RemoveRemoteHandle(local_image);
-  }
   device_info.presentation_thread()->swapchains.erase(
       std::remove_if(device_info.presentation_thread()->swapchains.begin(),
                      device_info.presentation_thread()->swapchains.end(),

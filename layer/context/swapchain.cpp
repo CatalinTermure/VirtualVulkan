@@ -61,6 +61,8 @@ SwapchainInfo::SwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAlloc
       .pInheritanceInfo = nullptr,
   };
 
+  local_swapchain_images_ = swapchain_images;
+
   for (uint32_t i = 0; i < swapchain_images.size(); ++i) {
     vmaCreateBuffer(device_info.local_allocator(), &buffer_create_info, &allocation_create_info, &staging_buffers_[i],
                     &buffer_allocations_[i], nullptr);
