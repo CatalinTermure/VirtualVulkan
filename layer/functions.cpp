@@ -1363,7 +1363,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
          unused1 = std::move(semaphores_to_wait_remote), unused2 = std::move(semaphores_to_signal_remote),
          unused3 = std::move(command_buffers_remote)]() {
           // Wait for local semaphores
-          spdlog::info("VkQueueSubmit: Waiting for local semaphores");
+          spdlog::trace("VkQueueSubmit: Waiting for local semaphores");
           VkResult result =
               dispatch_table.WaitForFences(device, 1, &aux_fence, VK_TRUE, kVkQueueSubmitLocalSemaphoreTimeout);
           if (result != VK_SUCCESS) {
@@ -1374,7 +1374,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
             throw std::runtime_error("Failed to reset local fences");
           }
           fence_pool.ReturnFence(aux_fence);
-          spdlog::info("VkQueueSubmit: Finished waiting for local semaphores");
+          spdlog::trace("VkQueueSubmit: Finished waiting for local semaphores");
           for (VkSemaphore semaphore : semaphores_to_wait_local) {
             semaphore->state = SemaphoreState::kUnsignaled;
           }
@@ -1384,7 +1384,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
           if (result != VK_SUCCESS) {
             throw std::runtime_error("Failed to submit to remote queue");
           }
-          spdlog::info("VkQueueSubmit: Finished submitting to remote queue");
+          spdlog::trace("VkQueueSubmit: Finished submitting to remote queue");
 
           // After that, we wait for the remote fence to be signaled, so we can signal the local fence
           result = PackAndCallVkWaitForFences(command_stream, remote_device, 1, &remote_fence, VK_TRUE,
@@ -1396,7 +1396,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
           if (result != VK_SUCCESS) {
             throw std::runtime_error("Failed to reset remote fences");
           }
-          spdlog::info("VkQueueSubmit: Finished waiting for remote fence");
+          spdlog::trace("VkQueueSubmit: Finished waiting for remote fence");
           dispatch_table.QueueSubmit(present_queue, 0, nullptr, local_fence);
           for (auto* semaphore : semaphores_to_signal) {
             semaphore->release();
