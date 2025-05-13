@@ -88,20 +88,21 @@ message VvkRequest {
     VkFreeCommandBuffersParams vkFreeCommandBuffers = 65;
     VkBeginCommandBufferParams vkBeginCommandBuffer = 66;
     VkEndCommandBufferParams vkEndCommandBuffer = 67;
-    VkCmdBindPipelineParams vkCmdBindPipeline = 68;
-    VkCmdSetViewportParams vkCmdSetViewport = 69;
-    VkCmdSetScissorParams vkCmdSetScissor = 70;
-    VkCmdBindVertexBuffersParams vkCmdBindVertexBuffers = 71;
-    VkCmdDrawParams vkCmdDraw = 72;
-    VkCmdCopyImageToBufferParams vkCmdCopyImageToBuffer = 73;
-    VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 74;
-    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 75;
-    VkCmdEndRenderPassParams vkCmdEndRenderPass = 76;
-    VkBindImageMemory2Params vkBindImageMemory2 = 77;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 78;
-    VkGetPhysicalDeviceFeatures2Params vkGetPhysicalDeviceFeatures2 = 79;
-    VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 80;
-    VkSignalSemaphoreParams vkSignalSemaphore = 81;
+    VkResetCommandBufferParams vkResetCommandBuffer = 68;
+    VkCmdBindPipelineParams vkCmdBindPipeline = 69;
+    VkCmdSetViewportParams vkCmdSetViewport = 70;
+    VkCmdSetScissorParams vkCmdSetScissor = 71;
+    VkCmdBindVertexBuffersParams vkCmdBindVertexBuffers = 72;
+    VkCmdDrawParams vkCmdDraw = 73;
+    VkCmdCopyImageToBufferParams vkCmdCopyImageToBuffer = 74;
+    VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 75;
+    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 76;
+    VkCmdEndRenderPassParams vkCmdEndRenderPass = 77;
+    VkBindImageMemory2Params vkBindImageMemory2 = 78;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 79;
+    VkGetPhysicalDeviceFeatures2Params vkGetPhysicalDeviceFeatures2 = 80;
+    VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 81;
+    VkSignalSemaphoreParams vkSignalSemaphore = 82;
   }
 }
 
@@ -693,6 +694,11 @@ message VkBeginCommandBufferParams {
 
 message VkEndCommandBufferParams {
   uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+}
+
+message VkResetCommandBufferParams {
+  uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+  optional uint32 flags = 2; // VkCommandBufferResetFlags flags
 }
 
 message VkCmdBindPipelineParams {

@@ -3703,4 +3703,10 @@ void UnpackAndExecuteVkUpdateDescriptorSets(vvk::ExecutionContext& context, cons
     delete[] pDescriptorWrites_ref.pBufferInfo;
   }
 }
+void UnpackAndExecuteVkResetCommandBuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkResetCommandBuffer");
+
+  VkResult result = vkResetCommandBuffer(reinterpret_cast<VkCommandBuffer>(request.vkresetcommandbuffer().commandbuffer()), static_cast<VkCommandBufferResetFlags>(request.vkresetcommandbuffer().flags()));
+  response->set_result(result);
+}
 

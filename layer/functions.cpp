@@ -1618,4 +1618,11 @@ VKAPI_ATTR void VKAPI_CALL UpdateDescriptorSets(VkDevice device, uint32_t descri
                                     device_info.instance_info().GetRemoteHandle(device), descriptorWriteCount,
                                     pDescriptorWrites, descriptorCopyCount, pDescriptorCopies);
 }
+
+VKAPI_ATTR VkResult VKAPI_CALL ResetCommandBuffer(VkCommandBuffer commandBuffer, VkCommandBufferResetFlags flags) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  device_info.swapchain_render_command_buffers.erase(commandBuffer);
+  return PackAndCallVkResetCommandBuffer(device_info.instance_info().command_stream(),
+                                         device_info.GetRemoteHandle(commandBuffer), flags);
+}
 }  // namespace vvk

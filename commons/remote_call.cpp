@@ -4135,5 +4135,23 @@ void PackAndCallVkUpdateDescriptorSets(VvkCommandClientBidiStream& stream, VkDev
     spdlog::error("Failed to read response from server");
   }
 }
+VkResult PackAndCallVkResetCommandBuffer(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkCommandBufferResetFlags flags) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkResetCommandBuffer");
+  request.mutable_vkresetcommandbuffer()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  if (flags) {
+    request.mutable_vkresetcommandbuffer()->set_flags(flags);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  return static_cast<VkResult>(response.result());
+}
 }  // namespace vvk
 
