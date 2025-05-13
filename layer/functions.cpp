@@ -1625,4 +1625,14 @@ VKAPI_ATTR VkResult VKAPI_CALL ResetCommandBuffer(VkCommandBuffer commandBuffer,
   return PackAndCallVkResetCommandBuffer(device_info.instance_info().command_stream(),
                                          device_info.GetRemoteHandle(commandBuffer), flags);
 }
+
+VKAPI_ATTR void VKAPI_CALL CmdBindDescriptorSets(VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint,
+                                                 VkPipelineLayout layout, uint32_t firstSet,
+                                                 uint32_t descriptorSetCount, const VkDescriptorSet* pDescriptorSets,
+                                                 uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdBindDescriptorSets(device_info.instance_info().command_stream(),
+                                     device_info.GetRemoteHandle(commandBuffer), pipelineBindPoint, layout, firstSet,
+                                     descriptorSetCount, pDescriptorSets, dynamicOffsetCount, pDynamicOffsets);
+}
 }  // namespace vvk

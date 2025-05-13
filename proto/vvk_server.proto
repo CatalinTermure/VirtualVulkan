@@ -92,17 +92,18 @@ message VvkRequest {
     VkCmdBindPipelineParams vkCmdBindPipeline = 69;
     VkCmdSetViewportParams vkCmdSetViewport = 70;
     VkCmdSetScissorParams vkCmdSetScissor = 71;
-    VkCmdBindVertexBuffersParams vkCmdBindVertexBuffers = 72;
-    VkCmdDrawParams vkCmdDraw = 73;
-    VkCmdCopyImageToBufferParams vkCmdCopyImageToBuffer = 74;
-    VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 75;
-    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 76;
-    VkCmdEndRenderPassParams vkCmdEndRenderPass = 77;
-    VkBindImageMemory2Params vkBindImageMemory2 = 78;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 79;
-    VkGetPhysicalDeviceFeatures2Params vkGetPhysicalDeviceFeatures2 = 80;
-    VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 81;
-    VkSignalSemaphoreParams vkSignalSemaphore = 82;
+    VkCmdBindDescriptorSetsParams vkCmdBindDescriptorSets = 72;
+    VkCmdBindVertexBuffersParams vkCmdBindVertexBuffers = 73;
+    VkCmdDrawParams vkCmdDraw = 74;
+    VkCmdCopyImageToBufferParams vkCmdCopyImageToBuffer = 75;
+    VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 76;
+    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 77;
+    VkCmdEndRenderPassParams vkCmdEndRenderPass = 78;
+    VkBindImageMemory2Params vkBindImageMemory2 = 79;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 80;
+    VkGetPhysicalDeviceFeatures2Params vkGetPhysicalDeviceFeatures2 = 81;
+    VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 82;
+    VkSignalSemaphoreParams vkSignalSemaphore = 83;
   }
 }
 
@@ -719,6 +720,17 @@ message VkCmdSetScissorParams {
   uint32 firstScissor = 2; // uint32_t firstScissor
   uint32 scissorCount = 3; // uint32_t scissorCount
   repeated VkRect2D pScissors = 4; // const VkRect2D* pScissors
+}
+
+message VkCmdBindDescriptorSetsParams {
+  uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+  VkPipelineBindPoint pipelineBindPoint = 2; // VkPipelineBindPoint pipelineBindPoint
+  uint64 layout = 3; // VkPipelineLayout layout
+  uint32 firstSet = 4; // uint32_t firstSet
+  uint32 descriptorSetCount = 5; // uint32_t descriptorSetCount
+  repeated uint64 pDescriptorSets = 6; // const VkDescriptorSet* pDescriptorSets
+  optional uint32 dynamicOffsetCount = 7; // uint32_t dynamicOffsetCount
+  repeated uint32 pDynamicOffsets = 8; // const uint32_t* pDynamicOffsets
 }
 
 message VkCmdBindVertexBuffersParams {

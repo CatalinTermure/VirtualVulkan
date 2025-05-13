@@ -4153,5 +4153,32 @@ VkResult PackAndCallVkResetCommandBuffer(VvkCommandClientBidiStream& stream, VkC
   }
   return static_cast<VkResult>(response.result());
 }
+void PackAndCallVkCmdBindDescriptorSets(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint, VkPipelineLayout layout, uint32_t firstSet, uint32_t descriptorSetCount, const VkDescriptorSet* pDescriptorSets, uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdBindDescriptorSets");
+  request.mutable_vkcmdbinddescriptorsets()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  request.mutable_vkcmdbinddescriptorsets()->set_pipelinebindpoint(static_cast<vvk::server::VkPipelineBindPoint>(pipelineBindPoint));
+  request.mutable_vkcmdbinddescriptorsets()->set_layout(reinterpret_cast<uint64_t>(layout));
+  request.mutable_vkcmdbinddescriptorsets()->set_firstset(firstSet);
+  request.mutable_vkcmdbinddescriptorsets()->set_descriptorsetcount(descriptorSetCount);
+  for (int i = 0; i < descriptorSetCount; i++) {
+    request.mutable_vkcmdbinddescriptorsets()->add_pdescriptorsets(reinterpret_cast<uint64_t>(pDescriptorSets[i]));
+  }
+  if (dynamicOffsetCount) {
+    request.mutable_vkcmdbinddescriptorsets()->set_dynamicoffsetcount(dynamicOffsetCount);
+  }
+  for (uint32_t i = 0; i < dynamicOffsetCount; i++) {
+    request.mutable_vkcmdbinddescriptorsets()->add_pdynamicoffsets(pDynamicOffsets[i]);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+}
 }  // namespace vvk
 
