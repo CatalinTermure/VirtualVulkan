@@ -38,7 +38,8 @@ constexpr uint64_t kVkQueueSubmitLocalSemaphoreTimeout = UINT64_MAX - 2;
 constexpr uint64_t kVkQueueSubmitRemoteSemaphoreTimeout = UINT64_MAX - 3;
 constexpr uint64_t kVkQueuePresentFenceTimeout = UINT64_MAX - 4;
 
-const std::unordered_set<std::string> kAllowedExtensions = {};
+const std::unordered_set<std::string> kAllowedInstanceExtensions = {};
+const std::unordered_set<std::string> kAllowedDeviceExtensions = {VK_KHR_TIMELINE_SEMAPHORE_EXTENSION_NAME};
 
 const std::unordered_set<std::string> kAllowedLayers = {
     "VK_LAYER_KHRONOS_validation",
@@ -459,7 +460,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
 
     std::vector<const char*> enabled_extensions;
     for (uint32_t i = 0; i < remote_create_info.enabledExtensionCount; i++) {
-      if (kAllowedExtensions.contains(remote_create_info.ppEnabledExtensionNames[i])) {
+      if (kAllowedInstanceExtensions.contains(remote_create_info.ppEnabledExtensionNames[i])) {
         enabled_extensions.push_back(remote_create_info.ppEnabledExtensionNames[i]);
       }
     }
@@ -687,6 +688,15 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 
     AddStructToChain(reinterpret_cast<VkBaseOutStructure*>(&remote_create_info),
                      reinterpret_cast<VkBaseOutStructure*>(&timeline_semaphore_features));
+
+    std::vector<const char*> enabled_extensions;
+    for (uint32_t i = 0; i < remote_create_info.enabledExtensionCount; i++) {
+      if (kAllowedDeviceExtensions.contains(remote_create_info.ppEnabledExtensionNames[i])) {
+        enabled_extensions.push_back(remote_create_info.ppEnabledExtensionNames[i]);
+      }
+    }
+    remote_create_info.enabledExtensionCount = enabled_extensions.size();
+    remote_create_info.ppEnabledExtensionNames = enabled_extensions.data();
 
     PackAndCallVkCreateDevice(instance_info.command_stream(), physicalDevice, &remote_create_info, pAllocator,
                               &remote_device);
