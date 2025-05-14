@@ -184,7 +184,7 @@ def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, n
             out.append(access_length_member_from_struct(
                 generator, struct_type, name, name, member))
             out.append(
-                f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
+                f'  for (uint32_t {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
             if type_info.cast_to is None:
                 out.append(
                     f'    {name}.{member.name}[{index_name}] = {proto_accessor}.{member.name.lower()}({index_name});\n')
@@ -477,7 +477,7 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
             generator, struct_type, name, struct_accessor, member))
         index_name = f'{member.name}_indx'
         out.append(
-            f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
+            f'  for (uint32_t {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
         out.append(
             f'    {name}->add_{member.name.lower()}({struct_accessor}->{member.name}[{index_name}]);\n')
         out.append('  }\n')
@@ -495,7 +495,7 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
                 generator, struct_type, name, struct_accessor, member))
             index_name = f'{member.name}_indx'
             out.append(
-                f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
+                f'  for (uint32_t {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
             if type_info.cast_to is None:
                 out.append(
                     f'    {name}->add_{member.name.lower()}({struct_accessor}->{member.name}[{index_name}]);\n')
@@ -512,7 +512,7 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
                 generator, struct_type, name, struct_accessor, member))
             index_name = f'{member.name}_indx'
             out.append(
-                f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
+                f'  for (uint32_t {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
             out.append(
                 f'    {name}->add_{member.name.lower()}(static_cast<{member.type}>({struct_accessor}->{member.name}[{index_name}]));\n')
             out.append('  }\n')
@@ -525,7 +525,7 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
                 generator, struct_type, name, struct_accessor, member))
             index_name = f'{member.name}_indx'
             out.append(
-                f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
+                f'  for (uint32_t {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
             out.append(
                 f'    {name}->add_{member.name.lower()}(static_cast<vvk::server::{member.type}>({struct_accessor}->{member.name}[{index_name}]));\n')
             out.append('  }\n')
@@ -546,7 +546,7 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
                 out.append(access_length_member_from_struct(
                     generator, struct_type, name, struct_accessor, member))
             out.append(
-                f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
+                f'  for (uint32_t {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
             out.append(
                 f'    FillProtoFromStruct({name}->add_{member.name.lower()}(), (&{struct_accessor}->{member.name}[{index_name}]));\n')
             generator.required_functions.add(
@@ -563,7 +563,7 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
                 generator, struct_type, name, struct_accessor, member))
         index_name = f'{member.name}_indx'
         out.append(
-            f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
+            f'  for (uint32_t {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
         out.append(
             f'    {name}->add_{member.name.lower()}(reinterpret_cast<uint64_t>({struct_accessor}->{member.name}[{index_name}]));\n')
         out.append('  }\n')
@@ -591,7 +591,7 @@ def __fill_proto_from_member(generator: VvkGenerator, struct_type: str, name: st
                 generator, struct_type, name, struct_accessor, member))
             index_name = f'{member.name}_indx'
             out.append(
-                f'  for (int {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
+                f'  for (uint32_t {index_name} = 0; {index_name} < {name}_{member.name}_length; {index_name}++) {{\n')
             out.append(
                 f'    FillProtoFromStruct({name}->add_{member.name.lower()}(), &{struct_accessor}->{member.name}[{index_name}]);\n')
             generator.required_functions.add(

@@ -232,7 +232,6 @@ VKAPI_ATTR VkResult VKAPI_CALL GetSwapchainImagesKHR(VkDevice device, VkSwapchai
 VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(VkDevice device, VkSwapchainKHR swapchain, uint64_t timeout,
                                                    VkSemaphore semaphore, VkFence fence, uint32_t* pImageIndex) {
   DeviceInfo& device_info = GetDeviceInfo(device);
-  InstanceInfo& instance_info = device_info.instance_info();
   if (semaphore != VK_NULL_HANDLE) {
     if (fence != VK_NULL_HANDLE) {
       throw std::runtime_error("Cannot use both semaphore and fence in AcquireNextImageKHR");
@@ -623,6 +622,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
           reinterpret_cast<PFN_vkGetPhysicalDeviceMemoryProperties2KHR>(0xDEADBEEF),
       .vkGetDeviceBufferMemoryRequirements = reinterpret_cast<PFN_vkGetDeviceBufferMemoryRequirements>(0xDEADBEEF),
       .vkGetDeviceImageMemoryRequirements = reinterpret_cast<PFN_vkGetDeviceImageMemoryRequirements>(0xDEADBEEF),
+      .vkGetMemoryWin32HandleKHR = nullptr,
   };
 
   VmaAllocatorCreateInfo allocator_create_info = {
@@ -813,11 +813,6 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphor
   if (result != VK_SUCCESS) {
     return result;
   }
-  VkFenceCreateInfo fence_create_info = {
-      .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-      .pNext = nullptr,
-      .flags = 0,
-  };
   VkSemaphore remote_semaphore = VK_NULL_HANDLE;
   result = PackAndCallVkCreateSemaphore(device_info.instance_info().command_stream(),
                                         device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator,

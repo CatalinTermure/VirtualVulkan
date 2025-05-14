@@ -47,7 +47,7 @@ class ClientSrcGenerator(VvkGenerator):
 
                 index_name = f'{param.name}_indx'
                 out.append(
-                    f'  for (int {index_name} = 0; {index_name} < {param.length}; {index_name}++) {{\n')
+                    f'  for (uint32_t {index_name} = 0; {index_name} < {param.length}; {index_name}++) {{\n')
                 out.append(
                     f'    FillProtoFromStruct(request.mutable_{cmd_name.lower()}()->add_{param.name.lower()}(), &{param.name}[{index_name}]);\n')
                 self.required_functions.add(
@@ -60,7 +60,8 @@ class ClientSrcGenerator(VvkGenerator):
             else:
                 assert (param.length in [
                     p.name for p in command.params])
-                out.append(f'  for (int i = 0; i < {param.length}; i++) {{\n')
+                out.append(
+                    f'  for (uint32_t i = 0; i < {param.length}; i++) {{\n')
                 out.append(
                     f'    request.mutable_{cmd_name.lower()}()->add_{param.name.lower()}(reinterpret_cast<uint64_t>({param.name}[i]));\n')
                 out.append("  }\n")
@@ -94,7 +95,7 @@ class ClientSrcGenerator(VvkGenerator):
                     f'  *{param.name} = reinterpret_cast<{param.type}>({response_accessor}.{param.name.lower()}());\n')
             elif not param.optional:
                 after_call_code.append(
-                    f'  for (int i = 0; i < {param.length}; i++) {{\n')
+                    f'  for (uint32_t i = 0; i < {param.length}; i++) {{\n')
                 after_call_code.append(
                     f'    {param.name}[i] = reinterpret_cast<{param.type}>({response_accessor}.{param.name.lower()}(i));\n')
                 after_call_code.append("  }\n")
@@ -118,7 +119,7 @@ class ClientSrcGenerator(VvkGenerator):
                 after_call_code.append(
                     f'    assert(*{param.length} == {response_accessor}.{param.length.lower()}());\n')
                 after_call_code.append(
-                    f'    for (int {index_name} = 0; {index_name} < *{param.length}; {index_name}++) {{\n')
+                    f'    for (uint32_t {index_name} = 0; {index_name} < *{param.length}; {index_name}++) {{\n')
                 after_call_code.append(
                     f'      {param.name}[{index_name}] = reinterpret_cast<{param.type}>({response_accessor}.{param.name.lower()}({index_name}));\n')
                 after_call_code.append("    }\n")
@@ -158,7 +159,7 @@ class ClientSrcGenerator(VvkGenerator):
                 after_call_code.append(
                     f'    assert(*{param.length} == {response_accessor}.{param.length.lower()}());\n')
                 after_call_code.append(
-                    f'    for (int {index_name} = 0; {index_name} < *{param.length}; {index_name}++) {{\n')
+                    f'    for (uint32_t {index_name} = 0; {index_name} < *{param.length}; {index_name}++) {{\n')
                 after_call_code.append(
                     f'      {param.type}& {param.name}_ref = {param.name}[{index_name}];\n')
                 struct_fill_, unused = fill_struct_from_proto(

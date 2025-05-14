@@ -77,7 +77,7 @@ class ServerSrcGenerator(VvkGenerator):
                         out.append(
                             f'  std::vector<{param.type}> {param.name}({param_accessor}.{param.length.lower()}());\n')
                         out.append(
-                            f'  for (int i = 0; i < {param.name}.size(); i++) {{\n')
+                            f'  for (uint32_t i = 0; i < {param.name}.size(); i++) {{\n')
                         _, after_ = fill_struct_from_proto(self,
                                                            param.type, f'{param.name}_ref', f'{param_accessor}.{param.name.lower()}(i)')
                         out.append(
@@ -87,7 +87,7 @@ class ServerSrcGenerator(VvkGenerator):
                         out.append("  }\n")
                         if after_:
                             deletions.append(
-                                f'  for (int i = 0; i < {param.name}.size(); i++) {{\n')
+                                f'  for (uint32_t i = 0; i < {param.name}.size(); i++) {{\n')
                             deletions.append(
                                 f'    {param.type}& {param.name}_ref = {param.name}[i];\n')
                             deletions.append(indent(after_, 2))
@@ -105,8 +105,6 @@ class ServerSrcGenerator(VvkGenerator):
                 elif param.pointer and not param.const and param.type in self.vk.handles:
                     if param.length is None:
                         actual_parameters.append(f'&server_{param.name}')
-                        out.append(
-                            f'  {param.type} client_{param.name} = reinterpret_cast<{param.type}>({param_accessor}.{param.name.lower()}());\n')
                         out.append(f'  {param.type} server_{param.name};\n')
                         after_call_code.append(
                             f'  response->mutable_{cmd_name.lower()}()->set_{param.name.lower()}(reinterpret_cast<uint64_t>(server_{param.name}));\n')
@@ -149,7 +147,7 @@ class ServerSrcGenerator(VvkGenerator):
                         after_call_code.append(
                             f'  if ({param_accessor}.{length_param.name.lower()}() != 0) {{\n')
                         after_call_code.append(
-                            f'    for (int {index_name} = 0; {index_name} < {length_param.name}; {index_name}++) {{\n')
+                            f'    for (uint32_t {index_name} = 0; {index_name} < {length_param.name}; {index_name}++) {{\n')
                         after_call_code.append(
                             f'      response->mutable_{cmd_name.lower()}()->add_{param.name.lower()}(reinterpret_cast<uint64_t>({param.name}[{index_name}]));\n')
                         after_call_code.append("    }\n")
@@ -195,7 +193,7 @@ class ServerSrcGenerator(VvkGenerator):
                         after_call_code.append(
                             f'  if ({param_accessor}.{length_param.name.lower()}() != 0) {{\n')
                         after_call_code.append(
-                            f'    for (int {index_name} = 0; {index_name} < {length_param.name}; {index_name}++) {{\n')
+                            f'    for (uint32_t {index_name} = 0; {index_name} < {length_param.name}; {index_name}++) {{\n')
                         after_call_code.append(
                             f'      FillProtoFromStruct(response->mutable_{cmd_name.lower()}()->add_{param.name.lower()}(), &{param.name}[{index_name}]);\n')
                         self.required_functions.add(

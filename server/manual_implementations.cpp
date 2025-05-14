@@ -58,7 +58,6 @@ void UnpackAndExecuteSetupPresentation(vvk::ExecutionContext& context, const vvk
 
   VkInstance instance = reinterpret_cast<VkInstance>(params.instance());
   VkDevice device = reinterpret_cast<VkDevice>(params.device());
-  VkExtent2D swapchain_image_extent = {params.width(), params.height()};
   uint32_t queue_family_index = params.uncompressed_stream_create_info().queue_family_index();
 
   if (context.allocator() == VK_NULL_HANDLE) {

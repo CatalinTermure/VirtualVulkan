@@ -339,12 +339,12 @@ void FillProtoFromStruct(vvk::server::VkPhysicalDeviceLimits* proto, const VkPhy
   proto->set_maxfragmentcombinedoutputresources(original_struct->maxFragmentCombinedOutputResources);
   proto->set_maxcomputesharedmemorysize(original_struct->maxComputeSharedMemorySize);
   const size_t proto_maxComputeWorkGroupCount_length = std::min(3, 3);
-  for (int maxComputeWorkGroupCount_indx = 0; maxComputeWorkGroupCount_indx < proto_maxComputeWorkGroupCount_length; maxComputeWorkGroupCount_indx++) {
+  for (uint32_t maxComputeWorkGroupCount_indx = 0; maxComputeWorkGroupCount_indx < proto_maxComputeWorkGroupCount_length; maxComputeWorkGroupCount_indx++) {
     proto->add_maxcomputeworkgroupcount(original_struct->maxComputeWorkGroupCount[maxComputeWorkGroupCount_indx]);
   }
   proto->set_maxcomputeworkgroupinvocations(original_struct->maxComputeWorkGroupInvocations);
   const size_t proto_maxComputeWorkGroupSize_length = std::min(3, 3);
-  for (int maxComputeWorkGroupSize_indx = 0; maxComputeWorkGroupSize_indx < proto_maxComputeWorkGroupSize_length; maxComputeWorkGroupSize_indx++) {
+  for (uint32_t maxComputeWorkGroupSize_indx = 0; maxComputeWorkGroupSize_indx < proto_maxComputeWorkGroupSize_length; maxComputeWorkGroupSize_indx++) {
     proto->add_maxcomputeworkgroupsize(original_struct->maxComputeWorkGroupSize[maxComputeWorkGroupSize_indx]);
   }
   proto->set_subpixelprecisionbits(original_struct->subPixelPrecisionBits);
@@ -356,11 +356,11 @@ void FillProtoFromStruct(vvk::server::VkPhysicalDeviceLimits* proto, const VkPhy
   proto->set_maxsampleranisotropy(original_struct->maxSamplerAnisotropy);
   proto->set_maxviewports(original_struct->maxViewports);
   const size_t proto_maxViewportDimensions_length = std::min(2, 2);
-  for (int maxViewportDimensions_indx = 0; maxViewportDimensions_indx < proto_maxViewportDimensions_length; maxViewportDimensions_indx++) {
+  for (uint32_t maxViewportDimensions_indx = 0; maxViewportDimensions_indx < proto_maxViewportDimensions_length; maxViewportDimensions_indx++) {
     proto->add_maxviewportdimensions(original_struct->maxViewportDimensions[maxViewportDimensions_indx]);
   }
   const size_t proto_viewportBoundsRange_length = std::min(2, 2);
-  for (int viewportBoundsRange_indx = 0; viewportBoundsRange_indx < proto_viewportBoundsRange_length; viewportBoundsRange_indx++) {
+  for (uint32_t viewportBoundsRange_indx = 0; viewportBoundsRange_indx < proto_viewportBoundsRange_length; viewportBoundsRange_indx++) {
     proto->add_viewportboundsrange(original_struct->viewportBoundsRange[viewportBoundsRange_indx]);
   }
   proto->set_viewportsubpixelbits(original_struct->viewportSubPixelBits);
@@ -414,11 +414,11 @@ void FillProtoFromStruct(vvk::server::VkPhysicalDeviceLimits* proto, const VkPhy
   proto->set_maxcombinedclipandculldistances(original_struct->maxCombinedClipAndCullDistances);
   proto->set_discretequeuepriorities(original_struct->discreteQueuePriorities);
   const size_t proto_pointSizeRange_length = std::min(2, 2);
-  for (int pointSizeRange_indx = 0; pointSizeRange_indx < proto_pointSizeRange_length; pointSizeRange_indx++) {
+  for (uint32_t pointSizeRange_indx = 0; pointSizeRange_indx < proto_pointSizeRange_length; pointSizeRange_indx++) {
     proto->add_pointsizerange(original_struct->pointSizeRange[pointSizeRange_indx]);
   }
   const size_t proto_lineWidthRange_length = std::min(2, 2);
-  for (int lineWidthRange_indx = 0; lineWidthRange_indx < proto_lineWidthRange_length; lineWidthRange_indx++) {
+  for (uint32_t lineWidthRange_indx = 0; lineWidthRange_indx < proto_lineWidthRange_length; lineWidthRange_indx++) {
     proto->add_linewidthrange(original_struct->lineWidthRange[lineWidthRange_indx]);
   }
   proto->set_pointsizegranularity(original_struct->pointSizeGranularity);
@@ -432,12 +432,12 @@ void FillProtoFromStruct(vvk::server::VkPhysicalDeviceLimits* proto, const VkPhy
 void FillProtoFromStruct(vvk::server::VkPhysicalDeviceMemoryProperties* proto, const VkPhysicalDeviceMemoryProperties* original_struct) {
   proto->set_memorytypecount(original_struct->memoryTypeCount);
   const size_t proto_memoryTypes_length = std::min(original_struct->memoryTypeCount, VK_MAX_MEMORY_TYPES);
-  for (int memoryTypes_indx = 0; memoryTypes_indx < proto_memoryTypes_length; memoryTypes_indx++) {
+  for (uint32_t memoryTypes_indx = 0; memoryTypes_indx < proto_memoryTypes_length; memoryTypes_indx++) {
     FillProtoFromStruct(proto->add_memorytypes(), &original_struct->memoryTypes[memoryTypes_indx]);
   }
   proto->set_memoryheapcount(original_struct->memoryHeapCount);
   const size_t proto_memoryHeaps_length = std::min(original_struct->memoryHeapCount, VK_MAX_MEMORY_HEAPS);
-  for (int memoryHeaps_indx = 0; memoryHeaps_indx < proto_memoryHeaps_length; memoryHeaps_indx++) {
+  for (uint32_t memoryHeaps_indx = 0; memoryHeaps_indx < proto_memoryHeaps_length; memoryHeaps_indx++) {
     FillProtoFromStruct(proto->add_memoryheaps(), &original_struct->memoryHeaps[memoryHeaps_indx]);
   }
 }
@@ -449,7 +449,7 @@ void FillProtoFromStruct(vvk::server::VkPhysicalDeviceProperties* proto, const V
   proto->set_devicetype(static_cast<vvk::server::VkPhysicalDeviceType>(original_struct->deviceType));
   proto->set_devicename(original_struct->deviceName);
   const size_t proto_pipelineCacheUUID_length = std::min(VK_UUID_SIZE, VK_UUID_SIZE);
-  for (int pipelineCacheUUID_indx = 0; pipelineCacheUUID_indx < proto_pipelineCacheUUID_length; pipelineCacheUUID_indx++) {
+  for (uint32_t pipelineCacheUUID_indx = 0; pipelineCacheUUID_indx < proto_pipelineCacheUUID_length; pipelineCacheUUID_indx++) {
     proto->add_pipelinecacheuuid(static_cast<uint32_t>(original_struct->pipelineCacheUUID[pipelineCacheUUID_indx]));
   }
   FillProtoFromStruct(proto->mutable_limits(), &original_struct->limits);
@@ -554,15 +554,15 @@ void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan11Properties* proto,
     // Empty pNext chain
   }
   const size_t proto_deviceUUID_length = std::min(VK_UUID_SIZE, VK_UUID_SIZE);
-  for (int deviceUUID_indx = 0; deviceUUID_indx < proto_deviceUUID_length; deviceUUID_indx++) {
+  for (uint32_t deviceUUID_indx = 0; deviceUUID_indx < proto_deviceUUID_length; deviceUUID_indx++) {
     proto->add_deviceuuid(static_cast<uint32_t>(original_struct->deviceUUID[deviceUUID_indx]));
   }
   const size_t proto_driverUUID_length = std::min(VK_UUID_SIZE, VK_UUID_SIZE);
-  for (int driverUUID_indx = 0; driverUUID_indx < proto_driverUUID_length; driverUUID_indx++) {
+  for (uint32_t driverUUID_indx = 0; driverUUID_indx < proto_driverUUID_length; driverUUID_indx++) {
     proto->add_driveruuid(static_cast<uint32_t>(original_struct->driverUUID[driverUUID_indx]));
   }
   const size_t proto_deviceLUID_length = std::min(VK_LUID_SIZE, VK_LUID_SIZE);
-  for (int deviceLUID_indx = 0; deviceLUID_indx < proto_deviceLUID_length; deviceLUID_indx++) {
+  for (uint32_t deviceLUID_indx = 0; deviceLUID_indx < proto_deviceLUID_length; deviceLUID_indx++) {
     proto->add_deviceluid(static_cast<uint32_t>(original_struct->deviceLUID[deviceLUID_indx]));
   }
   proto->set_devicenodemask(original_struct->deviceNodeMask);
@@ -813,7 +813,7 @@ void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan14Properties* proto,
   }
   if (original_struct->pCopySrcLayouts) {
     const size_t proto_pCopySrcLayouts_length = original_struct->copySrcLayoutCount;
-    for (int pCopySrcLayouts_indx = 0; pCopySrcLayouts_indx < proto_pCopySrcLayouts_length; pCopySrcLayouts_indx++) {
+    for (uint32_t pCopySrcLayouts_indx = 0; pCopySrcLayouts_indx < proto_pCopySrcLayouts_length; pCopySrcLayouts_indx++) {
       proto->add_pcopysrclayouts(static_cast<vvk::server::VkImageLayout>(original_struct->pCopySrcLayouts[pCopySrcLayouts_indx]));
     }
   }
@@ -822,13 +822,13 @@ void FillProtoFromStruct(vvk::server::VkPhysicalDeviceVulkan14Properties* proto,
   }
   if (original_struct->pCopyDstLayouts) {
     const size_t proto_pCopyDstLayouts_length = original_struct->copyDstLayoutCount;
-    for (int pCopyDstLayouts_indx = 0; pCopyDstLayouts_indx < proto_pCopyDstLayouts_length; pCopyDstLayouts_indx++) {
+    for (uint32_t pCopyDstLayouts_indx = 0; pCopyDstLayouts_indx < proto_pCopyDstLayouts_length; pCopyDstLayouts_indx++) {
       proto->add_pcopydstlayouts(static_cast<vvk::server::VkImageLayout>(original_struct->pCopyDstLayouts[pCopyDstLayouts_indx]));
     }
   }
   if (original_struct->optimalTilingLayoutUUID) {
     const size_t proto_optimalTilingLayoutUUID_length = std::min(VK_UUID_SIZE, VK_UUID_SIZE);
-    for (int optimalTilingLayoutUUID_indx = 0; optimalTilingLayoutUUID_indx < proto_optimalTilingLayoutUUID_length; optimalTilingLayoutUUID_indx++) {
+    for (uint32_t optimalTilingLayoutUUID_indx = 0; optimalTilingLayoutUUID_indx < proto_optimalTilingLayoutUUID_length; optimalTilingLayoutUUID_indx++) {
       proto->add_optimaltilinglayoutuuid(static_cast<uint32_t>(original_struct->optimalTilingLayoutUUID[optimalTilingLayoutUUID_indx]));
     }
   }
@@ -938,15 +938,15 @@ void FillStructFromProto(VkBufferMemoryBarrier& original_struct, const vvk::serv
 }
 void FillStructFromProto(VkClearColorValue& original_struct, const vvk::server::VkClearColorValue& proto) {
   const size_t original_struct_float32_length = std::min(4, 4);
-  for (int float32_indx = 0; float32_indx < original_struct_float32_length; float32_indx++) {
+  for (uint32_t float32_indx = 0; float32_indx < original_struct_float32_length; float32_indx++) {
     original_struct.float32[float32_indx] = proto.float32(float32_indx);
   }
   const size_t original_struct_int32_length = std::min(4, 4);
-  for (int int32_indx = 0; int32_indx < original_struct_int32_length; int32_indx++) {
+  for (uint32_t int32_indx = 0; int32_indx < original_struct_int32_length; int32_indx++) {
     original_struct.int32[int32_indx] = proto.int32(int32_indx);
   }
   const size_t original_struct_uint32_length = std::min(4, 4);
-  for (int uint32_indx = 0; uint32_indx < original_struct_uint32_length; uint32_indx++) {
+  for (uint32_t uint32_indx = 0; uint32_indx < original_struct_uint32_length; uint32_indx++) {
     original_struct.uint32[uint32_indx] = proto.uint32(uint32_indx);
   }
 }
@@ -1695,12 +1695,12 @@ void FillStructFromProto(VkPhysicalDeviceLimits& original_struct, const vvk::ser
   original_struct.maxFragmentCombinedOutputResources = proto.maxfragmentcombinedoutputresources();
   original_struct.maxComputeSharedMemorySize = proto.maxcomputesharedmemorysize();
   const size_t original_struct_maxComputeWorkGroupCount_length = std::min(3, 3);
-  for (int maxComputeWorkGroupCount_indx = 0; maxComputeWorkGroupCount_indx < original_struct_maxComputeWorkGroupCount_length; maxComputeWorkGroupCount_indx++) {
+  for (uint32_t maxComputeWorkGroupCount_indx = 0; maxComputeWorkGroupCount_indx < original_struct_maxComputeWorkGroupCount_length; maxComputeWorkGroupCount_indx++) {
     original_struct.maxComputeWorkGroupCount[maxComputeWorkGroupCount_indx] = proto.maxcomputeworkgroupcount(maxComputeWorkGroupCount_indx);
   }
   original_struct.maxComputeWorkGroupInvocations = proto.maxcomputeworkgroupinvocations();
   const size_t original_struct_maxComputeWorkGroupSize_length = std::min(3, 3);
-  for (int maxComputeWorkGroupSize_indx = 0; maxComputeWorkGroupSize_indx < original_struct_maxComputeWorkGroupSize_length; maxComputeWorkGroupSize_indx++) {
+  for (uint32_t maxComputeWorkGroupSize_indx = 0; maxComputeWorkGroupSize_indx < original_struct_maxComputeWorkGroupSize_length; maxComputeWorkGroupSize_indx++) {
     original_struct.maxComputeWorkGroupSize[maxComputeWorkGroupSize_indx] = proto.maxcomputeworkgroupsize(maxComputeWorkGroupSize_indx);
   }
   original_struct.subPixelPrecisionBits = proto.subpixelprecisionbits();
@@ -1712,11 +1712,11 @@ void FillStructFromProto(VkPhysicalDeviceLimits& original_struct, const vvk::ser
   original_struct.maxSamplerAnisotropy = proto.maxsampleranisotropy();
   original_struct.maxViewports = proto.maxviewports();
   const size_t original_struct_maxViewportDimensions_length = std::min(2, 2);
-  for (int maxViewportDimensions_indx = 0; maxViewportDimensions_indx < original_struct_maxViewportDimensions_length; maxViewportDimensions_indx++) {
+  for (uint32_t maxViewportDimensions_indx = 0; maxViewportDimensions_indx < original_struct_maxViewportDimensions_length; maxViewportDimensions_indx++) {
     original_struct.maxViewportDimensions[maxViewportDimensions_indx] = proto.maxviewportdimensions(maxViewportDimensions_indx);
   }
   const size_t original_struct_viewportBoundsRange_length = std::min(2, 2);
-  for (int viewportBoundsRange_indx = 0; viewportBoundsRange_indx < original_struct_viewportBoundsRange_length; viewportBoundsRange_indx++) {
+  for (uint32_t viewportBoundsRange_indx = 0; viewportBoundsRange_indx < original_struct_viewportBoundsRange_length; viewportBoundsRange_indx++) {
     original_struct.viewportBoundsRange[viewportBoundsRange_indx] = proto.viewportboundsrange(viewportBoundsRange_indx);
   }
   original_struct.viewportSubPixelBits = proto.viewportsubpixelbits();
@@ -1788,11 +1788,11 @@ void FillStructFromProto(VkPhysicalDeviceLimits& original_struct, const vvk::ser
   original_struct.maxCombinedClipAndCullDistances = proto.maxcombinedclipandculldistances();
   original_struct.discreteQueuePriorities = proto.discretequeuepriorities();
   const size_t original_struct_pointSizeRange_length = std::min(2, 2);
-  for (int pointSizeRange_indx = 0; pointSizeRange_indx < original_struct_pointSizeRange_length; pointSizeRange_indx++) {
+  for (uint32_t pointSizeRange_indx = 0; pointSizeRange_indx < original_struct_pointSizeRange_length; pointSizeRange_indx++) {
     original_struct.pointSizeRange[pointSizeRange_indx] = proto.pointsizerange(pointSizeRange_indx);
   }
   const size_t original_struct_lineWidthRange_length = std::min(2, 2);
-  for (int lineWidthRange_indx = 0; lineWidthRange_indx < original_struct_lineWidthRange_length; lineWidthRange_indx++) {
+  for (uint32_t lineWidthRange_indx = 0; lineWidthRange_indx < original_struct_lineWidthRange_length; lineWidthRange_indx++) {
     original_struct.lineWidthRange[lineWidthRange_indx] = proto.linewidthrange(lineWidthRange_indx);
   }
   original_struct.pointSizeGranularity = proto.pointsizegranularity();
@@ -1821,7 +1821,7 @@ void FillStructFromProto(VkPhysicalDeviceProperties& original_struct, const vvk:
   original_struct.deviceType = static_cast<VkPhysicalDeviceType>(proto.devicetype());
   strncpy(original_struct.deviceName, proto.devicename().c_str(), VK_MAX_PHYSICAL_DEVICE_NAME_SIZE);
   const size_t original_struct_pipelineCacheUUID_length = std::min(VK_UUID_SIZE, VK_UUID_SIZE);
-  for (int pipelineCacheUUID_indx = 0; pipelineCacheUUID_indx < original_struct_pipelineCacheUUID_length; pipelineCacheUUID_indx++) {
+  for (uint32_t pipelineCacheUUID_indx = 0; pipelineCacheUUID_indx < original_struct_pipelineCacheUUID_length; pipelineCacheUUID_indx++) {
     original_struct.pipelineCacheUUID[pipelineCacheUUID_indx] = static_cast<uint8_t>(proto.pipelinecacheuuid(pipelineCacheUUID_indx));
   }
   VkPhysicalDeviceLimits &original_struct_limits = original_struct.limits;
@@ -1929,7 +1929,7 @@ void FillStructFromProto(VkPipelineColorBlendStateCreateInfo& original_struct, c
     original_struct.pAttachments = nullptr;
   }
   const size_t original_struct_blendConstants_length = std::min(4, 4);
-  for (int blendConstants_indx = 0; blendConstants_indx < original_struct_blendConstants_length; blendConstants_indx++) {
+  for (uint32_t blendConstants_indx = 0; blendConstants_indx < original_struct_blendConstants_length; blendConstants_indx++) {
     original_struct.blendConstants[blendConstants_indx] = proto.blendconstants(blendConstants_indx);
   }
 }
@@ -2543,15 +2543,15 @@ void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan11Features& original_struc
 void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan11Properties& original_struct, const vvk::server::VkPhysicalDeviceVulkan11Properties& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_PROPERTIES;
   const size_t original_struct_deviceUUID_length = std::min(VK_UUID_SIZE, VK_UUID_SIZE);
-  for (int deviceUUID_indx = 0; deviceUUID_indx < original_struct_deviceUUID_length; deviceUUID_indx++) {
+  for (uint32_t deviceUUID_indx = 0; deviceUUID_indx < original_struct_deviceUUID_length; deviceUUID_indx++) {
     original_struct.deviceUUID[deviceUUID_indx] = static_cast<uint8_t>(proto.deviceuuid(deviceUUID_indx));
   }
   const size_t original_struct_driverUUID_length = std::min(VK_UUID_SIZE, VK_UUID_SIZE);
-  for (int driverUUID_indx = 0; driverUUID_indx < original_struct_driverUUID_length; driverUUID_indx++) {
+  for (uint32_t driverUUID_indx = 0; driverUUID_indx < original_struct_driverUUID_length; driverUUID_indx++) {
     original_struct.driverUUID[driverUUID_indx] = static_cast<uint8_t>(proto.driveruuid(driverUUID_indx));
   }
   const size_t original_struct_deviceLUID_length = std::min(VK_LUID_SIZE, VK_LUID_SIZE);
-  for (int deviceLUID_indx = 0; deviceLUID_indx < original_struct_deviceLUID_length; deviceLUID_indx++) {
+  for (uint32_t deviceLUID_indx = 0; deviceLUID_indx < original_struct_deviceLUID_length; deviceLUID_indx++) {
     original_struct.deviceLUID[deviceLUID_indx] = static_cast<uint8_t>(proto.deviceluid(deviceLUID_indx));
   }
   original_struct.deviceNodeMask = proto.devicenodemask();
@@ -2810,7 +2810,7 @@ void FillStructFromProtoNoPNext(VkPhysicalDeviceVulkan14Properties& original_str
   }
   if (proto.optimaltilinglayoutuuid_size()) {
     const size_t original_struct_optimalTilingLayoutUUID_length = std::min(VK_UUID_SIZE, VK_UUID_SIZE);
-    for (int optimalTilingLayoutUUID_indx = 0; optimalTilingLayoutUUID_indx < original_struct_optimalTilingLayoutUUID_length; optimalTilingLayoutUUID_indx++) {
+    for (uint32_t optimalTilingLayoutUUID_indx = 0; optimalTilingLayoutUUID_indx < original_struct_optimalTilingLayoutUUID_length; optimalTilingLayoutUUID_indx++) {
       original_struct.optimalTilingLayoutUUID[optimalTilingLayoutUUID_indx] = static_cast<uint8_t>(proto.optimaltilinglayoutuuid(optimalTilingLayoutUUID_indx));
     }
   } else {
@@ -2879,7 +2879,6 @@ void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context, const vvk:
 
   VkInstanceCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreateinstance().pcreateinfo());
-  VkInstance client_pInstance = reinterpret_cast<VkInstance>(request.vkcreateinstance().pinstance());
   VkInstance server_pInstance;
   VkResult result = vkCreateInstance(&pCreateInfo, nullptr, &server_pInstance);
   response->mutable_vkcreateinstance()->set_pinstance(reinterpret_cast<uint64_t>(server_pInstance));
@@ -2912,7 +2911,7 @@ void UnpackAndExecuteVkEnumeratePhysicalDevices(vvk::ExecutionContext& context, 
   VkResult result = vkEnumeratePhysicalDevices(reinterpret_cast<VkInstance>(request.vkenumeratephysicaldevices().instance()), &pPhysicalDeviceCount, pPhysicalDevices);
   response->mutable_vkenumeratephysicaldevices()->set_pphysicaldevicecount(pPhysicalDeviceCount);
   if (request.vkenumeratephysicaldevices().pphysicaldevicecount() != 0) {
-    for (int pPhysicalDevices_index = 0; pPhysicalDevices_index < pPhysicalDeviceCount; pPhysicalDevices_index++) {
+    for (uint32_t pPhysicalDevices_index = 0; pPhysicalDevices_index < pPhysicalDeviceCount; pPhysicalDevices_index++) {
       response->mutable_vkenumeratephysicaldevices()->add_pphysicaldevices(reinterpret_cast<uint64_t>(pPhysicalDevices[pPhysicalDevices_index]));
     }
   }
@@ -2941,7 +2940,6 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
 
   VkDeviceCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreatedevice().pcreateinfo());
-  VkDevice client_pDevice = reinterpret_cast<VkDevice>(request.vkcreatedevice().pdevice());
   VkDevice server_pDevice;
   VkResult result = vkCreateDevice(context.physical_device(), &pCreateInfo, nullptr, &server_pDevice);
   response->mutable_vkcreatedevice()->set_pdevice(reinterpret_cast<uint64_t>(server_pDevice));
@@ -2979,7 +2977,7 @@ void UnpackAndExecuteVkEnumerateInstanceExtensionProperties(vvk::ExecutionContex
   VkResult result = vkEnumerateInstanceExtensionProperties(request.vkenumerateinstanceextensionproperties().playername().data(), &pPropertyCount, pProperties);
   response->mutable_vkenumerateinstanceextensionproperties()->set_ppropertycount(pPropertyCount);
   if (request.vkenumerateinstanceextensionproperties().ppropertycount() != 0) {
-    for (int pProperties_index = 0; pProperties_index < pPropertyCount; pProperties_index++) {
+    for (uint32_t pProperties_index = 0; pProperties_index < pPropertyCount; pProperties_index++) {
       FillProtoFromStruct(response->mutable_vkenumerateinstanceextensionproperties()->add_pproperties(), &pProperties[pProperties_index]);
     }
   }
@@ -3000,7 +2998,7 @@ void UnpackAndExecuteVkEnumerateDeviceExtensionProperties(vvk::ExecutionContext&
   VkResult result = vkEnumerateDeviceExtensionProperties(context.physical_device(), request.vkenumeratedeviceextensionproperties().playername().data(), &pPropertyCount, pProperties);
   response->mutable_vkenumeratedeviceextensionproperties()->set_ppropertycount(pPropertyCount);
   if (request.vkenumeratedeviceextensionproperties().ppropertycount() != 0) {
-    for (int pProperties_index = 0; pProperties_index < pPropertyCount; pProperties_index++) {
+    for (uint32_t pProperties_index = 0; pProperties_index < pPropertyCount; pProperties_index++) {
       FillProtoFromStruct(response->mutable_vkenumeratedeviceextensionproperties()->add_pproperties(), &pProperties[pProperties_index]);
     }
   }
@@ -3039,7 +3037,7 @@ void UnpackAndExecuteVkGetPhysicalDeviceQueueFamilyProperties(vvk::ExecutionCont
   vkGetPhysicalDeviceQueueFamilyProperties(context.physical_device(), &pQueueFamilyPropertyCount, pQueueFamilyProperties);
   response->mutable_vkgetphysicaldevicequeuefamilyproperties()->set_pqueuefamilypropertycount(pQueueFamilyPropertyCount);
   if (request.vkgetphysicaldevicequeuefamilyproperties().pqueuefamilypropertycount() != 0) {
-    for (int pQueueFamilyProperties_index = 0; pQueueFamilyProperties_index < pQueueFamilyPropertyCount; pQueueFamilyProperties_index++) {
+    for (uint32_t pQueueFamilyProperties_index = 0; pQueueFamilyProperties_index < pQueueFamilyPropertyCount; pQueueFamilyProperties_index++) {
       FillProtoFromStruct(response->mutable_vkgetphysicaldevicequeuefamilyproperties()->add_pqueuefamilyproperties(), &pQueueFamilyProperties[pQueueFamilyProperties_index]);
     }
   }
@@ -3048,7 +3046,6 @@ void UnpackAndExecuteVkGetPhysicalDeviceQueueFamilyProperties(vvk::ExecutionCont
 void UnpackAndExecuteVkGetDeviceQueue(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkGetDeviceQueue");
 
-  VkQueue client_pQueue = reinterpret_cast<VkQueue>(request.vkgetdevicequeue().pqueue());
   VkQueue server_pQueue;
   vkGetDeviceQueue(reinterpret_cast<VkDevice>(request.vkgetdevicequeue().device()), request.vkgetdevicequeue().queuefamilyindex(), request.vkgetdevicequeue().queueindex(), &server_pQueue);
   response->mutable_vkgetdevicequeue()->set_pqueue(reinterpret_cast<uint64_t>(server_pQueue));
@@ -3059,7 +3056,6 @@ void UnpackAndExecuteVkCreateFence(vvk::ExecutionContext& context, const vvk::se
 
   VkFenceCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreatefence().pcreateinfo());
-  VkFence client_pFence = reinterpret_cast<VkFence>(request.vkcreatefence().pfence());
   VkFence server_pFence;
   VkResult result = vkCreateFence(reinterpret_cast<VkDevice>(request.vkcreatefence().device()), &pCreateInfo, nullptr, &server_pFence);
   response->mutable_vkcreatefence()->set_pfence(reinterpret_cast<uint64_t>(server_pFence));
@@ -3076,7 +3072,6 @@ void UnpackAndExecuteVkCreateSemaphore(vvk::ExecutionContext& context, const vvk
 
   VkSemaphoreCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreatesemaphore().pcreateinfo());
-  VkSemaphore client_pSemaphore = reinterpret_cast<VkSemaphore>(request.vkcreatesemaphore().psemaphore());
   VkSemaphore server_pSemaphore;
   VkResult result = vkCreateSemaphore(reinterpret_cast<VkDevice>(request.vkcreatesemaphore().device()), &pCreateInfo, nullptr, &server_pSemaphore);
   response->mutable_vkcreatesemaphore()->set_psemaphore(reinterpret_cast<uint64_t>(server_pSemaphore));
@@ -3093,7 +3088,6 @@ void UnpackAndExecuteVkAllocateMemory(vvk::ExecutionContext& context, const vvk:
 
   VkMemoryAllocateInfo pAllocateInfo = {};
   FillStructFromProto(pAllocateInfo, request.vkallocatememory().pallocateinfo());
-  VkDeviceMemory client_pMemory = reinterpret_cast<VkDeviceMemory>(request.vkallocatememory().pmemory());
   VkDeviceMemory server_pMemory;
   VkResult result = vkAllocateMemory(reinterpret_cast<VkDevice>(request.vkallocatememory().device()), &pAllocateInfo, nullptr, &server_pMemory);
   response->mutable_vkallocatememory()->set_pmemory(reinterpret_cast<uint64_t>(server_pMemory));
@@ -3110,7 +3104,6 @@ void UnpackAndExecuteVkCreateImage(vvk::ExecutionContext& context, const vvk::se
 
   VkImageCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreateimage().pcreateinfo());
-  VkImage client_pImage = reinterpret_cast<VkImage>(request.vkcreateimage().pimage());
   VkImage server_pImage;
   VkResult result = vkCreateImage(reinterpret_cast<VkDevice>(request.vkcreateimage().device()), &pCreateInfo, nullptr, &server_pImage);
   response->mutable_vkcreateimage()->set_pimage(reinterpret_cast<uint64_t>(server_pImage));
@@ -3133,7 +3126,7 @@ void UnpackAndExecuteVkBindImageMemory2(vvk::ExecutionContext& context, const vv
   assert(request.method() == "vkBindImageMemory2");
 
   std::vector<VkBindImageMemoryInfo> pBindInfos(request.vkbindimagememory2().bindinfocount());
-  for (int i = 0; i < pBindInfos.size(); i++) {
+  for (uint32_t i = 0; i < pBindInfos.size(); i++) {
     FillStructFromProto(pBindInfos[i], request.vkbindimagememory2().pbindinfos(i));
   }
   VkResult result = vkBindImageMemory2(reinterpret_cast<VkDevice>(request.vkbindimagememory2().device()), request.vkbindimagememory2().bindinfocount(), pBindInfos.data());
@@ -3164,7 +3157,6 @@ void UnpackAndExecuteVkCreateImageView(vvk::ExecutionContext& context, const vvk
 
   VkImageViewCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreateimageview().pcreateinfo());
-  VkImageView client_pView = reinterpret_cast<VkImageView>(request.vkcreateimageview().pview());
   VkImageView server_pView;
   VkResult result = vkCreateImageView(reinterpret_cast<VkDevice>(request.vkcreateimageview().device()), &pCreateInfo, nullptr, &server_pView);
   response->mutable_vkcreateimageview()->set_pview(reinterpret_cast<uint64_t>(server_pView));
@@ -3181,7 +3173,6 @@ void UnpackAndExecuteVkCreateCommandPool(vvk::ExecutionContext& context, const v
 
   VkCommandPoolCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreatecommandpool().pcreateinfo());
-  VkCommandPool client_pCommandPool = reinterpret_cast<VkCommandPool>(request.vkcreatecommandpool().pcommandpool());
   VkCommandPool server_pCommandPool;
   VkResult result = vkCreateCommandPool(reinterpret_cast<VkDevice>(request.vkcreatecommandpool().device()), &pCreateInfo, nullptr, &server_pCommandPool);
   response->mutable_vkcreatecommandpool()->set_pcommandpool(reinterpret_cast<uint64_t>(server_pCommandPool));
@@ -3245,7 +3236,6 @@ void UnpackAndExecuteVkCreateRenderPass(vvk::ExecutionContext& context, const vv
 
   VkRenderPassCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreaterenderpass().pcreateinfo());
-  VkRenderPass client_pRenderPass = reinterpret_cast<VkRenderPass>(request.vkcreaterenderpass().prenderpass());
   VkRenderPass server_pRenderPass;
   VkResult result = vkCreateRenderPass(reinterpret_cast<VkDevice>(request.vkcreaterenderpass().device()), &pCreateInfo, nullptr, &server_pRenderPass);
   response->mutable_vkcreaterenderpass()->set_prenderpass(reinterpret_cast<uint64_t>(server_pRenderPass));
@@ -3276,7 +3266,6 @@ void UnpackAndExecuteVkCreatePipelineLayout(vvk::ExecutionContext& context, cons
 
   VkPipelineLayoutCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreatepipelinelayout().pcreateinfo());
-  VkPipelineLayout client_pPipelineLayout = reinterpret_cast<VkPipelineLayout>(request.vkcreatepipelinelayout().ppipelinelayout());
   VkPipelineLayout server_pPipelineLayout;
   VkResult result = vkCreatePipelineLayout(reinterpret_cast<VkDevice>(request.vkcreatepipelinelayout().device()), &pCreateInfo, nullptr, &server_pPipelineLayout);
   response->mutable_vkcreatepipelinelayout()->set_ppipelinelayout(reinterpret_cast<uint64_t>(server_pPipelineLayout));
@@ -3294,7 +3283,6 @@ void UnpackAndExecuteVkCreateShaderModule(vvk::ExecutionContext& context, const 
 
   VkShaderModuleCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreateshadermodule().pcreateinfo());
-  VkShaderModule client_pShaderModule = reinterpret_cast<VkShaderModule>(request.vkcreateshadermodule().pshadermodule());
   VkShaderModule server_pShaderModule;
   VkResult result = vkCreateShaderModule(reinterpret_cast<VkDevice>(request.vkcreateshadermodule().device()), &pCreateInfo, nullptr, &server_pShaderModule);
   response->mutable_vkcreateshadermodule()->set_pshadermodule(reinterpret_cast<uint64_t>(server_pShaderModule));
@@ -3311,7 +3299,7 @@ void UnpackAndExecuteVkCreateGraphicsPipelines(vvk::ExecutionContext& context, c
   assert(request.method() == "vkCreateGraphicsPipelines");
 
   std::vector<VkGraphicsPipelineCreateInfo> pCreateInfos(request.vkcreategraphicspipelines().createinfocount());
-  for (int i = 0; i < pCreateInfos.size(); i++) {
+  for (uint32_t i = 0; i < pCreateInfos.size(); i++) {
     FillStructFromProto(pCreateInfos[i], request.vkcreategraphicspipelines().pcreateinfos(i));
   }
   std::vector<VkPipeline> pPipelines(request.vkcreategraphicspipelines().createinfocount());
@@ -3320,7 +3308,7 @@ void UnpackAndExecuteVkCreateGraphicsPipelines(vvk::ExecutionContext& context, c
     response->mutable_vkcreategraphicspipelines()->add_ppipelines(reinterpret_cast<uint64_t>(pPipelines_elem));
   }
   response->set_result(result);
-  for (int i = 0; i < pCreateInfos.size(); i++) {
+  for (uint32_t i = 0; i < pCreateInfos.size(); i++) {
     VkGraphicsPipelineCreateInfo& pCreateInfos_ref = pCreateInfos[i];
     for (int pStages_indx = 0; pStages_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pstages_size(); pStages_indx++)  {
       const VkPipelineShaderStageCreateInfo &pCreateInfos_ref_pStages_i = pCreateInfos_ref.pStages[pStages_indx];
@@ -3386,7 +3374,6 @@ void UnpackAndExecuteVkCreateFramebuffer(vvk::ExecutionContext& context, const v
 
   VkFramebufferCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreateframebuffer().pcreateinfo());
-  VkFramebuffer client_pFramebuffer = reinterpret_cast<VkFramebuffer>(request.vkcreateframebuffer().pframebuffer());
   VkFramebuffer server_pFramebuffer;
   VkResult result = vkCreateFramebuffer(reinterpret_cast<VkDevice>(request.vkcreateframebuffer().device()), &pCreateInfo, nullptr, &server_pFramebuffer);
   response->mutable_vkcreateframebuffer()->set_pframebuffer(reinterpret_cast<uint64_t>(server_pFramebuffer));
@@ -3441,7 +3428,7 @@ void UnpackAndExecuteVkCmdSetViewport(vvk::ExecutionContext& context, const vvk:
   assert(request.method() == "vkCmdSetViewport");
 
   std::vector<VkViewport> pViewports(request.vkcmdsetviewport().viewportcount());
-  for (int i = 0; i < pViewports.size(); i++) {
+  for (uint32_t i = 0; i < pViewports.size(); i++) {
     FillStructFromProto(pViewports[i], request.vkcmdsetviewport().pviewports(i));
   }
   vkCmdSetViewport(reinterpret_cast<VkCommandBuffer>(request.vkcmdsetviewport().commandbuffer()), request.vkcmdsetviewport().firstviewport(), request.vkcmdsetviewport().viewportcount(), pViewports.data());
@@ -3451,7 +3438,7 @@ void UnpackAndExecuteVkCmdSetScissor(vvk::ExecutionContext& context, const vvk::
   assert(request.method() == "vkCmdSetScissor");
 
   std::vector<VkRect2D> pScissors(request.vkcmdsetscissor().scissorcount());
-  for (int i = 0; i < pScissors.size(); i++) {
+  for (uint32_t i = 0; i < pScissors.size(); i++) {
     FillStructFromProto(pScissors[i], request.vkcmdsetscissor().pscissors(i));
   }
   vkCmdSetScissor(reinterpret_cast<VkCommandBuffer>(request.vkcmdsetscissor().commandbuffer()), request.vkcmdsetscissor().firstscissor(), request.vkcmdsetscissor().scissorcount(), pScissors.data());
@@ -3467,12 +3454,12 @@ void UnpackAndExecuteVkQueueSubmit(vvk::ExecutionContext& context, const vvk::se
   assert(request.method() == "vkQueueSubmit");
 
   std::vector<VkSubmitInfo> pSubmits(request.vkqueuesubmit().submitcount());
-  for (int i = 0; i < pSubmits.size(); i++) {
+  for (uint32_t i = 0; i < pSubmits.size(); i++) {
     FillStructFromProto(pSubmits[i], request.vkqueuesubmit().psubmits(i));
   }
   VkResult result = vkQueueSubmit(reinterpret_cast<VkQueue>(request.vkqueuesubmit().queue()), request.vkqueuesubmit().submitcount(), pSubmits.data(), reinterpret_cast<VkFence>(request.vkqueuesubmit().fence()));
   response->set_result(result);
-  for (int i = 0; i < pSubmits.size(); i++) {
+  for (uint32_t i = 0; i < pSubmits.size(); i++) {
     VkSubmitInfo& pSubmits_ref = pSubmits[i];
     delete[] pSubmits_ref.pWaitDstStageMask;
   }
@@ -3493,15 +3480,15 @@ void UnpackAndExecuteVkCmdPipelineBarrier(vvk::ExecutionContext& context, const 
   assert(request.method() == "vkCmdPipelineBarrier");
 
   std::vector<VkMemoryBarrier> pMemoryBarriers(request.vkcmdpipelinebarrier().memorybarriercount());
-  for (int i = 0; i < pMemoryBarriers.size(); i++) {
+  for (uint32_t i = 0; i < pMemoryBarriers.size(); i++) {
     FillStructFromProto(pMemoryBarriers[i], request.vkcmdpipelinebarrier().pmemorybarriers(i));
   }
   std::vector<VkBufferMemoryBarrier> pBufferMemoryBarriers(request.vkcmdpipelinebarrier().buffermemorybarriercount());
-  for (int i = 0; i < pBufferMemoryBarriers.size(); i++) {
+  for (uint32_t i = 0; i < pBufferMemoryBarriers.size(); i++) {
     FillStructFromProto(pBufferMemoryBarriers[i], request.vkcmdpipelinebarrier().pbuffermemorybarriers(i));
   }
   std::vector<VkImageMemoryBarrier> pImageMemoryBarriers(request.vkcmdpipelinebarrier().imagememorybarriercount());
-  for (int i = 0; i < pImageMemoryBarriers.size(); i++) {
+  for (uint32_t i = 0; i < pImageMemoryBarriers.size(); i++) {
     FillStructFromProto(pImageMemoryBarriers[i], request.vkcmdpipelinebarrier().pimagememorybarriers(i));
   }
   vkCmdPipelineBarrier(reinterpret_cast<VkCommandBuffer>(request.vkcmdpipelinebarrier().commandbuffer()), static_cast<VkPipelineStageFlags>(request.vkcmdpipelinebarrier().srcstagemask()), static_cast<VkPipelineStageFlags>(request.vkcmdpipelinebarrier().dststagemask()), static_cast<VkDependencyFlags>(request.vkcmdpipelinebarrier().dependencyflags()), request.vkcmdpipelinebarrier().memorybarriercount(), pMemoryBarriers.data(), request.vkcmdpipelinebarrier().buffermemorybarriercount(), pBufferMemoryBarriers.data(), request.vkcmdpipelinebarrier().imagememorybarriercount(), pImageMemoryBarriers.data());
@@ -3511,7 +3498,7 @@ void UnpackAndExecuteVkCmdCopyImageToBuffer(vvk::ExecutionContext& context, cons
   assert(request.method() == "vkCmdCopyImageToBuffer");
 
   std::vector<VkBufferImageCopy> pRegions(request.vkcmdcopyimagetobuffer().regioncount());
-  for (int i = 0; i < pRegions.size(); i++) {
+  for (uint32_t i = 0; i < pRegions.size(); i++) {
     FillStructFromProto(pRegions[i], request.vkcmdcopyimagetobuffer().pregions(i));
   }
   vkCmdCopyImageToBuffer(reinterpret_cast<VkCommandBuffer>(request.vkcmdcopyimagetobuffer().commandbuffer()), reinterpret_cast<VkImage>(request.vkcmdcopyimagetobuffer().srcimage()), static_cast<VkImageLayout>(request.vkcmdcopyimagetobuffer().srcimagelayout()), reinterpret_cast<VkBuffer>(request.vkcmdcopyimagetobuffer().dstbuffer()), request.vkcmdcopyimagetobuffer().regioncount(), pRegions.data());
@@ -3548,7 +3535,6 @@ void UnpackAndExecuteVkCreateBuffer(vvk::ExecutionContext& context, const vvk::s
 
   VkBufferCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreatebuffer().pcreateinfo());
-  VkBuffer client_pBuffer = reinterpret_cast<VkBuffer>(request.vkcreatebuffer().pbuffer());
   VkBuffer server_pBuffer;
   VkResult result = vkCreateBuffer(reinterpret_cast<VkDevice>(request.vkcreatebuffer().device()), &pCreateInfo, nullptr, &server_pBuffer);
   response->mutable_vkcreatebuffer()->set_pbuffer(reinterpret_cast<uint64_t>(server_pBuffer));
@@ -3601,7 +3587,6 @@ void UnpackAndExecuteVkCreateSampler(vvk::ExecutionContext& context, const vvk::
 
   VkSamplerCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreatesampler().pcreateinfo());
-  VkSampler client_pSampler = reinterpret_cast<VkSampler>(request.vkcreatesampler().psampler());
   VkSampler server_pSampler;
   VkResult result = vkCreateSampler(reinterpret_cast<VkDevice>(request.vkcreatesampler().device()), &pCreateInfo, nullptr, &server_pSampler);
   response->mutable_vkcreatesampler()->set_psampler(reinterpret_cast<uint64_t>(server_pSampler));
@@ -3618,7 +3603,6 @@ void UnpackAndExecuteVkCreateDescriptorSetLayout(vvk::ExecutionContext& context,
 
   VkDescriptorSetLayoutCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreatedescriptorsetlayout().pcreateinfo());
-  VkDescriptorSetLayout client_pSetLayout = reinterpret_cast<VkDescriptorSetLayout>(request.vkcreatedescriptorsetlayout().psetlayout());
   VkDescriptorSetLayout server_pSetLayout;
   VkResult result = vkCreateDescriptorSetLayout(reinterpret_cast<VkDevice>(request.vkcreatedescriptorsetlayout().device()), &pCreateInfo, nullptr, &server_pSetLayout);
   response->mutable_vkcreatedescriptorsetlayout()->set_psetlayout(reinterpret_cast<uint64_t>(server_pSetLayout));
@@ -3636,7 +3620,6 @@ void UnpackAndExecuteVkCreatePipelineCache(vvk::ExecutionContext& context, const
 
   VkPipelineCacheCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreatepipelinecache().pcreateinfo());
-  VkPipelineCache client_pPipelineCache = reinterpret_cast<VkPipelineCache>(request.vkcreatepipelinecache().ppipelinecache());
   VkPipelineCache server_pPipelineCache;
   VkResult result = vkCreatePipelineCache(reinterpret_cast<VkDevice>(request.vkcreatepipelinecache().device()), &pCreateInfo, nullptr, &server_pPipelineCache);
   response->mutable_vkcreatepipelinecache()->set_ppipelinecache(reinterpret_cast<uint64_t>(server_pPipelineCache));
@@ -3653,7 +3636,6 @@ void UnpackAndExecuteVkCreateDescriptorPool(vvk::ExecutionContext& context, cons
 
   VkDescriptorPoolCreateInfo pCreateInfo = {};
   FillStructFromProto(pCreateInfo, request.vkcreatedescriptorpool().pcreateinfo());
-  VkDescriptorPool client_pDescriptorPool = reinterpret_cast<VkDescriptorPool>(request.vkcreatedescriptorpool().pdescriptorpool());
   VkDescriptorPool server_pDescriptorPool;
   VkResult result = vkCreateDescriptorPool(reinterpret_cast<VkDevice>(request.vkcreatedescriptorpool().device()), &pCreateInfo, nullptr, &server_pDescriptorPool);
   response->mutable_vkcreatedescriptorpool()->set_pdescriptorpool(reinterpret_cast<uint64_t>(server_pDescriptorPool));
@@ -3688,16 +3670,16 @@ void UnpackAndExecuteVkUpdateDescriptorSets(vvk::ExecutionContext& context, cons
   assert(request.method() == "vkUpdateDescriptorSets");
 
   std::vector<VkWriteDescriptorSet> pDescriptorWrites(request.vkupdatedescriptorsets().descriptorwritecount());
-  for (int i = 0; i < pDescriptorWrites.size(); i++) {
+  for (uint32_t i = 0; i < pDescriptorWrites.size(); i++) {
     FillStructFromProto(pDescriptorWrites[i], request.vkupdatedescriptorsets().pdescriptorwrites(i));
   }
   std::vector<VkCopyDescriptorSet> pDescriptorCopies(request.vkupdatedescriptorsets().descriptorcopycount());
-  for (int i = 0; i < pDescriptorCopies.size(); i++) {
+  for (uint32_t i = 0; i < pDescriptorCopies.size(); i++) {
     FillStructFromProto(pDescriptorCopies[i], request.vkupdatedescriptorsets().pdescriptorcopies(i));
   }
   vkUpdateDescriptorSets(reinterpret_cast<VkDevice>(request.vkupdatedescriptorsets().device()), request.vkupdatedescriptorsets().descriptorwritecount(), pDescriptorWrites.data(), request.vkupdatedescriptorsets().descriptorcopycount(), pDescriptorCopies.data());
   response->set_result(VK_SUCCESS);
-  for (int i = 0; i < pDescriptorWrites.size(); i++) {
+  for (uint32_t i = 0; i < pDescriptorWrites.size(); i++) {
     VkWriteDescriptorSet& pDescriptorWrites_ref = pDescriptorWrites[i];
     delete[] pDescriptorWrites_ref.pImageInfo;
     delete[] pDescriptorWrites_ref.pBufferInfo;

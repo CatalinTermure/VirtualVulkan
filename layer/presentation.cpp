@@ -89,7 +89,7 @@ void PresentationThreadAssociateSwapchain(PresentationThread &presentation_threa
   std::vector<uint64_t> remote_frame_keys;
   remote_buffers.reserve(response.setuppresentation().uncompressed_stream_info().remote_buffers_size());
   remote_frame_keys.reserve(response.setuppresentation().uncompressed_stream_info().frame_keys_size());
-  for (uint32_t i = 0; i < response.setuppresentation().uncompressed_stream_info().remote_buffers_size(); i++) {
+  for (int i = 0; i < response.setuppresentation().uncompressed_stream_info().remote_buffers_size(); i++) {
     remote_buffers.push_back(response.setuppresentation().uncompressed_stream_info().remote_buffers(i));
     remote_frame_keys.push_back(response.setuppresentation().uncompressed_stream_info().frame_keys(i));
   }

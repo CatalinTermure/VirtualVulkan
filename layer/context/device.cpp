@@ -56,6 +56,7 @@ DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhys
       .vkGetPhysicalDeviceMemoryProperties2KHR = instance_info_.dispatch_table().GetPhysicalDeviceMemoryProperties2KHR,
       .vkGetDeviceBufferMemoryRequirements = dispatch_table_.GetDeviceBufferMemoryRequirements,
       .vkGetDeviceImageMemoryRequirements = dispatch_table_.GetDeviceImageMemoryRequirements,
+      .vkGetMemoryWin32HandleKHR = nullptr,
   };
   VmaAllocatorCreateInfo local_allocator_create_info = {
       .flags = 0,
