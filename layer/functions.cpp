@@ -1051,9 +1051,18 @@ VKAPI_ATTR void VKAPI_CALL GetImageSubresourceLayout(VkDevice device, VkImage im
 VKAPI_ATTR VkResult VKAPI_CALL CreateRenderPass(VkDevice device, const VkRenderPassCreateInfo* pCreateInfo,
                                                 const VkAllocationCallbacks* pAllocator, VkRenderPass* pRenderPass) {
   DeviceInfo& device_info = GetDeviceInfo(device);
+  VkRenderPassCreateInfo remote_create_info = *pCreateInfo;
+  std::vector<VkAttachmentDescription> attachment_descriptions(remote_create_info.attachmentCount);
+  remote_create_info.pAttachments = attachment_descriptions.data();
+  for (uint32_t i = 0; i < remote_create_info.attachmentCount; i++) {
+    attachment_descriptions[i] = pCreateInfo->pAttachments[i];
+    if (attachment_descriptions[i].finalLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
+      attachment_descriptions[i].finalLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+    }
+  }
   return PackAndCallVkCreateRenderPass(device_info.instance_info().command_stream(),
-                                       device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator,
-                                       pRenderPass);
+                                       device_info.instance_info().GetRemoteHandle(device), &remote_create_info,
+                                       pAllocator, pRenderPass);
 }
 VKAPI_ATTR void VKAPI_CALL DestroyRenderPass(VkDevice device, VkRenderPass renderPass,
                                              const VkAllocationCallbacks* pAllocator) {
@@ -1429,10 +1438,17 @@ VKAPI_ATTR void VKAPI_CALL CmdPipelineBarrier(VkCommandBuffer commandBuffer, VkP
                                               uint32_t imageMemoryBarrierCount,
                                               const VkImageMemoryBarrier* pImageMemoryBarriers) {
   DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  std::vector<VkImageMemoryBarrier> image_memory_barriers(imageMemoryBarrierCount);
+  for (uint32_t i = 0; i < imageMemoryBarrierCount; i++) {
+    image_memory_barriers[i] = pImageMemoryBarriers[i];
+    if (image_memory_barriers[i].newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
+      image_memory_barriers[i].newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+    }
+  }
   PackAndCallVkCmdPipelineBarrier(device_info.instance_info().command_stream(),
                                   device_info.GetRemoteHandle(commandBuffer), srcStageMask, dstStageMask,
                                   dependencyFlags, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount,
-                                  pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);
+                                  pBufferMemoryBarriers, image_memory_barriers.size(), image_memory_barriers.data());
 }
 
 VKAPI_ATTR void VKAPI_CALL CmdCopyImageToBuffer(VkCommandBuffer commandBuffer, VkImage srcImage,

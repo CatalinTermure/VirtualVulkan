@@ -110,28 +110,6 @@ void PresentationThreadSetupFrame(PresentationThread &presentation_thread, VkCom
   for (auto &swapchain_present_info : presentation_thread.swapchains) {
     SwapchainInfo &swapchain_info = GetSwapchainInfo(swapchain_present_info.swapchain);
     VkImage remote_image = swapchain_info.GetRemoteImages()[swapchain_image_index].first;
-    VkImageMemoryBarrier image_memory_barrier = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-        .pNext = nullptr,
-        .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-        .dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT,
-        .oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-        .newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-        .srcQueueFamilyIndex = presentation_thread.remote_graphics_queue_family_index,
-        .dstQueueFamilyIndex = presentation_thread.remote_graphics_queue_family_index,
-        .image = remote_image,
-        .subresourceRange =
-            {
-                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                .baseMipLevel = 0,
-                .levelCount = 1,
-                .baseArrayLayer = 0,
-                .layerCount = 1,
-            },
-    };
-    PackAndCallVkCmdPipelineBarrier(command_stream, remote_command_buffer,
-                                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0,
-                                    nullptr, 0, nullptr, 1, &image_memory_barrier);
 
     VkBufferImageCopy region = {
         .bufferOffset = 0,
