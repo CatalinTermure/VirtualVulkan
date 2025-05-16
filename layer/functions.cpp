@@ -260,7 +260,6 @@ VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(VkDevice device, VkSwapchainK
 
 VKAPI_ATTR VkResult VKAPI_CALL QueuePresentKHR(VkQueue queue, const VkPresentInfoKHR* pPresentInfo) {
   DeviceInfo& device_info = GetDeviceInfo(queue);
-  VkFence aux_fence = device_info.fence_pool().GetFence();
   VkQueue local_queue = *device_info.present_queue();
   VkDevice local_device = GetDeviceForQueue(queue);
   PresentationThread& presentation_thread = *device_info.presentation_thread();
@@ -336,21 +335,31 @@ VKAPI_ATTR VkResult VKAPI_CALL QueuePresentKHR(VkQueue queue, const VkPresentInf
     client_readers.emplace_back(instance_info.stub().RequestFrame(&client_contexts[i], request));
   }
 
-  for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
-    vvk::server::VvkGetFrameResponse response;
-    std::string data;
-    while (client_readers[i]->Read(&response)) {
-      data.append(response.frame_data());
+  {
+    std::vector<VkFenceProxy> fences;
+    fences.reserve(present_info.swapchainCount);
+    for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
+      fences.emplace_back(device_info.fence_pool().GetFence());
+      vvk::server::VvkGetFrameResponse response;
+      std::string data;
+      while (client_readers[i]->Read(&response)) {
+        data.append(response.frame_data());
+      }
+      client_readers[i]->Finish();
+
+      SwapchainInfo& swapchain_info = GetSwapchainInfo(present_info.pSwapchains[i]);
+      swapchain_info.CopyMemoryToImage(present_info.pImageIndices[i], data, {}, {}, {}, *fences.back());
     }
-    client_readers[i]->Finish();
 
-    SwapchainInfo& swapchain_info = GetSwapchainInfo(present_info.pSwapchains[i]);
-    swapchain_info.CopyMemoryToImage(present_info.pImageIndices[i], data, {}, {}, {}, aux_fence);
+    std::vector<VkFence> fences_to_wait;
+    fences_to_wait.reserve(fences.size());
+    for (auto& fence : fences) {
+      fences_to_wait.push_back(*fence);
+    }
+
+    dispatch_table.WaitForFences(local_device, fences_to_wait.size(), fences_to_wait.data(), VK_TRUE, UINT64_MAX);
+    dispatch_table.ResetFences(local_device, fences_to_wait.size(), fences_to_wait.data());
   }
-
-  dispatch_table.WaitForFences(local_device, 1, &aux_fence, VK_TRUE, kVkQueuePresentFenceTimeout);
-  dispatch_table.ResetFences(local_device, 1, &aux_fence);
-  device_info.fence_pool().ReturnFence(aux_fence);
 
   dispatch_table.QueuePresentKHR(local_queue, &present_info);
   return VK_SUCCESS;
@@ -1353,7 +1362,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
     for (size_t i = 0; i < semaphores_to_wait_local.size(); i++) {
       semaphores_to_wait_local_handles[i] = semaphores_to_wait_local[i]->local_handle;
     }
-    VkFence aux_fence = device_info.fence_pool().GetFence();
+    VkFenceProxy aux_fence = device_info.fence_pool().GetFence();
     VkSubmitInfo local_semaphores_submit_info{
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
         .pNext = nullptr,
@@ -1365,11 +1374,12 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
         .signalSemaphoreCount = 0,
         .pSignalSemaphores = nullptr,
     };
-    device_info.dispatch_table().QueueSubmit(*device_info.present_queue(), 1, &local_semaphores_submit_info, aux_fence);
+    device_info.dispatch_table().QueueSubmit(*device_info.present_queue(), 1, &local_semaphores_submit_info,
+                                             *aux_fence);
     std::thread remote_caller(
         [&dispatch_table = device_info.dispatch_table(), &command_stream = device_info.instance_info().command_stream(),
          remote_queue = device_info.GetRemoteHandle(queue), remote_fence = device_info.GetRemoteHandle(fence),
-         local_fence = fence, &fence_pool = device_info.fence_pool(), aux_fence, device,
+         local_fence = fence, &fence_pool = device_info.fence_pool(), aux_fence = std::move(aux_fence), device,
          remote_device = device_info.instance_info().GetRemoteHandle(device), submits = std::move(submit_infos),
          present_queue = *device_info.present_queue(), semaphores_to_wait_local = std::move(semaphores_to_wait_local),
          semaphores_to_signal = std::move(local_semaphores_to_signal_from_remote),
@@ -1379,20 +1389,18 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
           // Wait for local semaphores
           spdlog::trace("VkQueueSubmit: Waiting for local semaphores");
           VkResult result =
-              dispatch_table.WaitForFences(device, 1, &aux_fence, VK_TRUE, kVkQueueSubmitLocalSemaphoreTimeout);
+              dispatch_table.WaitForFences(device, 1, aux_fence.get(), VK_TRUE, kVkQueueSubmitLocalSemaphoreTimeout);
           if (result != VK_SUCCESS) {
             throw std::runtime_error("Failed to wait for local semaphores");
           }
-          result = dispatch_table.ResetFences(device, 1, &aux_fence);
+          result = dispatch_table.ResetFences(device, 1, aux_fence.get());
           if (result != VK_SUCCESS) {
             throw std::runtime_error("Failed to reset local fences");
           }
-          fence_pool.ReturnFence(aux_fence);
           spdlog::trace("VkQueueSubmit: Finished waiting for local semaphores");
           for (VkSemaphore semaphore : semaphores_to_wait_local) {
             semaphore->state = SemaphoreState::kUnsignaled;
           }
-
           // Then we can submit to the remote queue
           result = PackAndCallVkQueueSubmit(command_stream, remote_queue, submits.size(), submits.data(), remote_fence);
           if (result != VK_SUCCESS) {

@@ -7,12 +7,35 @@
 #include <vector>
 
 namespace vvk {
+
+class FencePool;
+
+class VkFenceProxy {
+ public:
+  VkFenceProxy(VkFence fence, FencePool& fence_pool) : fence_(fence), fence_pool_(&fence_pool) {}
+
+  VkFenceProxy(const VkFenceProxy&) = delete;
+  VkFenceProxy& operator=(const VkFenceProxy&) = delete;
+  VkFenceProxy(VkFenceProxy&& other) noexcept;
+  VkFenceProxy& operator=(VkFenceProxy&& other) noexcept;
+
+  ~VkFenceProxy();
+
+  VkFence operator*() const { return fence_; }
+  const VkFence* get() const { return &fence_; }
+  VkFence* get() { return &fence_; }
+
+ private:
+  VkFence fence_;
+  FencePool* fence_pool_;
+};
+
 class FencePool {
  public:
   FencePool(VkDevice device, size_t pool_size, PFN_vkCreateFence create_fence);
 
-  VkFence GetFence();
-  void ReturnFence(VkFence fence);
+  VkFenceProxy GetFence();
+  void ReturnFence(VkFence& fence);
 
  private:
   std::vector<VkFence> fences_;
