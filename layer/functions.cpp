@@ -604,6 +604,23 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     return result;
   }
 
+  VkInstance instance = GetInstanceForPhysicalDevice(physicalDevice);
+  uint32_t remote_physical_device_count = 0;
+  PackAndCallVkEnumeratePhysicalDevices(instance_info.command_stream(), instance_info.GetRemoteHandle(instance),
+                                        &remote_physical_device_count, nullptr);
+  if (remote_physical_device_count != 1) {
+    spdlog::error("Remote physical device count is not 1");
+    return VK_ERROR_INITIALIZATION_FAILED;
+  }
+  VkPhysicalDevice remote_physical_device;
+  result =
+      PackAndCallVkEnumeratePhysicalDevices(instance_info.command_stream(), instance_info.GetRemoteHandle(instance),
+                                            &remote_physical_device_count, &remote_physical_device);
+  if (result != VK_SUCCESS) {
+    return result;
+  }
+  instance_info.SetRemoteHandle(physicalDevice, remote_physical_device);
+
   VmaVulkanFunctions vma_vulkan_funcs = {
       .vkGetInstanceProcAddr = nullptr,
       .vkGetDeviceProcAddr = nullptr,
@@ -644,7 +661,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
       .pDeviceMemoryCallbacks = nullptr,
       .pHeapSizeLimit = nullptr,
       .pVulkanFunctions = &vma_vulkan_funcs,
-      .instance = GetInstanceForPhysicalDevice(physicalDevice),
+      .instance = instance,
       // We are using Vulkan 1.0 for VMA, because the application may only use Vulkan 1.0
       .vulkanApiVersion = VK_API_VERSION_1_0,
       .pTypeExternalMemoryHandleTypes = nullptr,

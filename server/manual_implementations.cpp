@@ -51,6 +51,23 @@ void UnpackAndExecuteVkCreateInstanceManual(vvk::ExecutionContext& context, cons
   }
 }
 
+void UnpackAndExecuteVkEnumeratePhysicalDevicesManual(vvk::ExecutionContext& context,
+                                                      const vvk::server::VvkRequest& request,
+                                                      vvk::server::VvkResponse* response) {
+  assert(request.method() == "vkEnumeratePhysicalDevices");
+
+  uint32_t physical_device_count = request.vkenumeratephysicaldevices().pphysicaldevicecount();
+  if (physical_device_count == 0) {
+    response->mutable_vkenumeratephysicaldevices()->set_pphysicaldevicecount(1);
+  } else {
+    assert(physical_device_count == 1);
+    response->mutable_vkenumeratephysicaldevices()->set_pphysicaldevicecount(physical_device_count);
+    response->mutable_vkenumeratephysicaldevices()->add_pphysicaldevices(
+        reinterpret_cast<uint64_t>(context.physical_device()));
+  }
+  response->set_result(VK_SUCCESS);
+}
+
 void UnpackAndExecuteSetupPresentation(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
                                        vvk::server::VvkResponse* response) {
   assert(request.method() == "setupPresentation");

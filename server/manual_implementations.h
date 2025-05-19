@@ -7,6 +7,10 @@
 void UnpackAndExecuteVkCreateInstanceManual(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
                                             vvk::server::VvkResponse* response);
 
+void UnpackAndExecuteVkEnumeratePhysicalDevicesManual(vvk::ExecutionContext& context,
+                                                      const vvk::server::VvkRequest& request,
+                                                      vvk::server::VvkResponse* response);
+
 void UnpackAndExecuteSetupPresentation(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
                                        vvk::server::VvkResponse* response);
 

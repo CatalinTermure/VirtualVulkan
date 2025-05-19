@@ -14,8 +14,8 @@ const std::unordered_map<
     g_jump_table = {
         {"setupPresentation", UnpackAndExecuteSetupPresentation},
         {"vkCreateInstance", UnpackAndExecuteVkCreateInstanceManual},
+        {"vkEnumeratePhysicalDevices", UnpackAndExecuteVkEnumeratePhysicalDevicesManual},
         {"vkDestroyInstance", UnpackAndExecuteVkDestroyInstance},
-        {"vkEnumeratePhysicalDevices", UnpackAndExecuteVkEnumeratePhysicalDevices},
         {"vkGetPhysicalDeviceProperties", UnpackAndExecuteVkGetPhysicalDeviceProperties},
         {"vkGetPhysicalDeviceFormatProperties", UnpackAndExecuteVkGetPhysicalDeviceFormatProperties},
         {"vkCreateDevice", UnpackAndExecuteVkCreateDevice},
