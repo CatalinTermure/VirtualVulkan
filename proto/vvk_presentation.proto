@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package vvk.server;
 
-message VvkGetFrameStreamingCapabilitiesRequest {}
+message VvkGetFrameStreamingCapabilitiesRequest {
+  uint64 physical_device = 1;
+}
 
 message VvkGetFrameStreamingCapabilitiesResponse {
   bool supports_uncompressed_stream = 1;

@@ -46,8 +46,29 @@ grpc::Status VvkServerImpl::GetFrameStreamingCapabilities(
     grpc::ServerContext* context, const vvk::server::VvkGetFrameStreamingCapabilitiesRequest* request,
     vvk::server::VvkGetFrameStreamingCapabilitiesResponse* response) {
   response->set_supports_uncompressed_stream(true);
-  response->set_supports_h264_stream(false);
-  response->set_supports_h265_stream(false);
+  uint32_t local_device_extension_count = 0;
+  std::vector<::VkExtensionProperties> local_device_extensions_properties;
+  VkPhysicalDevice physical_device = reinterpret_cast<VkPhysicalDevice>(request->physical_device());
+  vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &local_device_extension_count, nullptr);
+  local_device_extensions_properties.resize(local_device_extension_count);
+  vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &local_device_extension_count,
+                                       local_device_extensions_properties.data());
+
+  bool local_device_supports_h264_encode =
+      std::find_if(local_device_extensions_properties.begin(), local_device_extensions_properties.end(),
+                   [](const ::VkExtensionProperties& extension) {
+                     return strcmp(extension.extensionName, VK_KHR_VIDEO_ENCODE_H264_EXTENSION_NAME) == 0;
+                   }) != local_device_extensions_properties.end();
+
+  response->set_supports_h264_stream(local_device_supports_h264_encode);
+
+  bool local_device_supports_h265_encode =
+      std::find_if(local_device_extensions_properties.begin(), local_device_extensions_properties.end(),
+                   [](const ::VkExtensionProperties& extension) {
+                     return strcmp(extension.extensionName, VK_KHR_VIDEO_ENCODE_H265_EXTENSION_NAME) == 0;
+                   }) != local_device_extensions_properties.end();
+  response->set_supports_h265_stream(local_device_supports_h265_encode);
+
   return grpc::Status::OK;
 }
 

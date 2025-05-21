@@ -38,14 +38,16 @@ PresentationThread::PresentationThread(VkInstance instance, VkDevice device, uin
       thread{std::bind(PresentationThreadWorker, this)} {}
 
 std::unique_ptr<PresentationThread> PresentationThreadCreate(VkInstance local_instance, VkDevice local_device,
+                                                             VkPhysicalDevice remote_physical_device,
                                                              uint32_t remote_graphics_queue_family_index) {
   InstanceInfo &instance_info = GetInstanceInfo(local_instance);
 
   vvk::server::VvkGetFrameStreamingCapabilitiesResponse server_streaming_capabilities = [&]() {
+    vvk::server::VvkGetFrameStreamingCapabilitiesRequest request;
+    request.set_physical_device(reinterpret_cast<uint64_t>(remote_physical_device));
     vvk::server::VvkGetFrameStreamingCapabilitiesResponse response;
     grpc::ClientContext client_context;
-    instance_info.stub().GetFrameStreamingCapabilities(
-        &client_context, vvk::server::VvkGetFrameStreamingCapabilitiesRequest{}, &response);
+    instance_info.stub().GetFrameStreamingCapabilities(&client_context, request, &response);
     return response;
   }();
 

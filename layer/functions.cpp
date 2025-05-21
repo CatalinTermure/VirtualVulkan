@@ -464,7 +464,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
     RemoveStructsFromChain(reinterpret_cast<VkBaseOutStructure*>(&remote_create_info),
                            VK_STRUCTURE_TYPE_LOADER_INSTANCE_CREATE_INFO);
     VkApplicationInfo remote_app_info = *pCreateInfo->pApplicationInfo;
-    remote_app_info.apiVersion = std::max(remote_app_info.apiVersion, VK_API_VERSION_1_2);
+    remote_app_info.apiVersion = std::max(remote_app_info.apiVersion, VK_API_VERSION_1_3);
     remote_create_info.pApplicationInfo = &remote_app_info;
 
     std::vector<const char*> enabled_extensions;
@@ -557,8 +557,33 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
   }
 
   InstanceInfo& instance_info = GetInstanceInfo(physicalDevice);
-
   VkResult result;
+
+  VkInstance instance = GetInstanceForPhysicalDevice(physicalDevice);
+  uint32_t remote_physical_device_count = 0;
+  PackAndCallVkEnumeratePhysicalDevices(instance_info.command_stream(), instance_info.GetRemoteHandle(instance),
+                                        &remote_physical_device_count, nullptr);
+  if (remote_physical_device_count != 1) {
+    spdlog::error("Remote physical device count is not 1");
+    return VK_ERROR_INITIALIZATION_FAILED;
+  }
+  VkPhysicalDevice remote_physical_device;
+  result =
+      PackAndCallVkEnumeratePhysicalDevices(instance_info.command_stream(), instance_info.GetRemoteHandle(instance),
+                                            &remote_physical_device_count, &remote_physical_device);
+  if (result != VK_SUCCESS) {
+    return result;
+  }
+  instance_info.SetRemoteHandle(physicalDevice, remote_physical_device);
+
+  grpc::ClientContext context;
+  vvk::server::VvkGetFrameStreamingCapabilitiesResponse frame_streaming_capabilities;
+  {
+    vvk::server::VvkGetFrameStreamingCapabilitiesRequest request;
+    request.set_physical_device(reinterpret_cast<uint64_t>(instance_info.GetRemoteHandle(physicalDevice)));
+    instance_info.stub().GetFrameStreamingCapabilities(&context, request, &frame_streaming_capabilities);
+  }
+
   std::optional<uint32_t> present_queue_family_index = std::nullopt;
   {
     float queue_priorities[1] = {1.0f};
@@ -575,6 +600,36 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     };
     local_create_info.queueCreateInfoCount = 1;
     local_create_info.pQueueCreateInfos = &queue_create_info;
+    std::vector<const char*> enabled_extensions;
+    {
+      for (uint32_t i = 0; i < local_create_info.enabledExtensionCount; i++) {
+        enabled_extensions.push_back(local_create_info.ppEnabledExtensionNames[i]);
+      }
+
+      uint32_t local_device_extension_count = 0;
+      std::vector<VkExtensionProperties> local_device_extensions_properties;
+      instance_info.dispatch_table().EnumerateDeviceExtensionProperties(physicalDevice, nullptr,
+                                                                        &local_device_extension_count, nullptr);
+      local_device_extensions_properties.resize(local_device_extension_count);
+      instance_info.dispatch_table().EnumerateDeviceExtensionProperties(
+          physicalDevice, nullptr, &local_device_extension_count, local_device_extensions_properties.data());
+
+      bool local_device_supports_h264_decode =
+          std::find_if(local_device_extensions_properties.begin(), local_device_extensions_properties.end(),
+                       [](const VkExtensionProperties& extension) {
+                         return strcmp(extension.extensionName, VK_KHR_VIDEO_DECODE_H264_EXTENSION_NAME) == 0;
+                       }) != local_device_extensions_properties.end();
+
+      if (frame_streaming_capabilities.supports_h264_stream() && local_device_supports_h264_decode) {
+        enabled_extensions.push_back(VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME);
+        enabled_extensions.push_back(VK_KHR_VIDEO_QUEUE_EXTENSION_NAME);
+        enabled_extensions.push_back(VK_KHR_VIDEO_DECODE_QUEUE_EXTENSION_NAME);
+        enabled_extensions.push_back(VK_KHR_VIDEO_DECODE_H264_EXTENSION_NAME);
+      }
+    }
+
+    local_create_info.enabledExtensionCount = enabled_extensions.size();
+    local_create_info.ppEnabledExtensionNames = enabled_extensions.data();
 
     auto surface = instance_info.surface();
     if (surface.has_value()) {
@@ -603,23 +658,6 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
   if (result != VK_SUCCESS) {
     return result;
   }
-
-  VkInstance instance = GetInstanceForPhysicalDevice(physicalDevice);
-  uint32_t remote_physical_device_count = 0;
-  PackAndCallVkEnumeratePhysicalDevices(instance_info.command_stream(), instance_info.GetRemoteHandle(instance),
-                                        &remote_physical_device_count, nullptr);
-  if (remote_physical_device_count != 1) {
-    spdlog::error("Remote physical device count is not 1");
-    return VK_ERROR_INITIALIZATION_FAILED;
-  }
-  VkPhysicalDevice remote_physical_device;
-  result =
-      PackAndCallVkEnumeratePhysicalDevices(instance_info.command_stream(), instance_info.GetRemoteHandle(instance),
-                                            &remote_physical_device_count, &remote_physical_device);
-  if (result != VK_SUCCESS) {
-    return result;
-  }
-  instance_info.SetRemoteHandle(physicalDevice, remote_physical_device);
 
   VmaVulkanFunctions vma_vulkan_funcs = {
       .vkGetInstanceProcAddr = nullptr,
@@ -721,6 +759,13 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
         enabled_extensions.push_back(remote_create_info.ppEnabledExtensionNames[i]);
       }
     }
+
+    if (frame_streaming_capabilities.supports_h264_stream()) {
+      enabled_extensions.push_back(VK_KHR_VIDEO_QUEUE_EXTENSION_NAME);
+      enabled_extensions.push_back(VK_KHR_VIDEO_ENCODE_QUEUE_EXTENSION_NAME);
+      enabled_extensions.push_back(VK_KHR_VIDEO_ENCODE_H264_EXTENSION_NAME);
+    }
+
     remote_create_info.enabledExtensionCount = enabled_extensions.size();
     remote_create_info.ppEnabledExtensionNames = enabled_extensions.data();
 
