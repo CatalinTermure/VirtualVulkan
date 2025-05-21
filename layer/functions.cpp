@@ -20,7 +20,6 @@
 namespace vvk {
 namespace {
 
-constexpr uint64_t kVkQueueSubmitLocalSemaphoreTimeout = UINT64_MAX - 2;
 constexpr uint64_t kVkQueueSubmitRemoteSemaphoreTimeout = UINT64_MAX - 3;
 constexpr uint64_t kVkQueuePresentFenceTimeout = UINT64_MAX - 4;
 
@@ -1333,8 +1332,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
          unused3 = std::move(command_buffers_remote)]() {
           // Wait for local semaphores
           spdlog::trace("VkQueueSubmit: Waiting for local semaphores");
-          VkResult result =
-              dispatch_table.WaitForFences(device, 1, aux_fence.get(), VK_TRUE, kVkQueueSubmitLocalSemaphoreTimeout);
+          VkResult result = dispatch_table.WaitForFences(device, 1, aux_fence.get(), VK_TRUE, UINT64_MAX);
           if (result != VK_SUCCESS) {
             throw std::runtime_error("Failed to wait for local semaphores");
           }
