@@ -11,6 +11,7 @@
 #include <optional>
 #include <vector>
 
+#include "3rdparty/ctpl_stl.h"
 #include "commons/remote_call.h"
 #include "layer/context/device.h"
 #include "layer/context/instance.h"
@@ -19,6 +20,9 @@
 
 namespace vvk {
 namespace {
+
+constexpr int kThreadPoolSize = 16;
+ctpl::thread_pool g_thread_pool(kThreadPoolSize);
 
 constexpr uint64_t kVkQueueSubmitRemoteSemaphoreTimeout = UINT64_MAX - 3;
 constexpr uint64_t kVkQueuePresentFenceTimeout = UINT64_MAX - 4;
@@ -1110,28 +1114,30 @@ VKAPI_ATTR VkResult VKAPI_CALL WaitForFences(VkDevice device, uint32_t fenceCoun
 
   VkResult local_result = VK_SUCCESS;
   VkResult remote_result = VK_SUCCESS;
-  std::thread local_wait_thread;
-  std::thread remote_wait_thread;
+  std::future<void> local_wait_future;
+  std::future<void> remote_wait_future;
 
   if (!local_fences.empty()) {
-    local_wait_thread = std::thread([&device_info, &local_fences, &local_result, device, waitAll, timeout]() {
-      local_result = device_info.dispatch_table().WaitForFences(device, local_fences.size(), local_fences.data(),
-                                                                waitAll, timeout);
-    });
+    local_wait_future =
+        g_thread_pool.push([&device_info, &local_fences, &local_result, device, waitAll, timeout](int unused) {
+          local_result = device_info.dispatch_table().WaitForFences(device, local_fences.size(), local_fences.data(),
+                                                                    waitAll, timeout);
+        });
   }
   if (!remote_fences.empty()) {
-    remote_wait_thread = std::thread([&device_info, &remote_fences, &remote_result, device, waitAll, timeout]() {
-      remote_result = PackAndCallVkWaitForFences(device_info.instance_info().command_stream(),
-                                                 device_info.instance_info().GetRemoteHandle(device),
-                                                 remote_fences.size(), remote_fences.data(), waitAll, timeout);
-    });
+    remote_wait_future =
+        g_thread_pool.push([&device_info, &remote_fences, &remote_result, device, waitAll, timeout](int unused) {
+          remote_result = PackAndCallVkWaitForFences(device_info.instance_info().command_stream(),
+                                                     device_info.instance_info().GetRemoteHandle(device),
+                                                     remote_fences.size(), remote_fences.data(), waitAll, timeout);
+        });
   }
 
-  if (local_wait_thread.joinable()) {
-    local_wait_thread.join();
+  if (!local_fences.empty()) {
+    local_wait_future.wait();
   }
-  if (remote_wait_thread.joinable()) {
-    remote_wait_thread.join();
+  if (!remote_fences.empty()) {
+    remote_wait_future.wait();
   }
 
   if (local_result != VK_SUCCESS) {
@@ -1311,7 +1317,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
     };
     device_info.dispatch_table().QueueSubmit(*device_info.present_queue(), 1, &local_semaphores_submit_info,
                                              *aux_fence);
-    std::thread remote_caller(
+    g_thread_pool.push(
         [&dispatch_table = device_info.dispatch_table(), &command_stream = device_info.instance_info().command_stream(),
          remote_queue = device_info.GetRemoteHandle(queue), remote_fence = device_info.GetRemoteHandle(fence),
          local_fence = fence, &fence_pool = device_info.fence_pool(), aux_fence = std::move(aux_fence), device,
@@ -1320,7 +1326,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
          semaphores_to_signal = std::move(local_semaphores_to_signal_from_remote),
          // we need to move the vectors into this thread so they don't get deleted
          unused1 = std::move(semaphores_to_wait_remote), unused2 = std::move(semaphores_to_signal_remote),
-         unused3 = std::move(command_buffers_remote)]() {
+         unused3 = std::move(command_buffers_remote)](int unused) {
           // Wait for local semaphores
           spdlog::trace("VkQueueSubmit: Waiting for local semaphores");
           VkResult result = dispatch_table.WaitForFences(device, 1, aux_fence.get(), VK_TRUE, UINT64_MAX);
@@ -1358,7 +1364,6 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
             semaphore->release();
           }
         });
-    remote_caller.detach();
   }
 
   return VK_SUCCESS;
