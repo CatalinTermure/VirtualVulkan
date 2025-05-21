@@ -101,9 +101,7 @@ void PresentationThreadAssociateSwapchain(PresentationThread &presentation_threa
       .remote_session_key = response.setuppresentation().uncompressed_stream_info().session_key(),
       .remote_buffers = remote_buffers,
       .remote_frame_keys = remote_frame_keys,
-      .image_extent = swapchain_image_extent,
-      .swapchain_image_index = std::numeric_limits<uint32_t>::max(),
-  });
+      .image_extent = swapchain_image_extent});
 }
 
 void PresentationThreadRemoveSwapchain(PresentationThread &presentation_thread, VkSwapchainKHR swapchain) {
@@ -216,7 +214,7 @@ void PresentationThreadPresentFrame(PresentationThread &presentation_thread, VkQ
     for (auto &swapchain_present_info : presentation_thread.swapchains) {
       if (swapchain_present_info.swapchain == present_info.pSwapchains[i]) {
         request.set_session_key(swapchain_present_info.remote_session_key);
-        request.set_frame_key(swapchain_present_info.remote_frame_keys[swapchain_present_info.swapchain_image_index]);
+        request.set_frame_key(swapchain_present_info.remote_frame_keys[present_info.pImageIndices[i]]);
         request.set_width(swapchain_present_info.image_extent.width);
         request.set_height(swapchain_present_info.image_extent.height);
         break;

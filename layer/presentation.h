@@ -20,7 +20,6 @@ struct SwapchainPresentationInfo {
   std::vector<uint64_t> remote_buffers;
   std::vector<uint64_t> remote_frame_keys;
   VkExtent2D image_extent;
-  uint32_t swapchain_image_index;
 };
 
 struct PresentationThread {

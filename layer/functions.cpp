@@ -232,12 +232,6 @@ VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(VkDevice device, VkSwapchainK
     device_info.ResetFenceLocal(fence);
   }
 
-  for (auto& swapchain_present_info : device_info.presentation_thread()->swapchains) {
-    if (swapchain_present_info.swapchain != swapchain) continue;
-
-    swapchain_present_info.swapchain_image_index = *pImageIndex;
-  }
-
   return result;
 }
 
