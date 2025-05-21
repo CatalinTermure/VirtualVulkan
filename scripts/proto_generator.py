@@ -143,7 +143,7 @@ service VvkServer {
   // This is because we must guarantee that the order of the calls is the same as the order of the calls in the Vulkan API
   rpc CallMethods (stream VvkRequest) returns (stream VvkResponse) {}
 
-  rpc GetFrameStreamingCapabilities (VvkGetFrameStreamingCapabilitiesRequest) returns (VvkGetFrameStreamingCapabilitiesResponse) {}
+  rpc GetFrameStreamingCapabilities (VvkGetFrameStreamingCapabilitiesRequest) returns (StreamingCapabilities) {}
   rpc RequestFrame (VvkGetFrameRequest) returns (stream VvkGetFrameResponse) {}
   rpc WriteMappedMemory (VvkWriteMappedMemoryRequest) returns (google.protobuf.Empty) {}
 }

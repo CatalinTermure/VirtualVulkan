@@ -455,7 +455,9 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
   instance_info.SetRemoteHandle(physicalDevice, remote_physical_device);
 
   grpc::ClientContext context;
-  vvk::server::VvkGetFrameStreamingCapabilitiesResponse frame_streaming_capabilities;
+  vvk::server::StreamingCapabilities streaming_capabilities;
+  streaming_capabilities.set_supports_uncompressed_stream(true);
+  vvk::server::StreamingCapabilities frame_streaming_capabilities;
   {
     vvk::server::VvkGetFrameStreamingCapabilitiesRequest request;
     request.set_physical_device(reinterpret_cast<uint64_t>(instance_info.GetRemoteHandle(physicalDevice)));
@@ -503,6 +505,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
         enabled_extensions.push_back(VK_KHR_VIDEO_QUEUE_EXTENSION_NAME);
         enabled_extensions.push_back(VK_KHR_VIDEO_DECODE_QUEUE_EXTENSION_NAME);
         enabled_extensions.push_back(VK_KHR_VIDEO_DECODE_H264_EXTENSION_NAME);
+        streaming_capabilities.set_supports_h264_stream(local_device_supports_h264_decode);
       }
     }
 
@@ -604,8 +607,9 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     return VK_ERROR_INITIALIZATION_FAILED;
   }
 
-  DeviceInfo& device_info = SetDeviceInfo(*pDevice, nxt_gdpa, physicalDevice, allocator_create_info,
-                                          present_queue_family_index, *remote_graphics_queue_family_index);
+  DeviceInfo& device_info =
+      SetDeviceInfo(*pDevice, nxt_gdpa, physicalDevice, allocator_create_info, present_queue_family_index,
+                    *remote_graphics_queue_family_index, streaming_capabilities);
 
   for (uint32_t i = 0; i < pCreateInfo->queueCreateInfoCount; i++) {
     const VkDeviceQueueCreateInfo& queue_create_info = pCreateInfo->pQueueCreateInfos[i];

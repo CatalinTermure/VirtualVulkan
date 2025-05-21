@@ -6,7 +6,7 @@ message VvkGetFrameStreamingCapabilitiesRequest {
   uint64 physical_device = 1;
 }
 
-message VvkGetFrameStreamingCapabilitiesResponse {
+message StreamingCapabilities {
   bool supports_uncompressed_stream = 1;
   bool supports_h264_stream = 2;
   bool supports_h265_stream = 3;

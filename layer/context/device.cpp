@@ -19,7 +19,8 @@ constexpr size_t kFencePoolSize = 16;
 
 DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
                        const VmaAllocatorCreateInfo& remote_allocator_create_info,
-                       std::optional<uint32_t> present_queue_family_index, uint32_t remote_graphics_queue_family_index)
+                       std::optional<uint32_t> present_queue_family_index, uint32_t remote_graphics_queue_family_index,
+                       const vvk::server::StreamingCapabilities& streaming_capabilities)
     : nxt_gdpa_(nxt_gdpa),
       instance_info_(GetInstanceInfo(physical_device)),
       presentation_thread_(nullptr),
@@ -85,9 +86,9 @@ DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhys
     *reinterpret_cast<VK_LOADER_DATA*>(present_queue) = *reinterpret_cast<VK_LOADER_DATA*>(device);
     present_queue_ = present_queue;
     present_queue_family_index_ = present_queue_family_index;
-    presentation_thread_ =
-        PresentationThread::Create(GetInstanceForPhysicalDevice(physical_device), device,
-                                   instance_info_.GetRemoteHandle(physical_device), remote_graphics_queue_family_index);
+    presentation_thread_ = PresentationThread::Create(GetInstanceForPhysicalDevice(physical_device), device,
+                                                      instance_info_.GetRemoteHandle(physical_device),
+                                                      remote_graphics_queue_family_index, streaming_capabilities);
   }
 }
 
@@ -193,11 +194,12 @@ DeviceInfo& GetDeviceInfo(VkQueue queue) { return GetDeviceInfo(GetDeviceForQueu
 DeviceInfo& SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
                           const VmaAllocatorCreateInfo& remote_allocator_create_info,
                           std::optional<uint32_t> present_queue_family_index,
-                          uint32_t remote_graphics_queue_family_index) {
+                          uint32_t remote_graphics_queue_family_index,
+                          const vvk::server::StreamingCapabilities& streaming_capabilities) {
   std::lock_guard lock(device_info_lock);
-  auto [iter, inserted] =
-      g_device_infos.try_emplace(device, device, nxt_gdpa, physical_device, remote_allocator_create_info,
-                                 present_queue_family_index, remote_graphics_queue_family_index);
+  auto [iter, inserted] = g_device_infos.try_emplace(device, device, nxt_gdpa, physical_device,
+                                                     remote_allocator_create_info, present_queue_family_index,
+                                                     remote_graphics_queue_family_index, streaming_capabilities);
   assert(inserted);
   return iter->second;
 }

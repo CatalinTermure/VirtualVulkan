@@ -12,7 +12,7 @@ class VvkServerImpl final : public VvkServer::Service {
 
   grpc::Status GetFrameStreamingCapabilities(grpc::ServerContext* context,
                                              const vvk::server::VvkGetFrameStreamingCapabilitiesRequest* request,
-                                             vvk::server::VvkGetFrameStreamingCapabilitiesResponse* response) override;
+                                             vvk::server::StreamingCapabilities* response) override;
 
   grpc::Status RequestFrame(grpc::ServerContext* context, const vvk::server::VvkGetFrameRequest* request,
                             grpc::ServerWriter<vvk::server::VvkGetFrameResponse>* writer);

@@ -12,13 +12,16 @@
 #include <thread>
 #include <vector>
 
+#include "vvk_presentation.pb.h"
+
 namespace vvk {
 
 struct PresentationThread {
   // Creates a worker thread for presenting frames from the remote server to the local device.
-  static std::unique_ptr<PresentationThread> Create(VkInstance local_instance, VkDevice local_device,
-                                                    VkPhysicalDevice remote_physical_device,
-                                                    uint32_t remote_graphics_queue_family_index);
+  static std::unique_ptr<PresentationThread> Create(
+      VkInstance local_instance, VkDevice local_device, VkPhysicalDevice remote_physical_device,
+      uint32_t remote_graphics_queue_family_index,
+      const vvk::server::StreamingCapabilities& client_streaming_capabilities);
 
   void AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D& swapchain_image_extent);
 

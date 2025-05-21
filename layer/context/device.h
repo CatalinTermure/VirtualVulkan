@@ -24,7 +24,8 @@ namespace vvk {
 struct DeviceInfo {
   DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
              const VmaAllocatorCreateInfo& remote_allocator_create_info,
-             std::optional<uint32_t> present_queue_family_index, uint32_t remote_graphics_queue_family_index);
+             std::optional<uint32_t> present_queue_family_index, uint32_t remote_graphics_queue_family_index,
+             const vvk::server::StreamingCapabilities& streaming_capabilities);
 
   VmaAllocator remote_allocator() const { return remote_allocator_; }
   VmaAllocator local_allocator() const { return local_allocator_; }
@@ -99,7 +100,8 @@ DeviceInfo& GetDeviceInfo(VkQueue queue);
 DeviceInfo& SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
                           const VmaAllocatorCreateInfo& remote_allocator_create_info,
                           std::optional<uint32_t> present_queue_family_index,
-                          uint32_t remote_graphics_queue_family_index);
+                          uint32_t remote_graphics_queue_family_index,
+                          const vvk::server::StreamingCapabilities& streaming_capabilities);
 void RemoveDeviceInfo(VkDevice device);
 
 void AssociateCommandBufferWithDevice(VkCommandBuffer command_buffer, VkDevice device);

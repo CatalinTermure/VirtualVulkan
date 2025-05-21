@@ -17,15 +17,16 @@ namespace vvk {
 PresentationThread::PresentationThread(VkInstance instance, VkDevice device, uint32_t queue_family_index)
     : local_instance(instance), local_device(device), remote_graphics_queue_family_index(queue_family_index) {}
 
-std::unique_ptr<PresentationThread> PresentationThread::Create(VkInstance local_instance, VkDevice local_device,
-                                                               VkPhysicalDevice remote_physical_device,
-                                                               uint32_t remote_graphics_queue_family_index) {
+std::unique_ptr<PresentationThread> PresentationThread::Create(
+    VkInstance local_instance, VkDevice local_device, VkPhysicalDevice remote_physical_device,
+    uint32_t remote_graphics_queue_family_index,
+    const vvk::server::StreamingCapabilities &client_streaming_capabilities) {
   InstanceInfo &instance_info = GetInstanceInfo(local_instance);
 
-  vvk::server::VvkGetFrameStreamingCapabilitiesResponse server_streaming_capabilities = [&]() {
+  vvk::server::StreamingCapabilities server_streaming_capabilities = [&]() {
     vvk::server::VvkGetFrameStreamingCapabilitiesRequest request;
     request.set_physical_device(reinterpret_cast<uint64_t>(remote_physical_device));
-    vvk::server::VvkGetFrameStreamingCapabilitiesResponse response;
+    vvk::server::StreamingCapabilities response;
     grpc::ClientContext client_context;
     instance_info.stub().GetFrameStreamingCapabilities(&client_context, request, &response);
     return response;

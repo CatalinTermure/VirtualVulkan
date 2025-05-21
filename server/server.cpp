@@ -44,7 +44,7 @@ grpc::Status VvkServerImpl::CallMethods(grpc::ServerContext* context,
 
 grpc::Status VvkServerImpl::GetFrameStreamingCapabilities(
     grpc::ServerContext* context, const vvk::server::VvkGetFrameStreamingCapabilitiesRequest* request,
-    vvk::server::VvkGetFrameStreamingCapabilitiesResponse* response) {
+    vvk::server::StreamingCapabilities* response) {
   response->set_supports_uncompressed_stream(true);
   uint32_t local_device_extension_count = 0;
   std::vector<::VkExtensionProperties> local_device_extensions_properties;
