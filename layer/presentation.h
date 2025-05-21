@@ -38,6 +38,7 @@ struct PresentationThread {
 
 // Creates a worker thread for presenting frames from the remote server to the local device.
 std::unique_ptr<PresentationThread> PresentationThreadCreate(VkInstance local_instance, VkDevice local_device,
+                                                             VkPhysicalDevice remote_physical_device,
                                                              uint32_t remote_graphics_queue_family_index);
 void PresentationThreadAssociateSwapchain(PresentationThread& presentation_thread, VkSwapchainKHR swapchain,
                                           const VkExtent2D& swapchain_image_extent);

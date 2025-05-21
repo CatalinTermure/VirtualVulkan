@@ -85,8 +85,9 @@ DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhys
     *reinterpret_cast<VK_LOADER_DATA*>(present_queue) = *reinterpret_cast<VK_LOADER_DATA*>(device);
     present_queue_ = present_queue;
     present_queue_family_index_ = present_queue_family_index;
-    presentation_thread_ = PresentationThreadCreate(GetInstanceForPhysicalDevice(physical_device), device,
-                                                    remote_graphics_queue_family_index);
+    presentation_thread_ =
+        PresentationThreadCreate(GetInstanceForPhysicalDevice(physical_device), device,
+                                 instance_info_.GetRemoteHandle(physical_device), remote_graphics_queue_family_index);
   }
 }
 
