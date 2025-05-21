@@ -96,9 +96,12 @@ std::optional<std::vector<VkImage>> GetLocalImagesForSwapchain(VkDevice device, 
 
 void CleanupSwapchainInfo(DeviceInfo& device_info, VkSwapchainKHR swapchain) {
   SwapchainInfo& swapchain_info = GetSwapchainInfo(swapchain);
-  auto local_images = swapchain_info.GetLocalSwapchainImages();
-  for (auto local_image : local_images) {
-    device_info.RemoveRemoteHandle(local_image);
+  {
+    std::lock_guard g(swapchain_info.GetLock());
+    auto local_images = swapchain_info.GetLocalSwapchainImages();
+    for (auto local_image : local_images) {
+      device_info.RemoveRemoteHandle(local_image);
+    }
   }
   RemoveSwapchainInfo(swapchain);
 }
@@ -165,7 +168,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
     server_image = swapchain_info.CreateImageRemote(image_create_info, alloc_create_info);
     if (result != VK_SUCCESS) {
       device_info.dispatch_table().DestroySwapchainKHR(device, *pSwapchain, pAllocator);
-      RemoveSwapchainInfo(*pSwapchain);
+      CleanupSwapchainInfo(device_info, *pSwapchain);
       return VK_ERROR_INITIALIZATION_FAILED;
     }
     device_info.swapchain_images.emplace(server_image, image_index++);
@@ -186,13 +189,8 @@ VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(VkDevice device, VkSwapchainKHR s
     spdlog::info("Swapchain {} already had the swapchain info removed", (void*)swapchain);
   }
 
-  device_info.presentation_thread()->swapchains.erase(
-      std::remove_if(device_info.presentation_thread()->swapchains.begin(),
-                     device_info.presentation_thread()->swapchains.end(),
-                     [swapchain](const SwapchainPresentationInfo& swapchain_present_info) {
-                       return swapchain_present_info.swapchain == swapchain;
-                     }),
-      device_info.presentation_thread()->swapchains.end());
+  PresentationThreadRemoveSwapchain(*device_info.presentation_thread(), swapchain);
+
   device_info.dispatch_table().DestroySwapchainKHR(device, swapchain, pAllocator);
 }
 

@@ -167,6 +167,7 @@ VkResult SwapchainInfo::CopyMemoryToImage(uint32_t image_index, std::string_view
 }
 
 SwapchainInfo::~SwapchainInfo() {
+  std::lock_guard g(lock_);
   DeviceInfo& device_info = GetDeviceInfo(device_);
   for (auto [remote_image, remote_allocation] : remote_images_) {
     vmaDestroyImage(remote_allocator_, remote_image, remote_allocation);

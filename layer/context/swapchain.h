@@ -31,6 +31,8 @@ class SwapchainInfo {
                              std::span<VkPipelineStageFlags> wait_stages, std::span<VkSemaphore> semaphores_to_signal,
                              VkFence fence_to_signal);
 
+  std::mutex& GetLock() { return lock_; }
+
   ~SwapchainInfo();
 
  private:
@@ -44,6 +46,7 @@ class SwapchainInfo {
   std::vector<VmaAllocation> buffer_allocations_;
   std::vector<VkCommandBuffer> command_buffers_;
   std::vector<VkImage> local_swapchain_images_;
+  std::mutex lock_;
 };
 
 SwapchainInfo& GetSwapchainInfo(VkSwapchainKHR swapchain);

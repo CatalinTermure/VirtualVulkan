@@ -106,6 +106,15 @@ void PresentationThreadAssociateSwapchain(PresentationThread &presentation_threa
   });
 }
 
+void PresentationThreadRemoveSwapchain(PresentationThread &presentation_thread, VkSwapchainKHR swapchain) {
+  presentation_thread.swapchains.erase(
+      std::remove_if(presentation_thread.swapchains.begin(), presentation_thread.swapchains.end(),
+                     [swapchain](const SwapchainPresentationInfo &swapchain_present_info) {
+                       return swapchain_present_info.swapchain == swapchain;
+                     }),
+      presentation_thread.swapchains.end());
+}
+
 void PresentationThreadSetupFrame(PresentationThread &presentation_thread, VkCommandBuffer remote_command_buffer,
                                   uint32_t swapchain_image_index) {
   auto &command_stream = GetInstanceInfo(presentation_thread.local_instance).command_stream();

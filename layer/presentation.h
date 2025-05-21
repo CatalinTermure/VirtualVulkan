@@ -40,11 +40,15 @@ struct PresentationThread {
 std::unique_ptr<PresentationThread> PresentationThreadCreate(VkInstance local_instance, VkDevice local_device,
                                                              VkPhysicalDevice remote_physical_device,
                                                              uint32_t remote_graphics_queue_family_index);
+
 void PresentationThreadAssociateSwapchain(PresentationThread& presentation_thread, VkSwapchainKHR swapchain,
                                           const VkExtent2D& swapchain_image_extent);
+void PresentationThreadRemoveSwapchain(PresentationThread& presentation_thread, VkSwapchainKHR swapchain);
+
 // Called during command buffer recording for a presentable frame.
 void PresentationThreadSetupFrame(PresentationThread& presentation_thread, VkCommandBuffer remote_command_buffer,
                                   uint32_t swapchain_image_index);
+
 // Called when a frame should be presented.
 void PresentationThreadPresentFrame(PresentationThread& presentation_thread, VkQueue queue,
                                     const VkPresentInfoKHR& original_present_info);
