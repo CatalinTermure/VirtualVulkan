@@ -46,7 +46,8 @@ void PresentationThreadAssociateSwapchain(PresentationThread& presentation_threa
 void PresentationThreadSetupFrame(PresentationThread& presentation_thread, VkCommandBuffer remote_command_buffer,
                                   uint32_t swapchain_image_index);
 // Called when a frame should be presented.
-void PresentationThreadPresentFrame(PresentationThread& presentation_thread, VkPresentInfoKHR* present_info);
+void PresentationThreadPresentFrame(PresentationThread& presentation_thread, VkQueue queue,
+                                    const VkPresentInfoKHR& original_present_info);
 
 }  // namespace vvk
 

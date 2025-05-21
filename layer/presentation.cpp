@@ -9,6 +9,7 @@
 #include "layer/context/device.h"
 #include "layer/context/instance.h"
 #include "layer/context/swapchain.h"
+#include "layer/sempahore_handle.h"
 #include "vvk_server.grpc.pb.h"
 
 namespace vvk {
@@ -138,6 +139,110 @@ void PresentationThreadSetupFrame(PresentationThread &presentation_thread, VkCom
   }
 }
 
-void PresentationThreadPresentFrame(PresentationThread &presentation_thread, VkPresentInfoKHR *present_info) {}
+void PresentationThreadPresentFrame(PresentationThread &presentation_thread, VkQueue queue,
+                                    const VkPresentInfoKHR &original_present_info) {
+  DeviceInfo &device_info = GetDeviceInfo(queue);
+  VkQueue local_queue = *device_info.present_queue();
+  VkDevice local_device = GetDeviceForQueue(queue);
+  InstanceInfo &instance_info = device_info.instance_info();
+  const VkuDeviceDispatchTable &dispatch_table = device_info.dispatch_table();
+
+  std::vector<VkSemaphore> local_semaphores_to_wait;
+  std::vector<VkSemaphore> remote_semaphores_to_wait;
+  std::vector<VkSwapchainKHR> swapchains;
+  std::vector<uint32_t> image_indices;
+
+  VkPresentInfoKHR present_info = original_present_info;
+  for (uint32_t i = 0; i < present_info.waitSemaphoreCount; i++) {
+    VkSemaphore semaphore = present_info.pWaitSemaphores[i];
+    if (semaphore->state == SemaphoreState::kToBeSignaledRemote) {
+      remote_semaphores_to_wait.push_back(semaphore);
+      semaphore->state = SemaphoreState::kUnsignaled;
+    } else if (semaphore->state == SemaphoreState::kToBeSignaledLocal) {
+      local_semaphores_to_wait.push_back(semaphore->local_handle);
+      semaphore->state = SemaphoreState::kUnsignaled;
+    } else {
+      throw std::runtime_error("Invalid semaphore state in QueuePresentKHR");
+    }
+  }
+  present_info.waitSemaphoreCount = local_semaphores_to_wait.size();
+  present_info.pWaitSemaphores = local_semaphores_to_wait.data();
+
+  for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
+    swapchains.push_back(present_info.pSwapchains[i]);
+    image_indices.push_back(present_info.pImageIndices[i]);
+  }
+  present_info.pSwapchains = swapchains.data();
+  present_info.pImageIndices = image_indices.data();
+
+  if (remote_semaphores_to_wait.empty()) {
+    throw std::runtime_error("No fences to wait for");
+  }
+
+  for (auto *semaphore : remote_semaphores_to_wait) {
+    semaphore->remote_to_local_semaphore.acquire();
+    // Unsignal the semaphore on the remote side
+    {
+      VkPipelineStageFlags wait_dst_stage_mask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+      VkSubmitInfo submit = {
+          .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+          .pNext = nullptr,
+          .waitSemaphoreCount = 1,
+          .pWaitSemaphores = &semaphore->remote_handle,
+          .pWaitDstStageMask = &wait_dst_stage_mask,
+          .commandBufferCount = 0,
+          .pCommandBuffers = nullptr,
+          .signalSemaphoreCount = 0,
+          .pSignalSemaphores = nullptr,
+      };
+      PackAndCallVkQueueSubmit(instance_info.command_stream(), device_info.GetRemoteHandle(queue), 1, &submit, nullptr);
+    }
+  }
+
+  std::vector<grpc::ClientContext> client_contexts(present_info.swapchainCount);
+  std::vector<std::unique_ptr<grpc::ClientReader<vvk::server::VvkGetFrameResponse>>> client_readers;
+  client_readers.reserve(present_info.swapchainCount);
+  for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
+    vvk::server::VvkGetFrameRequest request;
+    for (auto &swapchain_present_info : presentation_thread.swapchains) {
+      if (swapchain_present_info.swapchain == present_info.pSwapchains[i]) {
+        request.set_session_key(swapchain_present_info.remote_session_key);
+        request.set_frame_key(swapchain_present_info.remote_frame_keys[swapchain_present_info.swapchain_image_index]);
+        request.set_width(swapchain_present_info.image_extent.width);
+        request.set_height(swapchain_present_info.image_extent.height);
+        break;
+      }
+    }
+    client_readers.emplace_back(instance_info.stub().RequestFrame(&client_contexts[i], request));
+  }
+
+  {
+    std::vector<VkFenceProxy> fences;
+    fences.reserve(present_info.swapchainCount);
+    for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
+      fences.emplace_back(device_info.fence_pool().GetFence());
+      vvk::server::VvkGetFrameResponse response;
+      std::string data;
+      while (client_readers[i]->Read(&response)) {
+        data.append(response.frame_data());
+      }
+      client_readers[i]->Finish();
+
+      SwapchainInfo &swapchain_info = GetSwapchainInfo(present_info.pSwapchains[i]);
+      swapchain_info.CopyMemoryToImage(present_info.pImageIndices[i], data, {}, {}, {}, *fences.back());
+    }
+
+    std::vector<VkFence> fences_to_wait;
+    fences_to_wait.reserve(fences.size());
+    for (auto &fence : fences) {
+      fences_to_wait.push_back(*fence);
+    }
+
+    dispatch_table.WaitForFences(local_device, fences_to_wait.size(), fences_to_wait.data(), VK_TRUE, UINT64_MAX);
+    dispatch_table.ResetFences(local_device, fences_to_wait.size(), fences_to_wait.data());
+  }
+
+  dispatch_table.QueuePresentKHR(local_queue, &present_info);
+}
 
 }  // namespace vvk
