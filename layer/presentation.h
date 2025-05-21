@@ -14,43 +14,38 @@
 
 namespace vvk {
 
-struct SwapchainPresentationInfo {
-  VkSwapchainKHR swapchain;
-  uint64_t remote_session_key;
-  std::vector<uint64_t> remote_buffers;
-  std::vector<uint64_t> remote_frame_keys;
-  VkExtent2D image_extent;
-};
-
 struct PresentationThread {
+  // Creates a worker thread for presenting frames from the remote server to the local device.
+  static std::unique_ptr<PresentationThread> Create(VkInstance local_instance, VkDevice local_device,
+                                                    VkPhysicalDevice remote_physical_device,
+                                                    uint32_t remote_graphics_queue_family_index);
+
+  void AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D& swapchain_image_extent);
+
+  void RemoveSwapchain(VkSwapchainKHR swapchain);
+
+  // Called during command buffer recording for a presentable frame.
+  void SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t swapchain_image_index);
+
+  // Called when a frame should be presented.
+  VkResult PresentFrame(VkQueue queue, const VkPresentInfoKHR& original_present_info);
+
+ private:
+  struct SwapchainPresentationInfo {
+    VkSwapchainKHR swapchain;
+    uint64_t remote_session_key;
+    std::vector<uint64_t> remote_buffers;
+    std::vector<uint64_t> remote_frame_keys;
+    VkExtent2D image_extent;
+  };
+
   VkInstance local_instance;
   VkDevice local_device;
   uint32_t remote_graphics_queue_family_index;
-  std::queue<std::function<void()>> work_queue;
-  std::counting_semaphore<64> work_queue_semaphore;
-  bool should_exit;
   std::vector<SwapchainPresentationInfo> swapchains;
-  std::jthread thread;
 
   PresentationThread(VkInstance instance, VkDevice device, uint32_t queue_family_index);
 };
-
-// Creates a worker thread for presenting frames from the remote server to the local device.
-std::unique_ptr<PresentationThread> PresentationThreadCreate(VkInstance local_instance, VkDevice local_device,
-                                                             VkPhysicalDevice remote_physical_device,
-                                                             uint32_t remote_graphics_queue_family_index);
-
-void PresentationThreadAssociateSwapchain(PresentationThread& presentation_thread, VkSwapchainKHR swapchain,
-                                          const VkExtent2D& swapchain_image_extent);
-void PresentationThreadRemoveSwapchain(PresentationThread& presentation_thread, VkSwapchainKHR swapchain);
-
-// Called during command buffer recording for a presentable frame.
-void PresentationThreadSetupFrame(PresentationThread& presentation_thread, VkCommandBuffer remote_command_buffer,
-                                  uint32_t swapchain_image_index);
-
-// Called when a frame should be presented.
-void PresentationThreadPresentFrame(PresentationThread& presentation_thread, VkQueue queue,
-                                    const VkPresentInfoKHR& original_present_info);
 
 }  // namespace vvk
 

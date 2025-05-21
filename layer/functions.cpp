@@ -174,7 +174,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
     device_info.SetRemoteHandle(client_image, server_image);
   }
 
-  PresentationThreadAssociateSwapchain(*device_info.presentation_thread(), *pSwapchain, pCreateInfo->imageExtent);
+  device_info.presentation_thread()->AssociateSwapchain(*pSwapchain, pCreateInfo->imageExtent);
 
   return result;
 }
@@ -188,7 +188,7 @@ VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(VkDevice device, VkSwapchainKHR s
     spdlog::info("Swapchain {} already had the swapchain info removed", (void*)swapchain);
   }
 
-  PresentationThreadRemoveSwapchain(*device_info.presentation_thread(), swapchain);
+  device_info.presentation_thread()->RemoveSwapchain(swapchain);
 
   device_info.dispatch_table().DestroySwapchainKHR(device, swapchain, pAllocator);
 }
@@ -236,9 +236,7 @@ VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(VkDevice device, VkSwapchainK
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL QueuePresentKHR(VkQueue queue, const VkPresentInfoKHR* pPresentInfo) {
-  PresentationThread& presentation_thread = *GetDeviceInfo(queue).presentation_thread();
-  PresentationThreadPresentFrame(presentation_thread, queue, *pPresentInfo);
-  return VK_SUCCESS;
+  return GetDeviceInfo(queue).presentation_thread()->PresentFrame(queue, *pPresentInfo);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateWaylandSurfaceKHR(VkInstance instance,
@@ -977,8 +975,7 @@ VKAPI_ATTR VkResult VKAPI_CALL EndCommandBuffer(VkCommandBuffer commandBuffer) {
 
   auto it = device_info.swapchain_render_command_buffers.find(commandBuffer);
   if (it != device_info.swapchain_render_command_buffers.end()) {
-    PresentationThreadSetupFrame(*device_info.presentation_thread(), device_info.GetRemoteHandle(commandBuffer),
-                                 it->second);
+    device_info.presentation_thread()->SetupFrame(device_info.GetRemoteHandle(commandBuffer), it->second);
     device_info.swapchain_render_command_buffers.erase(commandBuffer);
   }
 

@@ -14,33 +14,12 @@
 
 namespace vvk {
 
-namespace {
-
-void PresentationThreadWorker(PresentationThread *presentation_thread) {
-  while (!presentation_thread->should_exit) {
-    presentation_thread->work_queue_semaphore.acquire();
-    if (presentation_thread->work_queue.empty()) {
-      throw std::runtime_error("Work queue is empty but semaphore was acquired");
-    }
-    auto work = std::move(presentation_thread->work_queue.front());
-    presentation_thread->work_queue.pop();
-    work();
-  }
-}
-}  // namespace
-
 PresentationThread::PresentationThread(VkInstance instance, VkDevice device, uint32_t queue_family_index)
-    : local_instance(instance),
-      local_device(device),
-      remote_graphics_queue_family_index(queue_family_index),
-      work_queue{},
-      work_queue_semaphore{0},
-      should_exit{false},
-      thread{std::bind(PresentationThreadWorker, this)} {}
+    : local_instance(instance), local_device(device), remote_graphics_queue_family_index(queue_family_index) {}
 
-std::unique_ptr<PresentationThread> PresentationThreadCreate(VkInstance local_instance, VkDevice local_device,
-                                                             VkPhysicalDevice remote_physical_device,
-                                                             uint32_t remote_graphics_queue_family_index) {
+std::unique_ptr<PresentationThread> PresentationThread::Create(VkInstance local_instance, VkDevice local_device,
+                                                               VkPhysicalDevice remote_physical_device,
+                                                               uint32_t remote_graphics_queue_family_index) {
   InstanceInfo &instance_info = GetInstanceInfo(local_instance);
 
   vvk::server::VvkGetFrameStreamingCapabilitiesResponse server_streaming_capabilities = [&]() {
@@ -56,30 +35,27 @@ std::unique_ptr<PresentationThread> PresentationThreadCreate(VkInstance local_in
     throw std::runtime_error("Uncompressed stream not supported");
   }
 
-  std::unique_ptr<PresentationThread> presentation_thread =
-      std::make_unique<PresentationThread>(local_instance, local_device, remote_graphics_queue_family_index);
+  std::unique_ptr<PresentationThread> presentation_thread = std::unique_ptr<PresentationThread>(
+      new PresentationThread(local_instance, local_device, remote_graphics_queue_family_index));
 
   return presentation_thread;
 }
 
-void PresentationThreadAssociateSwapchain(PresentationThread &presentation_thread, VkSwapchainKHR swapchain,
-                                          const VkExtent2D &swapchain_image_extent) {
-  InstanceInfo &instance_info = GetInstanceInfo(presentation_thread.local_instance);
+void PresentationThread::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) {
+  InstanceInfo &instance_info = GetInstanceInfo(local_instance);
   SwapchainInfo &swapchain_info = GetSwapchainInfo(swapchain);
   vvk::server::VvkRequest request;
   request.set_method("setupPresentation");
   vvk::server::VvkSetupPresentationRequest &setup_presentation = *request.mutable_setuppresentation();
-  setup_presentation.set_instance(
-      reinterpret_cast<uint64_t>(instance_info.GetRemoteHandle(presentation_thread.local_instance)));
-  setup_presentation.set_device(
-      reinterpret_cast<uint64_t>(instance_info.GetRemoteHandle(presentation_thread.local_device)));
+  setup_presentation.set_instance(reinterpret_cast<uint64_t>(instance_info.GetRemoteHandle(local_instance)));
+  setup_presentation.set_device(reinterpret_cast<uint64_t>(instance_info.GetRemoteHandle(local_device)));
   for (auto &[remote_image, _] : swapchain_info.GetRemoteImages()) {
     setup_presentation.add_remote_images(reinterpret_cast<uint64_t>(remote_image));
   }
   setup_presentation.set_width(swapchain_image_extent.width);
   setup_presentation.set_height(swapchain_image_extent.height);
   setup_presentation.mutable_uncompressed_stream_create_info()->set_queue_family_index(
-      presentation_thread.remote_graphics_queue_family_index);
+      remote_graphics_queue_family_index);
   if (!instance_info.command_stream().Write(request)) {
     throw std::runtime_error("Failed to send setup presentation request");
   }
@@ -96,7 +72,7 @@ void PresentationThreadAssociateSwapchain(PresentationThread &presentation_threa
     remote_buffers.push_back(response.setuppresentation().uncompressed_stream_info().remote_buffers(i));
     remote_frame_keys.push_back(response.setuppresentation().uncompressed_stream_info().frame_keys(i));
   }
-  presentation_thread.swapchains.push_back(SwapchainPresentationInfo{
+  swapchains.push_back(SwapchainPresentationInfo{
       .swapchain = swapchain,
       .remote_session_key = response.setuppresentation().uncompressed_stream_info().session_key(),
       .remote_buffers = remote_buffers,
@@ -104,20 +80,18 @@ void PresentationThreadAssociateSwapchain(PresentationThread &presentation_threa
       .image_extent = swapchain_image_extent});
 }
 
-void PresentationThreadRemoveSwapchain(PresentationThread &presentation_thread, VkSwapchainKHR swapchain) {
-  presentation_thread.swapchains.erase(
-      std::remove_if(presentation_thread.swapchains.begin(), presentation_thread.swapchains.end(),
-                     [swapchain](const SwapchainPresentationInfo &swapchain_present_info) {
-                       return swapchain_present_info.swapchain == swapchain;
-                     }),
-      presentation_thread.swapchains.end());
+void PresentationThread::RemoveSwapchain(VkSwapchainKHR swapchain) {
+  swapchains.erase(std::remove_if(swapchains.begin(), swapchains.end(),
+                                  [swapchain](const SwapchainPresentationInfo &swapchain_present_info) {
+                                    return swapchain_present_info.swapchain == swapchain;
+                                  }),
+                   swapchains.end());
 }
 
-void PresentationThreadSetupFrame(PresentationThread &presentation_thread, VkCommandBuffer remote_command_buffer,
-                                  uint32_t swapchain_image_index) {
-  auto &command_stream = GetInstanceInfo(presentation_thread.local_instance).command_stream();
+void PresentationThread::SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t swapchain_image_index) {
+  auto &command_stream = GetInstanceInfo(local_instance).command_stream();
 
-  for (auto &swapchain_present_info : presentation_thread.swapchains) {
+  for (auto &swapchain_present_info : swapchains) {
     SwapchainInfo &swapchain_info = GetSwapchainInfo(swapchain_present_info.swapchain);
     VkImage remote_image = swapchain_info.GetRemoteImages()[swapchain_image_index].first;
 
@@ -146,8 +120,7 @@ void PresentationThreadSetupFrame(PresentationThread &presentation_thread, VkCom
   }
 }
 
-void PresentationThreadPresentFrame(PresentationThread &presentation_thread, VkQueue queue,
-                                    const VkPresentInfoKHR &original_present_info) {
+VkResult PresentationThread::PresentFrame(VkQueue queue, const VkPresentInfoKHR &original_present_info) {
   DeviceInfo &device_info = GetDeviceInfo(queue);
   VkQueue local_queue = *device_info.present_queue();
   VkDevice local_device = GetDeviceForQueue(queue);
@@ -156,7 +129,7 @@ void PresentationThreadPresentFrame(PresentationThread &presentation_thread, VkQ
 
   std::vector<VkSemaphore> local_semaphores_to_wait;
   std::vector<VkSemaphore> remote_semaphores_to_wait;
-  std::vector<VkSwapchainKHR> swapchains;
+  std::vector<VkSwapchainKHR> swapchains_to_present;
   std::vector<uint32_t> image_indices;
 
   VkPresentInfoKHR present_info = original_present_info;
@@ -176,10 +149,10 @@ void PresentationThreadPresentFrame(PresentationThread &presentation_thread, VkQ
   present_info.pWaitSemaphores = local_semaphores_to_wait.data();
 
   for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
-    swapchains.push_back(present_info.pSwapchains[i]);
+    swapchains_to_present.push_back(present_info.pSwapchains[i]);
     image_indices.push_back(present_info.pImageIndices[i]);
   }
-  present_info.pSwapchains = swapchains.data();
+  present_info.pSwapchains = swapchains_to_present.data();
   present_info.pImageIndices = image_indices.data();
 
   if (remote_semaphores_to_wait.empty()) {
@@ -211,7 +184,7 @@ void PresentationThreadPresentFrame(PresentationThread &presentation_thread, VkQ
   client_readers.reserve(present_info.swapchainCount);
   for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
     vvk::server::VvkGetFrameRequest request;
-    for (auto &swapchain_present_info : presentation_thread.swapchains) {
+    for (auto &swapchain_present_info : swapchains) {
       if (swapchain_present_info.swapchain == present_info.pSwapchains[i]) {
         request.set_session_key(swapchain_present_info.remote_session_key);
         request.set_frame_key(swapchain_present_info.remote_frame_keys[present_info.pImageIndices[i]]);
@@ -249,7 +222,7 @@ void PresentationThreadPresentFrame(PresentationThread &presentation_thread, VkQ
     dispatch_table.ResetFences(local_device, fences_to_wait.size(), fences_to_wait.data());
   }
 
-  dispatch_table.QueuePresentKHR(local_queue, &present_info);
+  return dispatch_table.QueuePresentKHR(local_queue, &present_info);
 }
 
 }  // namespace vvk
