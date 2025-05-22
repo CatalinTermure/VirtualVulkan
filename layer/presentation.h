@@ -16,38 +16,22 @@
 
 namespace vvk {
 
-struct PresentationThread {
-  // Creates a worker thread for presenting frames from the remote server to the local device.
-  static std::unique_ptr<PresentationThread> Create(
-      VkInstance local_instance, VkDevice local_device, VkPhysicalDevice remote_physical_device,
-      uint32_t remote_graphics_queue_family_index,
-      const vvk::server::StreamingCapabilities& client_streaming_capabilities);
+class FrameStream {
+ public:
+  // Creates a FrameStream instance.
+  static std::unique_ptr<FrameStream> Create(VkInstance local_instance, VkDevice local_device,
+                                             VkPhysicalDevice remote_physical_device,
+                                             uint32_t remote_graphics_queue_family_index,
+                                             const vvk::server::StreamingCapabilities& client_streaming_capabilities);
 
-  void AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D& swapchain_image_extent);
-
-  void RemoveSwapchain(VkSwapchainKHR swapchain);
+  virtual void AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D& swapchain_image_extent) = 0;
+  virtual void RemoveSwapchain(VkSwapchainKHR swapchain) = 0;
 
   // Called during command buffer recording for a presentable frame.
-  void SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t swapchain_image_index);
+  virtual void SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t swapchain_image_index) = 0;
 
   // Called when a frame should be presented.
-  VkResult PresentFrame(VkQueue queue, const VkPresentInfoKHR& original_present_info);
-
- private:
-  struct SwapchainPresentationInfo {
-    VkSwapchainKHR swapchain;
-    uint64_t remote_session_key;
-    std::vector<uint64_t> remote_buffers;
-    std::vector<uint64_t> remote_frame_keys;
-    VkExtent2D image_extent;
-  };
-
-  VkInstance local_instance;
-  VkDevice local_device;
-  uint32_t remote_graphics_queue_family_index;
-  std::vector<SwapchainPresentationInfo> swapchains;
-
-  PresentationThread(VkInstance instance, VkDevice device, uint32_t queue_family_index);
+  virtual VkResult PresentFrame(VkQueue queue, const VkPresentInfoKHR& original_present_info) = 0;
 };
 
 }  // namespace vvk

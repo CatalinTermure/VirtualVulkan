@@ -66,7 +66,7 @@ struct DeviceInfo {
 
   std::optional<uint32_t> present_queue_family_index() const { return present_queue_family_index_; }
   std::optional<VkQueue> present_queue() const { return present_queue_; }
-  PresentationThread* presentation_thread() { return presentation_thread_.get(); }
+  FrameStream* frame_stream() { return frame_stream_.get(); }
   FencePool& fence_pool() { return fence_pool_; }
 
   void CreateFakeQueueFamily(uint32_t queue_family_index, uint32_t queue_count);
@@ -88,7 +88,7 @@ struct DeviceInfo {
   std::optional<uint32_t> present_queue_family_index_ = std::nullopt;
   std::optional<VkQueue> present_queue_ = std::nullopt;
   std::unordered_map<uint32_t, std::list<DispatchableObject>> fake_queue_families_;
-  std::unique_ptr<PresentationThread> presentation_thread_;
+  std::unique_ptr<FrameStream> frame_stream_;
   FencePool fence_pool_;
   std::unordered_map<VkDeviceMemory, MappedMemoryInfo> mapped_memory_infos_;
   std::unordered_map<VkDeviceMemory, std::size_t> memory_sizes_;

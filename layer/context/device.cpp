@@ -23,7 +23,7 @@ DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhys
                        const vvk::server::StreamingCapabilities& streaming_capabilities)
     : nxt_gdpa_(nxt_gdpa),
       instance_info_(GetInstanceInfo(physical_device)),
-      presentation_thread_(nullptr),
+      frame_stream_(nullptr),
       fence_pool_(device, kFencePoolSize, reinterpret_cast<PFN_vkCreateFence>(nxt_gdpa(device, "vkCreateFence"))) {
   if (vmaCreateAllocator(&remote_allocator_create_info, &remote_allocator_) != VK_SUCCESS) {
     throw std::runtime_error("Failed to create remote VMA allocator");
@@ -86,9 +86,9 @@ DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhys
     *reinterpret_cast<VK_LOADER_DATA*>(present_queue) = *reinterpret_cast<VK_LOADER_DATA*>(device);
     present_queue_ = present_queue;
     present_queue_family_index_ = present_queue_family_index;
-    presentation_thread_ = PresentationThread::Create(GetInstanceForPhysicalDevice(physical_device), device,
-                                                      instance_info_.GetRemoteHandle(physical_device),
-                                                      remote_graphics_queue_family_index, streaming_capabilities);
+    frame_stream_ = FrameStream::Create(GetInstanceForPhysicalDevice(physical_device), device,
+                                        instance_info_.GetRemoteHandle(physical_device),
+                                        remote_graphics_queue_family_index, streaming_capabilities);
   }
 }
 

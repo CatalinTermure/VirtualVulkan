@@ -1,10 +1,5 @@
 #include "presentation.h"
 
-#include <functional>
-#include <mutex>
-#include <queue>
-#include <thread>
-
 #include "commons/remote_call.h"
 #include "layer/context/device.h"
 #include "layer/context/instance.h"
@@ -14,10 +9,41 @@
 
 namespace vvk {
 
-PresentationThread::PresentationThread(VkInstance instance, VkDevice device, uint32_t queue_family_index)
+namespace {
+
+class UncompressedFrameStream final : public FrameStream {
+ public:
+  UncompressedFrameStream(VkInstance instance, VkDevice device, uint32_t queue_family_index);
+
+  void AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) override;
+  void RemoveSwapchain(VkSwapchainKHR swapchain) override;
+
+  // Called during command buffer recording for a presentable frame.
+  void SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t swapchain_image_index) override;
+
+  // Called when a frame should be presented.
+  VkResult PresentFrame(VkQueue queue, const VkPresentInfoKHR &original_present_info) override;
+
+ private:
+  struct SwapchainPresentationInfo {
+    VkSwapchainKHR swapchain;
+    uint64_t remote_session_key;
+    std::vector<uint64_t> remote_buffers;
+    std::vector<uint64_t> remote_frame_keys;
+    VkExtent2D image_extent;
+  };
+
+  VkInstance local_instance;
+  VkDevice local_device;
+  uint32_t remote_graphics_queue_family_index;
+  std::vector<SwapchainPresentationInfo> swapchains;
+};
+}  // namespace
+
+UncompressedFrameStream::UncompressedFrameStream(VkInstance instance, VkDevice device, uint32_t queue_family_index)
     : local_instance(instance), local_device(device), remote_graphics_queue_family_index(queue_family_index) {}
 
-std::unique_ptr<PresentationThread> PresentationThread::Create(
+std::unique_ptr<FrameStream> FrameStream::Create(
     VkInstance local_instance, VkDevice local_device, VkPhysicalDevice remote_physical_device,
     uint32_t remote_graphics_queue_family_index,
     const vvk::server::StreamingCapabilities &client_streaming_capabilities) {
@@ -36,13 +62,13 @@ std::unique_ptr<PresentationThread> PresentationThread::Create(
     throw std::runtime_error("Uncompressed stream not supported");
   }
 
-  std::unique_ptr<PresentationThread> presentation_thread = std::unique_ptr<PresentationThread>(
-      new PresentationThread(local_instance, local_device, remote_graphics_queue_family_index));
+  std::unique_ptr<FrameStream> frame_stream = std::unique_ptr<FrameStream>(
+      new UncompressedFrameStream(local_instance, local_device, remote_graphics_queue_family_index));
 
-  return presentation_thread;
+  return frame_stream;
 }
 
-void PresentationThread::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) {
+void UncompressedFrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) {
   InstanceInfo &instance_info = GetInstanceInfo(local_instance);
   SwapchainInfo &swapchain_info = GetSwapchainInfo(swapchain);
   vvk::server::VvkRequest request;
@@ -81,7 +107,7 @@ void PresentationThread::AssociateSwapchain(VkSwapchainKHR swapchain, const VkEx
       .image_extent = swapchain_image_extent});
 }
 
-void PresentationThread::RemoveSwapchain(VkSwapchainKHR swapchain) {
+void UncompressedFrameStream::RemoveSwapchain(VkSwapchainKHR swapchain) {
   swapchains.erase(std::remove_if(swapchains.begin(), swapchains.end(),
                                   [swapchain](const SwapchainPresentationInfo &swapchain_present_info) {
                                     return swapchain_present_info.swapchain == swapchain;
@@ -89,7 +115,7 @@ void PresentationThread::RemoveSwapchain(VkSwapchainKHR swapchain) {
                    swapchains.end());
 }
 
-void PresentationThread::SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t swapchain_image_index) {
+void UncompressedFrameStream::SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t swapchain_image_index) {
   auto &command_stream = GetInstanceInfo(local_instance).command_stream();
 
   for (auto &swapchain_present_info : swapchains) {
@@ -121,7 +147,7 @@ void PresentationThread::SetupFrame(VkCommandBuffer remote_command_buffer, uint3
   }
 }
 
-VkResult PresentationThread::PresentFrame(VkQueue queue, const VkPresentInfoKHR &original_present_info) {
+VkResult UncompressedFrameStream::PresentFrame(VkQueue queue, const VkPresentInfoKHR &original_present_info) {
   DeviceInfo &device_info = GetDeviceInfo(queue);
   VkQueue local_queue = *device_info.present_queue();
   VkDevice local_device = GetDeviceForQueue(queue);
