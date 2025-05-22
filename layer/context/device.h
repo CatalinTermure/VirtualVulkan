@@ -18,7 +18,7 @@
 #include "layer/context/instance.h"
 #include "layer/context/mapped_memory.h"
 #include "layer/dispatchable_object.h"
-#include "layer/presentation.h"
+#include "layer/presentation/frame_stream.h"
 
 namespace vvk {
 struct DeviceInfo {

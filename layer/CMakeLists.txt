@@ -12,7 +12,9 @@ add_library(
     context/fence_pool.h context/fence_pool.cpp
     context/mapped_memory.h context/mapped_memory.cpp
     dispatchable_object.h
-    presentation.h presentation.cpp
+    presentation/frame_stream.h presentation/frame_stream.cpp
+    presentation/uncompressed_frame_stream.h presentation/uncompressed_frame_stream.cpp
+    presentation/h264_frame_stream.h presentation/h264_frame_stream.cpp
 )
 target_include_directories(VirtualVulkanLayer PRIVATE ../)
 target_include_directories(VirtualVulkanLayer PRIVATE ../Vulkan-Utility-Libraries/include)

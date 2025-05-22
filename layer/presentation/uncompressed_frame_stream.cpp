@@ -1,72 +1,15 @@
-#include "presentation.h"
+#include "uncompressed_frame_stream.h"
 
 #include "commons/remote_call.h"
 #include "layer/context/device.h"
 #include "layer/context/instance.h"
 #include "layer/context/swapchain.h"
 #include "layer/sempahore_handle.h"
-#include "vvk_server.grpc.pb.h"
 
 namespace vvk {
 
-namespace {
-
-class UncompressedFrameStream final : public FrameStream {
- public:
-  UncompressedFrameStream(VkInstance instance, VkDevice device, uint32_t queue_family_index);
-
-  void AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) override;
-  void RemoveSwapchain(VkSwapchainKHR swapchain) override;
-
-  // Called during command buffer recording for a presentable frame.
-  void SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t swapchain_image_index) override;
-
-  // Called when a frame should be presented.
-  VkResult PresentFrame(VkQueue queue, const VkPresentInfoKHR &original_present_info) override;
-
- private:
-  struct SwapchainPresentationInfo {
-    VkSwapchainKHR swapchain;
-    uint64_t remote_session_key;
-    std::vector<uint64_t> remote_buffers;
-    std::vector<uint64_t> remote_frame_keys;
-    VkExtent2D image_extent;
-  };
-
-  VkInstance local_instance;
-  VkDevice local_device;
-  uint32_t remote_graphics_queue_family_index;
-  std::vector<SwapchainPresentationInfo> swapchains;
-};
-}  // namespace
-
 UncompressedFrameStream::UncompressedFrameStream(VkInstance instance, VkDevice device, uint32_t queue_family_index)
     : local_instance(instance), local_device(device), remote_graphics_queue_family_index(queue_family_index) {}
-
-std::unique_ptr<FrameStream> FrameStream::Create(
-    VkInstance local_instance, VkDevice local_device, VkPhysicalDevice remote_physical_device,
-    uint32_t remote_graphics_queue_family_index,
-    const vvk::server::StreamingCapabilities &client_streaming_capabilities) {
-  InstanceInfo &instance_info = GetInstanceInfo(local_instance);
-
-  vvk::server::StreamingCapabilities server_streaming_capabilities = [&]() {
-    vvk::server::VvkGetFrameStreamingCapabilitiesRequest request;
-    request.set_physical_device(reinterpret_cast<uint64_t>(remote_physical_device));
-    vvk::server::StreamingCapabilities response;
-    grpc::ClientContext client_context;
-    instance_info.stub().GetFrameStreamingCapabilities(&client_context, request, &response);
-    return response;
-  }();
-
-  if (!server_streaming_capabilities.supports_uncompressed_stream()) {
-    throw std::runtime_error("Uncompressed stream not supported");
-  }
-
-  std::unique_ptr<FrameStream> frame_stream = std::unique_ptr<FrameStream>(
-      new UncompressedFrameStream(local_instance, local_device, remote_graphics_queue_family_index));
-
-  return frame_stream;
-}
 
 void UncompressedFrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) {
   InstanceInfo &instance_info = GetInstanceInfo(local_instance);
