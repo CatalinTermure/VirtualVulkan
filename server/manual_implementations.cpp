@@ -27,52 +27,10 @@ VmaAllocator CreateVmaAllocator(VkInstance instance, VkPhysicalDevice physical_d
   vmaCreateAllocator(&allocator_info, &allocator);
   return allocator;
 }
-}  // namespace
 
-void UnpackAndExecuteVkCreateInstanceManual(vvk::ExecutionContext& context, const VvkRequest& request,
-                                            VvkResponse* response) {
-  UnpackAndExecuteVkCreateInstance(context, request, response);
-
-  VkInstance instance = reinterpret_cast<VkInstance>(response->vkcreateinstance().pinstance());
-
-  uint32_t device_count;
-  vkEnumeratePhysicalDevices(instance, &device_count, nullptr);
-  std::vector<VkPhysicalDevice> phys_devices(device_count);
-  vkEnumeratePhysicalDevices(instance, &device_count, phys_devices.data());
-
-  for (VkPhysicalDevice phys_device : phys_devices) {
-    VkPhysicalDeviceProperties properties;
-    vkGetPhysicalDeviceProperties(phys_device, &properties);
-    if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-      context.set_physical_device(phys_device);
-      spdlog::info("Using discrete GPU {}", properties.deviceName);
-      break;
-    }
-  }
-}
-
-void UnpackAndExecuteVkEnumeratePhysicalDevicesManual(vvk::ExecutionContext& context,
-                                                      const vvk::server::VvkRequest& request,
-                                                      vvk::server::VvkResponse* response) {
-  assert(request.method() == "vkEnumeratePhysicalDevices");
-
-  uint32_t physical_device_count = request.vkenumeratephysicaldevices().pphysicaldevicecount();
-  if (physical_device_count == 0) {
-    response->mutable_vkenumeratephysicaldevices()->set_pphysicaldevicecount(1);
-  } else {
-    assert(physical_device_count == 1);
-    response->mutable_vkenumeratephysicaldevices()->set_pphysicaldevicecount(physical_device_count);
-    response->mutable_vkenumeratephysicaldevices()->add_pphysicaldevices(
-        reinterpret_cast<uint64_t>(context.physical_device()));
-  }
-  response->set_result(VK_SUCCESS);
-}
-
-void UnpackAndExecuteSetupPresentation(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
-                                       vvk::server::VvkResponse* response) {
-  assert(request.method() == "setupPresentation");
-  const auto& params = request.setuppresentation();
-
+void SetupPresentationUncompressedStream(vvk::ExecutionContext& context,
+                                         const vvk::server::VvkSetupPresentationRequest& params,
+                                         vvk::server::VvkResponse* response) {
   VkInstance instance = reinterpret_cast<VkInstance>(params.instance());
   VkDevice device = reinterpret_cast<VkDevice>(params.device());
   uint32_t queue_family_index = params.uncompressed_stream_create_info().queue_family_index();
@@ -124,4 +82,57 @@ void UnpackAndExecuteSetupPresentation(vvk::ExecutionContext& context, const vvk
   }
 
   uncompressed_stream_info->set_session_key(reinterpret_cast<uint64_t>(context.allocator()));
+}
+}  // namespace
+
+void UnpackAndExecuteVkCreateInstanceManual(vvk::ExecutionContext& context, const VvkRequest& request,
+                                            VvkResponse* response) {
+  UnpackAndExecuteVkCreateInstance(context, request, response);
+
+  VkInstance instance = reinterpret_cast<VkInstance>(response->vkcreateinstance().pinstance());
+
+  uint32_t device_count;
+  vkEnumeratePhysicalDevices(instance, &device_count, nullptr);
+  std::vector<VkPhysicalDevice> phys_devices(device_count);
+  vkEnumeratePhysicalDevices(instance, &device_count, phys_devices.data());
+
+  for (VkPhysicalDevice phys_device : phys_devices) {
+    VkPhysicalDeviceProperties properties;
+    vkGetPhysicalDeviceProperties(phys_device, &properties);
+    if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
+      context.set_physical_device(phys_device);
+      spdlog::info("Using discrete GPU {}", properties.deviceName);
+      break;
+    }
+  }
+}
+
+void UnpackAndExecuteVkEnumeratePhysicalDevicesManual(vvk::ExecutionContext& context,
+                                                      const vvk::server::VvkRequest& request,
+                                                      vvk::server::VvkResponse* response) {
+  assert(request.method() == "vkEnumeratePhysicalDevices");
+
+  uint32_t physical_device_count = request.vkenumeratephysicaldevices().pphysicaldevicecount();
+  if (physical_device_count == 0) {
+    response->mutable_vkenumeratephysicaldevices()->set_pphysicaldevicecount(1);
+  } else {
+    assert(physical_device_count == 1);
+    response->mutable_vkenumeratephysicaldevices()->set_pphysicaldevicecount(physical_device_count);
+    response->mutable_vkenumeratephysicaldevices()->add_pphysicaldevices(
+        reinterpret_cast<uint64_t>(context.physical_device()));
+  }
+  response->set_result(VK_SUCCESS);
+}
+
+void UnpackAndExecuteSetupPresentation(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
+                                       vvk::server::VvkResponse* response) {
+  assert(request.method() == "setupPresentation");
+  const auto& params = request.setuppresentation();
+
+  if (params.has_uncompressed_stream_create_info()) {
+    SetupPresentationUncompressedStream(context, params, response);
+  } else {
+    spdlog::error("Unsupported presentation stream type");
+    response->set_result(VK_ERROR_INITIALIZATION_FAILED);
+  }
 }
