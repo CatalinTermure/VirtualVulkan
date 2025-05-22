@@ -2,6 +2,7 @@
 #define VVK_SERVER_EXECUTION_CONTEXT_H
 
 #include <vk_mem_alloc.h>
+#include <vulkan/utility/vk_dispatch_table.h>
 #include <vulkan/vulkan_core.h>
 
 #include <functional>
@@ -27,6 +28,17 @@ class ExecutionContext {
 
   void defer_deletion(std::function<void()> func) { deferred_deletion_queue_.emplace(std::move(func)); }
 
+  void InitInstanceDispatchTable(VkInstance instance) {
+    vkuInitInstanceDispatchTable(instance, &instance_dispatch_table_, vkGetInstanceProcAddr);
+  }
+
+  void InitDeviceDispatchTable(VkDevice device) {
+    vkuInitDeviceDispatchTable(device, &device_dispatch_table_, vkGetDeviceProcAddr);
+  }
+
+  const VkuInstanceDispatchTable& instance_dispatch_table() const { return instance_dispatch_table_; }
+  const VkuDeviceDispatchTable& device_dispatch_table() const { return device_dispatch_table_; }
+
   ~ExecutionContext() {
     while (!deferred_deletion_queue_.empty()) {
       deferred_deletion_queue_.front()();
@@ -42,6 +54,8 @@ class ExecutionContext {
   VkPhysicalDevice physical_device_to_use_ = VK_NULL_HANDLE;
   VmaAllocator allocator_ = VK_NULL_HANDLE;
   std::queue<std::function<void()>> deferred_deletion_queue_;
+  VkuInstanceDispatchTable instance_dispatch_table_;
+  VkuDeviceDispatchTable device_dispatch_table_;
 };
 
 }  // namespace vvk

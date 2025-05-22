@@ -105,6 +105,15 @@ void UnpackAndExecuteVkCreateInstanceManual(vvk::ExecutionContext& context, cons
       break;
     }
   }
+
+  context.InitInstanceDispatchTable(instance);
+}
+
+void UnpackAndExecuteVkCreateDeviceManual(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
+                                          vvk::server::VvkResponse* response) {
+  UnpackAndExecuteVkCreateDevice(context, request, response);
+
+  context.InitDeviceDispatchTable(reinterpret_cast<VkDevice>(response->vkcreatedevice().pdevice()));
 }
 
 void UnpackAndExecuteVkEnumeratePhysicalDevicesManual(vvk::ExecutionContext& context,
