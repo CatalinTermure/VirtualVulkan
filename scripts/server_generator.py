@@ -234,10 +234,21 @@ class ServerSrcGenerator(VvkGenerator):
                     log("UNHANDLED PARAM:", cmd_name, param.name)
 
             # call the function
+            dispatch_function_call = cmd_name
+            if cmd_name in {"vkCreateInstance", "vkEnumerateInstanceExtensionProperties"}:
+                dispatch_function_call = cmd_name
+            elif command.params[0].type in {"VkInstance", "VkPhysicalDevice"}:
+                dispatch_function_call = f'context.instance_dispatch_table().{cmd_name[2:]}'
+            elif command.params[0].type in {"VkDevice", "VkQueue", "VkCommandBuffer"}:
+                dispatch_function_call = f'context.device_dispatch_table().{cmd_name[2:]}'
+            else:
+                print("Unhandled dispatch for function:",
+                      cmd_name, "with first param", command.params[0].type)
+
             if command.returnType == "VkResult":
-                out.append(f'  VkResult result = {cmd_name}(')
+                out.append(f'  VkResult result = {dispatch_function_call}(')
             elif command.returnType == "void":
-                out.append(f'  {cmd_name}(')
+                out.append(f'  {dispatch_function_call}(')
             else:
                 log("UNHANDLED RETURN TYPE:", command.returnType)
 

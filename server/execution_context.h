@@ -30,6 +30,8 @@ class ExecutionContext {
 
   void InitInstanceDispatchTable(VkInstance instance) {
     vkuInitInstanceDispatchTable(instance, &instance_dispatch_table_, vkGetInstanceProcAddr);
+    instance_dispatch_table_.CreateDevice =
+        reinterpret_cast<PFN_vkCreateDevice>(vkGetInstanceProcAddr(instance, "vkCreateDevice"));
   }
 
   void InitDeviceDispatchTable(VkDevice device) {

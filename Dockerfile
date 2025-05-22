@@ -25,6 +25,12 @@ RUN cmake -S . -B build/ -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build build/ --target install
 WORKDIR /
 
+COPY Vulkan-Utility-Libraries /src/Vulkan-Utility-Libraries
+WORKDIR /src/Vulkan-Utility-Libraries
+RUN cmake -S . -B build/ -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
+RUN cmake --build build/ --target install
+WORKDIR /
+
 COPY 3rdparty/renderdoc_app.h /usr/include/renderdoc_app.h
 
 COPY CMakeLists.txt /src/CMakeLists.txt
