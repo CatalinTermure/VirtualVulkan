@@ -17,6 +17,7 @@ message VvkUncompressedStreamCreateInfo {
 }
 
 message VvkH264StreamCreateInfo {
+  uint32 video_queue_family_index = 1;
 }
 
 message VvkUncompressedStreamInfo {

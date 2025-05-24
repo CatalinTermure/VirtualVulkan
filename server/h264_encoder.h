@@ -14,28 +14,26 @@ namespace vvk {
 
 class H264Encoder : public Encoder {
  public:
-  H264Encoder(const vvk::ExecutionContext& execution_context, VkDevice device)
+  H264Encoder(const vvk::ExecutionContext& execution_context, VkDevice device, uint32_t video_queue_index)
       : execution_context_(execution_context),
         dev_dispatch_(execution_context.device_dispatch_table()),
-        device_(device) {
+        device_(device),
+        video_queue_index_(video_queue_index) {
     CreateQueryPool();
     InitializeVideoProfile();
-
-    h264_rate_control_info_ = vk::VideoEncodeH264RateControlInfoKHR{
-        vk::VideoEncodeH264RateControlFlagBitsKHR::eRegularGop |
-            vk::VideoEncodeH264RateControlFlagBitsKHR::eReferencePatternFlat,
-        kGopFrameCount,
-        kIdrPeriod,
-        0,  // No B-frames, since they introduce latency due to re-ordering
-        1,  // Temporal layer count
-        nullptr,
-    };
-
-    encode_rate_control_info_ = vk::VideoEncodeRateControlInfoKHR{
-        vk::VideoEncodeRateControlFlagsKHR{}, {}, {}, kVirtualBufferSizeInMs, kInitialVirtualBufferSizeInMs, nullptr};
+    AllocateCommandBuffer();
+    InitializeRateControl();
   }
 
   ~H264Encoder() override {
+    if (command_buffer_ != VK_NULL_HANDLE) {
+      dev_dispatch_.FreeCommandBuffers(device_, command_pool_, 1, &command_buffer_);
+      command_buffer_ = VK_NULL_HANDLE;
+    }
+    if (command_pool_ != VK_NULL_HANDLE) {
+      dev_dispatch_.DestroyCommandPool(device_, command_pool_, nullptr);
+      command_pool_ = VK_NULL_HANDLE;
+    }
     if (query_pool_ != VK_NULL_HANDLE) {
       dev_dispatch_.DestroyQueryPool(device_, query_pool_, nullptr);
       query_pool_ = VK_NULL_HANDLE;
@@ -61,14 +59,19 @@ class H264Encoder : public Encoder {
   const vvk::ExecutionContext& execution_context_;
   const VkuDeviceDispatchTable& dev_dispatch_;
   VkDevice device_;
+  uint32_t video_queue_index_;
   uint32_t encoded_frame_count_ = 0;
   vk::VideoEncodeRateControlInfoKHR encode_rate_control_info_;
   vk::VideoEncodeH264RateControlInfoKHR h264_rate_control_info_;
+  vk::VideoEncodeRateControlLayerInfoKHR encode_rate_control_layer_info_;
+  vk::VideoEncodeH264RateControlLayerInfoKHR h264_rate_control_layer_info_;
   vk::VideoProfileListInfoKHR video_profile_list_info_;
   vk::VideoProfileInfoKHR video_profile_info_;
   vk::VideoEncodeH264ProfileInfoKHR h264_profile_info_;
 
   VkQueryPool query_pool_ = VK_NULL_HANDLE;
+  VkCommandPool command_pool_ = VK_NULL_HANDLE;
+  VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
 
  private:
   void CreateQueryPool() {
@@ -102,10 +105,74 @@ class H264Encoder : public Encoder {
     video_profile_list_info_ = vk::VideoProfileListInfoKHR{video_profile_info_};
   }
 
+  void AllocateCommandBuffer() {
+    vk::CommandPoolCreateInfo command_pool_create_info = {
+        vk::CommandPoolCreateFlags{},
+        video_queue_index_,
+    };
+    dev_dispatch_.CreateCommandPool(device_, command_pool_create_info, nullptr, &command_pool_);
+
+    vk::CommandBufferAllocateInfo command_buffer_allocate_info = {
+        command_pool_,
+        vk::CommandBufferLevel::ePrimary,
+        1,
+    };
+    dev_dispatch_.AllocateCommandBuffers(device_, command_buffer_allocate_info, &command_buffer_);
+  }
+
+  void InitializeRateControl() {
+    h264_rate_control_layer_info_ = vk::VideoEncodeH264RateControlLayerInfoKHR{
+        VK_FALSE,  // no min QP
+        {},
+        VK_FALSE,  // no max QP
+        {},
+        VK_FALSE,  // no max frame size
+        {},
+    };
+    encode_rate_control_layer_info_ = vk::VideoEncodeRateControlLayerInfoKHR{
+        kAverageBitrate, kMaxBitrate, kFrameRateNumerator, kFrameRateDenominator, h264_rate_control_layer_info_,
+    };
+    h264_rate_control_info_ = vk::VideoEncodeH264RateControlInfoKHR{
+        vk::VideoEncodeH264RateControlFlagBitsKHR::eRegularGop |
+            vk::VideoEncodeH264RateControlFlagBitsKHR::eReferencePatternFlat,
+        kGopFrameCount,
+        kIdrPeriod,
+        0,  // No B-frames, since they introduce latency due to re-ordering
+        1,  // Temporal layer count
+        nullptr,
+    };
+    encode_rate_control_info_ = vk::VideoEncodeRateControlInfoKHR{
+        vk::VideoEncodeRateControlFlagsKHR{},
+        vk::VideoEncodeRateControlModeFlagBitsKHR::eVbr,  // should be checked before using
+        encode_rate_control_layer_info_,
+        kVirtualBufferSizeInMs,
+        kInitialVirtualBufferSizeInMs,
+        h264_rate_control_info_,
+    };
+
+    dev_dispatch_.BeginCommandBuffer(command_buffer_, vk::CommandBufferBeginInfo{});
+    dev_dispatch_.CmdBeginVideoCodingKHR(command_buffer_,
+                                         vk::VideoBeginCodingInfoKHR{
+                                             vk::VideoBeginCodingFlagsKHR{},
+                                             {},  // VideoSessionKHR
+                                             {},  // VideoSessionParametersKHR
+                                             {},  // Reference slots are not required just to reset the video session
+                                         });
+    dev_dispatch_.CmdControlVideoCodingKHR(command_buffer_, vk::VideoCodingControlInfoKHR{
+                                                                vk::VideoCodingControlFlagBitsKHR::eReset,
+                                                                encode_rate_control_info_,
+                                                            });
+    dev_dispatch_.CmdEndVideoCodingKHR(command_buffer_, vk::VideoEndCodingInfoKHR{});
+  }
+
   constexpr static uint32_t kIdrPeriod = 16;
   constexpr static uint32_t kGopFrameCount = 16;
   constexpr static uint32_t kVirtualBufferSizeInMs = 200;
   constexpr static uint32_t kInitialVirtualBufferSizeInMs = 100;
+  constexpr static uint32_t kAverageBitrate = 5'000'000;  // 5 Mbps
+  constexpr static uint32_t kMaxBitrate = 20'000'000;     // 20 Mbps
+  constexpr static uint32_t kFrameRateNumerator = 30;     // 30 fps
+  constexpr static uint32_t kFrameRateDenominator = 1;    // 30 fps
 };
 
 }  // namespace vvk
