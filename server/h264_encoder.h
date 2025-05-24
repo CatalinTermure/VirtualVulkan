@@ -19,6 +19,7 @@ class H264Encoder : public Encoder {
         dev_dispatch_(execution_context.device_dispatch_table()),
         device_(device) {
     CreateQueryPool();
+    InitializeVideoProfile();
 
     h264_rate_control_info_ = vk::VideoEncodeH264RateControlInfoKHR{
         vk::VideoEncodeH264RateControlFlagBitsKHR::eRegularGop |
@@ -63,6 +64,9 @@ class H264Encoder : public Encoder {
   uint32_t encoded_frame_count_ = 0;
   vk::VideoEncodeRateControlInfoKHR encode_rate_control_info_;
   vk::VideoEncodeH264RateControlInfoKHR h264_rate_control_info_;
+  vk::VideoProfileListInfoKHR video_profile_list_info_;
+  vk::VideoProfileInfoKHR video_profile_info_;
+  vk::VideoEncodeH264ProfileInfoKHR h264_profile_info_;
 
   VkQueryPool query_pool_ = VK_NULL_HANDLE;
 
@@ -81,6 +85,21 @@ class H264Encoder : public Encoder {
         query_pool_video_encode_feedback_create_info,
     };
     dev_dispatch_.CreateQueryPool(device_, query_pool_create_info, nullptr, &query_pool_);
+  }
+
+  void InitializeVideoProfile() {
+    h264_profile_info_ = vk::VideoEncodeH264ProfileInfoKHR{
+        STD_VIDEO_H264_PROFILE_IDC_BASELINE,
+        nullptr,
+    };
+    video_profile_info_ = vk::VideoProfileInfoKHR{
+        vk::VideoCodecOperationFlagBitsKHR::eEncodeH264,
+        vk::VideoChromaSubsamplingFlagBitsKHR::e420,
+        vk::VideoComponentBitDepthFlagBitsKHR::e8,
+        vk::VideoComponentBitDepthFlagBitsKHR::e8,
+        h264_profile_info_,
+    };
+    video_profile_list_info_ = vk::VideoProfileListInfoKHR{video_profile_info_};
   }
 
   constexpr static uint32_t kIdrPeriod = 16;
