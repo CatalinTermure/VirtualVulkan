@@ -6,8 +6,11 @@
 #include <vulkan/vulkan_core.h>
 
 #include <functional>
+#include <memory>
 #include <queue>
 #include <unordered_map>
+
+#include "server/encoder.h"
 
 namespace vvk {
 
@@ -52,12 +55,17 @@ class ExecutionContext {
     }
   }
 
+  // May return nullptr if no encoder is set.
+  Encoder* encoder() const { return encoder_.get(); }
+  void set_encoder(std::unique_ptr<Encoder> encoder) { encoder_ = std::move(encoder); }
+
  private:
   VkPhysicalDevice physical_device_to_use_ = VK_NULL_HANDLE;
   VmaAllocator allocator_ = VK_NULL_HANDLE;
   std::queue<std::function<void()>> deferred_deletion_queue_;
   VkuInstanceDispatchTable instance_dispatch_table_;
   VkuDeviceDispatchTable device_dispatch_table_;
+  std::unique_ptr<Encoder> encoder_;
 };
 
 }  // namespace vvk

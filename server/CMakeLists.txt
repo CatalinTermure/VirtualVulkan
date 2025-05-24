@@ -10,6 +10,7 @@ add_executable(
     manual_implementations.h manual_implementations.cpp
     execution_context.h
     vma_implementation.cpp
+    h264_encoder.h h264_encoder.cpp
   )
 target_include_directories(VirtualVulkanServer PRIVATE ../)
 

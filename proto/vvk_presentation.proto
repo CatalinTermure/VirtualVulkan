@@ -16,6 +16,9 @@ message VvkUncompressedStreamCreateInfo {
   uint32 queue_family_index = 1;
 }
 
+message VvkH264StreamCreateInfo {
+}
+
 message VvkUncompressedStreamInfo {
   repeated uint64 remote_buffers = 1;
   uint64 session_key = 2;
@@ -30,6 +33,7 @@ message VvkSetupPresentationRequest {
   uint32 height = 5;
   oneof stream_create_info {
     VvkUncompressedStreamCreateInfo uncompressed_stream_create_info = 6;
+    VvkH264StreamCreateInfo h264_stream_create_info = 7;
   }
 }
 

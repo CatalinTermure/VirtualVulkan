@@ -5,6 +5,7 @@
 
 #include <vector>
 
+#include "server/h264_encoder.h"
 #include "server/implementations.h"
 
 using vvk::server::VvkRequest;
@@ -83,6 +84,11 @@ void SetupPresentationUncompressedStream(vvk::ExecutionContext& context,
 
   uncompressed_stream_info->set_session_key(reinterpret_cast<uint64_t>(context.allocator()));
 }
+
+void SetupPresentationH264Stream(vvk::ExecutionContext& context, const vvk::server::VvkSetupPresentationRequest& params,
+                                 vvk::server::VvkResponse* response) {
+  context.set_encoder(std::make_unique<vvk::H264Encoder>(context, reinterpret_cast<VkDevice>(params.device())));
+}
 }  // namespace
 
 void UnpackAndExecuteVkCreateInstanceManual(vvk::ExecutionContext& context, const VvkRequest& request,
@@ -140,6 +146,8 @@ void UnpackAndExecuteSetupPresentation(vvk::ExecutionContext& context, const vvk
 
   if (params.has_uncompressed_stream_create_info()) {
     SetupPresentationUncompressedStream(context, params, response);
+  } else if (params.has_h264_stream_create_info()) {
+    SetupPresentationH264Stream(context, params, response);
   } else {
     spdlog::error("Unsupported presentation stream type");
     response->set_result(VK_ERROR_INITIALIZATION_FAILED);
