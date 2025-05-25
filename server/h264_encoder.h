@@ -25,10 +25,17 @@ class H264Encoder : public Encoder {
     CreateQueryPool();
     AllocateCommandBuffer();
     InitializeVideoSession();
+    BindVideoSessionMemory();
     InitializeRateControl();
   }
 
   ~H264Encoder() override {
+    if (!allocations_.empty()) {
+      for (auto& allocation : allocations_) {
+        vmaFreeMemory(execution_context_.allocator(), allocation);
+      }
+      allocations_.clear();
+    }
     if (video_session_ != VK_NULL_HANDLE) {
       dev_dispatch_.DestroyVideoSessionKHR(device_, video_session_, nullptr);
       video_session_ = VK_NULL_HANDLE;
@@ -81,6 +88,7 @@ class H264Encoder : public Encoder {
   VkCommandPool command_pool_ = VK_NULL_HANDLE;
   VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
   VkVideoSessionKHR video_session_ = VK_NULL_HANDLE;
+  std::vector<VmaAllocation> allocations_;
 
  private:
   void CreateQueryPool() {
@@ -147,6 +155,44 @@ class H264Encoder : public Encoder {
                                             &h264_std_extension_version,
                                         },
                                         nullptr, &video_session_);
+  }
+
+  void BindVideoSessionMemory() {
+    uint32_t video_session_memory_requirements_count = 0;
+    dev_dispatch_.GetVideoSessionMemoryRequirementsKHR(device_, video_session_,
+                                                       &video_session_memory_requirements_count, nullptr);
+    std::vector<VkVideoSessionMemoryRequirementsKHR> video_session_memory_requirements(
+        video_session_memory_requirements_count);
+    for (auto& video_memory_requirement : video_session_memory_requirements) {
+      video_memory_requirement.sType = VK_STRUCTURE_TYPE_VIDEO_SESSION_MEMORY_REQUIREMENTS_KHR;
+    }
+    dev_dispatch_.GetVideoSessionMemoryRequirementsKHR(
+        device_, video_session_, &video_session_memory_requirements_count, video_session_memory_requirements.data());
+    std::vector<VkBindVideoSessionMemoryInfoKHR> bind_video_session_memory_infos;
+    for (const auto& video_memory_requirement : video_session_memory_requirements) {
+      VmaAllocationCreateInfo allocation_create_info = {};
+      allocation_create_info.memoryTypeBits = video_memory_requirement.memoryRequirements.memoryTypeBits;
+
+      VmaAllocation allocation;
+      VmaAllocationInfo allocation_info;
+      VkResult result = vmaAllocateMemory(execution_context_.allocator(), &video_memory_requirement.memoryRequirements,
+                                          &allocation_create_info, &allocation, &allocation_info);
+      if (result != VK_SUCCESS) {
+        throw std::runtime_error("Failed to allocate memory for video session");
+      }
+      allocations_.push_back(allocation);
+
+      bind_video_session_memory_infos.push_back(vk::BindVideoSessionMemoryInfoKHR{
+          video_memory_requirement.memoryBindIndex,
+          allocation_info.deviceMemory,
+          allocation_info.offset,
+          allocation_info.size,
+          nullptr,
+      });
+    }
+    dev_dispatch_.BindVideoSessionMemoryKHR(device_, video_session_,
+                                            static_cast<uint32_t>(bind_video_session_memory_infos.size()),
+                                            bind_video_session_memory_infos.data());
   }
 
   void InitializeRateControl() {

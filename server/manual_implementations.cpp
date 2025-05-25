@@ -36,10 +36,6 @@ void SetupPresentationUncompressedStream(vvk::ExecutionContext& context,
   VkDevice device = reinterpret_cast<VkDevice>(params.device());
   uint32_t queue_family_index = params.uncompressed_stream_create_info().queue_family_index();
 
-  if (context.allocator() == VK_NULL_HANDLE) {
-    context.set_allocator(CreateVmaAllocator(instance, context.physical_device(), device));
-  }
-
   VmaAllocator allocator = context.allocator();
 
   const auto& uncompressed_stream_info = response->mutable_setuppresentation()->mutable_uncompressed_stream_info();
@@ -145,6 +141,10 @@ void UnpackAndExecuteSetupPresentation(vvk::ExecutionContext& context, const vvk
                                        vvk::server::VvkResponse* response) {
   assert(request.method() == "setupPresentation");
   const auto& params = request.setuppresentation();
+  if (context.allocator() == VK_NULL_HANDLE) {
+    context.set_allocator(CreateVmaAllocator(reinterpret_cast<VkInstance>(params.instance()), context.physical_device(),
+                                             reinterpret_cast<VkDevice>(params.device())));
+  }
 
   if (params.has_uncompressed_stream_create_info()) {
     SetupPresentationUncompressedStream(context, params, response);
