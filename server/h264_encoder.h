@@ -73,7 +73,34 @@ class H264Encoder : public Encoder {
     dev_dispatch_.CmdBeginVideoCodingKHR(command_buffer, video_begin_coding_info);
   }
 
-  std::vector<std::byte> GetEncodedData(VkImage image) override { return {}; }
+  std::string GetEncodedData(VkImage image) override { return {}; }
+
+  std::string GetEncodedHeader() const {
+    vk::VideoEncodeH264SessionParametersGetInfoKHR h264_param_get_info{
+        VK_TRUE,  // write std SPS
+        VK_TRUE,  // write std PPS
+        0,        // stdSpsId
+        0,        // stdPpsId
+        nullptr,
+    };
+    vk::VideoEncodeSessionParametersGetInfoKHR param_get_info{
+        video_session_parameters_,
+        h264_param_get_info,
+    };
+    vk::VideoEncodeH264SessionParametersFeedbackInfoKHR h264_feedback_info{VK_FALSE,  // no stdSps overrides
+                                                                           VK_FALSE,  // no stdPps overrides
+                                                                           nullptr};
+    vk::VideoEncodeSessionParametersFeedbackInfoKHR feedback_info{
+        VK_FALSE,  // no overrides
+        h264_feedback_info,
+    };
+    size_t data_size = 0;
+    dev_dispatch_.GetEncodedVideoSessionParametersKHR(device_, param_get_info, feedback_info, &data_size, nullptr);
+    std::string header_data(data_size, '\0');
+    dev_dispatch_.GetEncodedVideoSessionParametersKHR(device_, param_get_info, feedback_info, &data_size,
+                                                      header_data.data());
+    return header_data;
+  }
 
   const vvk::ExecutionContext& execution_context_;
   const VkuDeviceDispatchTable& dev_dispatch_;

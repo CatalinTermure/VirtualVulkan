@@ -11,7 +11,7 @@ class Encoder {
  public:
   virtual ~Encoder() = default;
   virtual void WriteEncodeCommands(VkCommandBuffer command_buffer, VkImage image) = 0;
-  virtual std::vector<std::byte> GetEncodedData(VkImage image) = 0;
+  virtual std::string GetEncodedData(VkImage image) = 0;
 };
 }  // namespace vvk
 

@@ -2,6 +2,7 @@
 
 #include "layer/context/instance.h"
 #include "layer/context/swapchain.h"
+#include "spdlog/spdlog.h"
 
 namespace vvk {
 H264FrameStream::H264FrameStream(VkInstance instance, VkDevice device, uint32_t queue_family_index)
@@ -30,6 +31,10 @@ void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExten
   if (!instance_info.command_stream().Read(&response)) {
     throw std::runtime_error("Failed to read setup presentation response");
   }
+
+  std::string encoded_header = response.setuppresentation().h264_stream_info().header();
+  spdlog::info("Received H264 stream header of size {} bytes", encoded_header.size());
+  spdlog::info("H264 stream header: {}", encoded_header);
 }
 
 void H264FrameStream::RemoveSwapchain(VkSwapchainKHR swapchain) {}

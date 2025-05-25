@@ -26,6 +26,10 @@ message UncompressedStreamInfo {
   repeated uint64 frame_keys = 3;
 }
 
+message H264StreamInfo {
+  bytes header = 1;
+}
+
 message VvkSetupPresentationRequest {
   uint64 instance = 1;
   uint64 device = 2;
@@ -41,6 +45,7 @@ message VvkSetupPresentationRequest {
 message VvkSetupPresentationResponse {
   oneof stream_info {
     UncompressedStreamInfo uncompressed_stream_info = 1;
+    H264StreamInfo h264_stream_info = 2;
   }
 }
 
