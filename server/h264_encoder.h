@@ -28,9 +28,19 @@ class H264Encoder : public Encoder {
     BindVideoSessionMemory();
     InitializeVideoSessionParameters();
     InitializeRateControl();
+    AllocateOutputBuffer();
   }
 
   ~H264Encoder() override {
+    if (output_buffer_data_ != nullptr) {
+      vmaUnmapMemory(execution_context_.allocator(), output_buffer_allocation_);
+      output_buffer_data_ = nullptr;
+    }
+    if (output_buffer_ != VK_NULL_HANDLE) {
+      vmaDestroyBuffer(execution_context_.allocator(), output_buffer_, output_buffer_allocation_);
+      output_buffer_ = VK_NULL_HANDLE;
+      output_buffer_allocation_ = VK_NULL_HANDLE;
+    }
     if (video_session_parameters_ != VK_NULL_HANDLE) {
       dev_dispatch_.DestroyVideoSessionParametersKHR(device_, video_session_parameters_, nullptr);
       video_session_parameters_ = VK_NULL_HANDLE;
@@ -122,6 +132,9 @@ class H264Encoder : public Encoder {
   VkVideoSessionKHR video_session_ = VK_NULL_HANDLE;
   VkVideoSessionParametersKHR video_session_parameters_ = VK_NULL_HANDLE;
   std::vector<VmaAllocation> allocations_;
+  VkBuffer output_buffer_ = VK_NULL_HANDLE;
+  VmaAllocation output_buffer_allocation_ = VK_NULL_HANDLE;
+  char* output_buffer_data_ = nullptr;
 
  private:
   void CreateQueryPool() {
@@ -387,16 +400,38 @@ class H264Encoder : public Encoder {
     dev_dispatch_.CmdEndVideoCodingKHR(command_buffer_, vk::VideoEndCodingInfoKHR{});
   }
 
+  void AllocateOutputBuffer() {
+    vk::BufferCreateInfo buffer_create_info = {
+        vk::BufferCreateFlags{},     kEncodedOutputSize, vk::BufferUsageFlagBits::eVideoEncodeDstKHR,
+        vk::SharingMode::eExclusive, video_queue_index_, video_profile_list_info_,
+    };
+    VmaAllocationCreateInfo allocation_create_info = {};
+    allocation_create_info.usage = VMA_MEMORY_USAGE_AUTO;
+    allocation_create_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT;
+    VmaAllocation output_allocation;
+    VkResult result = vmaCreateBuffer(execution_context_.allocator(), buffer_create_info, &allocation_create_info,
+                                      &output_buffer_, &output_buffer_allocation_, nullptr);
+    if (result != VK_SUCCESS) {
+      throw std::runtime_error("Failed to create output buffer for H264 encoding");
+    }
+    result = vmaMapMemory(execution_context_.allocator(), output_buffer_allocation_,
+                          reinterpret_cast<void**>(&output_buffer_data_));
+    if (result != VK_SUCCESS) {
+      throw std::runtime_error("Failed to map output buffer memory for H264 encoding");
+    }
+  }
+
   constexpr static uint32_t kIdrPeriod = 16;
   constexpr static uint32_t kGopFrameCount = 16;
   constexpr static uint32_t kMaxDpbSlots = 16;
   constexpr static uint32_t kMaxActiveReferenceSlots = 16;
   constexpr static uint32_t kVirtualBufferSizeInMs = 200;
   constexpr static uint32_t kInitialVirtualBufferSizeInMs = 100;
-  constexpr static uint32_t kAverageBitrate = 5'000'000;  // 5 Mbps
-  constexpr static uint32_t kMaxBitrate = 20'000'000;     // 20 Mbps
-  constexpr static uint32_t kFrameRateNumerator = 30;     // 30 fps
-  constexpr static uint32_t kFrameRateDenominator = 1;    // 30 fps
+  constexpr static uint32_t kAverageBitrate = 5'000'000;            // 5 Mbps
+  constexpr static uint32_t kMaxBitrate = 20'000'000;               // 20 Mbps
+  constexpr static uint32_t kFrameRateNumerator = 30;               // 30 fps
+  constexpr static uint32_t kFrameRateDenominator = 1;              // 30 fps
+  constexpr static uint32_t kEncodedOutputSize = 10 * 1024 * 1024;  // 10 MB for encoded output
   constexpr static StdVideoH264ProfileIdc kProfileIdc = STD_VIDEO_H264_PROFILE_IDC_MAIN;
   constexpr static StdVideoH264LevelIdc kLevelIdc = STD_VIDEO_H264_LEVEL_IDC_4_1;
   constexpr static vk::VideoChromaSubsamplingFlagsKHR kChromaSubsampling = vk::VideoChromaSubsamplingFlagBitsKHR::e420;
