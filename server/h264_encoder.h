@@ -21,8 +21,8 @@ class H264Encoder : public Encoder {
         device_(device),
         video_queue_index_(video_queue_index),
         image_extent_(image_extent) {
-    CreateQueryPool();
     InitializeVideoProfile();
+    CreateQueryPool();
     AllocateCommandBuffer();
     InitializeVideoSession();
     InitializeRateControl();
@@ -87,6 +87,7 @@ class H264Encoder : public Encoder {
     vk::QueryPoolVideoEncodeFeedbackCreateInfoKHR query_pool_video_encode_feedback_create_info = {
         vk::VideoEncodeFeedbackFlagBitsKHR::eBitstreamBufferOffset |
             vk::VideoEncodeFeedbackFlagBitsKHR::eBitstreamBytesWritten,
+        video_profile_info_,
     };
 
     vk::QueryPoolCreateInfo query_pool_create_info = {
