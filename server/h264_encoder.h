@@ -14,18 +14,25 @@ namespace vvk {
 
 class H264Encoder : public Encoder {
  public:
-  H264Encoder(const vvk::ExecutionContext& execution_context, VkDevice device, uint32_t video_queue_index)
+  H264Encoder(const vvk::ExecutionContext& execution_context, VkDevice device, uint32_t video_queue_index,
+              vk::Extent2D image_extent)
       : execution_context_(execution_context),
         dev_dispatch_(execution_context.device_dispatch_table()),
         device_(device),
-        video_queue_index_(video_queue_index) {
+        video_queue_index_(video_queue_index),
+        image_extent_(image_extent) {
     CreateQueryPool();
     InitializeVideoProfile();
     AllocateCommandBuffer();
+    InitializeVideoSession();
     InitializeRateControl();
   }
 
   ~H264Encoder() override {
+    if (video_session_ != VK_NULL_HANDLE) {
+      dev_dispatch_.DestroyVideoSessionKHR(device_, video_session_, nullptr);
+      video_session_ = VK_NULL_HANDLE;
+    }
     if (command_buffer_ != VK_NULL_HANDLE) {
       dev_dispatch_.FreeCommandBuffers(device_, command_pool_, 1, &command_buffer_);
       command_buffer_ = VK_NULL_HANDLE;
@@ -61,6 +68,7 @@ class H264Encoder : public Encoder {
   VkDevice device_;
   uint32_t video_queue_index_;
   uint32_t encoded_frame_count_ = 0;
+  vk::Extent2D image_extent_;
   vk::VideoEncodeRateControlInfoKHR encode_rate_control_info_;
   vk::VideoEncodeH264RateControlInfoKHR h264_rate_control_info_;
   vk::VideoEncodeRateControlLayerInfoKHR encode_rate_control_layer_info_;
@@ -72,6 +80,7 @@ class H264Encoder : public Encoder {
   VkQueryPool query_pool_ = VK_NULL_HANDLE;
   VkCommandPool command_pool_ = VK_NULL_HANDLE;
   VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
+  VkVideoSessionKHR video_session_ = VK_NULL_HANDLE;
 
  private:
   void CreateQueryPool() {
@@ -120,6 +129,25 @@ class H264Encoder : public Encoder {
     dev_dispatch_.AllocateCommandBuffers(device_, command_buffer_allocate_info, &command_buffer_);
   }
 
+  void InitializeVideoSession() {
+    vk::ExtensionProperties h264_std_extension_version;
+    strcpy(h264_std_extension_version.extensionName, VK_KHR_VIDEO_ENCODE_H264_EXTENSION_NAME);
+    h264_std_extension_version.specVersion = VK_KHR_VIDEO_ENCODE_H264_SPEC_VERSION;
+    dev_dispatch_.CreateVideoSessionKHR(device_,
+                                        vk::VideoSessionCreateInfoKHR{
+                                            video_queue_index_,
+                                            vk::VideoSessionCreateFlagsKHR{},
+                                            &video_profile_info_,
+                                            vk::Format::eG8B8R82Plane420Unorm,
+                                            image_extent_,
+                                            vk::Format::eG8B8R82Plane420Unorm,
+                                            kMaxDpbSlots,
+                                            kMaxActiveReferenceSlots,
+                                            &h264_std_extension_version,
+                                        },
+                                        nullptr, &video_session_);
+  }
+
   void InitializeRateControl() {
     h264_rate_control_layer_info_ = vk::VideoEncodeH264RateControlLayerInfoKHR{
         VK_FALSE,  // no min QP
@@ -154,7 +182,7 @@ class H264Encoder : public Encoder {
     dev_dispatch_.CmdBeginVideoCodingKHR(command_buffer_,
                                          vk::VideoBeginCodingInfoKHR{
                                              vk::VideoBeginCodingFlagsKHR{},
-                                             {},  // VideoSessionKHR
+                                             video_session_,
                                              {},  // VideoSessionParametersKHR
                                              {},  // Reference slots are not required just to reset the video session
                                          });
@@ -167,6 +195,8 @@ class H264Encoder : public Encoder {
 
   constexpr static uint32_t kIdrPeriod = 16;
   constexpr static uint32_t kGopFrameCount = 16;
+  constexpr static uint32_t kMaxDpbSlots = 16;
+  constexpr static uint32_t kMaxActiveReferenceSlots = 16;
   constexpr static uint32_t kVirtualBufferSizeInMs = 200;
   constexpr static uint32_t kInitialVirtualBufferSizeInMs = 100;
   constexpr static uint32_t kAverageBitrate = 5'000'000;  // 5 Mbps

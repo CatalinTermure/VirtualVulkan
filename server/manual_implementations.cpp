@@ -88,7 +88,8 @@ void SetupPresentationUncompressedStream(vvk::ExecutionContext& context,
 void SetupPresentationH264Stream(vvk::ExecutionContext& context, const vvk::server::VvkSetupPresentationRequest& params,
                                  vvk::server::VvkResponse* response) {
   context.set_encoder(std::make_unique<vvk::H264Encoder>(context, reinterpret_cast<VkDevice>(params.device()),
-                                                         params.h264_stream_create_info().video_queue_family_index()));
+                                                         params.h264_stream_create_info().video_queue_family_index(),
+                                                         vk::Extent2D{params.width(), params.height()}));
 }
 }  // namespace
 
