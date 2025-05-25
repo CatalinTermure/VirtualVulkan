@@ -26,10 +26,15 @@ class H264Encoder : public Encoder {
     AllocateCommandBuffer();
     InitializeVideoSession();
     BindVideoSessionMemory();
+    InitializeVideoSessionParameters();
     InitializeRateControl();
   }
 
   ~H264Encoder() override {
+    if (video_session_parameters_ != VK_NULL_HANDLE) {
+      dev_dispatch_.DestroyVideoSessionParametersKHR(device_, video_session_parameters_, nullptr);
+      video_session_parameters_ = VK_NULL_HANDLE;
+    }
     if (!allocations_.empty()) {
       for (auto& allocation : allocations_) {
         vmaFreeMemory(execution_context_.allocator(), allocation);
@@ -62,7 +67,7 @@ class H264Encoder : public Encoder {
     std::vector<vk::VideoReferenceSlotInfoKHR> reference_slots;
 
     vk::VideoBeginCodingInfoKHR video_begin_coding_info = {vk::VideoBeginCodingFlagsKHR{}, video_session_,
-                                                           vk::VideoSessionParametersKHR{}, reference_slots,
+                                                           video_session_parameters_, reference_slots,
                                                            encode_rate_control_info_};
 
     dev_dispatch_.CmdBeginVideoCodingKHR(command_buffer, video_begin_coding_info);
@@ -88,6 +93,7 @@ class H264Encoder : public Encoder {
   VkCommandPool command_pool_ = VK_NULL_HANDLE;
   VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
   VkVideoSessionKHR video_session_ = VK_NULL_HANDLE;
+  VkVideoSessionParametersKHR video_session_parameters_ = VK_NULL_HANDLE;
   std::vector<VmaAllocation> allocations_;
 
  private:
@@ -110,15 +116,12 @@ class H264Encoder : public Encoder {
 
   void InitializeVideoProfile() {
     h264_profile_info_ = vk::VideoEncodeH264ProfileInfoKHR{
-        STD_VIDEO_H264_PROFILE_IDC_BASELINE,
+        kProfileIdc,
         nullptr,
     };
     video_profile_info_ = vk::VideoProfileInfoKHR{
-        vk::VideoCodecOperationFlagBitsKHR::eEncodeH264,
-        vk::VideoChromaSubsamplingFlagBitsKHR::e420,
-        vk::VideoComponentBitDepthFlagBitsKHR::e8,
-        vk::VideoComponentBitDepthFlagBitsKHR::e8,
-        h264_profile_info_,
+        vk::VideoCodecOperationFlagBitsKHR::eEncodeH264, kChromaSubsampling, vk::VideoComponentBitDepthFlagBitsKHR::e8,
+        vk::VideoComponentBitDepthFlagBitsKHR::e8,       h264_profile_info_,
     };
     video_profile_list_info_ = vk::VideoProfileListInfoKHR{video_profile_info_};
   }
@@ -195,6 +198,123 @@ class H264Encoder : public Encoder {
                                             bind_video_session_memory_infos.data());
   }
 
+  void InitializeVideoSessionParameters() {
+    StdVideoH264SpsVuiFlags std_sps_vui_flags = {
+        .aspect_ratio_info_present_flag = 0u,
+        .overscan_info_present_flag = 0u,
+        .overscan_appropriate_flag = 0u,
+        .video_signal_type_present_flag = 0u,
+        .video_full_range_flag = 0u,
+        .color_description_present_flag = 0u,
+        .chroma_loc_info_present_flag = 0u,
+        .timing_info_present_flag = 0u,
+        .fixed_frame_rate_flag = 0u,
+        .bitstream_restriction_flag = 0u,
+        .nal_hrd_parameters_present_flag = 0u,
+        .vcl_hrd_parameters_present_flag = 0u,
+    };
+    StdVideoH264SequenceParameterSetVui std_sps_vui = {
+        .flags = std_sps_vui_flags,
+        .aspect_ratio_idc = {},
+        .sar_width = 0u,
+        .sar_height = 0u,
+        .video_format = 0u,
+        .colour_primaries = 0u,
+        .transfer_characteristics = 0u,
+        .matrix_coefficients = 0u,
+        .num_units_in_tick = 0u,
+        .time_scale = 0u,
+        .max_num_reorder_frames = 0u,
+        .max_dec_frame_buffering = 0u,
+        .chroma_sample_loc_type_top_field = 0u,
+        .chroma_sample_loc_type_bottom_field = 0u,
+        .reserved1 = 0u,
+        .pHrdParameters = 0u,
+    };
+    StdVideoH264SpsFlags std_sps_flags = {
+        .constraint_set0_flag = 0u,
+        .constraint_set1_flag = 0u,
+        .constraint_set2_flag = 0u,
+        .constraint_set3_flag = 0u,
+        .constraint_set4_flag = 0u,
+        .constraint_set5_flag = 0u,
+        .direct_8x8_inference_flag = 0u,
+        .mb_adaptive_frame_field_flag = 0u,
+        .frame_mbs_only_flag = 0u,
+        .delta_pic_order_always_zero_flag = 0u,
+        .separate_colour_plane_flag = 0u,
+        .gaps_in_frame_num_value_allowed_flag = 0u,
+        .qpprime_y_zero_transform_bypass_flag = 0u,
+        .frame_cropping_flag = 0u,
+        .seq_scaling_matrix_present_flag = 0u,
+        .vui_parameters_present_flag = 1u,
+    };
+    StdVideoH264SequenceParameterSet std_sps = {
+        .flags = std_sps_flags,
+        .profile_idc = kProfileIdc,
+        .level_idc = kLevelIdc,
+        .chroma_format_idc = kChromaFormatIdc,
+        .seq_parameter_set_id = 0u,
+        .bit_depth_luma_minus8 = 0u,
+        .bit_depth_chroma_minus8 = 0u,
+        .log2_max_frame_num_minus4 = 0u,
+        .pic_order_cnt_type = STD_VIDEO_H264_POC_TYPE_0,
+        .offset_for_non_ref_pic = 0u,
+        .offset_for_top_to_bottom_field = 0u,
+        .log2_max_pic_order_cnt_lsb_minus4 = 0u,
+        .num_ref_frames_in_pic_order_cnt_cycle = 0u,
+        .max_num_ref_frames = 1u,
+        .reserved1 = 0u,
+        .pic_width_in_mbs_minus1 = 0u,
+        .pic_height_in_map_units_minus1 = 0u,
+        .frame_crop_left_offset = 0u,
+        .frame_crop_right_offset = 0u,
+        .frame_crop_top_offset = 0u,
+        .frame_crop_bottom_offset = 0u,
+        .reserved2 = 0u,
+        .pOffsetForRefFrame = 0u,
+        .pScalingLists = 0u,
+        .pSequenceParameterSetVui = &std_sps_vui,
+    };
+    StdVideoH264PpsFlags std_pps_flags = {
+        .transform_8x8_mode_flag = 0u,
+        .redundant_pic_cnt_present_flag = 0u,
+        .constrained_intra_pred_flag = 0u,
+        .deblocking_filter_control_present_flag = 0u,
+        .weighted_pred_flag = 0u,
+        .bottom_field_pic_order_in_frame_present_flag = 0u,
+        .entropy_coding_mode_flag = 0u,
+        .pic_scaling_matrix_present_flag = 0u,
+    };
+    StdVideoH264PictureParameterSet std_pps = {
+        .flags = std_pps_flags,
+        .seq_parameter_set_id = 0u,
+        .pic_parameter_set_id = 0u,
+        .num_ref_idx_l0_default_active_minus1 = 0u,
+        .num_ref_idx_l1_default_active_minus1 = 0u,
+        .weighted_bipred_idc = STD_VIDEO_H264_WEIGHTED_BIPRED_IDC_DEFAULT,
+        .pic_init_qp_minus26 = 0u,
+        .pic_init_qs_minus26 = 0u,
+        .chroma_qp_index_offset = 0u,
+        .second_chroma_qp_index_offset = 0u,
+        .pScalingLists = 0u,
+    };
+    vk::VideoEncodeH264SessionParametersAddInfoKHR h264_parameters_add_info{std_sps, std_pps};
+    dev_dispatch_.CreateVideoSessionParametersKHR(device_,
+                                                  vk::VideoSessionParametersCreateInfoKHR{
+                                                      vk::VideoSessionParametersCreateFlagsKHR{},
+                                                      {},  // videoSessionParametersTemplate
+                                                      video_session_,
+                                                      vk::VideoEncodeH264SessionParametersCreateInfoKHR{
+                                                          1,
+                                                          1,
+                                                          &h264_parameters_add_info,
+                                                          nullptr,
+                                                      },
+                                                  },
+                                                  nullptr, &video_session_parameters_);
+  }
+
   void InitializeRateControl() {
     h264_rate_control_layer_info_ = vk::VideoEncodeH264RateControlLayerInfoKHR{
         VK_FALSE,  // no min QP
@@ -230,7 +350,7 @@ class H264Encoder : public Encoder {
                                          vk::VideoBeginCodingInfoKHR{
                                              vk::VideoBeginCodingFlagsKHR{},
                                              video_session_,
-                                             {},  // VideoSessionParametersKHR
+                                             video_session_parameters_,  // VideoSessionParametersKHR
                                              {},  // Reference slots are not required just to reset the video session
                                          });
     dev_dispatch_.CmdControlVideoCodingKHR(command_buffer_, vk::VideoCodingControlInfoKHR{
@@ -250,6 +370,10 @@ class H264Encoder : public Encoder {
   constexpr static uint32_t kMaxBitrate = 20'000'000;     // 20 Mbps
   constexpr static uint32_t kFrameRateNumerator = 30;     // 30 fps
   constexpr static uint32_t kFrameRateDenominator = 1;    // 30 fps
+  constexpr static StdVideoH264ProfileIdc kProfileIdc = STD_VIDEO_H264_PROFILE_IDC_MAIN;
+  constexpr static StdVideoH264LevelIdc kLevelIdc = STD_VIDEO_H264_LEVEL_IDC_4_1;
+  constexpr static vk::VideoChromaSubsamplingFlagsKHR kChromaSubsampling = vk::VideoChromaSubsamplingFlagBitsKHR::e420;
+  constexpr static StdVideoH264ChromaFormatIdc kChromaFormatIdc = STD_VIDEO_H264_CHROMA_FORMAT_IDC_420;
 };
 
 }  // namespace vvk
