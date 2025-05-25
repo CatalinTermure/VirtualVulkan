@@ -7,7 +7,30 @@ namespace vvk {
 H264FrameStream::H264FrameStream(VkInstance instance, VkDevice device, uint32_t queue_family_index)
     : local_instance_(instance), local_device_(device), remote_video_queue_family_index_(queue_family_index) {}
 
-void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) {}
+void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) {
+  InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
+  SwapchainInfo &swapchain_info = GetSwapchainInfo(swapchain);
+  vvk::server::VvkRequest request;
+  request.set_method("setupPresentation");
+  vvk::server::VvkSetupPresentationRequest &setup_presentation = *request.mutable_setuppresentation();
+  setup_presentation.set_instance(reinterpret_cast<uint64_t>(instance_info.GetRemoteHandle(local_instance_)));
+  setup_presentation.set_device(reinterpret_cast<uint64_t>(instance_info.GetRemoteHandle(local_device_)));
+  for (auto &[remote_image, _] : swapchain_info.GetRemoteImages()) {
+    setup_presentation.add_remote_images(reinterpret_cast<uint64_t>(remote_image));
+  }
+  setup_presentation.set_width(swapchain_image_extent.width);
+  setup_presentation.set_height(swapchain_image_extent.height);
+  vvk::server::H264StreamCreateInfo &h264_stream_create_info = *setup_presentation.mutable_h264_stream_create_info();
+  h264_stream_create_info.set_video_queue_family_index(remote_video_queue_family_index_);
+  if (!instance_info.command_stream().Write(request)) {
+    throw std::runtime_error("Failed to send setup presentation request");
+  }
+
+  vvk::server::VvkResponse response;
+  if (!instance_info.command_stream().Read(&response)) {
+    throw std::runtime_error("Failed to read setup presentation response");
+  }
+}
 
 void H264FrameStream::RemoveSwapchain(VkSwapchainKHR swapchain) {}
 
