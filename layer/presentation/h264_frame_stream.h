@@ -26,10 +26,10 @@ class H264FrameStream final : public FrameStream {
     VkExtent2D image_extent;
   };
 
-  VkInstance local_instance;
-  VkDevice local_device;
-  uint32_t remote_graphics_queue_family_index;
-  std::vector<SwapchainPresentationInfo> swapchains;
+  VkInstance local_instance_;
+  VkDevice local_device_;
+  uint32_t remote_video_queue_family_index_;
+  std::vector<SwapchainPresentationInfo> swapchains_;
 };
 }  // namespace vvk
 

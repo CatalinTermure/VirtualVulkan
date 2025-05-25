@@ -1,10 +1,14 @@
 #include "h264_frame_stream.h"
 
+#include "layer/context/instance.h"
+#include "layer/context/swapchain.h"
+
 namespace vvk {
 H264FrameStream::H264FrameStream(VkInstance instance, VkDevice device, uint32_t queue_family_index)
-    : local_instance(instance), local_device(device), remote_graphics_queue_family_index(queue_family_index) {}
+    : local_instance_(instance), local_device_(device), remote_video_queue_family_index_(queue_family_index) {}
 
 void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) {}
+
 void H264FrameStream::RemoveSwapchain(VkSwapchainKHR swapchain) {}
 
 // Called during command buffer recording for a presentable frame.

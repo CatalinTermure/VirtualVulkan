@@ -586,16 +586,20 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
       .pTypeExternalMemoryHandleTypes = nullptr,
   };
 
-  auto remote_graphics_queue_family_index = [&]() -> std::optional<uint32_t> {
+  auto remote_queue_family_properties = [&]() {
     uint32_t queue_family_count;
     PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(instance_info.command_stream(), physicalDevice,
                                                         &queue_family_count, nullptr);
     std::vector<VkQueueFamilyProperties> queue_family_properties(queue_family_count);
     PackAndCallVkGetPhysicalDeviceQueueFamilyProperties(instance_info.command_stream(), physicalDevice,
                                                         &queue_family_count, queue_family_properties.data());
+    return queue_family_properties;
+  }();
+
+  auto remote_graphics_queue_family_index = [&]() -> std::optional<uint32_t> {
     for (uint32_t i = 0; i < pCreateInfo->queueCreateInfoCount; i++) {
       const VkDeviceQueueCreateInfo& queue_create_info = pCreateInfo->pQueueCreateInfos[i];
-      if (queue_family_properties[queue_create_info.queueFamilyIndex].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+      if (remote_queue_family_properties[queue_create_info.queueFamilyIndex].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
         return queue_create_info.queueFamilyIndex;
       }
     }
@@ -607,9 +611,23 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     return VK_ERROR_INITIALIZATION_FAILED;
   }
 
+  auto remote_video_queue_family_index = [&]() -> std::optional<uint32_t> {
+    for (uint32_t i = 0; i < remote_queue_family_properties.size(); i++) {
+      if (remote_queue_family_properties[i].queueFlags & VK_QUEUE_VIDEO_ENCODE_BIT_KHR) {
+        return i;
+      }
+    }
+    return std::nullopt;
+  }();
+
+  if (frame_streaming_capabilities.supports_h264_stream() && !remote_video_queue_family_index.has_value()) {
+    spdlog::error("No video queue family found");
+    return VK_ERROR_INITIALIZATION_FAILED;
+  }
+
   DeviceInfo& device_info =
       SetDeviceInfo(*pDevice, nxt_gdpa, physicalDevice, allocator_create_info, present_queue_family_index,
-                    *remote_graphics_queue_family_index, streaming_capabilities);
+                    *remote_graphics_queue_family_index, *remote_video_queue_family_index, streaming_capabilities);
 
   for (uint32_t i = 0; i < pCreateInfo->queueCreateInfoCount; i++) {
     const VkDeviceQueueCreateInfo& queue_create_info = pCreateInfo->pQueueCreateInfos[i];
@@ -625,6 +643,8 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     RemoveStructsFromChain(reinterpret_cast<VkBaseOutStructure*>(&remote_create_info),
                            VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO);
     VkDevice remote_device = *pDevice;
+
+    // Add timeline semaphore feature
     // TODO: check if pNext chain contains VkPhysicalDevice12Features
     VkPhysicalDeviceTimelineSemaphoreFeatures timeline_semaphore_features = {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES,
@@ -635,6 +655,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     AddStructToChain(reinterpret_cast<VkBaseOutStructure*>(&remote_create_info),
                      reinterpret_cast<VkBaseOutStructure*>(&timeline_semaphore_features));
 
+    // Add extensions
     std::vector<const char*> enabled_extensions;
     for (uint32_t i = 0; i < remote_create_info.enabledExtensionCount; i++) {
       if (kAllowedDeviceExtensions.contains(remote_create_info.ppEnabledExtensionNames[i])) {
@@ -650,6 +671,27 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 
     remote_create_info.enabledExtensionCount = enabled_extensions.size();
     remote_create_info.ppEnabledExtensionNames = enabled_extensions.data();
+
+    std::vector<VkDeviceQueueCreateInfo> remote_queue_create_infos;
+    remote_queue_create_infos.reserve(remote_create_info.queueCreateInfoCount);
+    for (uint32_t i = 0; i < remote_create_info.queueCreateInfoCount; i++) {
+      remote_queue_create_infos.push_back(remote_create_info.pQueueCreateInfos[i]);
+    }
+
+    if (frame_streaming_capabilities.supports_h264_stream()) {
+      VkDeviceQueueCreateInfo video_queue_create_info = {
+          .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+          .pNext = nullptr,
+          .flags = 0,
+          .queueFamilyIndex = *remote_video_queue_family_index,
+          .queueCount = 1,
+          .pQueuePriorities = remote_queue_create_infos[0].pQueuePriorities,  // Use the same priority as graphics queue
+      };
+      remote_queue_create_infos.push_back(video_queue_create_info);
+    }
+
+    remote_create_info.queueCreateInfoCount = remote_queue_create_infos.size();
+    remote_create_info.pQueueCreateInfos = remote_queue_create_infos.data();
 
     PackAndCallVkCreateDevice(instance_info.command_stream(), physicalDevice, &remote_create_info, pAllocator,
                               &remote_device);

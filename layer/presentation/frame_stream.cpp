@@ -8,7 +8,7 @@ namespace vvk {
 
 std::unique_ptr<FrameStream> FrameStream::Create(
     VkInstance local_instance, VkDevice local_device, VkPhysicalDevice remote_physical_device,
-    uint32_t remote_graphics_queue_family_index,
+    uint32_t remote_graphics_queue_family_index, uint32_t remote_video_queue_family_index,
     const vvk::server::StreamingCapabilities &client_streaming_capabilities) {
   InstanceInfo &instance_info = GetInstanceInfo(local_instance);
 
@@ -27,7 +27,7 @@ std::unique_ptr<FrameStream> FrameStream::Create(
 
   if (server_streaming_capabilities.supports_h264_stream() && client_streaming_capabilities.supports_h264_stream()) {
     return std::unique_ptr<FrameStream>(
-        new H264FrameStream(local_instance, local_device, remote_graphics_queue_family_index));
+        new H264FrameStream(local_instance, local_device, remote_video_queue_family_index));
   }
 
   return std::unique_ptr<FrameStream>(

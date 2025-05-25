@@ -15,6 +15,7 @@ class FrameStream {
   static std::unique_ptr<FrameStream> Create(VkInstance local_instance, VkDevice local_device,
                                              VkPhysicalDevice remote_physical_device,
                                              uint32_t remote_graphics_queue_family_index,
+                                             uint32_t remote_video_queue_family_index,
                                              const vvk::server::StreamingCapabilities &client_streaming_capabilities);
 
   virtual void AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) = 0;
