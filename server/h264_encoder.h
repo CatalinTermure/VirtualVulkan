@@ -54,7 +54,7 @@ class H264Encoder : public Encoder {
 
     std::vector<vk::VideoReferenceSlotInfoKHR> reference_slots;
 
-    vk::VideoBeginCodingInfoKHR video_begin_coding_info = {vk::VideoBeginCodingFlagsKHR{}, vk::VideoSessionKHR{},
+    vk::VideoBeginCodingInfoKHR video_begin_coding_info = {vk::VideoBeginCodingFlagsKHR{}, video_session_,
                                                            vk::VideoSessionParametersKHR{}, reference_slots,
                                                            encode_rate_control_info_};
 
@@ -131,8 +131,8 @@ class H264Encoder : public Encoder {
 
   void InitializeVideoSession() {
     vk::ExtensionProperties h264_std_extension_version;
-    strcpy(h264_std_extension_version.extensionName, VK_KHR_VIDEO_ENCODE_H264_EXTENSION_NAME);
-    h264_std_extension_version.specVersion = VK_KHR_VIDEO_ENCODE_H264_SPEC_VERSION;
+    strcpy(h264_std_extension_version.extensionName, VK_STD_VULKAN_VIDEO_CODEC_H264_ENCODE_EXTENSION_NAME);
+    h264_std_extension_version.specVersion = VK_STD_VULKAN_VIDEO_CODEC_H264_ENCODE_SPEC_VERSION;
     dev_dispatch_.CreateVideoSessionKHR(device_,
                                         vk::VideoSessionCreateInfoKHR{
                                             video_queue_index_,
