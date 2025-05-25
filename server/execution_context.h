@@ -45,6 +45,7 @@ class ExecutionContext {
   const VkuDeviceDispatchTable& device_dispatch_table() const { return device_dispatch_table_; }
 
   ~ExecutionContext() {
+    encoder_.reset();
     while (!deferred_deletion_queue_.empty()) {
       deferred_deletion_queue_.front()();
       deferred_deletion_queue_.pop();
