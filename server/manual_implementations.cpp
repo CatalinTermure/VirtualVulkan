@@ -138,7 +138,7 @@ void UnpackAndExecuteVkEnumeratePhysicalDevicesManual(vvk::ExecutionContext& con
     response->mutable_vkenumeratephysicaldevices()->add_pphysicaldevices(
         reinterpret_cast<uint64_t>(context.physical_device()));
   }
-  response->set_result(VK_SUCCESS);
+  response->mutable_vkenumeratephysicaldevices()->set_result(vvk::server::VkResult::VK_SUCCESS);
 }
 
 void UnpackAndExecuteSetupPresentation(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
@@ -156,6 +156,5 @@ void UnpackAndExecuteSetupPresentation(vvk::ExecutionContext& context, const vvk
     SetupPresentationH264Stream(context, params, response);
   } else {
     spdlog::error("Unsupported presentation stream type");
-    response->set_result(VK_ERROR_INITIALIZATION_FAILED);
   }
 }

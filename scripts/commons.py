@@ -13,6 +13,7 @@ class RetVal:
     const: bool           # type contains 'const'
     # type contains a pointer (include 'PFN' function pointers)
     pointer: bool
+    optional: bool
     fixedSizeArray: list[str]  # for VkTransformMatrixKHR:matrix this is [3, 4]
 
     # C string of member, example:

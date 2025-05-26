@@ -108,50 +108,64 @@ message VvkRequest {
 }
 
 message VvkResponse {
-  uint32 result = 1;
   oneof response {
-    VvkSetupPresentationResponse setupPresentation = 2;
-    VkCreateInstanceResponse vkCreateInstance = 3;
-    VkEnumeratePhysicalDevicesResponse vkEnumeratePhysicalDevices = 4;
-    VkGetPhysicalDeviceFeaturesResponse vkGetPhysicalDeviceFeatures = 5;
-    VkGetPhysicalDeviceFormatPropertiesResponse vkGetPhysicalDeviceFormatProperties = 6;
-    VkGetPhysicalDevicePropertiesResponse vkGetPhysicalDeviceProperties = 7;
-    VkGetPhysicalDeviceQueueFamilyPropertiesResponse vkGetPhysicalDeviceQueueFamilyProperties = 8;
-    VkGetPhysicalDeviceMemoryPropertiesResponse vkGetPhysicalDeviceMemoryProperties = 9;
-    VkCreateDeviceResponse vkCreateDevice = 10;
-    VkEnumerateInstanceExtensionPropertiesResponse vkEnumerateInstanceExtensionProperties = 11;
-    VkEnumerateDeviceExtensionPropertiesResponse vkEnumerateDeviceExtensionProperties = 12;
-    VkGetDeviceQueueResponse vkGetDeviceQueue = 13;
-    VkAllocateMemoryResponse vkAllocateMemory = 14;
-    VkMapMemoryResponse vkMapMemory = 15;
-    VkGetBufferMemoryRequirementsResponse vkGetBufferMemoryRequirements = 16;
-    VkGetImageMemoryRequirementsResponse vkGetImageMemoryRequirements = 17;
-    VkCreateFenceResponse vkCreateFence = 18;
-    VkCreateSemaphoreResponse vkCreateSemaphore = 19;
-    VkCreateBufferResponse vkCreateBuffer = 20;
-    VkCreateImageResponse vkCreateImage = 21;
-    VkGetImageSubresourceLayoutResponse vkGetImageSubresourceLayout = 22;
-    VkCreateImageViewResponse vkCreateImageView = 23;
-    VkCreateShaderModuleResponse vkCreateShaderModule = 24;
-    VkCreatePipelineCacheResponse vkCreatePipelineCache = 25;
-    VkCreateGraphicsPipelinesResponse vkCreateGraphicsPipelines = 26;
-    VkCreatePipelineLayoutResponse vkCreatePipelineLayout = 27;
-    VkCreateSamplerResponse vkCreateSampler = 28;
-    VkCreateDescriptorSetLayoutResponse vkCreateDescriptorSetLayout = 29;
-    VkCreateDescriptorPoolResponse vkCreateDescriptorPool = 30;
-    VkAllocateDescriptorSetsResponse vkAllocateDescriptorSets = 31;
-    VkCreateFramebufferResponse vkCreateFramebuffer = 32;
-    VkCreateRenderPassResponse vkCreateRenderPass = 33;
-    VkCreateCommandPoolResponse vkCreateCommandPool = 34;
-    VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 35;
-    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 36;
-    VkGetPhysicalDeviceFeatures2Response vkGetPhysicalDeviceFeatures2 = 37;
-    VkGetPhysicalDeviceProperties2Response vkGetPhysicalDeviceProperties2 = 38;
+    VvkSetupPresentationResponse setupPresentation = 1;
+    VkCreateInstanceResponse vkCreateInstance = 2;
+    VkEnumeratePhysicalDevicesResponse vkEnumeratePhysicalDevices = 3;
+    VkGetPhysicalDeviceFeaturesResponse vkGetPhysicalDeviceFeatures = 4;
+    VkGetPhysicalDeviceFormatPropertiesResponse vkGetPhysicalDeviceFormatProperties = 5;
+    VkGetPhysicalDevicePropertiesResponse vkGetPhysicalDeviceProperties = 6;
+    VkGetPhysicalDeviceQueueFamilyPropertiesResponse vkGetPhysicalDeviceQueueFamilyProperties = 7;
+    VkGetPhysicalDeviceMemoryPropertiesResponse vkGetPhysicalDeviceMemoryProperties = 8;
+    VkCreateDeviceResponse vkCreateDevice = 9;
+    VkEnumerateInstanceExtensionPropertiesResponse vkEnumerateInstanceExtensionProperties = 10;
+    VkEnumerateDeviceExtensionPropertiesResponse vkEnumerateDeviceExtensionProperties = 11;
+    VkGetDeviceQueueResponse vkGetDeviceQueue = 12;
+    VkQueueSubmitResponse vkQueueSubmit = 13;
+    VkQueueWaitIdleResponse vkQueueWaitIdle = 14;
+    VkDeviceWaitIdleResponse vkDeviceWaitIdle = 15;
+    VkAllocateMemoryResponse vkAllocateMemory = 16;
+    VkMapMemoryResponse vkMapMemory = 17;
+    VkBindBufferMemoryResponse vkBindBufferMemory = 18;
+    VkBindImageMemoryResponse vkBindImageMemory = 19;
+    VkGetBufferMemoryRequirementsResponse vkGetBufferMemoryRequirements = 20;
+    VkGetImageMemoryRequirementsResponse vkGetImageMemoryRequirements = 21;
+    VkCreateFenceResponse vkCreateFence = 22;
+    VkResetFencesResponse vkResetFences = 23;
+    VkWaitForFencesResponse vkWaitForFences = 24;
+    VkCreateSemaphoreResponse vkCreateSemaphore = 25;
+    VkCreateBufferResponse vkCreateBuffer = 26;
+    VkCreateImageResponse vkCreateImage = 27;
+    VkGetImageSubresourceLayoutResponse vkGetImageSubresourceLayout = 28;
+    VkCreateImageViewResponse vkCreateImageView = 29;
+    VkCreateShaderModuleResponse vkCreateShaderModule = 30;
+    VkCreatePipelineCacheResponse vkCreatePipelineCache = 31;
+    VkCreateGraphicsPipelinesResponse vkCreateGraphicsPipelines = 32;
+    VkCreatePipelineLayoutResponse vkCreatePipelineLayout = 33;
+    VkCreateSamplerResponse vkCreateSampler = 34;
+    VkCreateDescriptorSetLayoutResponse vkCreateDescriptorSetLayout = 35;
+    VkCreateDescriptorPoolResponse vkCreateDescriptorPool = 36;
+    VkAllocateDescriptorSetsResponse vkAllocateDescriptorSets = 37;
+    VkFreeDescriptorSetsResponse vkFreeDescriptorSets = 38;
+    VkCreateFramebufferResponse vkCreateFramebuffer = 39;
+    VkCreateRenderPassResponse vkCreateRenderPass = 40;
+    VkCreateCommandPoolResponse vkCreateCommandPool = 41;
+    VkResetCommandPoolResponse vkResetCommandPool = 42;
+    VkAllocateCommandBuffersResponse vkAllocateCommandBuffers = 43;
+    VkBeginCommandBufferResponse vkBeginCommandBuffer = 44;
+    VkEndCommandBufferResponse vkEndCommandBuffer = 45;
+    VkResetCommandBufferResponse vkResetCommandBuffer = 46;
+    VkBindImageMemory2Response vkBindImageMemory2 = 47;
+    VkGetImageMemoryRequirements2Response vkGetImageMemoryRequirements2 = 48;
+    VkGetPhysicalDeviceFeatures2Response vkGetPhysicalDeviceFeatures2 = 49;
+    VkGetPhysicalDeviceProperties2Response vkGetPhysicalDeviceProperties2 = 50;
+    VkSignalSemaphoreResponse vkSignalSemaphore = 51;
   }
 }
 
 message VkCreateInstanceResponse {
-  uint64 pInstance = 1; // VkInstance* pInstance
+  VkResult result = 1; // VkResult result
+  uint64 pInstance = 2; // VkInstance* pInstance
 }
 
 message VkCreateInstanceParams {
@@ -166,8 +180,9 @@ message VkDestroyInstanceParams {
 }
 
 message VkEnumeratePhysicalDevicesResponse {
-  uint32 pPhysicalDeviceCount = 1; // uint32_t* pPhysicalDeviceCount
-  repeated uint64 pPhysicalDevices = 2; // VkPhysicalDevice* pPhysicalDevices NON-CONST POINTER
+  VkResult result = 1; // VkResult result
+  uint32 pPhysicalDeviceCount = 2; // uint32_t* pPhysicalDeviceCount
+  repeated uint64 pPhysicalDevices = 3; // VkPhysicalDevice* pPhysicalDevices NON-CONST POINTER
 }
 
 message VkEnumeratePhysicalDevicesParams {
@@ -225,7 +240,8 @@ message VkGetPhysicalDeviceMemoryPropertiesParams {
 }
 
 message VkCreateDeviceResponse {
-  uint64 pDevice = 1; // VkDevice* pDevice
+  VkResult result = 1; // VkResult result
+  uint64 pDevice = 2; // VkDevice* pDevice
 }
 
 message VkCreateDeviceParams {
@@ -241,8 +257,9 @@ message VkDestroyDeviceParams {
 }
 
 message VkEnumerateInstanceExtensionPropertiesResponse {
-  uint32 pPropertyCount = 1; // uint32_t* pPropertyCount
-  repeated VkExtensionProperties pProperties = 2; // VkExtensionProperties* pProperties NON-CONST POINTER
+  VkResult result = 1; // VkResult result
+  uint32 pPropertyCount = 2; // uint32_t* pPropertyCount
+  repeated VkExtensionProperties pProperties = 3; // VkExtensionProperties* pProperties NON-CONST POINTER
 }
 
 message VkEnumerateInstanceExtensionPropertiesParams {
@@ -252,8 +269,9 @@ message VkEnumerateInstanceExtensionPropertiesParams {
 }
 
 message VkEnumerateDeviceExtensionPropertiesResponse {
-  uint32 pPropertyCount = 1; // uint32_t* pPropertyCount
-  repeated VkExtensionProperties pProperties = 2; // VkExtensionProperties* pProperties NON-CONST POINTER
+  VkResult result = 1; // VkResult result
+  uint32 pPropertyCount = 2; // uint32_t* pPropertyCount
+  repeated VkExtensionProperties pProperties = 3; // VkExtensionProperties* pProperties NON-CONST POINTER
 }
 
 message VkEnumerateDeviceExtensionPropertiesParams {
@@ -274,6 +292,10 @@ message VkGetDeviceQueueParams {
   uint64 pQueue = 4; // VkQueue* pQueue NON-CONST POINTER
 }
 
+message VkQueueSubmitResponse {
+  VkResult result = 1; // VkResult result
+}
+
 message VkQueueSubmitParams {
   uint64 queue = 1; // VkQueue queue
   optional uint32 submitCount = 2; // uint32_t submitCount
@@ -281,8 +303,16 @@ message VkQueueSubmitParams {
   optional uint64 fence = 4; // VkFence fence
 }
 
+message VkQueueWaitIdleResponse {
+  VkResult result = 1; // VkResult result
+}
+
 message VkQueueWaitIdleParams {
   uint64 queue = 1; // VkQueue queue
+}
+
+message VkDeviceWaitIdleResponse {
+  VkResult result = 1; // VkResult result
 }
 
 message VkDeviceWaitIdleParams {
@@ -290,7 +320,8 @@ message VkDeviceWaitIdleParams {
 }
 
 message VkAllocateMemoryResponse {
-  uint64 pMemory = 1; // VkDeviceMemory* pMemory
+  VkResult result = 1; // VkResult result
+  uint64 pMemory = 2; // VkDeviceMemory* pMemory
 }
 
 message VkAllocateMemoryParams {
@@ -307,7 +338,8 @@ message VkFreeMemoryParams {
 }
 
 message VkMapMemoryResponse {
-  uint64 ppData = 1; // void** ppData
+  VkResult result = 1; // VkResult result
+  uint64 ppData = 2; // void** ppData
 }
 
 message VkMapMemoryParams {
@@ -324,11 +356,19 @@ message VkUnmapMemoryParams {
   uint64 memory = 2; // VkDeviceMemory memory
 }
 
+message VkBindBufferMemoryResponse {
+  VkResult result = 1; // VkResult result
+}
+
 message VkBindBufferMemoryParams {
   uint64 device = 1; // VkDevice device
   uint64 buffer = 2; // VkBuffer buffer
   uint64 memory = 3; // VkDeviceMemory memory
   uint64 memoryOffset = 4; // VkDeviceSize memoryOffset
+}
+
+message VkBindImageMemoryResponse {
+  VkResult result = 1; // VkResult result
 }
 
 message VkBindImageMemoryParams {
@@ -359,7 +399,8 @@ message VkGetImageMemoryRequirementsParams {
 }
 
 message VkCreateFenceResponse {
-  uint64 pFence = 1; // VkFence* pFence
+  VkResult result = 1; // VkResult result
+  uint64 pFence = 2; // VkFence* pFence
 }
 
 message VkCreateFenceParams {
@@ -375,10 +416,18 @@ message VkDestroyFenceParams {
   optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
 }
 
+message VkResetFencesResponse {
+  VkResult result = 1; // VkResult result
+}
+
 message VkResetFencesParams {
   uint64 device = 1; // VkDevice device
   uint32 fenceCount = 2; // uint32_t fenceCount
   repeated uint64 pFences = 3; // const VkFence* pFences
+}
+
+message VkWaitForFencesResponse {
+  VkResult result = 1; // VkResult result
 }
 
 message VkWaitForFencesParams {
@@ -390,7 +439,8 @@ message VkWaitForFencesParams {
 }
 
 message VkCreateSemaphoreResponse {
-  uint64 pSemaphore = 1; // VkSemaphore* pSemaphore
+  VkResult result = 1; // VkResult result
+  uint64 pSemaphore = 2; // VkSemaphore* pSemaphore
 }
 
 message VkCreateSemaphoreParams {
@@ -407,7 +457,8 @@ message VkDestroySemaphoreParams {
 }
 
 message VkCreateBufferResponse {
-  uint64 pBuffer = 1; // VkBuffer* pBuffer
+  VkResult result = 1; // VkResult result
+  uint64 pBuffer = 2; // VkBuffer* pBuffer
 }
 
 message VkCreateBufferParams {
@@ -424,7 +475,8 @@ message VkDestroyBufferParams {
 }
 
 message VkCreateImageResponse {
-  uint64 pImage = 1; // VkImage* pImage
+  VkResult result = 1; // VkResult result
+  uint64 pImage = 2; // VkImage* pImage
 }
 
 message VkCreateImageParams {
@@ -452,7 +504,8 @@ message VkGetImageSubresourceLayoutParams {
 }
 
 message VkCreateImageViewResponse {
-  uint64 pView = 1; // VkImageView* pView
+  VkResult result = 1; // VkResult result
+  uint64 pView = 2; // VkImageView* pView
 }
 
 message VkCreateImageViewParams {
@@ -469,7 +522,8 @@ message VkDestroyImageViewParams {
 }
 
 message VkCreateShaderModuleResponse {
-  uint64 pShaderModule = 1; // VkShaderModule* pShaderModule
+  VkResult result = 1; // VkResult result
+  uint64 pShaderModule = 2; // VkShaderModule* pShaderModule
 }
 
 message VkCreateShaderModuleParams {
@@ -486,7 +540,8 @@ message VkDestroyShaderModuleParams {
 }
 
 message VkCreatePipelineCacheResponse {
-  uint64 pPipelineCache = 1; // VkPipelineCache* pPipelineCache
+  VkResult result = 1; // VkResult result
+  uint64 pPipelineCache = 2; // VkPipelineCache* pPipelineCache
 }
 
 message VkCreatePipelineCacheParams {
@@ -503,7 +558,8 @@ message VkDestroyPipelineCacheParams {
 }
 
 message VkCreateGraphicsPipelinesResponse {
-  repeated uint64 pPipelines = 1; // VkPipeline* pPipelines NON-CONST POINTER
+  VkResult result = 1; // VkResult result
+  repeated uint64 pPipelines = 2; // VkPipeline* pPipelines NON-CONST POINTER
 }
 
 message VkCreateGraphicsPipelinesParams {
@@ -522,7 +578,8 @@ message VkDestroyPipelineParams {
 }
 
 message VkCreatePipelineLayoutResponse {
-  uint64 pPipelineLayout = 1; // VkPipelineLayout* pPipelineLayout
+  VkResult result = 1; // VkResult result
+  uint64 pPipelineLayout = 2; // VkPipelineLayout* pPipelineLayout
 }
 
 message VkCreatePipelineLayoutParams {
@@ -539,7 +596,8 @@ message VkDestroyPipelineLayoutParams {
 }
 
 message VkCreateSamplerResponse {
-  uint64 pSampler = 1; // VkSampler* pSampler
+  VkResult result = 1; // VkResult result
+  uint64 pSampler = 2; // VkSampler* pSampler
 }
 
 message VkCreateSamplerParams {
@@ -556,7 +614,8 @@ message VkDestroySamplerParams {
 }
 
 message VkCreateDescriptorSetLayoutResponse {
-  uint64 pSetLayout = 1; // VkDescriptorSetLayout* pSetLayout
+  VkResult result = 1; // VkResult result
+  uint64 pSetLayout = 2; // VkDescriptorSetLayout* pSetLayout
 }
 
 message VkCreateDescriptorSetLayoutParams {
@@ -573,7 +632,8 @@ message VkDestroyDescriptorSetLayoutParams {
 }
 
 message VkCreateDescriptorPoolResponse {
-  uint64 pDescriptorPool = 1; // VkDescriptorPool* pDescriptorPool
+  VkResult result = 1; // VkResult result
+  uint64 pDescriptorPool = 2; // VkDescriptorPool* pDescriptorPool
 }
 
 message VkCreateDescriptorPoolParams {
@@ -590,13 +650,18 @@ message VkDestroyDescriptorPoolParams {
 }
 
 message VkAllocateDescriptorSetsResponse {
-  repeated uint64 pDescriptorSets = 1; // VkDescriptorSet* pDescriptorSets NON-CONST POINTER
+  VkResult result = 1; // VkResult result
+  repeated uint64 pDescriptorSets = 2; // VkDescriptorSet* pDescriptorSets NON-CONST POINTER
 }
 
 message VkAllocateDescriptorSetsParams {
   uint64 device = 1; // VkDevice device
   VkDescriptorSetAllocateInfo pAllocateInfo = 2; // const VkDescriptorSetAllocateInfo* pAllocateInfo
   repeated uint64 pDescriptorSets = 3; // VkDescriptorSet* pDescriptorSets NON-CONST POINTER
+}
+
+message VkFreeDescriptorSetsResponse {
+  VkResult result = 1; // VkResult result
 }
 
 message VkFreeDescriptorSetsParams {
@@ -615,7 +680,8 @@ message VkUpdateDescriptorSetsParams {
 }
 
 message VkCreateFramebufferResponse {
-  uint64 pFramebuffer = 1; // VkFramebuffer* pFramebuffer
+  VkResult result = 1; // VkResult result
+  uint64 pFramebuffer = 2; // VkFramebuffer* pFramebuffer
 }
 
 message VkCreateFramebufferParams {
@@ -632,7 +698,8 @@ message VkDestroyFramebufferParams {
 }
 
 message VkCreateRenderPassResponse {
-  uint64 pRenderPass = 1; // VkRenderPass* pRenderPass
+  VkResult result = 1; // VkResult result
+  uint64 pRenderPass = 2; // VkRenderPass* pRenderPass
 }
 
 message VkCreateRenderPassParams {
@@ -649,7 +716,8 @@ message VkDestroyRenderPassParams {
 }
 
 message VkCreateCommandPoolResponse {
-  uint64 pCommandPool = 1; // VkCommandPool* pCommandPool
+  VkResult result = 1; // VkResult result
+  uint64 pCommandPool = 2; // VkCommandPool* pCommandPool
 }
 
 message VkCreateCommandPoolParams {
@@ -665,6 +733,10 @@ message VkDestroyCommandPoolParams {
   optional VkAllocationCallbacks pAllocator = 3; // const VkAllocationCallbacks* pAllocator
 }
 
+message VkResetCommandPoolResponse {
+  VkResult result = 1; // VkResult result
+}
+
 message VkResetCommandPoolParams {
   uint64 device = 1; // VkDevice device
   uint64 commandPool = 2; // VkCommandPool commandPool
@@ -672,7 +744,8 @@ message VkResetCommandPoolParams {
 }
 
 message VkAllocateCommandBuffersResponse {
-  repeated uint64 pCommandBuffers = 1; // VkCommandBuffer* pCommandBuffers NON-CONST POINTER
+  VkResult result = 1; // VkResult result
+  repeated uint64 pCommandBuffers = 2; // VkCommandBuffer* pCommandBuffers NON-CONST POINTER
 }
 
 message VkAllocateCommandBuffersParams {
@@ -688,13 +761,25 @@ message VkFreeCommandBuffersParams {
   repeated uint64 pCommandBuffers = 4; // const VkCommandBuffer* pCommandBuffers
 }
 
+message VkBeginCommandBufferResponse {
+  VkResult result = 1; // VkResult result
+}
+
 message VkBeginCommandBufferParams {
   uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
   VkCommandBufferBeginInfo pBeginInfo = 2; // const VkCommandBufferBeginInfo* pBeginInfo
 }
 
+message VkEndCommandBufferResponse {
+  VkResult result = 1; // VkResult result
+}
+
 message VkEndCommandBufferParams {
   uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+}
+
+message VkResetCommandBufferResponse {
+  VkResult result = 1; // VkResult result
 }
 
 message VkResetCommandBufferParams {
@@ -781,6 +866,10 @@ message VkCmdEndRenderPassParams {
   uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
 }
 
+message VkBindImageMemory2Response {
+  VkResult result = 1; // VkResult result
+}
+
 message VkBindImageMemory2Params {
   uint64 device = 1; // VkDevice device
   uint32 bindInfoCount = 2; // uint32_t bindInfoCount
@@ -813,6 +902,10 @@ message VkGetPhysicalDeviceProperties2Response {
 message VkGetPhysicalDeviceProperties2Params {
   uint64 physicalDevice = 1; // VkPhysicalDevice physicalDevice
   VkPhysicalDeviceProperties2 pProperties = 2; // VkPhysicalDeviceProperties2* pProperties NON-CONST POINTER
+}
+
+message VkSignalSemaphoreResponse {
+  VkResult result = 1; // VkResult result
 }
 
 message VkSignalSemaphoreParams {

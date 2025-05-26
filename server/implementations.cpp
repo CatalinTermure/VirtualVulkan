@@ -2882,7 +2882,7 @@ void UnpackAndExecuteVkCreateInstance(vvk::ExecutionContext& context, const vvk:
   VkInstance server_pInstance;
   VkResult result = vkCreateInstance(&pCreateInfo, nullptr, &server_pInstance);
   response->mutable_vkcreateinstance()->set_pinstance(reinterpret_cast<uint64_t>(server_pInstance));
-  response->set_result(result);
+  response->mutable_vkcreateinstance()->set_result(static_cast<vvk::server::VkResult>(result));
   if (request.vkcreateinstance().pcreateinfo().has_papplicationinfo()) {
     const VkApplicationInfo &pCreateInfo_pApplicationInfo = *pCreateInfo.pApplicationInfo;
     delete pCreateInfo.pApplicationInfo;
@@ -2894,7 +2894,6 @@ void UnpackAndExecuteVkDestroyInstance(vvk::ExecutionContext& context, const vvk
   assert(request.method() == "vkDestroyInstance");
 
   context.instance_dispatch_table().DestroyInstance(reinterpret_cast<VkInstance>(request.vkdestroyinstance().instance()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkEnumeratePhysicalDevices(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkEnumeratePhysicalDevices");
@@ -2915,7 +2914,7 @@ void UnpackAndExecuteVkEnumeratePhysicalDevices(vvk::ExecutionContext& context, 
       response->mutable_vkenumeratephysicaldevices()->add_pphysicaldevices(reinterpret_cast<uint64_t>(pPhysicalDevices[pPhysicalDevices_index]));
     }
   }
-  response->set_result(result);
+  response->mutable_vkenumeratephysicaldevices()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkGetPhysicalDeviceProperties(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkGetPhysicalDeviceProperties");
@@ -2924,7 +2923,6 @@ void UnpackAndExecuteVkGetPhysicalDeviceProperties(vvk::ExecutionContext& contex
   FillStructFromProto(pProperties, request.vkgetphysicaldeviceproperties().pproperties());
   context.instance_dispatch_table().GetPhysicalDeviceProperties(context.physical_device(), &pProperties);
   FillProtoFromStruct(response->mutable_vkgetphysicaldeviceproperties()->mutable_pproperties(), &pProperties);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkGetPhysicalDeviceFormatProperties(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkGetPhysicalDeviceFormatProperties");
@@ -2933,7 +2931,6 @@ void UnpackAndExecuteVkGetPhysicalDeviceFormatProperties(vvk::ExecutionContext& 
   FillStructFromProto(pFormatProperties, request.vkgetphysicaldeviceformatproperties().pformatproperties());
   context.instance_dispatch_table().GetPhysicalDeviceFormatProperties(context.physical_device(), static_cast<VkFormat>(request.vkgetphysicaldeviceformatproperties().format()), &pFormatProperties);
   FillProtoFromStruct(response->mutable_vkgetphysicaldeviceformatproperties()->mutable_pformatproperties(), &pFormatProperties);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateDevice");
@@ -2943,7 +2940,7 @@ void UnpackAndExecuteVkCreateDevice(vvk::ExecutionContext& context, const vvk::s
   VkDevice server_pDevice;
   VkResult result = context.instance_dispatch_table().CreateDevice(context.physical_device(), &pCreateInfo, nullptr, &server_pDevice);
   response->mutable_vkcreatedevice()->set_pdevice(reinterpret_cast<uint64_t>(server_pDevice));
-  response->set_result(result);
+  response->mutable_vkcreatedevice()->set_result(static_cast<vvk::server::VkResult>(result));
   for (int pQueueCreateInfos_indx = 0; pQueueCreateInfos_indx < request.vkcreatedevice().pcreateinfo().pqueuecreateinfos_size(); pQueueCreateInfos_indx++)  {
     const VkDeviceQueueCreateInfo &pCreateInfo_pQueueCreateInfos_i = pCreateInfo.pQueueCreateInfos[pQueueCreateInfos_indx];
     delete[] pCreateInfo_pQueueCreateInfos_i.pQueuePriorities;
@@ -2960,7 +2957,6 @@ void UnpackAndExecuteVkDestroyDevice(vvk::ExecutionContext& context, const vvk::
   assert(request.method() == "vkDestroyDevice");
 
   context.device_dispatch_table().DestroyDevice(reinterpret_cast<VkDevice>(request.vkdestroydevice().device()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkEnumerateInstanceExtensionProperties(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkEnumerateInstanceExtensionProperties");
@@ -2981,7 +2977,7 @@ void UnpackAndExecuteVkEnumerateInstanceExtensionProperties(vvk::ExecutionContex
       FillProtoFromStruct(response->mutable_vkenumerateinstanceextensionproperties()->add_pproperties(), &pProperties[pProperties_index]);
     }
   }
-  response->set_result(result);
+  response->mutable_vkenumerateinstanceextensionproperties()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkEnumerateDeviceExtensionProperties(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkEnumerateDeviceExtensionProperties");
@@ -3002,7 +2998,7 @@ void UnpackAndExecuteVkEnumerateDeviceExtensionProperties(vvk::ExecutionContext&
       FillProtoFromStruct(response->mutable_vkenumeratedeviceextensionproperties()->add_pproperties(), &pProperties[pProperties_index]);
     }
   }
-  response->set_result(result);
+  response->mutable_vkenumeratedeviceextensionproperties()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkGetPhysicalDeviceMemoryProperties(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkGetPhysicalDeviceMemoryProperties");
@@ -3011,7 +3007,6 @@ void UnpackAndExecuteVkGetPhysicalDeviceMemoryProperties(vvk::ExecutionContext& 
   FillStructFromProto(pMemoryProperties, request.vkgetphysicaldevicememoryproperties().pmemoryproperties());
   context.instance_dispatch_table().GetPhysicalDeviceMemoryProperties(context.physical_device(), &pMemoryProperties);
   FillProtoFromStruct(response->mutable_vkgetphysicaldevicememoryproperties()->mutable_pmemoryproperties(), &pMemoryProperties);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkGetPhysicalDeviceFeatures(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkGetPhysicalDeviceFeatures");
@@ -3020,7 +3015,6 @@ void UnpackAndExecuteVkGetPhysicalDeviceFeatures(vvk::ExecutionContext& context,
   FillStructFromProto(pFeatures, request.vkgetphysicaldevicefeatures().pfeatures());
   context.instance_dispatch_table().GetPhysicalDeviceFeatures(context.physical_device(), &pFeatures);
   FillProtoFromStruct(response->mutable_vkgetphysicaldevicefeatures()->mutable_pfeatures(), &pFeatures);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkGetPhysicalDeviceQueueFamilyProperties(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkGetPhysicalDeviceQueueFamilyProperties");
@@ -3041,7 +3035,6 @@ void UnpackAndExecuteVkGetPhysicalDeviceQueueFamilyProperties(vvk::ExecutionCont
       FillProtoFromStruct(response->mutable_vkgetphysicaldevicequeuefamilyproperties()->add_pqueuefamilyproperties(), &pQueueFamilyProperties[pQueueFamilyProperties_index]);
     }
   }
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkGetDeviceQueue(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkGetDeviceQueue");
@@ -3049,7 +3042,6 @@ void UnpackAndExecuteVkGetDeviceQueue(vvk::ExecutionContext& context, const vvk:
   VkQueue server_pQueue;
   context.device_dispatch_table().GetDeviceQueue(reinterpret_cast<VkDevice>(request.vkgetdevicequeue().device()), request.vkgetdevicequeue().queuefamilyindex(), request.vkgetdevicequeue().queueindex(), &server_pQueue);
   response->mutable_vkgetdevicequeue()->set_pqueue(reinterpret_cast<uint64_t>(server_pQueue));
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCreateFence(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateFence");
@@ -3059,13 +3051,12 @@ void UnpackAndExecuteVkCreateFence(vvk::ExecutionContext& context, const vvk::se
   VkFence server_pFence;
   VkResult result = context.device_dispatch_table().CreateFence(reinterpret_cast<VkDevice>(request.vkcreatefence().device()), &pCreateInfo, nullptr, &server_pFence);
   response->mutable_vkcreatefence()->set_pfence(reinterpret_cast<uint64_t>(server_pFence));
-  response->set_result(result);
+  response->mutable_vkcreatefence()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkDestroyFence(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyFence");
 
   context.device_dispatch_table().DestroyFence(reinterpret_cast<VkDevice>(request.vkdestroyfence().device()), reinterpret_cast<VkFence>(request.vkdestroyfence().fence()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCreateSemaphore(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateSemaphore");
@@ -3075,13 +3066,12 @@ void UnpackAndExecuteVkCreateSemaphore(vvk::ExecutionContext& context, const vvk
   VkSemaphore server_pSemaphore;
   VkResult result = context.device_dispatch_table().CreateSemaphore(reinterpret_cast<VkDevice>(request.vkcreatesemaphore().device()), &pCreateInfo, nullptr, &server_pSemaphore);
   response->mutable_vkcreatesemaphore()->set_psemaphore(reinterpret_cast<uint64_t>(server_pSemaphore));
-  response->set_result(result);
+  response->mutable_vkcreatesemaphore()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkDestroySemaphore(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroySemaphore");
 
   context.device_dispatch_table().DestroySemaphore(reinterpret_cast<VkDevice>(request.vkdestroysemaphore().device()), reinterpret_cast<VkSemaphore>(request.vkdestroysemaphore().semaphore()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkAllocateMemory(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkAllocateMemory");
@@ -3091,13 +3081,12 @@ void UnpackAndExecuteVkAllocateMemory(vvk::ExecutionContext& context, const vvk:
   VkDeviceMemory server_pMemory;
   VkResult result = context.device_dispatch_table().AllocateMemory(reinterpret_cast<VkDevice>(request.vkallocatememory().device()), &pAllocateInfo, nullptr, &server_pMemory);
   response->mutable_vkallocatememory()->set_pmemory(reinterpret_cast<uint64_t>(server_pMemory));
-  response->set_result(result);
+  response->mutable_vkallocatememory()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkFreeMemory(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkFreeMemory");
 
   context.device_dispatch_table().FreeMemory(reinterpret_cast<VkDevice>(request.vkfreememory().device()), reinterpret_cast<VkDeviceMemory>(request.vkfreememory().memory()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCreateImage(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateImage");
@@ -3107,20 +3096,19 @@ void UnpackAndExecuteVkCreateImage(vvk::ExecutionContext& context, const vvk::se
   VkImage server_pImage;
   VkResult result = context.device_dispatch_table().CreateImage(reinterpret_cast<VkDevice>(request.vkcreateimage().device()), &pCreateInfo, nullptr, &server_pImage);
   response->mutable_vkcreateimage()->set_pimage(reinterpret_cast<uint64_t>(server_pImage));
-  response->set_result(result);
+  response->mutable_vkcreateimage()->set_result(static_cast<vvk::server::VkResult>(result));
   delete[] pCreateInfo.pQueueFamilyIndices;
 }
 void UnpackAndExecuteVkDestroyImage(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyImage");
 
   context.device_dispatch_table().DestroyImage(reinterpret_cast<VkDevice>(request.vkdestroyimage().device()), reinterpret_cast<VkImage>(request.vkdestroyimage().image()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkBindImageMemory(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkBindImageMemory");
 
   VkResult result = context.device_dispatch_table().BindImageMemory(reinterpret_cast<VkDevice>(request.vkbindimagememory().device()), reinterpret_cast<VkImage>(request.vkbindimagememory().image()), reinterpret_cast<VkDeviceMemory>(request.vkbindimagememory().memory()), static_cast<VkDeviceSize>(request.vkbindimagememory().memoryoffset()));
-  response->set_result(result);
+  response->mutable_vkbindimagememory()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkBindImageMemory2(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkBindImageMemory2");
@@ -3130,7 +3118,7 @@ void UnpackAndExecuteVkBindImageMemory2(vvk::ExecutionContext& context, const vv
     FillStructFromProto(pBindInfos[i], request.vkbindimagememory2().pbindinfos(i));
   }
   VkResult result = context.device_dispatch_table().BindImageMemory2(reinterpret_cast<VkDevice>(request.vkbindimagememory2().device()), request.vkbindimagememory2().bindinfocount(), pBindInfos.data());
-  response->set_result(result);
+  response->mutable_vkbindimagememory2()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkGetImageMemoryRequirements(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkGetImageMemoryRequirements");
@@ -3139,7 +3127,6 @@ void UnpackAndExecuteVkGetImageMemoryRequirements(vvk::ExecutionContext& context
   FillStructFromProto(pMemoryRequirements, request.vkgetimagememoryrequirements().pmemoryrequirements());
   context.device_dispatch_table().GetImageMemoryRequirements(reinterpret_cast<VkDevice>(request.vkgetimagememoryrequirements().device()), reinterpret_cast<VkImage>(request.vkgetimagememoryrequirements().image()), &pMemoryRequirements);
   FillProtoFromStruct(response->mutable_vkgetimagememoryrequirements()->mutable_pmemoryrequirements(), &pMemoryRequirements);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkGetImageMemoryRequirements2(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkGetImageMemoryRequirements2");
@@ -3150,7 +3137,6 @@ void UnpackAndExecuteVkGetImageMemoryRequirements2(vvk::ExecutionContext& contex
   FillStructFromProto(pMemoryRequirements, request.vkgetimagememoryrequirements2().pmemoryrequirements());
   context.device_dispatch_table().GetImageMemoryRequirements2(reinterpret_cast<VkDevice>(request.vkgetimagememoryrequirements2().device()), &pInfo, &pMemoryRequirements);
   FillProtoFromStruct(response->mutable_vkgetimagememoryrequirements2()->mutable_pmemoryrequirements(), &pMemoryRequirements);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCreateImageView(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateImageView");
@@ -3160,13 +3146,12 @@ void UnpackAndExecuteVkCreateImageView(vvk::ExecutionContext& context, const vvk
   VkImageView server_pView;
   VkResult result = context.device_dispatch_table().CreateImageView(reinterpret_cast<VkDevice>(request.vkcreateimageview().device()), &pCreateInfo, nullptr, &server_pView);
   response->mutable_vkcreateimageview()->set_pview(reinterpret_cast<uint64_t>(server_pView));
-  response->set_result(result);
+  response->mutable_vkcreateimageview()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkDestroyImageView(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyImageView");
 
   context.device_dispatch_table().DestroyImageView(reinterpret_cast<VkDevice>(request.vkdestroyimageview().device()), reinterpret_cast<VkImageView>(request.vkdestroyimageview().imageview()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCreateCommandPool(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateCommandPool");
@@ -3176,13 +3161,12 @@ void UnpackAndExecuteVkCreateCommandPool(vvk::ExecutionContext& context, const v
   VkCommandPool server_pCommandPool;
   VkResult result = context.device_dispatch_table().CreateCommandPool(reinterpret_cast<VkDevice>(request.vkcreatecommandpool().device()), &pCreateInfo, nullptr, &server_pCommandPool);
   response->mutable_vkcreatecommandpool()->set_pcommandpool(reinterpret_cast<uint64_t>(server_pCommandPool));
-  response->set_result(result);
+  response->mutable_vkcreatecommandpool()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkDestroyCommandPool(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyCommandPool");
 
   context.device_dispatch_table().DestroyCommandPool(reinterpret_cast<VkDevice>(request.vkdestroycommandpool().device()), reinterpret_cast<VkCommandPool>(request.vkdestroycommandpool().commandpool()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkAllocateCommandBuffers(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkAllocateCommandBuffers");
@@ -3194,13 +3178,12 @@ void UnpackAndExecuteVkAllocateCommandBuffers(vvk::ExecutionContext& context, co
   for (VkCommandBuffer pCommandBuffers_elem : pCommandBuffers) {
     response->mutable_vkallocatecommandbuffers()->add_pcommandbuffers(reinterpret_cast<uint64_t>(pCommandBuffers_elem));
   }
-  response->set_result(result);
+  response->mutable_vkallocatecommandbuffers()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkFreeCommandBuffers(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkFreeCommandBuffers");
 
   context.device_dispatch_table().FreeCommandBuffers(reinterpret_cast<VkDevice>(request.vkfreecommandbuffers().device()), reinterpret_cast<VkCommandPool>(request.vkfreecommandbuffers().commandpool()), request.vkfreecommandbuffers().commandbuffercount(), reinterpret_cast<const VkCommandBuffer*>(request.vkfreecommandbuffers().pcommandbuffers().data()));
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkBeginCommandBuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkBeginCommandBuffer");
@@ -3208,7 +3191,7 @@ void UnpackAndExecuteVkBeginCommandBuffer(vvk::ExecutionContext& context, const 
   VkCommandBufferBeginInfo pBeginInfo = {};
   FillStructFromProto(pBeginInfo, request.vkbegincommandbuffer().pbegininfo());
   VkResult result = context.device_dispatch_table().BeginCommandBuffer(reinterpret_cast<VkCommandBuffer>(request.vkbegincommandbuffer().commandbuffer()), &pBeginInfo);
-  response->set_result(result);
+  response->mutable_vkbegincommandbuffer()->set_result(static_cast<vvk::server::VkResult>(result));
   if (request.vkbegincommandbuffer().pbegininfo().has_pinheritanceinfo()) {
     const VkCommandBufferInheritanceInfo &pBeginInfo_pInheritanceInfo = *pBeginInfo.pInheritanceInfo;
     delete pBeginInfo.pInheritanceInfo;
@@ -3218,7 +3201,7 @@ void UnpackAndExecuteVkEndCommandBuffer(vvk::ExecutionContext& context, const vv
   assert(request.method() == "vkEndCommandBuffer");
 
   VkResult result = context.device_dispatch_table().EndCommandBuffer(reinterpret_cast<VkCommandBuffer>(request.vkendcommandbuffer().commandbuffer()));
-  response->set_result(result);
+  response->mutable_vkendcommandbuffer()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkGetImageSubresourceLayout(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkGetImageSubresourceLayout");
@@ -3229,7 +3212,6 @@ void UnpackAndExecuteVkGetImageSubresourceLayout(vvk::ExecutionContext& context,
   FillStructFromProto(pLayout, request.vkgetimagesubresourcelayout().playout());
   context.device_dispatch_table().GetImageSubresourceLayout(reinterpret_cast<VkDevice>(request.vkgetimagesubresourcelayout().device()), reinterpret_cast<VkImage>(request.vkgetimagesubresourcelayout().image()), &pSubresource, &pLayout);
   FillProtoFromStruct(response->mutable_vkgetimagesubresourcelayout()->mutable_playout(), &pLayout);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCreateRenderPass(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateRenderPass");
@@ -3239,7 +3221,7 @@ void UnpackAndExecuteVkCreateRenderPass(vvk::ExecutionContext& context, const vv
   VkRenderPass server_pRenderPass;
   VkResult result = context.device_dispatch_table().CreateRenderPass(reinterpret_cast<VkDevice>(request.vkcreaterenderpass().device()), &pCreateInfo, nullptr, &server_pRenderPass);
   response->mutable_vkcreaterenderpass()->set_prenderpass(reinterpret_cast<uint64_t>(server_pRenderPass));
-  response->set_result(result);
+  response->mutable_vkcreaterenderpass()->set_result(static_cast<vvk::server::VkResult>(result));
   delete[] pCreateInfo.pAttachments;
   for (int pSubpasses_indx = 0; pSubpasses_indx < request.vkcreaterenderpass().pcreateinfo().psubpasses_size(); pSubpasses_indx++)  {
     const VkSubpassDescription &pCreateInfo_pSubpasses_i = pCreateInfo.pSubpasses[pSubpasses_indx];
@@ -3259,7 +3241,6 @@ void UnpackAndExecuteVkDestroyRenderPass(vvk::ExecutionContext& context, const v
   assert(request.method() == "vkDestroyRenderPass");
 
   context.device_dispatch_table().DestroyRenderPass(reinterpret_cast<VkDevice>(request.vkdestroyrenderpass().device()), reinterpret_cast<VkRenderPass>(request.vkdestroyrenderpass().renderpass()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCreatePipelineLayout(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreatePipelineLayout");
@@ -3269,14 +3250,13 @@ void UnpackAndExecuteVkCreatePipelineLayout(vvk::ExecutionContext& context, cons
   VkPipelineLayout server_pPipelineLayout;
   VkResult result = context.device_dispatch_table().CreatePipelineLayout(reinterpret_cast<VkDevice>(request.vkcreatepipelinelayout().device()), &pCreateInfo, nullptr, &server_pPipelineLayout);
   response->mutable_vkcreatepipelinelayout()->set_ppipelinelayout(reinterpret_cast<uint64_t>(server_pPipelineLayout));
-  response->set_result(result);
+  response->mutable_vkcreatepipelinelayout()->set_result(static_cast<vvk::server::VkResult>(result));
   delete[] pCreateInfo.pPushConstantRanges;
 }
 void UnpackAndExecuteVkDestroyPipelineLayout(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyPipelineLayout");
 
   context.device_dispatch_table().DestroyPipelineLayout(reinterpret_cast<VkDevice>(request.vkdestroypipelinelayout().device()), reinterpret_cast<VkPipelineLayout>(request.vkdestroypipelinelayout().pipelinelayout()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCreateShaderModule(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateShaderModule");
@@ -3286,14 +3266,13 @@ void UnpackAndExecuteVkCreateShaderModule(vvk::ExecutionContext& context, const 
   VkShaderModule server_pShaderModule;
   VkResult result = context.device_dispatch_table().CreateShaderModule(reinterpret_cast<VkDevice>(request.vkcreateshadermodule().device()), &pCreateInfo, nullptr, &server_pShaderModule);
   response->mutable_vkcreateshadermodule()->set_pshadermodule(reinterpret_cast<uint64_t>(server_pShaderModule));
-  response->set_result(result);
+  response->mutable_vkcreateshadermodule()->set_result(static_cast<vvk::server::VkResult>(result));
   delete[] pCreateInfo.pCode;
 }
 void UnpackAndExecuteVkDestroyShaderModule(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyShaderModule");
 
   context.device_dispatch_table().DestroyShaderModule(reinterpret_cast<VkDevice>(request.vkdestroyshadermodule().device()), reinterpret_cast<VkShaderModule>(request.vkdestroyshadermodule().shadermodule()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCreateGraphicsPipelines(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateGraphicsPipelines");
@@ -3307,7 +3286,7 @@ void UnpackAndExecuteVkCreateGraphicsPipelines(vvk::ExecutionContext& context, c
   for (VkPipeline pPipelines_elem : pPipelines) {
     response->mutable_vkcreategraphicspipelines()->add_ppipelines(reinterpret_cast<uint64_t>(pPipelines_elem));
   }
-  response->set_result(result);
+  response->mutable_vkcreategraphicspipelines()->set_result(static_cast<vvk::server::VkResult>(result));
   for (uint32_t i = 0; i < pCreateInfos.size(); i++) {
     VkGraphicsPipelineCreateInfo& pCreateInfos_ref = pCreateInfos[i];
     for (int pStages_indx = 0; pStages_indx < request.vkcreategraphicspipelines().pcreateinfos(i).pstages_size(); pStages_indx++)  {
@@ -3367,7 +3346,6 @@ void UnpackAndExecuteVkDestroyPipeline(vvk::ExecutionContext& context, const vvk
   assert(request.method() == "vkDestroyPipeline");
 
   context.device_dispatch_table().DestroyPipeline(reinterpret_cast<VkDevice>(request.vkdestroypipeline().device()), reinterpret_cast<VkPipeline>(request.vkdestroypipeline().pipeline()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCreateFramebuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateFramebuffer");
@@ -3377,31 +3355,30 @@ void UnpackAndExecuteVkCreateFramebuffer(vvk::ExecutionContext& context, const v
   VkFramebuffer server_pFramebuffer;
   VkResult result = context.device_dispatch_table().CreateFramebuffer(reinterpret_cast<VkDevice>(request.vkcreateframebuffer().device()), &pCreateInfo, nullptr, &server_pFramebuffer);
   response->mutable_vkcreateframebuffer()->set_pframebuffer(reinterpret_cast<uint64_t>(server_pFramebuffer));
-  response->set_result(result);
+  response->mutable_vkcreateframebuffer()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkDestroyFramebuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyFramebuffer");
 
   context.device_dispatch_table().DestroyFramebuffer(reinterpret_cast<VkDevice>(request.vkdestroyframebuffer().device()), reinterpret_cast<VkFramebuffer>(request.vkdestroyframebuffer().framebuffer()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkWaitForFences(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkWaitForFences");
 
   VkResult result = context.device_dispatch_table().WaitForFences(reinterpret_cast<VkDevice>(request.vkwaitforfences().device()), request.vkwaitforfences().fencecount(), reinterpret_cast<const VkFence*>(request.vkwaitforfences().pfences().data()), request.vkwaitforfences().waitall(), request.vkwaitforfences().timeout());
-  response->set_result(result);
+  response->mutable_vkwaitforfences()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkResetFences(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkResetFences");
 
   VkResult result = context.device_dispatch_table().ResetFences(reinterpret_cast<VkDevice>(request.vkresetfences().device()), request.vkresetfences().fencecount(), reinterpret_cast<const VkFence*>(request.vkresetfences().pfences().data()));
-  response->set_result(result);
+  response->mutable_vkresetfences()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkResetCommandPool(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkResetCommandPool");
 
   VkResult result = context.device_dispatch_table().ResetCommandPool(reinterpret_cast<VkDevice>(request.vkresetcommandpool().device()), reinterpret_cast<VkCommandPool>(request.vkresetcommandpool().commandpool()), static_cast<VkCommandPoolResetFlags>(request.vkresetcommandpool().flags()));
-  response->set_result(result);
+  response->mutable_vkresetcommandpool()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkCmdBeginRenderPass(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCmdBeginRenderPass");
@@ -3409,20 +3386,17 @@ void UnpackAndExecuteVkCmdBeginRenderPass(vvk::ExecutionContext& context, const 
   VkRenderPassBeginInfo pRenderPassBegin = {};
   FillStructFromProto(pRenderPassBegin, request.vkcmdbeginrenderpass().prenderpassbegin());
   context.device_dispatch_table().CmdBeginRenderPass(reinterpret_cast<VkCommandBuffer>(request.vkcmdbeginrenderpass().commandbuffer()), &pRenderPassBegin, static_cast<VkSubpassContents>(request.vkcmdbeginrenderpass().contents()));
-  response->set_result(VK_SUCCESS);
   delete[] pRenderPassBegin.pClearValues;
 }
 void UnpackAndExecuteVkCmdEndRenderPass(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCmdEndRenderPass");
 
   context.device_dispatch_table().CmdEndRenderPass(reinterpret_cast<VkCommandBuffer>(request.vkcmdendrenderpass().commandbuffer()));
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCmdBindPipeline(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCmdBindPipeline");
 
   context.device_dispatch_table().CmdBindPipeline(reinterpret_cast<VkCommandBuffer>(request.vkcmdbindpipeline().commandbuffer()), static_cast<VkPipelineBindPoint>(request.vkcmdbindpipeline().pipelinebindpoint()), reinterpret_cast<VkPipeline>(request.vkcmdbindpipeline().pipeline()));
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCmdSetViewport(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCmdSetViewport");
@@ -3432,7 +3406,6 @@ void UnpackAndExecuteVkCmdSetViewport(vvk::ExecutionContext& context, const vvk:
     FillStructFromProto(pViewports[i], request.vkcmdsetviewport().pviewports(i));
   }
   context.device_dispatch_table().CmdSetViewport(reinterpret_cast<VkCommandBuffer>(request.vkcmdsetviewport().commandbuffer()), request.vkcmdsetviewport().firstviewport(), request.vkcmdsetviewport().viewportcount(), pViewports.data());
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCmdSetScissor(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCmdSetScissor");
@@ -3442,13 +3415,11 @@ void UnpackAndExecuteVkCmdSetScissor(vvk::ExecutionContext& context, const vvk::
     FillStructFromProto(pScissors[i], request.vkcmdsetscissor().pscissors(i));
   }
   context.device_dispatch_table().CmdSetScissor(reinterpret_cast<VkCommandBuffer>(request.vkcmdsetscissor().commandbuffer()), request.vkcmdsetscissor().firstscissor(), request.vkcmdsetscissor().scissorcount(), pScissors.data());
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCmdDraw(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCmdDraw");
 
   context.device_dispatch_table().CmdDraw(reinterpret_cast<VkCommandBuffer>(request.vkcmddraw().commandbuffer()), request.vkcmddraw().vertexcount(), request.vkcmddraw().instancecount(), request.vkcmddraw().firstvertex(), request.vkcmddraw().firstinstance());
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkQueueSubmit(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkQueueSubmit");
@@ -3458,7 +3429,7 @@ void UnpackAndExecuteVkQueueSubmit(vvk::ExecutionContext& context, const vvk::se
     FillStructFromProto(pSubmits[i], request.vkqueuesubmit().psubmits(i));
   }
   VkResult result = context.device_dispatch_table().QueueSubmit(reinterpret_cast<VkQueue>(request.vkqueuesubmit().queue()), request.vkqueuesubmit().submitcount(), pSubmits.data(), reinterpret_cast<VkFence>(request.vkqueuesubmit().fence()));
-  response->set_result(result);
+  response->mutable_vkqueuesubmit()->set_result(static_cast<vvk::server::VkResult>(result));
   for (uint32_t i = 0; i < pSubmits.size(); i++) {
     VkSubmitInfo& pSubmits_ref = pSubmits[i];
     delete[] pSubmits_ref.pWaitDstStageMask;
@@ -3468,13 +3439,13 @@ void UnpackAndExecuteVkDeviceWaitIdle(vvk::ExecutionContext& context, const vvk:
   assert(request.method() == "vkDeviceWaitIdle");
 
   VkResult result = context.device_dispatch_table().DeviceWaitIdle(reinterpret_cast<VkDevice>(request.vkdevicewaitidle().device()));
-  response->set_result(result);
+  response->mutable_vkdevicewaitidle()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkQueueWaitIdle(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkQueueWaitIdle");
 
   VkResult result = context.device_dispatch_table().QueueWaitIdle(reinterpret_cast<VkQueue>(request.vkqueuewaitidle().queue()));
-  response->set_result(result);
+  response->mutable_vkqueuewaitidle()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkCmdPipelineBarrier(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCmdPipelineBarrier");
@@ -3492,7 +3463,6 @@ void UnpackAndExecuteVkCmdPipelineBarrier(vvk::ExecutionContext& context, const 
     FillStructFromProto(pImageMemoryBarriers[i], request.vkcmdpipelinebarrier().pimagememorybarriers(i));
   }
   context.device_dispatch_table().CmdPipelineBarrier(reinterpret_cast<VkCommandBuffer>(request.vkcmdpipelinebarrier().commandbuffer()), static_cast<VkPipelineStageFlags>(request.vkcmdpipelinebarrier().srcstagemask()), static_cast<VkPipelineStageFlags>(request.vkcmdpipelinebarrier().dststagemask()), static_cast<VkDependencyFlags>(request.vkcmdpipelinebarrier().dependencyflags()), request.vkcmdpipelinebarrier().memorybarriercount(), pMemoryBarriers.data(), request.vkcmdpipelinebarrier().buffermemorybarriercount(), pBufferMemoryBarriers.data(), request.vkcmdpipelinebarrier().imagememorybarriercount(), pImageMemoryBarriers.data());
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCmdCopyImageToBuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCmdCopyImageToBuffer");
@@ -3502,7 +3472,6 @@ void UnpackAndExecuteVkCmdCopyImageToBuffer(vvk::ExecutionContext& context, cons
     FillStructFromProto(pRegions[i], request.vkcmdcopyimagetobuffer().pregions(i));
   }
   context.device_dispatch_table().CmdCopyImageToBuffer(reinterpret_cast<VkCommandBuffer>(request.vkcmdcopyimagetobuffer().commandbuffer()), reinterpret_cast<VkImage>(request.vkcmdcopyimagetobuffer().srcimage()), static_cast<VkImageLayout>(request.vkcmdcopyimagetobuffer().srcimagelayout()), reinterpret_cast<VkBuffer>(request.vkcmdcopyimagetobuffer().dstbuffer()), request.vkcmdcopyimagetobuffer().regioncount(), pRegions.data());
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkGetPhysicalDeviceProperties2(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkGetPhysicalDeviceProperties2");
@@ -3511,7 +3480,6 @@ void UnpackAndExecuteVkGetPhysicalDeviceProperties2(vvk::ExecutionContext& conte
   FillStructFromProto(pProperties, request.vkgetphysicaldeviceproperties2().pproperties());
   context.instance_dispatch_table().GetPhysicalDeviceProperties2(context.physical_device(), &pProperties);
   FillProtoFromStruct(response->mutable_vkgetphysicaldeviceproperties2()->mutable_pproperties(), &pProperties);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkGetPhysicalDeviceFeatures2(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkGetPhysicalDeviceFeatures2");
@@ -3520,7 +3488,6 @@ void UnpackAndExecuteVkGetPhysicalDeviceFeatures2(vvk::ExecutionContext& context
   FillStructFromProto(pFeatures, request.vkgetphysicaldevicefeatures2().pfeatures());
   context.instance_dispatch_table().GetPhysicalDeviceFeatures2(context.physical_device(), &pFeatures);
   FillProtoFromStruct(response->mutable_vkgetphysicaldevicefeatures2()->mutable_pfeatures(), &pFeatures);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkSignalSemaphore(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkSignalSemaphore");
@@ -3528,7 +3495,7 @@ void UnpackAndExecuteVkSignalSemaphore(vvk::ExecutionContext& context, const vvk
   VkSemaphoreSignalInfo pSignalInfo = {};
   FillStructFromProto(pSignalInfo, request.vksignalsemaphore().psignalinfo());
   VkResult result = context.device_dispatch_table().SignalSemaphore(reinterpret_cast<VkDevice>(request.vksignalsemaphore().device()), &pSignalInfo);
-  response->set_result(result);
+  response->mutable_vksignalsemaphore()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkCreateBuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateBuffer");
@@ -3538,14 +3505,13 @@ void UnpackAndExecuteVkCreateBuffer(vvk::ExecutionContext& context, const vvk::s
   VkBuffer server_pBuffer;
   VkResult result = context.device_dispatch_table().CreateBuffer(reinterpret_cast<VkDevice>(request.vkcreatebuffer().device()), &pCreateInfo, nullptr, &server_pBuffer);
   response->mutable_vkcreatebuffer()->set_pbuffer(reinterpret_cast<uint64_t>(server_pBuffer));
-  response->set_result(result);
+  response->mutable_vkcreatebuffer()->set_result(static_cast<vvk::server::VkResult>(result));
   delete[] pCreateInfo.pQueueFamilyIndices;
 }
 void UnpackAndExecuteVkDestroyBuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyBuffer");
 
   context.device_dispatch_table().DestroyBuffer(reinterpret_cast<VkDevice>(request.vkdestroybuffer().device()), reinterpret_cast<VkBuffer>(request.vkdestroybuffer().buffer()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkGetBufferMemoryRequirements(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkGetBufferMemoryRequirements");
@@ -3554,13 +3520,12 @@ void UnpackAndExecuteVkGetBufferMemoryRequirements(vvk::ExecutionContext& contex
   FillStructFromProto(pMemoryRequirements, request.vkgetbuffermemoryrequirements().pmemoryrequirements());
   context.device_dispatch_table().GetBufferMemoryRequirements(reinterpret_cast<VkDevice>(request.vkgetbuffermemoryrequirements().device()), reinterpret_cast<VkBuffer>(request.vkgetbuffermemoryrequirements().buffer()), &pMemoryRequirements);
   FillProtoFromStruct(response->mutable_vkgetbuffermemoryrequirements()->mutable_pmemoryrequirements(), &pMemoryRequirements);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkBindBufferMemory(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkBindBufferMemory");
 
   VkResult result = context.device_dispatch_table().BindBufferMemory(reinterpret_cast<VkDevice>(request.vkbindbuffermemory().device()), reinterpret_cast<VkBuffer>(request.vkbindbuffermemory().buffer()), reinterpret_cast<VkDeviceMemory>(request.vkbindbuffermemory().memory()), static_cast<VkDeviceSize>(request.vkbindbuffermemory().memoryoffset()));
-  response->set_result(result);
+  response->mutable_vkbindbuffermemory()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkMapMemory(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkMapMemory");
@@ -3568,19 +3533,17 @@ void UnpackAndExecuteVkMapMemory(vvk::ExecutionContext& context, const vvk::serv
   void* ppData = reinterpret_cast<void*>(request.vkmapmemory().ppdata());
   VkResult result = context.device_dispatch_table().MapMemory(reinterpret_cast<VkDevice>(request.vkmapmemory().device()), reinterpret_cast<VkDeviceMemory>(request.vkmapmemory().memory()), static_cast<VkDeviceSize>(request.vkmapmemory().offset()), static_cast<VkDeviceSize>(request.vkmapmemory().size()), static_cast<VkMemoryMapFlags>(request.vkmapmemory().flags()), &ppData);
   response->mutable_vkmapmemory()->set_ppdata(reinterpret_cast<uint64_t>(ppData));
-  response->set_result(result);
+  response->mutable_vkmapmemory()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkUnmapMemory(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkUnmapMemory");
 
   context.device_dispatch_table().UnmapMemory(reinterpret_cast<VkDevice>(request.vkunmapmemory().device()), reinterpret_cast<VkDeviceMemory>(request.vkunmapmemory().memory()));
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCmdBindVertexBuffers(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCmdBindVertexBuffers");
 
   context.device_dispatch_table().CmdBindVertexBuffers(reinterpret_cast<VkCommandBuffer>(request.vkcmdbindvertexbuffers().commandbuffer()), request.vkcmdbindvertexbuffers().firstbinding(), request.vkcmdbindvertexbuffers().bindingcount(), reinterpret_cast<const VkBuffer*>(request.vkcmdbindvertexbuffers().pbuffers().data()), reinterpret_cast<const VkDeviceSize*>(request.vkcmdbindvertexbuffers().poffsets().data()));
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCreateSampler(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateSampler");
@@ -3590,13 +3553,12 @@ void UnpackAndExecuteVkCreateSampler(vvk::ExecutionContext& context, const vvk::
   VkSampler server_pSampler;
   VkResult result = context.device_dispatch_table().CreateSampler(reinterpret_cast<VkDevice>(request.vkcreatesampler().device()), &pCreateInfo, nullptr, &server_pSampler);
   response->mutable_vkcreatesampler()->set_psampler(reinterpret_cast<uint64_t>(server_pSampler));
-  response->set_result(result);
+  response->mutable_vkcreatesampler()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkDestroySampler(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroySampler");
 
   context.device_dispatch_table().DestroySampler(reinterpret_cast<VkDevice>(request.vkdestroysampler().device()), reinterpret_cast<VkSampler>(request.vkdestroysampler().sampler()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCreateDescriptorSetLayout(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateDescriptorSetLayout");
@@ -3606,14 +3568,13 @@ void UnpackAndExecuteVkCreateDescriptorSetLayout(vvk::ExecutionContext& context,
   VkDescriptorSetLayout server_pSetLayout;
   VkResult result = context.device_dispatch_table().CreateDescriptorSetLayout(reinterpret_cast<VkDevice>(request.vkcreatedescriptorsetlayout().device()), &pCreateInfo, nullptr, &server_pSetLayout);
   response->mutable_vkcreatedescriptorsetlayout()->set_psetlayout(reinterpret_cast<uint64_t>(server_pSetLayout));
-  response->set_result(result);
+  response->mutable_vkcreatedescriptorsetlayout()->set_result(static_cast<vvk::server::VkResult>(result));
   delete[] pCreateInfo.pBindings;
 }
 void UnpackAndExecuteVkDestroyDescriptorSetLayout(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyDescriptorSetLayout");
 
   context.device_dispatch_table().DestroyDescriptorSetLayout(reinterpret_cast<VkDevice>(request.vkdestroydescriptorsetlayout().device()), reinterpret_cast<VkDescriptorSetLayout>(request.vkdestroydescriptorsetlayout().descriptorsetlayout()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCreatePipelineCache(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreatePipelineCache");
@@ -3623,13 +3584,12 @@ void UnpackAndExecuteVkCreatePipelineCache(vvk::ExecutionContext& context, const
   VkPipelineCache server_pPipelineCache;
   VkResult result = context.device_dispatch_table().CreatePipelineCache(reinterpret_cast<VkDevice>(request.vkcreatepipelinecache().device()), &pCreateInfo, nullptr, &server_pPipelineCache);
   response->mutable_vkcreatepipelinecache()->set_ppipelinecache(reinterpret_cast<uint64_t>(server_pPipelineCache));
-  response->set_result(result);
+  response->mutable_vkcreatepipelinecache()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkDestroyPipelineCache(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyPipelineCache");
 
   context.device_dispatch_table().DestroyPipelineCache(reinterpret_cast<VkDevice>(request.vkdestroypipelinecache().device()), reinterpret_cast<VkPipelineCache>(request.vkdestroypipelinecache().pipelinecache()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkCreateDescriptorPool(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCreateDescriptorPool");
@@ -3639,14 +3599,13 @@ void UnpackAndExecuteVkCreateDescriptorPool(vvk::ExecutionContext& context, cons
   VkDescriptorPool server_pDescriptorPool;
   VkResult result = context.device_dispatch_table().CreateDescriptorPool(reinterpret_cast<VkDevice>(request.vkcreatedescriptorpool().device()), &pCreateInfo, nullptr, &server_pDescriptorPool);
   response->mutable_vkcreatedescriptorpool()->set_pdescriptorpool(reinterpret_cast<uint64_t>(server_pDescriptorPool));
-  response->set_result(result);
+  response->mutable_vkcreatedescriptorpool()->set_result(static_cast<vvk::server::VkResult>(result));
   delete[] pCreateInfo.pPoolSizes;
 }
 void UnpackAndExecuteVkDestroyDescriptorPool(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkDestroyDescriptorPool");
 
   context.device_dispatch_table().DestroyDescriptorPool(reinterpret_cast<VkDevice>(request.vkdestroydescriptorpool().device()), reinterpret_cast<VkDescriptorPool>(request.vkdestroydescriptorpool().descriptorpool()), nullptr);
-  response->set_result(VK_SUCCESS);
 }
 void UnpackAndExecuteVkAllocateDescriptorSets(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkAllocateDescriptorSets");
@@ -3658,13 +3617,13 @@ void UnpackAndExecuteVkAllocateDescriptorSets(vvk::ExecutionContext& context, co
   for (VkDescriptorSet pDescriptorSets_elem : pDescriptorSets) {
     response->mutable_vkallocatedescriptorsets()->add_pdescriptorsets(reinterpret_cast<uint64_t>(pDescriptorSets_elem));
   }
-  response->set_result(result);
+  response->mutable_vkallocatedescriptorsets()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkFreeDescriptorSets(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkFreeDescriptorSets");
 
   VkResult result = context.device_dispatch_table().FreeDescriptorSets(reinterpret_cast<VkDevice>(request.vkfreedescriptorsets().device()), reinterpret_cast<VkDescriptorPool>(request.vkfreedescriptorsets().descriptorpool()), request.vkfreedescriptorsets().descriptorsetcount(), reinterpret_cast<const VkDescriptorSet*>(request.vkfreedescriptorsets().pdescriptorsets().data()));
-  response->set_result(result);
+  response->mutable_vkfreedescriptorsets()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkUpdateDescriptorSets(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkUpdateDescriptorSets");
@@ -3678,7 +3637,6 @@ void UnpackAndExecuteVkUpdateDescriptorSets(vvk::ExecutionContext& context, cons
     FillStructFromProto(pDescriptorCopies[i], request.vkupdatedescriptorsets().pdescriptorcopies(i));
   }
   context.device_dispatch_table().UpdateDescriptorSets(reinterpret_cast<VkDevice>(request.vkupdatedescriptorsets().device()), request.vkupdatedescriptorsets().descriptorwritecount(), pDescriptorWrites.data(), request.vkupdatedescriptorsets().descriptorcopycount(), pDescriptorCopies.data());
-  response->set_result(VK_SUCCESS);
   for (uint32_t i = 0; i < pDescriptorWrites.size(); i++) {
     VkWriteDescriptorSet& pDescriptorWrites_ref = pDescriptorWrites[i];
     delete[] pDescriptorWrites_ref.pImageInfo;
@@ -3689,12 +3647,11 @@ void UnpackAndExecuteVkResetCommandBuffer(vvk::ExecutionContext& context, const 
   assert(request.method() == "vkResetCommandBuffer");
 
   VkResult result = context.device_dispatch_table().ResetCommandBuffer(reinterpret_cast<VkCommandBuffer>(request.vkresetcommandbuffer().commandbuffer()), static_cast<VkCommandBufferResetFlags>(request.vkresetcommandbuffer().flags()));
-  response->set_result(result);
+  response->mutable_vkresetcommandbuffer()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 void UnpackAndExecuteVkCmdBindDescriptorSets(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
   assert(request.method() == "vkCmdBindDescriptorSets");
 
   context.device_dispatch_table().CmdBindDescriptorSets(reinterpret_cast<VkCommandBuffer>(request.vkcmdbinddescriptorsets().commandbuffer()), static_cast<VkPipelineBindPoint>(request.vkcmdbinddescriptorsets().pipelinebindpoint()), reinterpret_cast<VkPipelineLayout>(request.vkcmdbinddescriptorsets().layout()), request.vkcmdbinddescriptorsets().firstset(), request.vkcmdbinddescriptorsets().descriptorsetcount(), reinterpret_cast<const VkDescriptorSet*>(request.vkcmdbinddescriptorsets().pdescriptorsets().data()), request.vkcmdbinddescriptorsets().dynamicoffsetcount(), reinterpret_cast<const uint32_t*>(request.vkcmdbinddescriptorsets().pdynamicoffsets().data()));
-  response->set_result(VK_SUCCESS);
 }
 

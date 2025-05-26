@@ -87,7 +87,7 @@ def get_proto_type(generator: VvkGenerator, param: Param | Member | RetVal) -> s
     return "UnknownType"
 
 
-def get_param_proto_declaration(generator: VvkGenerator, param: Param | Member, index: int) -> str:
+def get_param_proto_declaration(generator: VvkGenerator, param: Param | Member | RetVal, index: int) -> str:
     param_type = get_proto_type(generator, param)
     comment = " NON-CONST POINTER" if param.pointer and not param.const else ""
     if param.optional and "repeated" not in param_type:
@@ -102,12 +102,13 @@ class ServerProtoGenerator(VvkGenerator):
     def get_output_params(self, command_name: str) -> list[Param | RetVal]:
         output_params: list[Param | RetVal] = []
         command = self.vk.commands[command_name]
-        if command.returnType != 'void' and command.returnType != 'VkResult':
+        if command.returnType != 'void':
             output_params.append(
                 RetVal(name="result",
                        type=command.returnType,
                        const=False,
                        pointer=False,
+                       optional=False,
                        fixedSizeArray=[],
                        cDeclaration=f"{command.returnType} result"))
         for param in command.params:
@@ -126,7 +127,7 @@ class ServerProtoGenerator(VvkGenerator):
         response_types_oneof = []
         out = []
         params_index = 3
-        response_index = 3
+        response_index = 2
         out.append("// GENERATED FILE - DO NOT EDIT\n")
         out.append("// clang-format off\n")
         out.append('''syntax = "proto3";
@@ -187,9 +188,8 @@ message VvkRequest {
 }
 
 message VvkResponse {
-  uint32 result = 1;
   oneof response {
-    VvkSetupPresentationResponse setupPresentation = 2;
+    VvkSetupPresentationResponse setupPresentation = 1;
 ''')
 
         out.extend(response_types_oneof)

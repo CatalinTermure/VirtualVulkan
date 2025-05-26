@@ -2496,7 +2496,7 @@ VkResult PackAndCallVkCreateInstance(VvkCommandClientBidiStream& stream, const V
     spdlog::error("Failed to read response from server");
   }
   *pInstance = reinterpret_cast<VkInstance>(response.vkcreateinstance().pinstance());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreateinstance().result());
 }
 void PackAndCallVkDestroyInstance(VvkCommandClientBidiStream& stream, VkInstance instance, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -2541,7 +2541,7 @@ VkResult PackAndCallVkEnumeratePhysicalDevices(VvkCommandClientBidiStream& strea
       pPhysicalDevices[pPhysicalDevices_indx] = reinterpret_cast<VkPhysicalDevice>(response.vkenumeratephysicaldevices().pphysicaldevices(pPhysicalDevices_indx));
     }
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkenumeratephysicaldevices().result());
 }
 void PackAndCallVkGetPhysicalDeviceProperties(VvkCommandClientBidiStream& stream, VkPhysicalDevice physicalDevice, VkPhysicalDeviceProperties* pProperties) {
   vvk::server::VvkRequest request;
@@ -2621,7 +2621,7 @@ VkResult PackAndCallVkCreateDevice(VvkCommandClientBidiStream& stream, VkPhysica
     spdlog::error("Failed to read response from server");
   }
   *pDevice = reinterpret_cast<VkDevice>(response.vkcreatedevice().pdevice());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreatedevice().result());
 }
 void PackAndCallVkDestroyDevice(VvkCommandClientBidiStream& stream, VkDevice device, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -2668,7 +2668,7 @@ VkResult PackAndCallVkEnumerateInstanceExtensionProperties(VvkCommandClientBidiS
       pProperties_ref.specVersion = response.vkenumerateinstanceextensionproperties().pproperties(pProperties_indx).specversion();
     }
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkenumerateinstanceextensionproperties().result());
 }
 VkResult PackAndCallVkEnumerateDeviceExtensionProperties(VvkCommandClientBidiStream& stream, VkPhysicalDevice physicalDevice, const char* pLayerName, uint32_t* pPropertyCount, VkExtensionProperties* pProperties) {
   vvk::server::VvkRequest request;
@@ -2700,7 +2700,7 @@ VkResult PackAndCallVkEnumerateDeviceExtensionProperties(VvkCommandClientBidiStr
       pProperties_ref.specVersion = response.vkenumeratedeviceextensionproperties().pproperties(pProperties_indx).specversion();
     }
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkenumeratedeviceextensionproperties().result());
 }
 void PackAndCallVkGetPhysicalDeviceMemoryProperties(VvkCommandClientBidiStream& stream, VkPhysicalDevice physicalDevice, VkPhysicalDeviceMemoryProperties* pMemoryProperties) {
   vvk::server::VvkRequest request;
@@ -2868,7 +2868,7 @@ VkResult PackAndCallVkCreateFence(VvkCommandClientBidiStream& stream, VkDevice d
     spdlog::error("Failed to read response from server");
   }
   *pFence = reinterpret_cast<VkFence>(response.vkcreatefence().pfence());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreatefence().result());
 }
 void PackAndCallVkDestroyFence(VvkCommandClientBidiStream& stream, VkDevice device, VkFence fence, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -2903,7 +2903,7 @@ VkResult PackAndCallVkCreateSemaphore(VvkCommandClientBidiStream& stream, VkDevi
     spdlog::error("Failed to read response from server");
   }
   *pSemaphore = reinterpret_cast<VkSemaphore>(response.vkcreatesemaphore().psemaphore());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreatesemaphore().result());
 }
 void PackAndCallVkDestroySemaphore(VvkCommandClientBidiStream& stream, VkDevice device, VkSemaphore semaphore, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -2938,7 +2938,7 @@ VkResult PackAndCallVkAllocateMemory(VvkCommandClientBidiStream& stream, VkDevic
     spdlog::error("Failed to read response from server");
   }
   *pMemory = reinterpret_cast<VkDeviceMemory>(response.vkallocatememory().pmemory());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkallocatememory().result());
 }
 void PackAndCallVkFreeMemory(VvkCommandClientBidiStream& stream, VkDevice device, VkDeviceMemory memory, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -2973,7 +2973,7 @@ VkResult PackAndCallVkCreateImage(VvkCommandClientBidiStream& stream, VkDevice d
     spdlog::error("Failed to read response from server");
   }
   *pImage = reinterpret_cast<VkImage>(response.vkcreateimage().pimage());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreateimage().result());
 }
 void PackAndCallVkDestroyImage(VvkCommandClientBidiStream& stream, VkDevice device, VkImage image, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -3008,7 +3008,7 @@ VkResult PackAndCallVkBindImageMemory(VvkCommandClientBidiStream& stream, VkDevi
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkbindimagememory().result());
 }
 VkResult PackAndCallVkBindImageMemory2(VvkCommandClientBidiStream& stream, VkDevice device, uint32_t bindInfoCount, const VkBindImageMemoryInfo* pBindInfos) {
   vvk::server::VvkRequest request;
@@ -3027,7 +3027,7 @@ VkResult PackAndCallVkBindImageMemory2(VvkCommandClientBidiStream& stream, VkDev
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkbindimagememory2().result());
 }
 void PackAndCallVkGetImageMemoryRequirements(VvkCommandClientBidiStream& stream, VkDevice device, VkImage image, VkMemoryRequirements* pMemoryRequirements) {
   vvk::server::VvkRequest request;
@@ -3086,7 +3086,7 @@ VkResult PackAndCallVkCreateImageView(VvkCommandClientBidiStream& stream, VkDevi
     spdlog::error("Failed to read response from server");
   }
   *pView = reinterpret_cast<VkImageView>(response.vkcreateimageview().pview());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreateimageview().result());
 }
 void PackAndCallVkDestroyImageView(VvkCommandClientBidiStream& stream, VkDevice device, VkImageView imageView, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -3121,7 +3121,7 @@ VkResult PackAndCallVkCreateCommandPool(VvkCommandClientBidiStream& stream, VkDe
     spdlog::error("Failed to read response from server");
   }
   *pCommandPool = reinterpret_cast<VkCommandPool>(response.vkcreatecommandpool().pcommandpool());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreatecommandpool().result());
 }
 void PackAndCallVkDestroyCommandPool(VvkCommandClientBidiStream& stream, VkDevice device, VkCommandPool commandPool, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -3157,7 +3157,7 @@ VkResult PackAndCallVkAllocateCommandBuffers(VvkCommandClientBidiStream& stream,
   for (uint32_t i = 0; i < pAllocateInfo->commandBufferCount; i++) {
     pCommandBuffers[i] = reinterpret_cast<VkCommandBuffer>(response.vkallocatecommandbuffers().pcommandbuffers(i));
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkallocatecommandbuffers().result());
 }
 void PackAndCallVkFreeCommandBuffers(VvkCommandClientBidiStream& stream, VkDevice device, VkCommandPool commandPool, uint32_t commandBufferCount, const VkCommandBuffer* pCommandBuffers) {
   vvk::server::VvkRequest request;
@@ -3192,7 +3192,7 @@ VkResult PackAndCallVkBeginCommandBuffer(VvkCommandClientBidiStream& stream, VkC
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkbegincommandbuffer().result());
 }
 VkResult PackAndCallVkEndCommandBuffer(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer) {
   vvk::server::VvkRequest request;
@@ -3207,7 +3207,7 @@ VkResult PackAndCallVkEndCommandBuffer(VvkCommandClientBidiStream& stream, VkCom
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkendcommandbuffer().result());
 }
 void PackAndCallVkGetImageSubresourceLayout(VvkCommandClientBidiStream& stream, VkDevice device, VkImage image, const VkImageSubresource* pSubresource, VkSubresourceLayout* pLayout) {
   vvk::server::VvkRequest request;
@@ -3248,7 +3248,7 @@ VkResult PackAndCallVkCreateRenderPass(VvkCommandClientBidiStream& stream, VkDev
     spdlog::error("Failed to read response from server");
   }
   *pRenderPass = reinterpret_cast<VkRenderPass>(response.vkcreaterenderpass().prenderpass());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreaterenderpass().result());
 }
 void PackAndCallVkDestroyRenderPass(VvkCommandClientBidiStream& stream, VkDevice device, VkRenderPass renderPass, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -3283,7 +3283,7 @@ VkResult PackAndCallVkCreatePipelineLayout(VvkCommandClientBidiStream& stream, V
     spdlog::error("Failed to read response from server");
   }
   *pPipelineLayout = reinterpret_cast<VkPipelineLayout>(response.vkcreatepipelinelayout().ppipelinelayout());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreatepipelinelayout().result());
 }
 void PackAndCallVkDestroyPipelineLayout(VvkCommandClientBidiStream& stream, VkDevice device, VkPipelineLayout pipelineLayout, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -3318,7 +3318,7 @@ VkResult PackAndCallVkCreateShaderModule(VvkCommandClientBidiStream& stream, VkD
     spdlog::error("Failed to read response from server");
   }
   *pShaderModule = reinterpret_cast<VkShaderModule>(response.vkcreateshadermodule().pshadermodule());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreateshadermodule().result());
 }
 void PackAndCallVkDestroyShaderModule(VvkCommandClientBidiStream& stream, VkDevice device, VkShaderModule shaderModule, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -3360,7 +3360,7 @@ VkResult PackAndCallVkCreateGraphicsPipelines(VvkCommandClientBidiStream& stream
   for (uint32_t i = 0; i < createInfoCount; i++) {
     pPipelines[i] = reinterpret_cast<VkPipeline>(response.vkcreategraphicspipelines().ppipelines(i));
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreategraphicspipelines().result());
 }
 void PackAndCallVkDestroyPipeline(VvkCommandClientBidiStream& stream, VkDevice device, VkPipeline pipeline, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -3395,7 +3395,7 @@ VkResult PackAndCallVkCreateFramebuffer(VvkCommandClientBidiStream& stream, VkDe
     spdlog::error("Failed to read response from server");
   }
   *pFramebuffer = reinterpret_cast<VkFramebuffer>(response.vkcreateframebuffer().pframebuffer());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreateframebuffer().result());
 }
 void PackAndCallVkDestroyFramebuffer(VvkCommandClientBidiStream& stream, VkDevice device, VkFramebuffer framebuffer, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -3433,7 +3433,7 @@ VkResult PackAndCallVkWaitForFences(VvkCommandClientBidiStream& stream, VkDevice
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkwaitforfences().result());
 }
 VkResult PackAndCallVkResetFences(VvkCommandClientBidiStream& stream, VkDevice device, uint32_t fenceCount, const VkFence* pFences) {
   vvk::server::VvkRequest request;
@@ -3452,7 +3452,7 @@ VkResult PackAndCallVkResetFences(VvkCommandClientBidiStream& stream, VkDevice d
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkresetfences().result());
 }
 VkResult PackAndCallVkResetCommandPool(VvkCommandClientBidiStream& stream, VkDevice device, VkCommandPool commandPool, VkCommandPoolResetFlags flags) {
   vvk::server::VvkRequest request;
@@ -3471,7 +3471,7 @@ VkResult PackAndCallVkResetCommandPool(VvkCommandClientBidiStream& stream, VkDev
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkresetcommandpool().result());
 }
 void PackAndCallVkCmdBeginRenderPass(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo* pRenderPassBegin, VkSubpassContents contents) {
   vvk::server::VvkRequest request;
@@ -3597,7 +3597,7 @@ VkResult PackAndCallVkQueueSubmit(VvkCommandClientBidiStream& stream, VkQueue qu
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkqueuesubmit().result());
 }
 VkResult PackAndCallVkDeviceWaitIdle(VvkCommandClientBidiStream& stream, VkDevice device) {
   vvk::server::VvkRequest request;
@@ -3612,7 +3612,7 @@ VkResult PackAndCallVkDeviceWaitIdle(VvkCommandClientBidiStream& stream, VkDevic
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkdevicewaitidle().result());
 }
 VkResult PackAndCallVkQueueWaitIdle(VvkCommandClientBidiStream& stream, VkQueue queue) {
   vvk::server::VvkRequest request;
@@ -3627,7 +3627,7 @@ VkResult PackAndCallVkQueueWaitIdle(VvkCommandClientBidiStream& stream, VkQueue 
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkqueuewaitidle().result());
 }
 void PackAndCallVkCmdPipelineBarrier(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, VkDependencyFlags dependencyFlags, uint32_t memoryBarrierCount, const VkMemoryBarrier* pMemoryBarriers, uint32_t bufferMemoryBarrierCount, const VkBufferMemoryBarrier* pBufferMemoryBarriers, uint32_t imageMemoryBarrierCount, const VkImageMemoryBarrier* pImageMemoryBarriers) {
   vvk::server::VvkRequest request;
@@ -3795,7 +3795,7 @@ VkResult PackAndCallVkSignalSemaphore(VvkCommandClientBidiStream& stream, VkDevi
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vksignalsemaphore().result());
 }
 VkResult PackAndCallVkCreateBuffer(VvkCommandClientBidiStream& stream, VkDevice device, const VkBufferCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkBuffer* pBuffer) {
   vvk::server::VvkRequest request;
@@ -3813,7 +3813,7 @@ VkResult PackAndCallVkCreateBuffer(VvkCommandClientBidiStream& stream, VkDevice 
     spdlog::error("Failed to read response from server");
   }
   *pBuffer = reinterpret_cast<VkBuffer>(response.vkcreatebuffer().pbuffer());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreatebuffer().result());
 }
 void PackAndCallVkDestroyBuffer(VvkCommandClientBidiStream& stream, VkDevice device, VkBuffer buffer, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -3868,7 +3868,7 @@ VkResult PackAndCallVkBindBufferMemory(VvkCommandClientBidiStream& stream, VkDev
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkbindbuffermemory().result());
 }
 VkResult PackAndCallVkMapMemory(VvkCommandClientBidiStream& stream, VkDevice device, VkDeviceMemory memory, VkDeviceSize offset, VkDeviceSize size, VkMemoryMapFlags flags, void** ppData) {
   vvk::server::VvkRequest request;
@@ -3891,7 +3891,7 @@ VkResult PackAndCallVkMapMemory(VvkCommandClientBidiStream& stream, VkDevice dev
     spdlog::error("Failed to read response from server");
   }
   *ppData = reinterpret_cast<void*>(response.vkmapmemory().ppdata());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkmapmemory().result());
 }
 void PackAndCallVkUnmapMemory(VvkCommandClientBidiStream& stream, VkDevice device, VkDeviceMemory memory) {
   vvk::server::VvkRequest request;
@@ -3946,7 +3946,7 @@ VkResult PackAndCallVkCreateSampler(VvkCommandClientBidiStream& stream, VkDevice
     spdlog::error("Failed to read response from server");
   }
   *pSampler = reinterpret_cast<VkSampler>(response.vkcreatesampler().psampler());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreatesampler().result());
 }
 void PackAndCallVkDestroySampler(VvkCommandClientBidiStream& stream, VkDevice device, VkSampler sampler, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -3981,7 +3981,7 @@ VkResult PackAndCallVkCreateDescriptorSetLayout(VvkCommandClientBidiStream& stre
     spdlog::error("Failed to read response from server");
   }
   *pSetLayout = reinterpret_cast<VkDescriptorSetLayout>(response.vkcreatedescriptorsetlayout().psetlayout());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreatedescriptorsetlayout().result());
 }
 void PackAndCallVkDestroyDescriptorSetLayout(VvkCommandClientBidiStream& stream, VkDevice device, VkDescriptorSetLayout descriptorSetLayout, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -4016,7 +4016,7 @@ VkResult PackAndCallVkCreatePipelineCache(VvkCommandClientBidiStream& stream, Vk
     spdlog::error("Failed to read response from server");
   }
   *pPipelineCache = reinterpret_cast<VkPipelineCache>(response.vkcreatepipelinecache().ppipelinecache());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreatepipelinecache().result());
 }
 void PackAndCallVkDestroyPipelineCache(VvkCommandClientBidiStream& stream, VkDevice device, VkPipelineCache pipelineCache, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -4051,7 +4051,7 @@ VkResult PackAndCallVkCreateDescriptorPool(VvkCommandClientBidiStream& stream, V
     spdlog::error("Failed to read response from server");
   }
   *pDescriptorPool = reinterpret_cast<VkDescriptorPool>(response.vkcreatedescriptorpool().pdescriptorpool());
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkcreatedescriptorpool().result());
 }
 void PackAndCallVkDestroyDescriptorPool(VvkCommandClientBidiStream& stream, VkDevice device, VkDescriptorPool descriptorPool, const VkAllocationCallbacks* pAllocator) {
   vvk::server::VvkRequest request;
@@ -4087,7 +4087,7 @@ VkResult PackAndCallVkAllocateDescriptorSets(VvkCommandClientBidiStream& stream,
   for (uint32_t i = 0; i < pAllocateInfo->descriptorSetCount; i++) {
     pDescriptorSets[i] = reinterpret_cast<VkDescriptorSet>(response.vkallocatedescriptorsets().pdescriptorsets(i));
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkallocatedescriptorsets().result());
 }
 VkResult PackAndCallVkFreeDescriptorSets(VvkCommandClientBidiStream& stream, VkDevice device, VkDescriptorPool descriptorPool, uint32_t descriptorSetCount, const VkDescriptorSet* pDescriptorSets) {
   vvk::server::VvkRequest request;
@@ -4107,7 +4107,7 @@ VkResult PackAndCallVkFreeDescriptorSets(VvkCommandClientBidiStream& stream, VkD
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkfreedescriptorsets().result());
 }
 void PackAndCallVkUpdateDescriptorSets(VvkCommandClientBidiStream& stream, VkDevice device, uint32_t descriptorWriteCount, const VkWriteDescriptorSet* pDescriptorWrites, uint32_t descriptorCopyCount, const VkCopyDescriptorSet* pDescriptorCopies) {
   vvk::server::VvkRequest request;
@@ -4151,7 +4151,7 @@ VkResult PackAndCallVkResetCommandBuffer(VvkCommandClientBidiStream& stream, VkC
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
-  return static_cast<VkResult>(response.result());
+  return static_cast<VkResult>(response.vkresetcommandbuffer().result());
 }
 void PackAndCallVkCmdBindDescriptorSets(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint, VkPipelineLayout layout, uint32_t firstSet, uint32_t descriptorSetCount, const VkDescriptorSet* pDescriptorSets, uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets) {
   vvk::server::VvkRequest request;

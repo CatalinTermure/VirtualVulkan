@@ -253,7 +253,9 @@ namespace vvk {
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
+''')
 
+            out.append('''
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
@@ -263,7 +265,7 @@ namespace vvk {
 
             if command.returnType == "VkResult":
                 out.append(
-                    "  return static_cast<VkResult>(response.result());\n")
+                    f"  return static_cast<VkResult>(response.{cmd_name.lower()}().result());\n")
             elif command.returnType == 'void':
                 pass
             else:

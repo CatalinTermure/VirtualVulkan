@@ -259,9 +259,8 @@ class ServerSrcGenerator(VvkGenerator):
 
             # populate the response
             if command.returnType == "VkResult":
-                out.append("  response->set_result(result);\n")
-            elif command.returnType == "void":
-                out.append("  response->set_result(VK_SUCCESS);\n")
+                out.append(
+                    f"  response->mutable_{cmd_name.lower()}()->set_result(static_cast<vvk::server::VkResult>(result));\n")
 
             out.extend(deletions)
             out.append("}\n")
