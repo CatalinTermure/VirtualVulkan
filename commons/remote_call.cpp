@@ -2509,10 +2509,6 @@ void PackAndCallVkDestroyInstance(VvkCommandClientBidiStream& stream, VkInstance
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 VkResult PackAndCallVkEnumeratePhysicalDevices(VvkCommandClientBidiStream& stream, VkInstance instance, uint32_t* pPhysicalDeviceCount, VkPhysicalDevice* pPhysicalDevices) {
   vvk::server::VvkRequest request;
@@ -2633,10 +2629,6 @@ void PackAndCallVkDestroyDevice(VvkCommandClientBidiStream& stream, VkDevice dev
 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
-  }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
   }
 }
 VkResult PackAndCallVkEnumerateInstanceExtensionProperties(VvkCommandClientBidiStream& stream, const char* pLayerName, uint32_t* pPropertyCount, VkExtensionProperties* pProperties) {
@@ -2882,10 +2874,6 @@ void PackAndCallVkDestroyFence(VvkCommandClientBidiStream& stream, VkDevice devi
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 VkResult PackAndCallVkCreateSemaphore(VvkCommandClientBidiStream& stream, VkDevice device, const VkSemaphoreCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSemaphore* pSemaphore) {
   vvk::server::VvkRequest request;
@@ -2916,10 +2904,6 @@ void PackAndCallVkDestroySemaphore(VvkCommandClientBidiStream& stream, VkDevice 
 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
-  }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
   }
 }
 VkResult PackAndCallVkAllocateMemory(VvkCommandClientBidiStream& stream, VkDevice device, const VkMemoryAllocateInfo* pAllocateInfo, const VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMemory) {
@@ -2952,10 +2936,6 @@ void PackAndCallVkFreeMemory(VvkCommandClientBidiStream& stream, VkDevice device
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 VkResult PackAndCallVkCreateImage(VvkCommandClientBidiStream& stream, VkDevice device, const VkImageCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkImage* pImage) {
   vvk::server::VvkRequest request;
@@ -2986,10 +2966,6 @@ void PackAndCallVkDestroyImage(VvkCommandClientBidiStream& stream, VkDevice devi
 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
-  }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
   }
 }
 VkResult PackAndCallVkBindImageMemory(VvkCommandClientBidiStream& stream, VkDevice device, VkImage image, VkDeviceMemory memory, VkDeviceSize memoryOffset) {
@@ -3100,10 +3076,6 @@ void PackAndCallVkDestroyImageView(VvkCommandClientBidiStream& stream, VkDevice 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 VkResult PackAndCallVkCreateCommandPool(VvkCommandClientBidiStream& stream, VkDevice device, const VkCommandPoolCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkCommandPool* pCommandPool) {
   vvk::server::VvkRequest request;
@@ -3134,10 +3106,6 @@ void PackAndCallVkDestroyCommandPool(VvkCommandClientBidiStream& stream, VkDevic
 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
-  }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
   }
 }
 VkResult PackAndCallVkAllocateCommandBuffers(VvkCommandClientBidiStream& stream, VkDevice device, const VkCommandBufferAllocateInfo* pAllocateInfo, VkCommandBuffer* pCommandBuffers) {
@@ -3172,10 +3140,6 @@ void PackAndCallVkFreeCommandBuffers(VvkCommandClientBidiStream& stream, VkDevic
 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
-  }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
   }
 }
 VkResult PackAndCallVkBeginCommandBuffer(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, const VkCommandBufferBeginInfo* pBeginInfo) {
@@ -3262,10 +3226,6 @@ void PackAndCallVkDestroyRenderPass(VvkCommandClientBidiStream& stream, VkDevice
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 VkResult PackAndCallVkCreatePipelineLayout(VvkCommandClientBidiStream& stream, VkDevice device, const VkPipelineLayoutCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkPipelineLayout* pPipelineLayout) {
   vvk::server::VvkRequest request;
@@ -3297,10 +3257,6 @@ void PackAndCallVkDestroyPipelineLayout(VvkCommandClientBidiStream& stream, VkDe
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 VkResult PackAndCallVkCreateShaderModule(VvkCommandClientBidiStream& stream, VkDevice device, const VkShaderModuleCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkShaderModule* pShaderModule) {
   vvk::server::VvkRequest request;
@@ -3331,10 +3287,6 @@ void PackAndCallVkDestroyShaderModule(VvkCommandClientBidiStream& stream, VkDevi
 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
-  }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
   }
 }
 VkResult PackAndCallVkCreateGraphicsPipelines(VvkCommandClientBidiStream& stream, VkDevice device, VkPipelineCache pipelineCache, uint32_t createInfoCount, const VkGraphicsPipelineCreateInfo* pCreateInfos, const VkAllocationCallbacks* pAllocator, VkPipeline* pPipelines) {
@@ -3374,10 +3326,6 @@ void PackAndCallVkDestroyPipeline(VvkCommandClientBidiStream& stream, VkDevice d
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 VkResult PackAndCallVkCreateFramebuffer(VvkCommandClientBidiStream& stream, VkDevice device, const VkFramebufferCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkFramebuffer* pFramebuffer) {
   vvk::server::VvkRequest request;
@@ -3408,10 +3356,6 @@ void PackAndCallVkDestroyFramebuffer(VvkCommandClientBidiStream& stream, VkDevic
 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
-  }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
   }
 }
 VkResult PackAndCallVkWaitForFences(VvkCommandClientBidiStream& stream, VkDevice device, uint32_t fenceCount, const VkFence* pFences, VkBool32 waitAll, uint64_t timeout) {
@@ -3484,10 +3428,6 @@ void PackAndCallVkCmdBeginRenderPass(VvkCommandClientBidiStream& stream, VkComma
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 void PackAndCallVkCmdEndRenderPass(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer) {
   vvk::server::VvkRequest request;
@@ -3497,10 +3437,6 @@ void PackAndCallVkCmdEndRenderPass(VvkCommandClientBidiStream& stream, VkCommand
 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
-  }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
   }
 }
 void PackAndCallVkCmdBindPipeline(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint, VkPipeline pipeline) {
@@ -3513,10 +3449,6 @@ void PackAndCallVkCmdBindPipeline(VvkCommandClientBidiStream& stream, VkCommandB
 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
-  }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
   }
 }
 void PackAndCallVkCmdSetViewport(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t firstViewport, uint32_t viewportCount, const VkViewport* pViewports) {
@@ -3533,10 +3465,6 @@ void PackAndCallVkCmdSetViewport(VvkCommandClientBidiStream& stream, VkCommandBu
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 void PackAndCallVkCmdSetScissor(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t firstScissor, uint32_t scissorCount, const VkRect2D* pScissors) {
   vvk::server::VvkRequest request;
@@ -3552,10 +3480,6 @@ void PackAndCallVkCmdSetScissor(VvkCommandClientBidiStream& stream, VkCommandBuf
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 void PackAndCallVkCmdDraw(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) {
   vvk::server::VvkRequest request;
@@ -3569,10 +3493,6 @@ void PackAndCallVkCmdDraw(VvkCommandClientBidiStream& stream, VkCommandBuffer co
 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
-  }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
   }
 }
 VkResult PackAndCallVkQueueSubmit(VvkCommandClientBidiStream& stream, VkQueue queue, uint32_t submitCount, const VkSubmitInfo* pSubmits, VkFence fence) {
@@ -3665,10 +3585,6 @@ void PackAndCallVkCmdPipelineBarrier(VvkCommandClientBidiStream& stream, VkComma
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 void PackAndCallVkCmdCopyImageToBuffer(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout, VkBuffer dstBuffer, uint32_t regionCount, const VkBufferImageCopy* pRegions) {
   vvk::server::VvkRequest request;
@@ -3685,10 +3601,6 @@ void PackAndCallVkCmdCopyImageToBuffer(VvkCommandClientBidiStream& stream, VkCom
 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
-  }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
   }
 }
 void PackAndCallVkGetPhysicalDeviceProperties2(VvkCommandClientBidiStream& stream, VkPhysicalDevice physicalDevice, VkPhysicalDeviceProperties2* pProperties) {
@@ -3827,10 +3739,6 @@ void PackAndCallVkDestroyBuffer(VvkCommandClientBidiStream& stream, VkDevice dev
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 void PackAndCallVkGetBufferMemoryRequirements(VvkCommandClientBidiStream& stream, VkDevice device, VkBuffer buffer, VkMemoryRequirements* pMemoryRequirements) {
   vvk::server::VvkRequest request;
@@ -3903,10 +3811,6 @@ void PackAndCallVkUnmapMemory(VvkCommandClientBidiStream& stream, VkDevice devic
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 void PackAndCallVkCmdBindVertexBuffers(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t firstBinding, uint32_t bindingCount, const VkBuffer* pBuffers, const VkDeviceSize* pOffsets) {
   vvk::server::VvkRequest request;
@@ -3924,10 +3828,6 @@ void PackAndCallVkCmdBindVertexBuffers(VvkCommandClientBidiStream& stream, VkCom
 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
-  }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
   }
 }
 VkResult PackAndCallVkCreateSampler(VvkCommandClientBidiStream& stream, VkDevice device, const VkSamplerCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSampler* pSampler) {
@@ -3960,10 +3860,6 @@ void PackAndCallVkDestroySampler(VvkCommandClientBidiStream& stream, VkDevice de
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 VkResult PackAndCallVkCreateDescriptorSetLayout(VvkCommandClientBidiStream& stream, VkDevice device, const VkDescriptorSetLayoutCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDescriptorSetLayout* pSetLayout) {
   vvk::server::VvkRequest request;
@@ -3994,10 +3890,6 @@ void PackAndCallVkDestroyDescriptorSetLayout(VvkCommandClientBidiStream& stream,
 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
-  }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
   }
 }
 VkResult PackAndCallVkCreatePipelineCache(VvkCommandClientBidiStream& stream, VkDevice device, const VkPipelineCacheCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkPipelineCache* pPipelineCache) {
@@ -4030,10 +3922,6 @@ void PackAndCallVkDestroyPipelineCache(VvkCommandClientBidiStream& stream, VkDev
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 VkResult PackAndCallVkCreateDescriptorPool(VvkCommandClientBidiStream& stream, VkDevice device, const VkDescriptorPoolCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDescriptorPool* pDescriptorPool) {
   vvk::server::VvkRequest request;
@@ -4064,10 +3952,6 @@ void PackAndCallVkDestroyDescriptorPool(VvkCommandClientBidiStream& stream, VkDe
 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
-  }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
   }
 }
 VkResult PackAndCallVkAllocateDescriptorSets(VvkCommandClientBidiStream& stream, VkDevice device, const VkDescriptorSetAllocateInfo* pAllocateInfo, VkDescriptorSet* pDescriptorSets) {
@@ -4130,10 +4014,6 @@ void PackAndCallVkUpdateDescriptorSets(VvkCommandClientBidiStream& stream, VkDev
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
-  }
 }
 VkResult PackAndCallVkResetCommandBuffer(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkCommandBufferResetFlags flags) {
   vvk::server::VvkRequest request;
@@ -4174,10 +4054,6 @@ void PackAndCallVkCmdBindDescriptorSets(VvkCommandClientBidiStream& stream, VkCo
 
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
-  }
-
-  if (!stream.Read(&response)) {
-    spdlog::error("Failed to read response from server");
   }
 }
 }  // namespace vvk

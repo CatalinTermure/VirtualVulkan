@@ -255,21 +255,22 @@ namespace vvk {
   }
 ''')
 
-            out.append('''
+            if command.returnType == "VkResult":
+                after_call_code.append(
+                    f"  return static_cast<VkResult>(response.{cmd_name.lower()}().result());\n")
+            elif command.returnType == 'void':
+                pass
+            else:
+                log("UNHANDLED RETURN TYPE:", command.returnType)
+
+            if any([x != "" for x in after_call_code]):
+                out.append('''
   if (!stream.Read(&response)) {
     spdlog::error("Failed to read response from server");
   }
 ''')
 
             out.extend(after_call_code)
-
-            if command.returnType == "VkResult":
-                out.append(
-                    f"  return static_cast<VkResult>(response.{cmd_name.lower()}().result());\n")
-            elif command.returnType == 'void':
-                pass
-            else:
-                log("UNHANDLED RETURN TYPE:", command.returnType)
 
             out.append("}\n")
 

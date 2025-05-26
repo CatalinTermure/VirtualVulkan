@@ -35,8 +35,12 @@ grpc::Status VvkServerImpl::CallMethods(grpc::ServerContext* context,
       rdoc_api->StartFrameCapture(nullptr, nullptr);
     }
     UnpackAndExecuteFunction(execution_context, request, &response);
-    spdlog::trace("Response:\n{}", response.DebugString());
-    stream->Write(response);
+    if (response.response_case() == VvkResponse::RESPONSE_NOT_SET) {
+      spdlog::trace("No response set for method {}", request.method());
+    } else {
+      spdlog::trace("Response:\n{}", response.DebugString());
+      stream->Write(response);
+    }
   }
   spdlog::info("Connection closed {}", context->peer());
   return grpc::Status::OK;
