@@ -18,6 +18,8 @@ class H264FrameStream final : public FrameStream {
   // Called when a frame should be presented.
   VkResult PresentFrame(VkQueue queue, const VkPresentInfoKHR &original_present_info) override;
 
+  ~H264FrameStream() override = default;
+
  private:
   struct SwapchainPresentationInfo {
     VkSwapchainKHR swapchain;

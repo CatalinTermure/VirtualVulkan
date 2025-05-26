@@ -17,6 +17,8 @@ class UncompressedFrameStream final : public FrameStream {
   // Called when a frame should be presented.
   VkResult PresentFrame(VkQueue queue, const VkPresentInfoKHR &original_present_info) override;
 
+  ~UncompressedFrameStream() override = default;
+
  private:
   struct SwapchainPresentationInfo {
     VkSwapchainKHR swapchain;

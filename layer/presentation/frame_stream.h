@@ -26,6 +26,8 @@ class FrameStream {
 
   // Called when a frame should be presented.
   virtual VkResult PresentFrame(VkQueue queue, const VkPresentInfoKHR &original_present_info) = 0;
+
+  virtual ~FrameStream() = default;
 };
 
 }  // namespace vvk
