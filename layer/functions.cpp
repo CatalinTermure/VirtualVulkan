@@ -488,12 +488,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     };
     local_create_info.queueCreateInfoCount = 1;
     local_create_info.pQueueCreateInfos = &queue_create_info;
-    std::vector<const char*> enabled_extensions;
     {
-      for (uint32_t i = 0; i < local_create_info.enabledExtensionCount; i++) {
-        enabled_extensions.push_back(local_create_info.ppEnabledExtensionNames[i]);
-      }
-
       uint32_t local_device_extension_count = 0;
       std::vector<VkExtensionProperties> local_device_extensions_properties;
       instance_info.dispatch_table().EnumerateDeviceExtensionProperties(physicalDevice, nullptr,
@@ -509,16 +504,9 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
                        }) != local_device_extensions_properties.end();
 
       if (frame_streaming_capabilities.supports_h264_stream() && local_device_supports_h264_decode) {
-        enabled_extensions.push_back(VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME);
-        enabled_extensions.push_back(VK_KHR_VIDEO_QUEUE_EXTENSION_NAME);
-        enabled_extensions.push_back(VK_KHR_VIDEO_DECODE_QUEUE_EXTENSION_NAME);
-        enabled_extensions.push_back(VK_KHR_VIDEO_DECODE_H264_EXTENSION_NAME);
-        streaming_capabilities.set_supports_h264_stream(local_device_supports_h264_decode);
+        streaming_capabilities.set_supports_h264_stream(true);
       }
     }
-
-    local_create_info.enabledExtensionCount = enabled_extensions.size();
-    local_create_info.ppEnabledExtensionNames = enabled_extensions.data();
 
     auto surface = instance_info.surface();
     if (surface.has_value()) {
