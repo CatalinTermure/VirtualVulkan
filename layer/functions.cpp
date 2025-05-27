@@ -675,15 +675,25 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     }
 
     if (frame_streaming_capabilities.supports_h264_stream()) {
-      VkDeviceQueueCreateInfo video_queue_create_info = {
-          .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-          .pNext = nullptr,
-          .flags = 0,
-          .queueFamilyIndex = *remote_video_queue_family_index,
-          .queueCount = 1,
-          .pQueuePriorities = remote_queue_create_infos[0].pQueuePriorities,  // Use the same priority as graphics queue
-      };
-      remote_queue_create_infos.push_back(video_queue_create_info);
+      bool already_added_video_queue = false;
+      for (const auto& queue_create_info : remote_queue_create_infos) {
+        if (queue_create_info.queueFamilyIndex == *remote_video_queue_family_index) {
+          already_added_video_queue = true;
+          break;
+        }
+      }
+      if (!already_added_video_queue) {
+        VkDeviceQueueCreateInfo video_queue_create_info = {
+            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = 0,
+            .queueFamilyIndex = *remote_video_queue_family_index,
+            .queueCount = 1,
+            .pQueuePriorities =
+                remote_queue_create_infos[0].pQueuePriorities,  // Use the same priority as graphics queue
+        };
+        remote_queue_create_infos.push_back(video_queue_create_info);
+      }
     }
 
     remote_create_info.queueCreateInfoCount = remote_queue_create_infos.size();
