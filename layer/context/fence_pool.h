@@ -3,6 +3,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include <functional>
 #include <mutex>
 #include <vector>
 
@@ -36,6 +37,13 @@ class FencePool {
 
   VkFenceProxy GetFence();
   void ReturnFence(VkFence& fence);
+
+  void ForAllFences(const std::function<void(VkFence&)>& func) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    for (auto& fence : fences_) {
+      func(fence);
+    }
+  }
 
  private:
   std::vector<VkFence> fences_;

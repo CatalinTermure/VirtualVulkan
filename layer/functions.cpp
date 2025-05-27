@@ -702,6 +702,22 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     PackAndCallVkCreateDevice(instance_info.command_stream(), physicalDevice, &remote_create_info, pAllocator,
                               &remote_device);
     instance_info.SetRemoteHandle(*pDevice, remote_device);
+
+    device_info.fence_pool().ForAllFences([&](VkFence& fence) {
+      VkFenceCreateInfo fence_create_info = {
+          .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+          .pNext = nullptr,
+          .flags = 0,
+      };
+      VkFence remote_fence = VK_NULL_HANDLE;
+      VkResult result = PackAndCallVkCreateFence(instance_info.command_stream(), remote_device, &fence_create_info,
+                                                 pAllocator, &remote_fence);
+      if (result != VK_SUCCESS) {
+        spdlog::error("Failed to create remote fence for local fence in fence pool {}: {}", (void*)fence, (int)result);
+        return;
+      }
+      device_info.SetRemoteHandle(fence, remote_fence);
+    });
   }
 
   return result;
@@ -1296,8 +1312,10 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
   VkDevice device = GetDeviceForQueue(queue);
   DeviceInfo& device_info = GetDeviceInfo(device);
 
+  std::optional<VkFenceProxy> proxy_for_null_fence;
   if (fence == VK_NULL_HANDLE) {
-    throw std::runtime_error("QueueSubmit with fence == VK_NULL_HANDLE is not supported");
+    proxy_for_null_fence = device_info.fence_pool().GetFence();
+    fence = **proxy_for_null_fence;
   }
   device_info.SetFenceLocal(fence);
 
@@ -1376,6 +1394,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
         [&dispatch_table = device_info.dispatch_table(), &command_stream = device_info.instance_info().command_stream(),
          remote_queue = device_info.GetRemoteHandle(queue), remote_fence = device_info.GetRemoteHandle(fence),
          local_fence = fence, &fence_pool = device_info.fence_pool(), aux_fence = std::move(aux_fence), device,
+         proxy_for_null_fence = std::move(proxy_for_null_fence),
          remote_device = device_info.instance_info().GetRemoteHandle(device), submits = std::move(submit_infos),
          present_queue = *device_info.present_queue(), semaphores_to_wait_local = std::move(semaphores_to_wait_local),
          semaphores_to_signal = std::move(local_semaphores_to_signal_from_remote),
@@ -1414,7 +1433,9 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
             throw std::runtime_error("Failed to reset remote fences");
           }
           spdlog::trace("VkQueueSubmit: Finished waiting for remote fence");
-          dispatch_table.QueueSubmit(present_queue, 0, nullptr, local_fence);
+          if (!proxy_for_null_fence.has_value()) {
+            dispatch_table.QueueSubmit(present_queue, 0, nullptr, local_fence);
+          }
           for (auto* semaphore : semaphores_to_signal) {
             semaphore->release();
           }
