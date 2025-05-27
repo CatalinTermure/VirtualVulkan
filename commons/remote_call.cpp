@@ -4363,5 +4363,20 @@ void PackAndCallVkCmdBindIndexBuffer(VvkCommandClientBidiStream& stream, VkComma
     spdlog::error("Failed to write request to server");
   }
 }
+void PackAndCallVkCmdDrawIndexed(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdDrawIndexed");
+  request.mutable_vkcmddrawindexed()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  request.mutable_vkcmddrawindexed()->set_indexcount(indexCount);
+  request.mutable_vkcmddrawindexed()->set_instancecount(instanceCount);
+  request.mutable_vkcmddrawindexed()->set_firstindex(firstIndex);
+  request.mutable_vkcmddrawindexed()->set_vertexoffset(vertexOffset);
+  request.mutable_vkcmddrawindexed()->set_firstinstance(firstInstance);
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+}
 }  // namespace vvk
 

@@ -3850,4 +3850,9 @@ void UnpackAndExecuteVkCmdBindIndexBuffer(vvk::ExecutionContext& context, const 
 
   context.device_dispatch_table().CmdBindIndexBuffer(reinterpret_cast<VkCommandBuffer>(request.vkcmdbindindexbuffer().commandbuffer()), reinterpret_cast<VkBuffer>(request.vkcmdbindindexbuffer().buffer()), static_cast<VkDeviceSize>(request.vkcmdbindindexbuffer().offset()), static_cast<VkIndexType>(request.vkcmdbindindexbuffer().indextype()));
 }
+void UnpackAndExecuteVkCmdDrawIndexed(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCmdDrawIndexed");
+
+  context.device_dispatch_table().CmdDrawIndexed(reinterpret_cast<VkCommandBuffer>(request.vkcmddrawindexed().commandbuffer()), request.vkcmddrawindexed().indexcount(), request.vkcmddrawindexed().instancecount(), request.vkcmddrawindexed().firstindex(), request.vkcmddrawindexed().vertexoffset(), request.vkcmddrawindexed().firstinstance());
+}
 

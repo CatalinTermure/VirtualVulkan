@@ -103,6 +103,7 @@ const std::unordered_map<
         {"vkCmdDispatch", UnpackAndExecuteVkCmdDispatch},
         {"vkCmdPushConstants", UnpackAndExecuteVkCmdPushConstants},
         {"vkCmdBindIndexBuffer", UnpackAndExecuteVkCmdBindIndexBuffer},
+        {"vkCmdDrawIndexed", UnpackAndExecuteVkCmdDrawIndexed},
 };
 
 }  // namespace

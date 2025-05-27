@@ -99,22 +99,23 @@ message VvkRequest {
     VkCmdBindIndexBufferParams vkCmdBindIndexBuffer = 76;
     VkCmdBindVertexBuffersParams vkCmdBindVertexBuffers = 77;
     VkCmdDrawParams vkCmdDraw = 78;
-    VkCmdDispatchParams vkCmdDispatch = 79;
-    VkCmdCopyBufferParams vkCmdCopyBuffer = 80;
-    VkCmdCopyBufferToImageParams vkCmdCopyBufferToImage = 81;
-    VkCmdCopyImageToBufferParams vkCmdCopyImageToBuffer = 82;
-    VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 83;
-    VkCmdPushConstantsParams vkCmdPushConstants = 84;
-    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 85;
-    VkCmdEndRenderPassParams vkCmdEndRenderPass = 86;
-    VkBindImageMemory2Params vkBindImageMemory2 = 87;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 88;
-    VkGetBufferMemoryRequirements2Params vkGetBufferMemoryRequirements2 = 89;
-    VkGetPhysicalDeviceFeatures2Params vkGetPhysicalDeviceFeatures2 = 90;
-    VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 91;
-    VkSignalSemaphoreParams vkSignalSemaphore = 92;
-    VkGetImageMemoryRequirements2KHRParams vkGetImageMemoryRequirements2KHR = 93;
-    VkGetBufferMemoryRequirements2KHRParams vkGetBufferMemoryRequirements2KHR = 94;
+    VkCmdDrawIndexedParams vkCmdDrawIndexed = 79;
+    VkCmdDispatchParams vkCmdDispatch = 80;
+    VkCmdCopyBufferParams vkCmdCopyBuffer = 81;
+    VkCmdCopyBufferToImageParams vkCmdCopyBufferToImage = 82;
+    VkCmdCopyImageToBufferParams vkCmdCopyImageToBuffer = 83;
+    VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 84;
+    VkCmdPushConstantsParams vkCmdPushConstants = 85;
+    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 86;
+    VkCmdEndRenderPassParams vkCmdEndRenderPass = 87;
+    VkBindImageMemory2Params vkBindImageMemory2 = 88;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 89;
+    VkGetBufferMemoryRequirements2Params vkGetBufferMemoryRequirements2 = 90;
+    VkGetPhysicalDeviceFeatures2Params vkGetPhysicalDeviceFeatures2 = 91;
+    VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 92;
+    VkSignalSemaphoreParams vkSignalSemaphore = 93;
+    VkGetImageMemoryRequirements2KHRParams vkGetImageMemoryRequirements2KHR = 94;
+    VkGetBufferMemoryRequirements2KHRParams vkGetBufferMemoryRequirements2KHR = 95;
   }
 }
 
@@ -890,6 +891,15 @@ message VkCmdDrawParams {
   uint32 instanceCount = 3; // uint32_t instanceCount
   uint32 firstVertex = 4; // uint32_t firstVertex
   uint32 firstInstance = 5; // uint32_t firstInstance
+}
+
+message VkCmdDrawIndexedParams {
+  uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+  uint32 indexCount = 2; // uint32_t indexCount
+  uint32 instanceCount = 3; // uint32_t instanceCount
+  uint32 firstIndex = 4; // uint32_t firstIndex
+  int32 vertexOffset = 5; // int32_t vertexOffset
+  uint32 firstInstance = 6; // uint32_t firstInstance
 }
 
 message VkCmdDispatchParams {

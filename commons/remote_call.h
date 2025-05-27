@@ -102,6 +102,7 @@ VkResult PackAndCallVkCreateComputePipelines(VvkCommandClientBidiStream& stream,
 void PackAndCallVkCmdDispatch(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ);
 void PackAndCallVkCmdPushConstants(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkPipelineLayout layout, VkShaderStageFlags stageFlags, uint32_t offset, uint32_t size, const void* pValues);
 void PackAndCallVkCmdBindIndexBuffer(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, VkIndexType indexType);
+void PackAndCallVkCmdDrawIndexed(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

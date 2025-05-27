@@ -1761,4 +1761,11 @@ VKAPI_ATTR void VKAPI_CALL CmdBindIndexBuffer(VkCommandBuffer commandBuffer, VkB
   PackAndCallVkCmdBindIndexBuffer(device_info.instance_info().command_stream(),
                                   device_info.GetRemoteHandle(commandBuffer), buffer, offset, indexType);
 }
+
+VKAPI_ATTR void VKAPI_CALL CmdDrawIndexed(VkCommandBuffer commandBuffer, uint32_t indexCount, uint32_t instanceCount,
+                                          uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdDrawIndexed(device_info.instance_info().command_stream(), device_info.GetRemoteHandle(commandBuffer),
+                              indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
+}
 }  // namespace vvk
