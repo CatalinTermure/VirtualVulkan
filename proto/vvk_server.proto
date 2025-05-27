@@ -103,16 +103,17 @@ message VvkRequest {
     VkCmdCopyBufferToImageParams vkCmdCopyBufferToImage = 80;
     VkCmdCopyImageToBufferParams vkCmdCopyImageToBuffer = 81;
     VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 82;
-    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 83;
-    VkCmdEndRenderPassParams vkCmdEndRenderPass = 84;
-    VkBindImageMemory2Params vkBindImageMemory2 = 85;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 86;
-    VkGetBufferMemoryRequirements2Params vkGetBufferMemoryRequirements2 = 87;
-    VkGetPhysicalDeviceFeatures2Params vkGetPhysicalDeviceFeatures2 = 88;
-    VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 89;
-    VkSignalSemaphoreParams vkSignalSemaphore = 90;
-    VkGetImageMemoryRequirements2KHRParams vkGetImageMemoryRequirements2KHR = 91;
-    VkGetBufferMemoryRequirements2KHRParams vkGetBufferMemoryRequirements2KHR = 92;
+    VkCmdPushConstantsParams vkCmdPushConstants = 83;
+    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 84;
+    VkCmdEndRenderPassParams vkCmdEndRenderPass = 85;
+    VkBindImageMemory2Params vkBindImageMemory2 = 86;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 87;
+    VkGetBufferMemoryRequirements2Params vkGetBufferMemoryRequirements2 = 88;
+    VkGetPhysicalDeviceFeatures2Params vkGetPhysicalDeviceFeatures2 = 89;
+    VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 90;
+    VkSignalSemaphoreParams vkSignalSemaphore = 91;
+    VkGetImageMemoryRequirements2KHRParams vkGetImageMemoryRequirements2KHR = 92;
+    VkGetBufferMemoryRequirements2KHRParams vkGetBufferMemoryRequirements2KHR = 93;
   }
 }
 
@@ -927,6 +928,15 @@ message VkCmdPipelineBarrierParams {
   repeated VkBufferMemoryBarrier pBufferMemoryBarriers = 8; // const VkBufferMemoryBarrier* pBufferMemoryBarriers
   optional uint32 imageMemoryBarrierCount = 9; // uint32_t imageMemoryBarrierCount
   repeated VkImageMemoryBarrier pImageMemoryBarriers = 10; // const VkImageMemoryBarrier* pImageMemoryBarriers
+}
+
+message VkCmdPushConstantsParams {
+  uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+  uint64 layout = 2; // VkPipelineLayout layout
+  uint32 stageFlags = 3; // VkShaderStageFlags stageFlags
+  uint32 offset = 4; // uint32_t offset
+  uint32 size = 5; // uint32_t size
+  bytes pValues = 6; // const void* pValues
 }
 
 message VkCmdBeginRenderPassParams {

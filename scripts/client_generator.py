@@ -84,6 +84,11 @@ class ClientSrcGenerator(VvkGenerator):
                         out.append(
                             f'    request.mutable_{cmd_name.lower()}()->add_{param.name.lower()}(static_cast<{type_info.cast_to}>({param.name}[i]));\n')
                     out.append("  }\n")
+                elif param.type == 'void':
+                    assert (param.length in [
+                        p.name for p in command.params])
+                    out.append(
+                        f'  request.mutable_{cmd_name.lower()}()->set_{param.name.lower()}({param.name}, {param.length});\n')
                 else:
                     log("unknown const pointer type with length:",
                         cmd_name, param.cDeclaration)

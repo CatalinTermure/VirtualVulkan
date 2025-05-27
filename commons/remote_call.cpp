@@ -4333,5 +4333,20 @@ void PackAndCallVkCmdDispatch(VvkCommandClientBidiStream& stream, VkCommandBuffe
     spdlog::error("Failed to write request to server");
   }
 }
+void PackAndCallVkCmdPushConstants(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkPipelineLayout layout, VkShaderStageFlags stageFlags, uint32_t offset, uint32_t size, const void* pValues) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdPushConstants");
+  request.mutable_vkcmdpushconstants()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  request.mutable_vkcmdpushconstants()->set_layout(reinterpret_cast<uint64_t>(layout));
+  request.mutable_vkcmdpushconstants()->set_stageflags(stageFlags);
+  request.mutable_vkcmdpushconstants()->set_offset(offset);
+  request.mutable_vkcmdpushconstants()->set_size(size);
+  request.mutable_vkcmdpushconstants()->set_pvalues(pValues, size);
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+}
 }  // namespace vvk
 

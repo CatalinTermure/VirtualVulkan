@@ -1746,4 +1746,12 @@ VKAPI_ATTR void VKAPI_CALL CmdDispatch(VkCommandBuffer commandBuffer, uint32_t g
   PackAndCallVkCmdDispatch(device_info.instance_info().command_stream(), device_info.GetRemoteHandle(commandBuffer),
                            groupCountX, groupCountY, groupCountZ);
 }
+
+VKAPI_ATTR void VKAPI_CALL CmdPushConstants(VkCommandBuffer commandBuffer, VkPipelineLayout layout,
+                                            VkShaderStageFlags stageFlags, uint32_t offset, uint32_t size,
+                                            const void* pValues) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdPushConstants(device_info.instance_info().command_stream(),
+                                device_info.GetRemoteHandle(commandBuffer), layout, stageFlags, offset, size, pValues);
+}
 }  // namespace vvk

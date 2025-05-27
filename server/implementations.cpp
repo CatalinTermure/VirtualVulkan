@@ -3840,4 +3840,9 @@ void UnpackAndExecuteVkCmdDispatch(vvk::ExecutionContext& context, const vvk::se
 
   context.device_dispatch_table().CmdDispatch(reinterpret_cast<VkCommandBuffer>(request.vkcmddispatch().commandbuffer()), request.vkcmddispatch().groupcountx(), request.vkcmddispatch().groupcounty(), request.vkcmddispatch().groupcountz());
 }
+void UnpackAndExecuteVkCmdPushConstants(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCmdPushConstants");
+
+  context.device_dispatch_table().CmdPushConstants(reinterpret_cast<VkCommandBuffer>(request.vkcmdpushconstants().commandbuffer()), reinterpret_cast<VkPipelineLayout>(request.vkcmdpushconstants().layout()), static_cast<VkShaderStageFlags>(request.vkcmdpushconstants().stageflags()), request.vkcmdpushconstants().offset(), request.vkcmdpushconstants().size(), reinterpret_cast<const void*>(request.vkcmdpushconstants().pvalues().data()));
+}
 
