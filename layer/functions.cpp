@@ -1301,7 +1301,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
   }
   device_info.SetFenceLocal(fence);
 
-  device_info.SyncMappedMemories();
+  device_info.UploadMappedMemories();
 
   std::vector<VkSemaphore> semaphores_to_wait_local;
   semaphores_to_wait_local.reserve(submitCount);  // not the exact size but it's a good guess
@@ -1541,7 +1541,7 @@ VKAPI_ATTR VkResult VKAPI_CALL MapMemory(VkDevice device, VkDeviceMemory memory,
 VKAPI_ATTR void VKAPI_CALL UnmapMemory(VkDevice device, VkDeviceMemory memory) {
   DeviceInfo& device_info = GetDeviceInfo(device);
 
-  device_info.SyncMappedMemory(memory);
+  device_info.UploadMappedMemory(memory);
 
   PackAndCallVkUnmapMemory(device_info.instance_info().command_stream(),
                            device_info.instance_info().GetRemoteHandle(device), memory);

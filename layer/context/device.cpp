@@ -102,7 +102,7 @@ void DeviceInfo::AddMappedMemory(void* local_address, void* remote_address, VkDe
   mapped_memory_infos_[memory_handle] = {local_address, remote_address, map_size};
 }
 
-void DeviceInfo::SyncMappedMemory(VkDeviceMemory memory) {
+void DeviceInfo::UploadMappedMemory(VkDeviceMemory memory) {
   grpc::ClientContext context;
   vvk::server::VvkWriteMappedMemoryRequest request;
   MappedMemoryInfo& mapped_memory_info = mapped_memory_infos_.at(memory);
@@ -112,9 +112,9 @@ void DeviceInfo::SyncMappedMemory(VkDeviceMemory memory) {
   instance_info_.stub().WriteMappedMemory(&context, request, &empty);
 }
 
-void DeviceInfo::SyncMappedMemories() {
+void DeviceInfo::UploadMappedMemories() {
   for (auto& [memory, mapped_memory_info] : mapped_memory_infos_) {
-    SyncMappedMemory(memory);
+    UploadMappedMemory(memory);
   }
 }
 

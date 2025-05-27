@@ -57,8 +57,8 @@ struct DeviceInfo {
   void SetFenceLocal(VkFence fence) { local_synchronization_primitives_.insert(reinterpret_cast<void*>(fence)); }
 
   void AddMappedMemory(void* local_address, void* remote_address, VkDeviceMemory memory_handle, std::size_t map_size);
-  void SyncMappedMemory(VkDeviceMemory memory);
-  void SyncMappedMemories();
+  void UploadMappedMemory(VkDeviceMemory memory);
+  void UploadMappedMemories();
   void RemoveMappedMemory(VkDeviceMemory memory_handle);
 
   void RegisterMemorySize(VkDeviceMemory memory_handle, std::size_t size);
