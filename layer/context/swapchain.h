@@ -8,6 +8,8 @@
 #include <vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
 
+#include <mutex>
+#include <semaphore>
 #include <span>
 #include <vector>
 
@@ -33,6 +35,9 @@ class SwapchainInfo {
 
   std::mutex& GetLock() { return lock_; }
 
+  void SetImageAcquired() { acquired_images_.acquire(); }
+  void SetImageReleased() { acquired_images_.release(); }
+
   ~SwapchainInfo();
 
  private:
@@ -47,6 +52,7 @@ class SwapchainInfo {
   std::vector<VkCommandBuffer> command_buffers_;
   std::vector<VkImage> local_swapchain_images_;
   std::mutex lock_;
+  std::counting_semaphore<64> acquired_images_;
 };
 
 SwapchainInfo& GetSwapchainInfo(VkSwapchainKHR swapchain);

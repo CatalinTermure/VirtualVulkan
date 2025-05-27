@@ -229,9 +229,17 @@ VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(VkDevice device, VkSwapchainK
   if (fence != VK_NULL_HANDLE) {
     device_info.SetFenceLocal(fence);
   }
+  spdlog::trace("Signaling acquire semaphore: {}, fence: {}", (void*)semaphore, (void*)fence);
+  SwapchainInfo& swapchain_info = GetSwapchainInfo(swapchain);
+  swapchain_info.SetImageAcquired();
+  spdlog::trace("Acquiring next image available for swapchain {}", (void*)swapchain);
   VkResult result = device_info.dispatch_table().AcquireNextImageKHR(device, swapchain, timeout,
                                                                      semaphore->local_handle, fence, pImageIndex);
+  spdlog::trace("Signaled acquire semaphore: {}, fence: {} for image: {}", (void*)semaphore, (void*)fence,
+                *pImageIndex);
   if (result != VK_SUCCESS) {
+    spdlog::error("AcquireNextImageKHR failed with result: {}", (int)result);
+    swapchain_info.SetImageReleased();
     semaphore->state = SemaphoreState::kUnsignaled;
     device_info.ResetFenceLocal(fence);
   }
@@ -853,6 +861,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphor
   (*pSemaphore)->remote_handle = remote_semaphore;
   (*pSemaphore)->remote_timeline_semaphore = remote_timeline_semaphore;
   (*pSemaphore)->state = SemaphoreState::kUnsignaled;
+  spdlog::info("Created semaphore: {}, remote handle: {}", (void*)(*pSemaphore), (void*)remote_semaphore);
   return result;
 }
 
@@ -1363,6 +1372,8 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
     };
     device_info.dispatch_table().QueueSubmit(*device_info.present_queue(), 1, &local_semaphores_submit_info,
                                              *aux_fence);
+    if (semaphores_to_wait_local.size())
+      spdlog::trace("VkQueueSubmit: Waiting for local semaphore {}", (void*)semaphores_to_wait_local[0]);
     g_thread_pool.push(
         [&dispatch_table = device_info.dispatch_table(), &command_stream = device_info.instance_info().command_stream(),
          remote_queue = device_info.GetRemoteHandle(queue), remote_fence = device_info.GetRemoteHandle(fence),
@@ -1409,6 +1420,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
           for (auto* semaphore : semaphores_to_signal) {
             semaphore->release();
           }
+          spdlog::trace("VkQueueSubmit: Finished signaling remote_to_local semaphores");
         });
   }
 
