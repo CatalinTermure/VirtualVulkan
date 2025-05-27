@@ -4263,5 +4263,22 @@ void PackAndCallVkGetBufferMemoryRequirements2(VvkCommandClientBidiStream& strea
   VkMemoryRequirements &pMemoryRequirements_ref_memoryRequirements = pMemoryRequirements_ref.memoryRequirements;
   FillStructFromProto(pMemoryRequirements_ref_memoryRequirements, response.vkgetbuffermemoryrequirements2().pmemoryrequirements().memoryrequirements());
 }
+void PackAndCallVkCmdCopyBufferToImage(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkImage dstImage, VkImageLayout dstImageLayout, uint32_t regionCount, const VkBufferImageCopy* pRegions) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdCopyBufferToImage");
+  request.mutable_vkcmdcopybuffertoimage()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  request.mutable_vkcmdcopybuffertoimage()->set_srcbuffer(reinterpret_cast<uint64_t>(srcBuffer));
+  request.mutable_vkcmdcopybuffertoimage()->set_dstimage(reinterpret_cast<uint64_t>(dstImage));
+  request.mutable_vkcmdcopybuffertoimage()->set_dstimagelayout(static_cast<vvk::server::VkImageLayout>(dstImageLayout));
+  request.mutable_vkcmdcopybuffertoimage()->set_regioncount(regionCount);
+  for (uint32_t pRegions_indx = 0; pRegions_indx < regionCount; pRegions_indx++) {
+    FillProtoFromStruct(request.mutable_vkcmdcopybuffertoimage()->add_pregions(), &pRegions[pRegions_indx]);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+}
 }  // namespace vvk
 

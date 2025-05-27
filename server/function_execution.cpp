@@ -98,6 +98,7 @@ const std::unordered_map<
         {"vkInvalidateMappedMemoryRanges", UnpackAndExecuteVkInvalidateMappedMemoryRanges},
         {"vkCmdCopyBuffer", UnpackAndExecuteVkCmdCopyBuffer},
         {"vkGetBufferMemoryRequirements2", UnpackAndExecuteVkGetBufferMemoryRequirements2},
+        {"vkCmdCopyBufferToImage", UnpackAndExecuteVkCmdCopyBufferToImage},
 };
 
 }  // namespace

@@ -121,6 +121,7 @@ COMMANDS_TO_GENERATE = [
     "vkGetBufferMemoryRequirements2KHR",
     "vkGetImageMemoryRequirements2KHR",
     "vkGetBufferMemoryRequirements2",
+    "vkCmdCopyBufferToImage",
 ]
 
 TRIVIAL_TYPES: dict[str, TypeInfo] = {

@@ -3784,4 +3784,13 @@ void UnpackAndExecuteVkGetBufferMemoryRequirements2(vvk::ExecutionContext& conte
   context.device_dispatch_table().GetBufferMemoryRequirements2(reinterpret_cast<VkDevice>(request.vkgetbuffermemoryrequirements2().device()), &pInfo, &pMemoryRequirements);
   FillProtoFromStruct(response->mutable_vkgetbuffermemoryrequirements2()->mutable_pmemoryrequirements(), &pMemoryRequirements);
 }
+void UnpackAndExecuteVkCmdCopyBufferToImage(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCmdCopyBufferToImage");
+
+  std::vector<VkBufferImageCopy> pRegions(request.vkcmdcopybuffertoimage().regioncount());
+  for (uint32_t i = 0; i < pRegions.size(); i++) {
+    FillStructFromProto(pRegions[i], request.vkcmdcopybuffertoimage().pregions(i));
+  }
+  context.device_dispatch_table().CmdCopyBufferToImage(reinterpret_cast<VkCommandBuffer>(request.vkcmdcopybuffertoimage().commandbuffer()), reinterpret_cast<VkBuffer>(request.vkcmdcopybuffertoimage().srcbuffer()), reinterpret_cast<VkImage>(request.vkcmdcopybuffertoimage().dstimage()), static_cast<VkImageLayout>(request.vkcmdcopybuffertoimage().dstimagelayout()), request.vkcmdcopybuffertoimage().regioncount(), pRegions.data());
+}
 

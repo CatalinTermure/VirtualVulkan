@@ -98,18 +98,19 @@ message VvkRequest {
     VkCmdBindVertexBuffersParams vkCmdBindVertexBuffers = 75;
     VkCmdDrawParams vkCmdDraw = 76;
     VkCmdCopyBufferParams vkCmdCopyBuffer = 77;
-    VkCmdCopyImageToBufferParams vkCmdCopyImageToBuffer = 78;
-    VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 79;
-    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 80;
-    VkCmdEndRenderPassParams vkCmdEndRenderPass = 81;
-    VkBindImageMemory2Params vkBindImageMemory2 = 82;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 83;
-    VkGetBufferMemoryRequirements2Params vkGetBufferMemoryRequirements2 = 84;
-    VkGetPhysicalDeviceFeatures2Params vkGetPhysicalDeviceFeatures2 = 85;
-    VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 86;
-    VkSignalSemaphoreParams vkSignalSemaphore = 87;
-    VkGetImageMemoryRequirements2KHRParams vkGetImageMemoryRequirements2KHR = 88;
-    VkGetBufferMemoryRequirements2KHRParams vkGetBufferMemoryRequirements2KHR = 89;
+    VkCmdCopyBufferToImageParams vkCmdCopyBufferToImage = 78;
+    VkCmdCopyImageToBufferParams vkCmdCopyImageToBuffer = 79;
+    VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 80;
+    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 81;
+    VkCmdEndRenderPassParams vkCmdEndRenderPass = 82;
+    VkBindImageMemory2Params vkBindImageMemory2 = 83;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 84;
+    VkGetBufferMemoryRequirements2Params vkGetBufferMemoryRequirements2 = 85;
+    VkGetPhysicalDeviceFeatures2Params vkGetPhysicalDeviceFeatures2 = 86;
+    VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 87;
+    VkSignalSemaphoreParams vkSignalSemaphore = 88;
+    VkGetImageMemoryRequirements2KHRParams vkGetImageMemoryRequirements2KHR = 89;
+    VkGetBufferMemoryRequirements2KHRParams vkGetBufferMemoryRequirements2KHR = 90;
   }
 }
 
@@ -871,6 +872,15 @@ message VkCmdCopyBufferParams {
   uint64 dstBuffer = 3; // VkBuffer dstBuffer
   uint32 regionCount = 4; // uint32_t regionCount
   repeated VkBufferCopy pRegions = 5; // const VkBufferCopy* pRegions
+}
+
+message VkCmdCopyBufferToImageParams {
+  uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+  uint64 srcBuffer = 2; // VkBuffer srcBuffer
+  uint64 dstImage = 3; // VkImage dstImage
+  VkImageLayout dstImageLayout = 4; // VkImageLayout dstImageLayout
+  uint32 regionCount = 5; // uint32_t regionCount
+  repeated VkBufferImageCopy pRegions = 6; // const VkBufferImageCopy* pRegions
 }
 
 message VkCmdCopyImageToBufferParams {

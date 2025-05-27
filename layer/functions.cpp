@@ -1699,4 +1699,13 @@ VKAPI_ATTR void VKAPI_CALL GetBufferMemoryRequirements2(VkDevice device, const V
                                             device_info.instance_info().GetRemoteHandle(device), pInfo,
                                             pMemoryRequirements);
 }
+
+VKAPI_ATTR void VKAPI_CALL CmdCopyBufferToImage(VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkImage dstImage,
+                                                VkImageLayout dstImageLayout, uint32_t regionCount,
+                                                const VkBufferImageCopy* pRegions) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdCopyBufferToImage(device_info.instance_info().command_stream(),
+                                    device_info.GetRemoteHandle(commandBuffer), srcBuffer, dstImage, dstImageLayout,
+                                    regionCount, pRegions);
+}
 }  // namespace vvk
