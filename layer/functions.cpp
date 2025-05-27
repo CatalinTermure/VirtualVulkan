@@ -1708,4 +1708,14 @@ VKAPI_ATTR void VKAPI_CALL CmdCopyBufferToImage(VkCommandBuffer commandBuffer, V
                                     device_info.GetRemoteHandle(commandBuffer), srcBuffer, dstImage, dstImageLayout,
                                     regionCount, pRegions);
 }
+
+VKAPI_ATTR VkResult VKAPI_CALL CreateComputePipelines(VkDevice device, VkPipelineCache pipelineCache,
+                                                      uint32_t createInfoCount,
+                                                      const VkComputePipelineCreateInfo* pCreateInfos,
+                                                      const VkAllocationCallbacks* pAllocator, VkPipeline* pPipelines) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  return PackAndCallVkCreateComputePipelines(device_info.instance_info().command_stream(),
+                                             device_info.instance_info().GetRemoteHandle(device), pipelineCache,
+                                             createInfoCount, pCreateInfos, pAllocator, pPipelines);
+}
 }  // namespace vvk

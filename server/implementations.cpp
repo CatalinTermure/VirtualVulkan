@@ -61,6 +61,7 @@ void FillStructFromProto(VkCommandBufferBeginInfo& original_struct, const vvk::s
 void FillStructFromProto(VkCommandBufferInheritanceInfo& original_struct, const vvk::server::VkCommandBufferInheritanceInfo& proto);
 void FillStructFromProto(VkCommandPoolCreateInfo& original_struct, const vvk::server::VkCommandPoolCreateInfo& proto);
 void FillStructFromProto(VkComponentMapping& original_struct, const vvk::server::VkComponentMapping& proto);
+void FillStructFromProto(VkComputePipelineCreateInfo& original_struct, const vvk::server::VkComputePipelineCreateInfo& proto);
 void FillStructFromProto(VkConformanceVersion& original_struct, const vvk::server::VkConformanceVersion& proto);
 void FillStructFromProto(VkCopyDescriptorSet& original_struct, const vvk::server::VkCopyDescriptorSet& proto);
 void FillStructFromProto(VkDescriptorBufferInfo& original_struct, const vvk::server::VkDescriptorBufferInfo& proto);
@@ -1054,6 +1055,24 @@ void FillStructFromProto(VkComponentMapping& original_struct, const vvk::server:
   original_struct.g = static_cast<VkComponentSwizzle>(proto.g());
   original_struct.b = static_cast<VkComponentSwizzle>(proto.b());
   original_struct.a = static_cast<VkComponentSwizzle>(proto.a());
+}
+void FillStructFromProto(VkComputePipelineCreateInfo& original_struct, const vvk::server::VkComputePipelineCreateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+  original_struct.pNext = nullptr;  // Empty pNext chain
+  if (proto.has_flags()) {
+    original_struct.flags = static_cast<VkPipelineCreateFlags>(proto.flags());
+  } else {
+    original_struct.flags = VkPipelineCreateFlags{};
+  }
+  VkPipelineShaderStageCreateInfo &original_struct_stage = original_struct.stage;
+  FillStructFromProto(original_struct_stage, proto.stage());
+  original_struct.layout = reinterpret_cast<VkPipelineLayout>(proto.layout());
+  if (proto.has_basepipelinehandle()) {
+    original_struct.basePipelineHandle = reinterpret_cast<VkPipeline>(proto.basepipelinehandle());
+  } else {
+    original_struct.basePipelineHandle = VkPipeline{};
+  }
+  original_struct.basePipelineIndex = proto.basepipelineindex();
 }
 void FillStructFromProto(VkConformanceVersion& original_struct, const vvk::server::VkConformanceVersion& proto) {
   original_struct.major = static_cast<uint8_t>(proto.major());
@@ -3792,5 +3811,28 @@ void UnpackAndExecuteVkCmdCopyBufferToImage(vvk::ExecutionContext& context, cons
     FillStructFromProto(pRegions[i], request.vkcmdcopybuffertoimage().pregions(i));
   }
   context.device_dispatch_table().CmdCopyBufferToImage(reinterpret_cast<VkCommandBuffer>(request.vkcmdcopybuffertoimage().commandbuffer()), reinterpret_cast<VkBuffer>(request.vkcmdcopybuffertoimage().srcbuffer()), reinterpret_cast<VkImage>(request.vkcmdcopybuffertoimage().dstimage()), static_cast<VkImageLayout>(request.vkcmdcopybuffertoimage().dstimagelayout()), request.vkcmdcopybuffertoimage().regioncount(), pRegions.data());
+}
+void UnpackAndExecuteVkCreateComputePipelines(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCreateComputePipelines");
+
+  std::vector<VkComputePipelineCreateInfo> pCreateInfos(request.vkcreatecomputepipelines().createinfocount());
+  for (uint32_t i = 0; i < pCreateInfos.size(); i++) {
+    FillStructFromProto(pCreateInfos[i], request.vkcreatecomputepipelines().pcreateinfos(i));
+  }
+  std::vector<VkPipeline> pPipelines(request.vkcreatecomputepipelines().createinfocount());
+  VkResult result = context.device_dispatch_table().CreateComputePipelines(reinterpret_cast<VkDevice>(request.vkcreatecomputepipelines().device()), reinterpret_cast<VkPipelineCache>(request.vkcreatecomputepipelines().pipelinecache()), request.vkcreatecomputepipelines().createinfocount(), pCreateInfos.data(), nullptr, pPipelines.data());
+  for (VkPipeline pPipelines_elem : pPipelines) {
+    response->mutable_vkcreatecomputepipelines()->add_ppipelines(reinterpret_cast<uint64_t>(pPipelines_elem));
+  }
+  response->mutable_vkcreatecomputepipelines()->set_result(static_cast<vvk::server::VkResult>(result));
+  for (uint32_t i = 0; i < pCreateInfos.size(); i++) {
+    VkComputePipelineCreateInfo& pCreateInfos_ref = pCreateInfos[i];
+    const VkPipelineShaderStageCreateInfo &pCreateInfos_ref_stage = pCreateInfos_ref.stage;
+    if (request.vkcreatecomputepipelines().pcreateinfos(i).stage().has_pspecializationinfo()) {
+      const VkSpecializationInfo &pCreateInfos_ref_stage_pSpecializationInfo = *pCreateInfos_ref_stage.pSpecializationInfo;
+      delete[] pCreateInfos_ref_stage_pSpecializationInfo.pMapEntries;
+      delete pCreateInfos_ref_stage.pSpecializationInfo;
+    }
+  }
 }
 

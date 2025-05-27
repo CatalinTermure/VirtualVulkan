@@ -28,6 +28,7 @@ void FillProtoFromStruct(vvk::server::VkCommandBufferBeginInfo* proto, const VkC
 void FillProtoFromStruct(vvk::server::VkCommandBufferInheritanceInfo* proto, const VkCommandBufferInheritanceInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkCommandPoolCreateInfo* proto, const VkCommandPoolCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkComponentMapping* proto, const VkComponentMapping* original_struct);
+void FillProtoFromStruct(vvk::server::VkComputePipelineCreateInfo* proto, const VkComputePipelineCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkConformanceVersion* proto, const VkConformanceVersion* original_struct);
 void FillProtoFromStruct(vvk::server::VkCopyDescriptorSet* proto, const VkCopyDescriptorSet* original_struct);
 void FillProtoFromStruct(vvk::server::VkDescriptorBufferInfo* proto, const VkDescriptorBufferInfo* original_struct);
@@ -306,6 +307,20 @@ void FillProtoFromStruct(vvk::server::VkComponentMapping* proto, const VkCompone
   proto->set_g(static_cast<vvk::server::VkComponentSwizzle>(original_struct->g));
   proto->set_b(static_cast<vvk::server::VkComponentSwizzle>(original_struct->b));
   proto->set_a(static_cast<vvk::server::VkComponentSwizzle>(original_struct->a));
+}
+void FillProtoFromStruct(vvk::server::VkComputePipelineCreateInfo* proto, const VkComputePipelineCreateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  if (original_struct->flags) {
+    proto->set_flags(original_struct->flags);
+  }
+  FillProtoFromStruct(proto->mutable_stage(), &original_struct->stage);
+  proto->set_layout(reinterpret_cast<uint64_t>(original_struct->layout));
+  if (original_struct->basePipelineHandle) {
+    proto->set_basepipelinehandle(reinterpret_cast<uint64_t>(original_struct->basePipelineHandle));
+  }
+  proto->set_basepipelineindex(original_struct->basePipelineIndex);
 }
 void FillProtoFromStruct(vvk::server::VkConformanceVersion* proto, const VkConformanceVersion* original_struct) {
   proto->set_major(static_cast<uint32_t>(original_struct->major));
@@ -4279,6 +4294,31 @@ void PackAndCallVkCmdCopyBufferToImage(VvkCommandClientBidiStream& stream, VkCom
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
+}
+VkResult PackAndCallVkCreateComputePipelines(VvkCommandClientBidiStream& stream, VkDevice device, VkPipelineCache pipelineCache, uint32_t createInfoCount, const VkComputePipelineCreateInfo* pCreateInfos, const VkAllocationCallbacks* pAllocator, VkPipeline* pPipelines) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCreateComputePipelines");
+  request.mutable_vkcreatecomputepipelines()->set_device(reinterpret_cast<uint64_t>(device));
+  if (pipelineCache) {
+    request.mutable_vkcreatecomputepipelines()->set_pipelinecache(reinterpret_cast<uint64_t>(pipelineCache));
+  }
+  request.mutable_vkcreatecomputepipelines()->set_createinfocount(createInfoCount);
+  for (uint32_t pCreateInfos_indx = 0; pCreateInfos_indx < createInfoCount; pCreateInfos_indx++) {
+    FillProtoFromStruct(request.mutable_vkcreatecomputepipelines()->add_pcreateinfos(), &pCreateInfos[pCreateInfos_indx]);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  for (uint32_t i = 0; i < createInfoCount; i++) {
+    pPipelines[i] = reinterpret_cast<VkPipeline>(response.vkcreatecomputepipelines().ppipelines(i));
+  }
+  return static_cast<VkResult>(response.vkcreatecomputepipelines().result());
 }
 }  // namespace vvk
 

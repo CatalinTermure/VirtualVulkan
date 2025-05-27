@@ -3530,6 +3530,14 @@ message VkPipelineShaderStageCreateInfo {
   optional VkSpecializationInfo pSpecializationInfo = 6; // const VkSpecializationInfo* pSpecializationInfo
 }
 
+message VkComputePipelineCreateInfo {
+  optional uint32 flags = 1; // VkPipelineCreateFlags flags
+  VkPipelineShaderStageCreateInfo stage = 2; // VkPipelineShaderStageCreateInfo stage
+  uint64 layout = 3; // VkPipelineLayout layout
+  optional uint64 basePipelineHandle = 4; // VkPipeline basePipelineHandle
+  int32 basePipelineIndex = 5; // int32_t basePipelineIndex
+}
+
 message VkVertexInputBindingDescription {
   uint32 binding = 1; // uint32_t binding
   uint32 stride = 2; // uint32_t stride
