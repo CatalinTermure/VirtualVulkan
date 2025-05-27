@@ -134,92 +134,91 @@ VkResult UncompressedFrameStream::PresentFrame(VkQueue queue, const VkPresentInf
     throw std::runtime_error("No fences to wait for");
   }
 
-  std::thread runner_thread(
-      [queue, original_present_info, this, remote_semaphores_to_wait = std::move(remote_semaphores_to_wait),
-       &instance_info, &device_info, present_info, local_semaphores_to_wait = std::move(local_semaphores_to_wait),
-       swapchains_to_present = std::move(swapchains_to_present), image_indices = std::move(image_indices),
-       swapchain_infos = std::move(swapchain_infos), &dispatch_table]() {
-        VkDevice local_device = GetDeviceForQueue(queue);
-        VkQueue local_queue = *device_info.present_queue();
-        for (auto *semaphore : remote_semaphores_to_wait) {
-          semaphore->remote_to_local_semaphore.acquire();
-          // Unsignal the semaphore on the remote side
-          {
-            VkPipelineStageFlags wait_dst_stage_mask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-            VkSubmitInfo submit = {
-                .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-                .pNext = nullptr,
-                .waitSemaphoreCount = 1,
-                .pWaitSemaphores = &semaphore->remote_handle,
-                .pWaitDstStageMask = &wait_dst_stage_mask,
-                .commandBufferCount = 0,
-                .pCommandBuffers = nullptr,
-                .signalSemaphoreCount = 0,
-                .pSignalSemaphores = nullptr,
-            };
-            PackAndCallVkQueueSubmit(instance_info.command_stream(), device_info.GetRemoteHandle(queue), 1, &submit,
-                                     nullptr);
-          }
-        }
+  // std::thread runner_thread(
+  //     [queue, original_present_info, this, remote_semaphores_to_wait = std::move(remote_semaphores_to_wait),
+  //      &instance_info, &device_info, present_info, local_semaphores_to_wait = std::move(local_semaphores_to_wait),
+  //      swapchains_to_present = std::move(swapchains_to_present), image_indices = std::move(image_indices),
+  //      swapchain_infos = std::move(swapchain_infos), &dispatch_table]() {
+  VkDevice local_device = GetDeviceForQueue(queue);
+  VkQueue local_queue = *device_info.present_queue();
+  for (auto *semaphore : remote_semaphores_to_wait) {
+    semaphore->remote_to_local_semaphore.acquire();
+    // Unsignal the semaphore on the remote side
+    {
+      VkPipelineStageFlags wait_dst_stage_mask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+      VkSubmitInfo submit = {
+          .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+          .pNext = nullptr,
+          .waitSemaphoreCount = 1,
+          .pWaitSemaphores = &semaphore->remote_handle,
+          .pWaitDstStageMask = &wait_dst_stage_mask,
+          .commandBufferCount = 0,
+          .pCommandBuffers = nullptr,
+          .signalSemaphoreCount = 0,
+          .pSignalSemaphores = nullptr,
+      };
+      PackAndCallVkQueueSubmit(instance_info.command_stream(), device_info.GetRemoteHandle(queue), 1, &submit, nullptr);
+    }
+  }
 
-        std::vector<grpc::ClientContext> client_contexts(present_info.swapchainCount);
-        std::vector<std::unique_ptr<grpc::ClientReader<vvk::server::VvkGetFrameResponse>>> client_readers;
-        client_readers.reserve(present_info.swapchainCount);
-        for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
-          vvk::server::VvkGetFrameRequest request;
-          bool swapchain_exists = false;
-          for (auto &swapchain_present_info : swapchains) {
-            if (swapchain_present_info.swapchain == present_info.pSwapchains[i]) {
-              request.set_session_key(swapchain_present_info.remote_session_key);
-              request.set_frame_key(swapchain_present_info.remote_frame_keys[present_info.pImageIndices[i]]);
-              request.set_width(swapchain_present_info.image_extent.width);
-              request.set_height(swapchain_present_info.image_extent.height);
-              swapchain_exists = true;
-              break;
-            }
-          }
-          if (!swapchain_exists) {
-            spdlog::info("Swapchain {} not found in UncompressedFrameStream during present",
-                         (void *)present_info.pSwapchains[i]);
-            return;
-          }
-          client_readers.emplace_back(instance_info.stub().RequestFrame(&client_contexts[i], request));
-        }
+  std::vector<grpc::ClientContext> client_contexts(present_info.swapchainCount);
+  std::vector<std::unique_ptr<grpc::ClientReader<vvk::server::VvkGetFrameResponse>>> client_readers;
+  client_readers.reserve(present_info.swapchainCount);
+  for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
+    vvk::server::VvkGetFrameRequest request;
+    bool swapchain_exists = false;
+    for (auto &swapchain_present_info : swapchains) {
+      if (swapchain_present_info.swapchain == present_info.pSwapchains[i]) {
+        request.set_session_key(swapchain_present_info.remote_session_key);
+        request.set_frame_key(swapchain_present_info.remote_frame_keys[present_info.pImageIndices[i]]);
+        request.set_width(swapchain_present_info.image_extent.width);
+        request.set_height(swapchain_present_info.image_extent.height);
+        swapchain_exists = true;
+        break;
+      }
+    }
+    if (!swapchain_exists) {
+      spdlog::info("Swapchain {} not found in UncompressedFrameStream during present",
+                   (void *)present_info.pSwapchains[i]);
+      return VK_ERROR_UNKNOWN;
+    }
+    client_readers.emplace_back(instance_info.stub().RequestFrame(&client_contexts[i], request));
+  }
 
-        {
-          std::vector<VkFenceProxy> fences;
-          fences.reserve(present_info.swapchainCount);
-          for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
-            fences.emplace_back(device_info.fence_pool().GetFence());
-            vvk::server::VvkGetFrameResponse response;
-            std::string data;
-            while (client_readers[i]->Read(&response)) {
-              data.append(response.frame_data());
-            }
-            client_readers[i]->Finish();
+  {
+    std::vector<VkFenceProxy> fences;
+    fences.reserve(present_info.swapchainCount);
+    for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
+      fences.emplace_back(device_info.fence_pool().GetFence());
+      vvk::server::VvkGetFrameResponse response;
+      std::string data;
+      while (client_readers[i]->Read(&response)) {
+        data.append(response.frame_data());
+      }
+      client_readers[i]->Finish();
 
-            swapchain_infos[i]->CopyMemoryToImage(present_info.pImageIndices[i], data, {}, {}, {}, *fences.back());
-          }
+      swapchain_infos[i]->CopyMemoryToImage(present_info.pImageIndices[i], data, {}, {}, {}, *fences.back());
+    }
 
-          std::vector<VkFence> fences_to_wait;
-          fences_to_wait.reserve(fences.size());
-          for (auto &fence : fences) {
-            fences_to_wait.push_back(*fence);
-          }
+    std::vector<VkFence> fences_to_wait;
+    fences_to_wait.reserve(fences.size());
+    for (auto &fence : fences) {
+      fences_to_wait.push_back(*fence);
+    }
 
-          dispatch_table.WaitForFences(local_device, fences_to_wait.size(), fences_to_wait.data(), VK_TRUE, UINT64_MAX);
-          dispatch_table.ResetFences(local_device, fences_to_wait.size(), fences_to_wait.data());
-        }
+    dispatch_table.WaitForFences(local_device, fences_to_wait.size(), fences_to_wait.data(), VK_TRUE, UINT64_MAX);
+    dispatch_table.ResetFences(local_device, fences_to_wait.size(), fences_to_wait.data());
+  }
 
-        dispatch_table.QueuePresentKHR(local_queue, &present_info);
-        for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
-          swapchain_infos[i]->SetImageReleased();
-          spdlog::info("Released image {} for swapchain {}", present_info.pImageIndices[i],
-                       (void *)present_info.pSwapchains[i]);
-        }
-      });
+  dispatch_table.QueuePresentKHR(local_queue, &present_info);
+  for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
+    swapchain_infos[i]->SetImageReleased();
+    spdlog::info("Released image {} for swapchain {}", present_info.pImageIndices[i],
+                 (void *)present_info.pSwapchains[i]);
+  }
+  // });
 
-  runner_thread.detach();
+  // runner_thread.detach();
 
   return VK_SUCCESS;
 }
