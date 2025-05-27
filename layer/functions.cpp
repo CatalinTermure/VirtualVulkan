@@ -1659,4 +1659,15 @@ VKAPI_ATTR void VKAPI_CALL CmdBindDescriptorSets(VkCommandBuffer commandBuffer, 
                                      device_info.GetRemoteHandle(commandBuffer), pipelineBindPoint, layout, firstSet,
                                      descriptorSetCount, pDescriptorSets, dynamicOffsetCount, pDynamicOffsets);
 }
+
+VKAPI_ATTR VkResult VKAPI_CALL FlushMappedMemoryRanges(VkDevice device, uint32_t memoryRangeCount,
+                                                       const VkMappedMemoryRange* pMemoryRanges) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  for (uint32_t i = 0; i < memoryRangeCount; i++) {
+    device_info.UploadMappedMemory(pMemoryRanges[i].memory);
+  }
+  return PackAndCallVkFlushMappedMemoryRanges(device_info.instance_info().command_stream(),
+                                              device_info.instance_info().GetRemoteHandle(device), memoryRangeCount,
+                                              pMemoryRanges);
+}
 }  // namespace vvk

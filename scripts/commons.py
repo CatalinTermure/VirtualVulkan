@@ -114,6 +114,7 @@ COMMANDS_TO_GENERATE = [
     "vkUpdateDescriptorSets",
     "vkResetCommandBuffer",
     "vkCmdBindDescriptorSets",
+    "vkFlushMappedMemoryRanges",
 ]
 
 TRIVIAL_TYPES: dict[str, TypeInfo] = {

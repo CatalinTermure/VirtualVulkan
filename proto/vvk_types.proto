@@ -3414,6 +3414,12 @@ message VkSubmitInfo {
   repeated uint64 pSignalSemaphores = 8; // const VkSemaphore* pSignalSemaphores
 }
 
+message VkMappedMemoryRange {
+  uint64 memory = 1; // VkDeviceMemory memory
+  uint64 offset = 2; // VkDeviceSize offset
+  uint64 size = 3; // VkDeviceSize size
+}
+
 message VkMemoryAllocateInfo {
   uint64 allocationSize = 1; // VkDeviceSize allocationSize
   uint32 memoryTypeIndex = 2; // uint32_t memoryTypeIndex

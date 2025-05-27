@@ -83,6 +83,7 @@ void FillStructFromProto(VkImageSubresourceLayers& original_struct, const vvk::s
 void FillStructFromProto(VkImageSubresourceRange& original_struct, const vvk::server::VkImageSubresourceRange& proto);
 void FillStructFromProto(VkImageViewCreateInfo& original_struct, const vvk::server::VkImageViewCreateInfo& proto);
 void FillStructFromProto(VkInstanceCreateInfo& original_struct, const vvk::server::VkInstanceCreateInfo& proto);
+void FillStructFromProto(VkMappedMemoryRange& original_struct, const vvk::server::VkMappedMemoryRange& proto);
 void FillStructFromProto(VkMemoryAllocateInfo& original_struct, const vvk::server::VkMemoryAllocateInfo& proto);
 void FillStructFromProto(VkMemoryBarrier& original_struct, const vvk::server::VkMemoryBarrier& proto);
 void FillStructFromProto(VkMemoryHeap& original_struct, const vvk::server::VkMemoryHeap& proto);
@@ -1489,6 +1490,13 @@ void FillStructFromProto(VkInstanceCreateInfo& original_struct, const vvk::serve
   for (int ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < proto.ppenabledextensionnames_size(); ppEnabledExtensionNames_indx++) {
     original_struct_ppEnabledExtensionNames[ppEnabledExtensionNames_indx] = proto.ppenabledextensionnames(ppEnabledExtensionNames_indx).data();
   }
+}
+void FillStructFromProto(VkMappedMemoryRange& original_struct, const vvk::server::VkMappedMemoryRange& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+  original_struct.pNext = nullptr;  // Empty pNext chain
+  original_struct.memory = reinterpret_cast<VkDeviceMemory>(proto.memory());
+  original_struct.offset = static_cast<VkDeviceSize>(proto.offset());
+  original_struct.size = static_cast<VkDeviceSize>(proto.size());
 }
 void FillStructFromProto(VkMemoryAllocateInfo& original_struct, const vvk::server::VkMemoryAllocateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -3653,5 +3661,15 @@ void UnpackAndExecuteVkCmdBindDescriptorSets(vvk::ExecutionContext& context, con
   assert(request.method() == "vkCmdBindDescriptorSets");
 
   context.device_dispatch_table().CmdBindDescriptorSets(reinterpret_cast<VkCommandBuffer>(request.vkcmdbinddescriptorsets().commandbuffer()), static_cast<VkPipelineBindPoint>(request.vkcmdbinddescriptorsets().pipelinebindpoint()), reinterpret_cast<VkPipelineLayout>(request.vkcmdbinddescriptorsets().layout()), request.vkcmdbinddescriptorsets().firstset(), request.vkcmdbinddescriptorsets().descriptorsetcount(), reinterpret_cast<const VkDescriptorSet*>(request.vkcmdbinddescriptorsets().pdescriptorsets().data()), request.vkcmdbinddescriptorsets().dynamicoffsetcount(), reinterpret_cast<const uint32_t*>(request.vkcmdbinddescriptorsets().pdynamicoffsets().data()));
+}
+void UnpackAndExecuteVkFlushMappedMemoryRanges(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkFlushMappedMemoryRanges");
+
+  std::vector<VkMappedMemoryRange> pMemoryRanges(request.vkflushmappedmemoryranges().memoryrangecount());
+  for (uint32_t i = 0; i < pMemoryRanges.size(); i++) {
+    FillStructFromProto(pMemoryRanges[i], request.vkflushmappedmemoryranges().pmemoryranges(i));
+  }
+  VkResult result = context.device_dispatch_table().FlushMappedMemoryRanges(reinterpret_cast<VkDevice>(request.vkflushmappedmemoryranges().device()), request.vkflushmappedmemoryranges().memoryrangecount(), pMemoryRanges.data());
+  response->mutable_vkflushmappedmemoryranges()->set_result(static_cast<vvk::server::VkResult>(result));
 }
 

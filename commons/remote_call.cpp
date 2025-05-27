@@ -51,6 +51,7 @@ void FillProtoFromStruct(vvk::server::VkImageSubresourceLayers* proto, const VkI
 void FillProtoFromStruct(vvk::server::VkImageSubresourceRange* proto, const VkImageSubresourceRange* original_struct);
 void FillProtoFromStruct(vvk::server::VkImageViewCreateInfo* proto, const VkImageViewCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkInstanceCreateInfo* proto, const VkInstanceCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkMappedMemoryRange* proto, const VkMappedMemoryRange* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryAllocateInfo* proto, const VkMemoryAllocateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryBarrier* proto, const VkMemoryBarrier* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryHeap* proto, const VkMemoryHeap* original_struct);
@@ -650,6 +651,14 @@ void FillProtoFromStruct(vvk::server::VkInstanceCreateInfo* proto, const VkInsta
   for (uint32_t ppEnabledExtensionNames_indx = 0; ppEnabledExtensionNames_indx < proto_ppEnabledExtensionNames_length; ppEnabledExtensionNames_indx++) {
     proto->add_ppenabledextensionnames(original_struct->ppEnabledExtensionNames[ppEnabledExtensionNames_indx]);
   }
+}
+void FillProtoFromStruct(vvk::server::VkMappedMemoryRange* proto, const VkMappedMemoryRange* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_memory(reinterpret_cast<uint64_t>(original_struct->memory));
+  proto->set_offset(static_cast<uint64_t>(original_struct->offset));
+  proto->set_size(static_cast<uint64_t>(original_struct->size));
 }
 void FillProtoFromStruct(vvk::server::VkMemoryAllocateInfo* proto, const VkMemoryAllocateInfo* original_struct) {
   if (original_struct->pNext) {
@@ -4055,6 +4064,25 @@ void PackAndCallVkCmdBindDescriptorSets(VvkCommandClientBidiStream& stream, VkCo
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
+}
+VkResult PackAndCallVkFlushMappedMemoryRanges(VvkCommandClientBidiStream& stream, VkDevice device, uint32_t memoryRangeCount, const VkMappedMemoryRange* pMemoryRanges) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkFlushMappedMemoryRanges");
+  request.mutable_vkflushmappedmemoryranges()->set_device(reinterpret_cast<uint64_t>(device));
+  request.mutable_vkflushmappedmemoryranges()->set_memoryrangecount(memoryRangeCount);
+  for (uint32_t pMemoryRanges_indx = 0; pMemoryRanges_indx < memoryRangeCount; pMemoryRanges_indx++) {
+    FillProtoFromStruct(request.mutable_vkflushmappedmemoryranges()->add_pmemoryranges(), &pMemoryRanges[pMemoryRanges_indx]);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  return static_cast<VkResult>(response.vkflushmappedmemoryranges().result());
 }
 }  // namespace vvk
 

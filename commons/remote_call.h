@@ -91,6 +91,7 @@ VkResult PackAndCallVkFreeDescriptorSets(VvkCommandClientBidiStream& stream, VkD
 void PackAndCallVkUpdateDescriptorSets(VvkCommandClientBidiStream& stream, VkDevice device, uint32_t descriptorWriteCount, const VkWriteDescriptorSet* pDescriptorWrites, uint32_t descriptorCopyCount, const VkCopyDescriptorSet* pDescriptorCopies);
 VkResult PackAndCallVkResetCommandBuffer(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkCommandBufferResetFlags flags);
 void PackAndCallVkCmdBindDescriptorSets(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint, VkPipelineLayout layout, uint32_t firstSet, uint32_t descriptorSetCount, const VkDescriptorSet* pDescriptorSets, uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets);
+VkResult PackAndCallVkFlushMappedMemoryRanges(VvkCommandClientBidiStream& stream, VkDevice device, uint32_t memoryRangeCount, const VkMappedMemoryRange* pMemoryRanges);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

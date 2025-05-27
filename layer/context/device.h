@@ -60,6 +60,9 @@ struct DeviceInfo {
   void UploadMappedMemory(VkDeviceMemory memory);
   void UploadMappedMemories();
   void RemoveMappedMemory(VkDeviceMemory memory_handle);
+  const MappedMemoryInfo& GetMappedMemoryInfo(VkDeviceMemory memory_handle) const {
+    return mapped_memory_infos_.at(memory_handle);
+  }
 
   void RegisterMemorySize(VkDeviceMemory memory_handle, std::size_t size);
   std::size_t GetMemorySize(VkDeviceMemory memory_handle);
