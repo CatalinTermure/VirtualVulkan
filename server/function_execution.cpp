@@ -100,6 +100,7 @@ const std::unordered_map<
         {"vkGetBufferMemoryRequirements2", UnpackAndExecuteVkGetBufferMemoryRequirements2},
         {"vkCmdCopyBufferToImage", UnpackAndExecuteVkCmdCopyBufferToImage},
         {"vkCreateComputePipelines", UnpackAndExecuteVkCreateComputePipelines},
+        {"vkCmdDispatch", UnpackAndExecuteVkCmdDispatch},
 };
 
 }  // namespace

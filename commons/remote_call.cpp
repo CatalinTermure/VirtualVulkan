@@ -4320,5 +4320,18 @@ VkResult PackAndCallVkCreateComputePipelines(VvkCommandClientBidiStream& stream,
   }
   return static_cast<VkResult>(response.vkcreatecomputepipelines().result());
 }
+void PackAndCallVkCmdDispatch(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdDispatch");
+  request.mutable_vkcmddispatch()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  request.mutable_vkcmddispatch()->set_groupcountx(groupCountX);
+  request.mutable_vkcmddispatch()->set_groupcounty(groupCountY);
+  request.mutable_vkcmddispatch()->set_groupcountz(groupCountZ);
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+}
 }  // namespace vvk
 

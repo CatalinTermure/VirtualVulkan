@@ -3835,4 +3835,9 @@ void UnpackAndExecuteVkCreateComputePipelines(vvk::ExecutionContext& context, co
     }
   }
 }
+void UnpackAndExecuteVkCmdDispatch(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCmdDispatch");
+
+  context.device_dispatch_table().CmdDispatch(reinterpret_cast<VkCommandBuffer>(request.vkcmddispatch().commandbuffer()), request.vkcmddispatch().groupcountx(), request.vkcmddispatch().groupcounty(), request.vkcmddispatch().groupcountz());
+}
 

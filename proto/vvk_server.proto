@@ -98,20 +98,21 @@ message VvkRequest {
     VkCmdBindDescriptorSetsParams vkCmdBindDescriptorSets = 75;
     VkCmdBindVertexBuffersParams vkCmdBindVertexBuffers = 76;
     VkCmdDrawParams vkCmdDraw = 77;
-    VkCmdCopyBufferParams vkCmdCopyBuffer = 78;
-    VkCmdCopyBufferToImageParams vkCmdCopyBufferToImage = 79;
-    VkCmdCopyImageToBufferParams vkCmdCopyImageToBuffer = 80;
-    VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 81;
-    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 82;
-    VkCmdEndRenderPassParams vkCmdEndRenderPass = 83;
-    VkBindImageMemory2Params vkBindImageMemory2 = 84;
-    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 85;
-    VkGetBufferMemoryRequirements2Params vkGetBufferMemoryRequirements2 = 86;
-    VkGetPhysicalDeviceFeatures2Params vkGetPhysicalDeviceFeatures2 = 87;
-    VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 88;
-    VkSignalSemaphoreParams vkSignalSemaphore = 89;
-    VkGetImageMemoryRequirements2KHRParams vkGetImageMemoryRequirements2KHR = 90;
-    VkGetBufferMemoryRequirements2KHRParams vkGetBufferMemoryRequirements2KHR = 91;
+    VkCmdDispatchParams vkCmdDispatch = 78;
+    VkCmdCopyBufferParams vkCmdCopyBuffer = 79;
+    VkCmdCopyBufferToImageParams vkCmdCopyBufferToImage = 80;
+    VkCmdCopyImageToBufferParams vkCmdCopyImageToBuffer = 81;
+    VkCmdPipelineBarrierParams vkCmdPipelineBarrier = 82;
+    VkCmdBeginRenderPassParams vkCmdBeginRenderPass = 83;
+    VkCmdEndRenderPassParams vkCmdEndRenderPass = 84;
+    VkBindImageMemory2Params vkBindImageMemory2 = 85;
+    VkGetImageMemoryRequirements2Params vkGetImageMemoryRequirements2 = 86;
+    VkGetBufferMemoryRequirements2Params vkGetBufferMemoryRequirements2 = 87;
+    VkGetPhysicalDeviceFeatures2Params vkGetPhysicalDeviceFeatures2 = 88;
+    VkGetPhysicalDeviceProperties2Params vkGetPhysicalDeviceProperties2 = 89;
+    VkSignalSemaphoreParams vkSignalSemaphore = 90;
+    VkGetImageMemoryRequirements2KHRParams vkGetImageMemoryRequirements2KHR = 91;
+    VkGetBufferMemoryRequirements2KHRParams vkGetBufferMemoryRequirements2KHR = 92;
   }
 }
 
@@ -880,6 +881,13 @@ message VkCmdDrawParams {
   uint32 instanceCount = 3; // uint32_t instanceCount
   uint32 firstVertex = 4; // uint32_t firstVertex
   uint32 firstInstance = 5; // uint32_t firstInstance
+}
+
+message VkCmdDispatchParams {
+  uint64 commandBuffer = 1; // VkCommandBuffer commandBuffer
+  uint32 groupCountX = 2; // uint32_t groupCountX
+  uint32 groupCountY = 3; // uint32_t groupCountY
+  uint32 groupCountZ = 4; // uint32_t groupCountZ
 }
 
 message VkCmdCopyBufferParams {

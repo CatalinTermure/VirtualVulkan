@@ -1739,4 +1739,11 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateComputePipelines(VkDevice device, VkPipelin
                                              device_info.instance_info().GetRemoteHandle(device), pipelineCache,
                                              createInfoCount, pCreateInfos, pAllocator, pPipelines);
 }
+
+VKAPI_ATTR void VKAPI_CALL CmdDispatch(VkCommandBuffer commandBuffer, uint32_t groupCountX, uint32_t groupCountY,
+                                       uint32_t groupCountZ) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdDispatch(device_info.instance_info().command_stream(), device_info.GetRemoteHandle(commandBuffer),
+                           groupCountX, groupCountY, groupCountZ);
+}
 }  // namespace vvk

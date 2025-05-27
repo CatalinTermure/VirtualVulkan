@@ -123,6 +123,7 @@ COMMANDS_TO_GENERATE = [
     "vkGetBufferMemoryRequirements2",
     "vkCmdCopyBufferToImage",
     "vkCreateComputePipelines",
+    "vkCmdDispatch",
 ]
 
 TRIVIAL_TYPES: dict[str, TypeInfo] = {

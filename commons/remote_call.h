@@ -99,6 +99,7 @@ void PackAndCallVkGetImageMemoryRequirements2KHR(VvkCommandClientBidiStream& str
 void PackAndCallVkGetBufferMemoryRequirements2(VvkCommandClientBidiStream& stream, VkDevice device, const VkBufferMemoryRequirementsInfo2* pInfo, VkMemoryRequirements2* pMemoryRequirements);
 void PackAndCallVkCmdCopyBufferToImage(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkImage dstImage, VkImageLayout dstImageLayout, uint32_t regionCount, const VkBufferImageCopy* pRegions);
 VkResult PackAndCallVkCreateComputePipelines(VvkCommandClientBidiStream& stream, VkDevice device, VkPipelineCache pipelineCache, uint32_t createInfoCount, const VkComputePipelineCreateInfo* pCreateInfos, const VkAllocationCallbacks* pAllocator, VkPipeline* pPipelines);
+void PackAndCallVkCmdDispatch(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

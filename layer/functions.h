@@ -413,6 +413,11 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateComputePipelines(
     const VkComputePipelineCreateInfo*          pCreateInfos,
     const VkAllocationCallbacks*                pAllocator,
     VkPipeline*                                 pPipelines);
+VKAPI_ATTR void VKAPI_CALL CmdDispatch(
+    VkCommandBuffer                             commandBuffer,
+    uint32_t                                    groupCountX,
+    uint32_t                                    groupCountY,
+    uint32_t                                    groupCountZ);
 VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(
     VkDevice                                    device,
     const VkSwapchainCreateInfoKHR*             pCreateInfo,
@@ -543,6 +548,7 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkGetBufferMemoryRequirements2", reinterpret_cast<PFN_vkVoidFunction>(GetBufferMemoryRequirements2)},
     {"vkCmdCopyBufferToImage", reinterpret_cast<PFN_vkVoidFunction>(CmdCopyBufferToImage)},
     {"vkCreateComputePipelines", reinterpret_cast<PFN_vkVoidFunction>(CreateComputePipelines)},
+    {"vkCmdDispatch", reinterpret_cast<PFN_vkVoidFunction>(CmdDispatch)},
     {"vkCreateSwapchainKHR", reinterpret_cast<PFN_vkVoidFunction>(CreateSwapchainKHR)},
     {"vkDestroySwapchainKHR", reinterpret_cast<PFN_vkVoidFunction>(DestroySwapchainKHR)},
     {"vkGetSwapchainImagesKHR", reinterpret_cast<PFN_vkVoidFunction>(GetSwapchainImagesKHR)},
