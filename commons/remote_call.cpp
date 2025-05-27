@@ -4084,5 +4084,24 @@ VkResult PackAndCallVkFlushMappedMemoryRanges(VvkCommandClientBidiStream& stream
   }
   return static_cast<VkResult>(response.vkflushmappedmemoryranges().result());
 }
+VkResult PackAndCallVkInvalidateMappedMemoryRanges(VvkCommandClientBidiStream& stream, VkDevice device, uint32_t memoryRangeCount, const VkMappedMemoryRange* pMemoryRanges) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkInvalidateMappedMemoryRanges");
+  request.mutable_vkinvalidatemappedmemoryranges()->set_device(reinterpret_cast<uint64_t>(device));
+  request.mutable_vkinvalidatemappedmemoryranges()->set_memoryrangecount(memoryRangeCount);
+  for (uint32_t pMemoryRanges_indx = 0; pMemoryRanges_indx < memoryRangeCount; pMemoryRanges_indx++) {
+    FillProtoFromStruct(request.mutable_vkinvalidatemappedmemoryranges()->add_pmemoryranges(), &pMemoryRanges[pMemoryRanges_indx]);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  return static_cast<VkResult>(response.vkinvalidatemappedmemoryranges().result());
+}
 }  // namespace vvk
 

@@ -3672,4 +3672,14 @@ void UnpackAndExecuteVkFlushMappedMemoryRanges(vvk::ExecutionContext& context, c
   VkResult result = context.device_dispatch_table().FlushMappedMemoryRanges(reinterpret_cast<VkDevice>(request.vkflushmappedmemoryranges().device()), request.vkflushmappedmemoryranges().memoryrangecount(), pMemoryRanges.data());
   response->mutable_vkflushmappedmemoryranges()->set_result(static_cast<vvk::server::VkResult>(result));
 }
+void UnpackAndExecuteVkInvalidateMappedMemoryRanges(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkInvalidateMappedMemoryRanges");
+
+  std::vector<VkMappedMemoryRange> pMemoryRanges(request.vkinvalidatemappedmemoryranges().memoryrangecount());
+  for (uint32_t i = 0; i < pMemoryRanges.size(); i++) {
+    FillStructFromProto(pMemoryRanges[i], request.vkinvalidatemappedmemoryranges().pmemoryranges(i));
+  }
+  VkResult result = context.device_dispatch_table().InvalidateMappedMemoryRanges(reinterpret_cast<VkDevice>(request.vkinvalidatemappedmemoryranges().device()), request.vkinvalidatemappedmemoryranges().memoryrangecount(), pMemoryRanges.data());
+  response->mutable_vkinvalidatemappedmemoryranges()->set_result(static_cast<vvk::server::VkResult>(result));
+}
 
