@@ -16,6 +16,7 @@ void FillProtoFromStruct(vvk::server::VkConformanceVersion* proto, const VkConfo
 void FillProtoFromStruct(vvk::server::VkExtensionProperties* proto, const VkExtensionProperties* original_struct);
 void FillProtoFromStruct(vvk::server::VkExtent3D* proto, const VkExtent3D* original_struct);
 void FillProtoFromStruct(vvk::server::VkFormatProperties* proto, const VkFormatProperties* original_struct);
+void FillProtoFromStruct(vvk::server::VkMemoryDedicatedRequirements* proto, const VkMemoryDedicatedRequirements* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryHeap* proto, const VkMemoryHeap* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryRequirements* proto, const VkMemoryRequirements* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryRequirements2* proto, const VkMemoryRequirements2* original_struct);
@@ -51,6 +52,7 @@ void FillStructFromProto(VkBufferCopy& original_struct, const vvk::server::VkBuf
 void FillStructFromProto(VkBufferCreateInfo& original_struct, const vvk::server::VkBufferCreateInfo& proto);
 void FillStructFromProto(VkBufferImageCopy& original_struct, const vvk::server::VkBufferImageCopy& proto);
 void FillStructFromProto(VkBufferMemoryBarrier& original_struct, const vvk::server::VkBufferMemoryBarrier& proto);
+void FillStructFromProto(VkBufferMemoryRequirementsInfo2& original_struct, const vvk::server::VkBufferMemoryRequirementsInfo2& proto);
 void FillStructFromProto(VkClearColorValue& original_struct, const vvk::server::VkClearColorValue& proto);
 void FillStructFromProto(VkClearDepthStencilValue& original_struct, const vvk::server::VkClearDepthStencilValue& proto);
 void FillStructFromProto(VkClearValue& original_struct, const vvk::server::VkClearValue& proto);
@@ -132,6 +134,8 @@ void FillStructFromProto(VkVertexInputAttributeDescription& original_struct, con
 void FillStructFromProto(VkVertexInputBindingDescription& original_struct, const vvk::server::VkVertexInputBindingDescription& proto);
 void FillStructFromProto(VkViewport& original_struct, const vvk::server::VkViewport& proto);
 void FillStructFromProto(VkWriteDescriptorSet& original_struct, const vvk::server::VkWriteDescriptorSet& proto);
+void FillStructFromProtoNoPNext(VkMemoryDedicatedAllocateInfo& original_struct, const vvk::server::VkMemoryDedicatedAllocateInfo& proto);
+void FillStructFromProtoNoPNext(VkMemoryDedicatedRequirements& original_struct, const vvk::server::VkMemoryDedicatedRequirements& proto);
 void FillStructFromProtoNoPNext(VkPhysicalDeviceProtectedMemoryFeatures& original_struct, const vvk::server::VkPhysicalDeviceProtectedMemoryFeatures& proto);
 void FillStructFromProtoNoPNext(VkPhysicalDeviceProtectedMemoryProperties& original_struct, const vvk::server::VkPhysicalDeviceProtectedMemoryProperties& proto);
 void FillStructFromProtoNoPNext(VkPhysicalDeviceShaderDrawParametersFeatures& original_struct, const vvk::server::VkPhysicalDeviceShaderDrawParametersFeatures& proto);
@@ -176,6 +180,13 @@ void FillProtoFromStruct(vvk::server::VkFormatProperties* proto, const VkFormatP
     proto->set_bufferfeatures(original_struct->bufferFeatures);
   }
 }
+void FillProtoFromStruct(vvk::server::VkMemoryDedicatedRequirements* proto, const VkMemoryDedicatedRequirements* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_prefersdedicatedallocation(original_struct->prefersDedicatedAllocation);
+  proto->set_requiresdedicatedallocation(original_struct->requiresDedicatedAllocation);
+}
 void FillProtoFromStruct(vvk::server::VkMemoryHeap* proto, const VkMemoryHeap* original_struct) {
   proto->set_size(static_cast<uint64_t>(original_struct->size));
   if (original_struct->flags) {
@@ -189,7 +200,14 @@ void FillProtoFromStruct(vvk::server::VkMemoryRequirements* proto, const VkMemor
 }
 void FillProtoFromStruct(vvk::server::VkMemoryRequirements2* proto, const VkMemoryRequirements2* original_struct) {
   if (original_struct->pNext) {
-    // Empty pNext chain
+    const void* pNext = original_struct->pNext;
+    while (pNext) {
+      const VkBaseInStructure* base = reinterpret_cast<const VkBaseInStructure*>(pNext);
+      if (base->sType == VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS) {
+        FillProtoFromStruct(proto->add_pnext()->mutable_vkmemorydedicatedrequirements_chain_elem(), reinterpret_cast<const VkMemoryDedicatedRequirements*>(pNext));
+      }
+      pNext = reinterpret_cast<const void*>(base->pNext);
+    }
   }
   FillProtoFromStruct(proto->mutable_memoryrequirements(), &original_struct->memoryRequirements);
 }
@@ -943,6 +961,11 @@ void FillStructFromProto(VkBufferMemoryBarrier& original_struct, const vvk::serv
   original_struct.offset = static_cast<VkDeviceSize>(proto.offset());
   original_struct.size = static_cast<VkDeviceSize>(proto.size());
 }
+void FillStructFromProto(VkBufferMemoryRequirementsInfo2& original_struct, const vvk::server::VkBufferMemoryRequirementsInfo2& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2;
+  original_struct.pNext = nullptr;  // Empty pNext chain
+  original_struct.buffer = reinterpret_cast<VkBuffer>(proto.buffer());
+}
 void FillStructFromProto(VkClearColorValue& original_struct, const vvk::server::VkClearColorValue& proto) {
   const size_t original_struct_float32_length = std::min(4, 4);
   for (uint32_t float32_indx = 0; float32_indx < original_struct_float32_length; float32_indx++) {
@@ -1506,7 +1529,15 @@ void FillStructFromProto(VkMappedMemoryRange& original_struct, const vvk::server
 }
 void FillStructFromProto(VkMemoryAllocateInfo& original_struct, const vvk::server::VkMemoryAllocateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-  original_struct.pNext = nullptr;  // Empty pNext chain
+  VkBaseOutStructure* base = reinterpret_cast<VkBaseOutStructure*>(&original_struct);
+  for (const auto& pnext : proto.pnext()) {
+    if (pnext.has_vkmemorydedicatedallocateinfo_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkMemoryDedicatedAllocateInfo);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkMemoryDedicatedAllocateInfo*>(base->pNext), pnext.vkmemorydedicatedallocateinfo_chain_elem());
+    }
+    base = base->pNext;
+  }
+  base->pNext = nullptr;
   original_struct.allocationSize = static_cast<VkDeviceSize>(proto.allocationsize());
   original_struct.memoryTypeIndex = proto.memorytypeindex();
 }
@@ -1539,7 +1570,15 @@ void FillStructFromProto(VkMemoryRequirements& original_struct, const vvk::serve
 }
 void FillStructFromProto(VkMemoryRequirements2& original_struct, const vvk::server::VkMemoryRequirements2& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
-  original_struct.pNext = nullptr;  // Empty pNext chain
+  VkBaseOutStructure* base = reinterpret_cast<VkBaseOutStructure*>(&original_struct);
+  for (const auto& pnext : proto.pnext()) {
+    if (pnext.has_vkmemorydedicatedrequirements_chain_elem()) {
+      base->pNext = reinterpret_cast<VkBaseOutStructure*>(new VkMemoryDedicatedRequirements);
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkMemoryDedicatedRequirements*>(base->pNext), pnext.vkmemorydedicatedrequirements_chain_elem());
+    }
+    base = base->pNext;
+  }
+  base->pNext = nullptr;
   VkMemoryRequirements &original_struct_memoryRequirements = original_struct.memoryRequirements;
   FillStructFromProto(original_struct_memoryRequirements, proto.memoryrequirements());
 }
@@ -2511,6 +2550,24 @@ void FillStructFromProto(VkWriteDescriptorSet& original_struct, const vvk::serve
     FillStructFromProto(original_struct_pBufferInfo_i, proto.pbufferinfo(pBufferInfo_indx));
   }
   original_struct.pTexelBufferView = reinterpret_cast<const VkBufferView*>(proto.ptexelbufferview().data());
+}
+void FillStructFromProtoNoPNext(VkMemoryDedicatedAllocateInfo& original_struct, const vvk::server::VkMemoryDedicatedAllocateInfo& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO;
+  if (proto.has_image()) {
+    original_struct.image = reinterpret_cast<VkImage>(proto.image());
+  } else {
+    original_struct.image = VkImage{};
+  }
+  if (proto.has_buffer()) {
+    original_struct.buffer = reinterpret_cast<VkBuffer>(proto.buffer());
+  } else {
+    original_struct.buffer = VkBuffer{};
+  }
+}
+void FillStructFromProtoNoPNext(VkMemoryDedicatedRequirements& original_struct, const vvk::server::VkMemoryDedicatedRequirements& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS;
+  original_struct.prefersDedicatedAllocation = proto.prefersdedicatedallocation();
+  original_struct.requiresDedicatedAllocation = proto.requiresdedicatedallocation();
 }
 void FillStructFromProtoNoPNext(VkPhysicalDeviceProtectedMemoryFeatures& original_struct, const vvk::server::VkPhysicalDeviceProtectedMemoryFeatures& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_FEATURES;
@@ -3696,5 +3753,35 @@ void UnpackAndExecuteVkCmdCopyBuffer(vvk::ExecutionContext& context, const vvk::
     FillStructFromProto(pRegions[i], request.vkcmdcopybuffer().pregions(i));
   }
   context.device_dispatch_table().CmdCopyBuffer(reinterpret_cast<VkCommandBuffer>(request.vkcmdcopybuffer().commandbuffer()), reinterpret_cast<VkBuffer>(request.vkcmdcopybuffer().srcbuffer()), reinterpret_cast<VkBuffer>(request.vkcmdcopybuffer().dstbuffer()), request.vkcmdcopybuffer().regioncount(), pRegions.data());
+}
+void UnpackAndExecuteVkGetBufferMemoryRequirements2KHR(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkGetBufferMemoryRequirements2KHR");
+
+  VkBufferMemoryRequirementsInfo2 pInfo = {};
+  FillStructFromProto(pInfo, request.vkgetbuffermemoryrequirements2khr().pinfo());
+  VkMemoryRequirements2 pMemoryRequirements = {};
+  FillStructFromProto(pMemoryRequirements, request.vkgetbuffermemoryrequirements2khr().pmemoryrequirements());
+  context.device_dispatch_table().GetBufferMemoryRequirements2KHR(reinterpret_cast<VkDevice>(request.vkgetbuffermemoryrequirements2khr().device()), &pInfo, &pMemoryRequirements);
+  FillProtoFromStruct(response->mutable_vkgetbuffermemoryrequirements2khr()->mutable_pmemoryrequirements(), &pMemoryRequirements);
+}
+void UnpackAndExecuteVkGetImageMemoryRequirements2KHR(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkGetImageMemoryRequirements2KHR");
+
+  VkImageMemoryRequirementsInfo2 pInfo = {};
+  FillStructFromProto(pInfo, request.vkgetimagememoryrequirements2khr().pinfo());
+  VkMemoryRequirements2 pMemoryRequirements = {};
+  FillStructFromProto(pMemoryRequirements, request.vkgetimagememoryrequirements2khr().pmemoryrequirements());
+  context.device_dispatch_table().GetImageMemoryRequirements2KHR(reinterpret_cast<VkDevice>(request.vkgetimagememoryrequirements2khr().device()), &pInfo, &pMemoryRequirements);
+  FillProtoFromStruct(response->mutable_vkgetimagememoryrequirements2khr()->mutable_pmemoryrequirements(), &pMemoryRequirements);
+}
+void UnpackAndExecuteVkGetBufferMemoryRequirements2(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkGetBufferMemoryRequirements2");
+
+  VkBufferMemoryRequirementsInfo2 pInfo = {};
+  FillStructFromProto(pInfo, request.vkgetbuffermemoryrequirements2().pinfo());
+  VkMemoryRequirements2 pMemoryRequirements = {};
+  FillStructFromProto(pMemoryRequirements, request.vkgetbuffermemoryrequirements2().pmemoryrequirements());
+  context.device_dispatch_table().GetBufferMemoryRequirements2(reinterpret_cast<VkDevice>(request.vkgetbuffermemoryrequirements2().device()), &pInfo, &pMemoryRequirements);
+  FillProtoFromStruct(response->mutable_vkgetbuffermemoryrequirements2()->mutable_pmemoryrequirements(), &pMemoryRequirements);
 }
 

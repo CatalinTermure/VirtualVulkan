@@ -30,6 +30,7 @@ class TypeInfo:
 
 EXTENSIONS_TO_ALLOW = {
     "VK_KHR_timeline_semaphore",
+    "VK_KHR_dedicated_allocation",
 }
 
 COMMANDS_TO_GENERATE = [
@@ -117,6 +118,9 @@ COMMANDS_TO_GENERATE = [
     "vkFlushMappedMemoryRanges",
     "vkInvalidateMappedMemoryRanges",
     "vkCmdCopyBuffer",
+    "vkGetBufferMemoryRequirements2KHR",
+    "vkGetImageMemoryRequirements2KHR",
+    "vkGetBufferMemoryRequirements2",
 ]
 
 TRIVIAL_TYPES: dict[str, TypeInfo] = {

@@ -94,6 +94,9 @@ void PackAndCallVkCmdBindDescriptorSets(VvkCommandClientBidiStream& stream, VkCo
 VkResult PackAndCallVkFlushMappedMemoryRanges(VvkCommandClientBidiStream& stream, VkDevice device, uint32_t memoryRangeCount, const VkMappedMemoryRange* pMemoryRanges);
 VkResult PackAndCallVkInvalidateMappedMemoryRanges(VvkCommandClientBidiStream& stream, VkDevice device, uint32_t memoryRangeCount, const VkMappedMemoryRange* pMemoryRanges);
 void PackAndCallVkCmdCopyBuffer(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkBuffer dstBuffer, uint32_t regionCount, const VkBufferCopy* pRegions);
+void PackAndCallVkGetBufferMemoryRequirements2KHR(VvkCommandClientBidiStream& stream, VkDevice device, const VkBufferMemoryRequirementsInfo2* pInfo, VkMemoryRequirements2* pMemoryRequirements);
+void PackAndCallVkGetImageMemoryRequirements2KHR(VvkCommandClientBidiStream& stream, VkDevice device, const VkImageMemoryRequirementsInfo2* pInfo, VkMemoryRequirements2* pMemoryRequirements);
+void PackAndCallVkGetBufferMemoryRequirements2(VvkCommandClientBidiStream& stream, VkDevice device, const VkBufferMemoryRequirementsInfo2* pInfo, VkMemoryRequirements2* pMemoryRequirements);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H

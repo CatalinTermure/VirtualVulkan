@@ -3421,8 +3421,9 @@ message VkMappedMemoryRange {
 }
 
 message VkMemoryAllocateInfo {
-  uint64 allocationSize = 1; // VkDeviceSize allocationSize
-  uint32 memoryTypeIndex = 2; // uint32_t memoryTypeIndex
+  repeated PNextChain_VkMemoryAllocateInfo pNext = 1;
+  uint64 allocationSize = 2; // VkDeviceSize allocationSize
+  uint32 memoryTypeIndex = 3; // uint32_t memoryTypeIndex
 }
 
 message VkMemoryRequirements {
@@ -3913,12 +3914,27 @@ message VkBindImageMemoryInfo {
   uint64 memoryOffset = 3; // VkDeviceSize memoryOffset
 }
 
+message VkMemoryDedicatedRequirements {
+  bool prefersDedicatedAllocation = 1; // VkBool32 prefersDedicatedAllocation
+  bool requiresDedicatedAllocation = 2; // VkBool32 requiresDedicatedAllocation
+}
+
+message VkMemoryDedicatedAllocateInfo {
+  optional uint64 image = 1; // VkImage image
+  optional uint64 buffer = 2; // VkBuffer buffer
+}
+
+message VkBufferMemoryRequirementsInfo2 {
+  uint64 buffer = 1; // VkBuffer buffer
+}
+
 message VkImageMemoryRequirementsInfo2 {
   uint64 image = 1; // VkImage image
 }
 
 message VkMemoryRequirements2 {
-  VkMemoryRequirements memoryRequirements = 1; // VkMemoryRequirements memoryRequirements
+  repeated PNextChain_VkMemoryRequirements2 pNext = 1;
+  VkMemoryRequirements memoryRequirements = 2; // VkMemoryRequirements memoryRequirements
 }
 
 message VkPhysicalDeviceFeatures2 {
@@ -4253,6 +4269,11 @@ message PNextChain_VkSubmitInfo {
     VkTimelineSemaphoreSubmitInfo VkTimelineSemaphoreSubmitInfo_chain_elem = 2;
   }
 }
+message PNextChain_VkMemoryAllocateInfo {
+  oneof chain_element {
+    VkMemoryDedicatedAllocateInfo VkMemoryDedicatedAllocateInfo_chain_elem = 1;
+  }
+}
 message PNextChain_VkSemaphoreCreateInfo {
   oneof chain_element {
     VkSemaphoreTypeCreateInfo VkSemaphoreTypeCreateInfo_chain_elem = 1;
@@ -4261,6 +4282,11 @@ message PNextChain_VkSemaphoreCreateInfo {
 message PNextChain_VkPipelineShaderStageCreateInfo {
   oneof chain_element {
     VkShaderModuleCreateInfo VkShaderModuleCreateInfo_chain_elem = 1;
+  }
+}
+message PNextChain_VkMemoryRequirements2 {
+  oneof chain_element {
+    VkMemoryDedicatedRequirements VkMemoryDedicatedRequirements_chain_elem = 1;
   }
 }
 message PNextChain_VkPhysicalDeviceFeatures2 {

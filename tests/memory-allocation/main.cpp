@@ -75,7 +75,7 @@ int main() {
 
   VmaAllocatorCreateInfo allocator_info = {};
   allocator_info.flags = 0;
-  allocator_info.vulkanApiVersion = VK_API_VERSION_1_0;
+  allocator_info.vulkanApiVersion = VK_API_VERSION_1_1;
   allocator_info.physicalDevice = chosen_device;
   allocator_info.device = device;
   allocator_info.instance = instance;

@@ -19,6 +19,7 @@ void FillProtoFromStruct(vvk::server::VkBufferCopy* proto, const VkBufferCopy* o
 void FillProtoFromStruct(vvk::server::VkBufferCreateInfo* proto, const VkBufferCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkBufferImageCopy* proto, const VkBufferImageCopy* original_struct);
 void FillProtoFromStruct(vvk::server::VkBufferMemoryBarrier* proto, const VkBufferMemoryBarrier* original_struct);
+void FillProtoFromStruct(vvk::server::VkBufferMemoryRequirementsInfo2* proto, const VkBufferMemoryRequirementsInfo2* original_struct);
 void FillProtoFromStruct(vvk::server::VkClearColorValue* proto, const VkClearColorValue* original_struct);
 void FillProtoFromStruct(vvk::server::VkClearDepthStencilValue* proto, const VkClearDepthStencilValue* original_struct);
 void FillProtoFromStruct(vvk::server::VkClearValue* proto, const VkClearValue* original_struct);
@@ -55,6 +56,8 @@ void FillProtoFromStruct(vvk::server::VkInstanceCreateInfo* proto, const VkInsta
 void FillProtoFromStruct(vvk::server::VkMappedMemoryRange* proto, const VkMappedMemoryRange* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryAllocateInfo* proto, const VkMemoryAllocateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryBarrier* proto, const VkMemoryBarrier* original_struct);
+void FillProtoFromStruct(vvk::server::VkMemoryDedicatedAllocateInfo* proto, const VkMemoryDedicatedAllocateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkMemoryDedicatedRequirements* proto, const VkMemoryDedicatedRequirements* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryHeap* proto, const VkMemoryHeap* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryRequirements* proto, const VkMemoryRequirements* original_struct);
 void FillProtoFromStruct(vvk::server::VkMemoryRequirements2* proto, const VkMemoryRequirements2* original_struct);
@@ -126,6 +129,7 @@ void FillStructFromProto(VkPhysicalDeviceFeatures& original_struct, const vvk::s
 void FillStructFromProto(VkPhysicalDeviceLimits& original_struct, const vvk::server::VkPhysicalDeviceLimits& proto);
 void FillStructFromProto(VkPhysicalDeviceProperties& original_struct, const vvk::server::VkPhysicalDeviceProperties& proto);
 void FillStructFromProto(VkPhysicalDeviceSparseProperties& original_struct, const vvk::server::VkPhysicalDeviceSparseProperties& proto);
+void FillStructFromProtoNoPNext(VkMemoryDedicatedRequirements& original_struct, const vvk::server::VkMemoryDedicatedRequirements& proto);
 void FillStructFromProtoNoPNext(VkPhysicalDeviceProtectedMemoryFeatures& original_struct, const vvk::server::VkPhysicalDeviceProtectedMemoryFeatures& proto);
 void FillStructFromProtoNoPNext(VkPhysicalDeviceProtectedMemoryProperties& original_struct, const vvk::server::VkPhysicalDeviceProtectedMemoryProperties& proto);
 void FillStructFromProtoNoPNext(VkPhysicalDeviceShaderDrawParametersFeatures& original_struct, const vvk::server::VkPhysicalDeviceShaderDrawParametersFeatures& proto);
@@ -221,6 +225,12 @@ void FillProtoFromStruct(vvk::server::VkBufferMemoryBarrier* proto, const VkBuff
   proto->set_buffer(reinterpret_cast<uint64_t>(original_struct->buffer));
   proto->set_offset(static_cast<uint64_t>(original_struct->offset));
   proto->set_size(static_cast<uint64_t>(original_struct->size));
+}
+void FillProtoFromStruct(vvk::server::VkBufferMemoryRequirementsInfo2* proto, const VkBufferMemoryRequirementsInfo2* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_buffer(reinterpret_cast<uint64_t>(original_struct->buffer));
 }
 void FillProtoFromStruct(vvk::server::VkClearColorValue* proto, const VkClearColorValue* original_struct) {
   const size_t proto_float32_length = std::min(4, 4);
@@ -668,7 +678,14 @@ void FillProtoFromStruct(vvk::server::VkMappedMemoryRange* proto, const VkMapped
 }
 void FillProtoFromStruct(vvk::server::VkMemoryAllocateInfo* proto, const VkMemoryAllocateInfo* original_struct) {
   if (original_struct->pNext) {
-    // Empty pNext chain
+    const void* pNext = original_struct->pNext;
+    while (pNext) {
+      const VkBaseInStructure* base = reinterpret_cast<const VkBaseInStructure*>(pNext);
+      if (base->sType == VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO) {
+        FillProtoFromStruct(proto->add_pnext()->mutable_vkmemorydedicatedallocateinfo_chain_elem(), reinterpret_cast<const VkMemoryDedicatedAllocateInfo*>(pNext));
+      }
+      pNext = reinterpret_cast<const void*>(base->pNext);
+    }
   }
   proto->set_allocationsize(static_cast<uint64_t>(original_struct->allocationSize));
   proto->set_memorytypeindex(original_struct->memoryTypeIndex);
@@ -684,6 +701,24 @@ void FillProtoFromStruct(vvk::server::VkMemoryBarrier* proto, const VkMemoryBarr
     proto->set_dstaccessmask(original_struct->dstAccessMask);
   }
 }
+void FillProtoFromStruct(vvk::server::VkMemoryDedicatedAllocateInfo* proto, const VkMemoryDedicatedAllocateInfo* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  if (original_struct->image) {
+    proto->set_image(reinterpret_cast<uint64_t>(original_struct->image));
+  }
+  if (original_struct->buffer) {
+    proto->set_buffer(reinterpret_cast<uint64_t>(original_struct->buffer));
+  }
+}
+void FillProtoFromStruct(vvk::server::VkMemoryDedicatedRequirements* proto, const VkMemoryDedicatedRequirements* original_struct) {
+  if (original_struct->pNext) {
+    // Empty pNext chain
+  }
+  proto->set_prefersdedicatedallocation(original_struct->prefersDedicatedAllocation);
+  proto->set_requiresdedicatedallocation(original_struct->requiresDedicatedAllocation);
+}
 void FillProtoFromStruct(vvk::server::VkMemoryHeap* proto, const VkMemoryHeap* original_struct) {
   proto->set_size(static_cast<uint64_t>(original_struct->size));
   if (original_struct->flags) {
@@ -697,7 +732,14 @@ void FillProtoFromStruct(vvk::server::VkMemoryRequirements* proto, const VkMemor
 }
 void FillProtoFromStruct(vvk::server::VkMemoryRequirements2* proto, const VkMemoryRequirements2* original_struct) {
   if (original_struct->pNext) {
-    // Empty pNext chain
+    const void* pNext = original_struct->pNext;
+    while (pNext) {
+      const VkBaseInStructure* base = reinterpret_cast<const VkBaseInStructure*>(pNext);
+      if (base->sType == VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS) {
+        FillProtoFromStruct(proto->add_pnext()->mutable_vkmemorydedicatedrequirements_chain_elem(), reinterpret_cast<const VkMemoryDedicatedRequirements*>(pNext));
+      }
+      pNext = reinterpret_cast<const void*>(base->pNext);
+    }
   }
   FillProtoFromStruct(proto->mutable_memoryrequirements(), &original_struct->memoryRequirements);
 }
@@ -2174,6 +2216,11 @@ void FillStructFromProto(VkPhysicalDeviceSparseProperties& original_struct, cons
   original_struct.residencyAlignedMipSize = proto.residencyalignedmipsize();
   original_struct.residencyNonResidentStrict = proto.residencynonresidentstrict();
 }
+void FillStructFromProtoNoPNext(VkMemoryDedicatedRequirements& original_struct, const vvk::server::VkMemoryDedicatedRequirements& proto) {
+  original_struct.sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS;
+  original_struct.prefersDedicatedAllocation = proto.prefersdedicatedallocation();
+  original_struct.requiresDedicatedAllocation = proto.requiresdedicatedallocation();
+}
 void FillStructFromProtoNoPNext(VkPhysicalDeviceProtectedMemoryFeatures& original_struct, const vvk::server::VkPhysicalDeviceProtectedMemoryFeatures& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_FEATURES;
   original_struct.protectedMemory = proto.protectedmemory();
@@ -3057,7 +3104,14 @@ void PackAndCallVkGetImageMemoryRequirements2(VvkCommandClientBidiStream& stream
   }
   VkMemoryRequirements2& pMemoryRequirements_ref = *pMemoryRequirements;
   pMemoryRequirements_ref.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
-  pMemoryRequirements_ref.pNext = nullptr;  // Empty pNext chain
+  VkBaseOutStructure* base = reinterpret_cast<VkBaseOutStructure*>(&pMemoryRequirements_ref);
+  for (const auto& pnext : response.vkgetimagememoryrequirements2().pmemoryrequirements().pnext()) {
+    if (pnext.has_vkmemorydedicatedrequirements_chain_elem()) {
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkMemoryDedicatedRequirements*>(base->pNext), pnext.vkmemorydedicatedrequirements_chain_elem());
+    }
+    base = base->pNext;
+  }
+  base->pNext = nullptr;
   VkMemoryRequirements &pMemoryRequirements_ref_memoryRequirements = pMemoryRequirements_ref.memoryRequirements;
   FillStructFromProto(pMemoryRequirements_ref_memoryRequirements, response.vkgetimagememoryrequirements2().pmemoryrequirements().memoryrequirements());
 }
@@ -4124,6 +4178,90 @@ void PackAndCallVkCmdCopyBuffer(VvkCommandClientBidiStream& stream, VkCommandBuf
   if (!stream.Write(request)) {
     spdlog::error("Failed to write request to server");
   }
+}
+void PackAndCallVkGetBufferMemoryRequirements2KHR(VvkCommandClientBidiStream& stream, VkDevice device, const VkBufferMemoryRequirementsInfo2* pInfo, VkMemoryRequirements2* pMemoryRequirements) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkGetBufferMemoryRequirements2KHR");
+  request.mutable_vkgetbuffermemoryrequirements2khr()->set_device(reinterpret_cast<uint64_t>(device));
+  FillProtoFromStruct(request.mutable_vkgetbuffermemoryrequirements2khr()->mutable_pinfo(), pInfo);
+  FillProtoFromStruct(request.mutable_vkgetbuffermemoryrequirements2khr()->mutable_pmemoryrequirements(), pMemoryRequirements);
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  VkMemoryRequirements2& pMemoryRequirements_ref = *pMemoryRequirements;
+  pMemoryRequirements_ref.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
+  VkBaseOutStructure* base = reinterpret_cast<VkBaseOutStructure*>(&pMemoryRequirements_ref);
+  for (const auto& pnext : response.vkgetbuffermemoryrequirements2khr().pmemoryrequirements().pnext()) {
+    if (pnext.has_vkmemorydedicatedrequirements_chain_elem()) {
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkMemoryDedicatedRequirements*>(base->pNext), pnext.vkmemorydedicatedrequirements_chain_elem());
+    }
+    base = base->pNext;
+  }
+  base->pNext = nullptr;
+  VkMemoryRequirements &pMemoryRequirements_ref_memoryRequirements = pMemoryRequirements_ref.memoryRequirements;
+  FillStructFromProto(pMemoryRequirements_ref_memoryRequirements, response.vkgetbuffermemoryrequirements2khr().pmemoryrequirements().memoryrequirements());
+}
+void PackAndCallVkGetImageMemoryRequirements2KHR(VvkCommandClientBidiStream& stream, VkDevice device, const VkImageMemoryRequirementsInfo2* pInfo, VkMemoryRequirements2* pMemoryRequirements) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkGetImageMemoryRequirements2KHR");
+  request.mutable_vkgetimagememoryrequirements2khr()->set_device(reinterpret_cast<uint64_t>(device));
+  FillProtoFromStruct(request.mutable_vkgetimagememoryrequirements2khr()->mutable_pinfo(), pInfo);
+  FillProtoFromStruct(request.mutable_vkgetimagememoryrequirements2khr()->mutable_pmemoryrequirements(), pMemoryRequirements);
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  VkMemoryRequirements2& pMemoryRequirements_ref = *pMemoryRequirements;
+  pMemoryRequirements_ref.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
+  VkBaseOutStructure* base = reinterpret_cast<VkBaseOutStructure*>(&pMemoryRequirements_ref);
+  for (const auto& pnext : response.vkgetimagememoryrequirements2khr().pmemoryrequirements().pnext()) {
+    if (pnext.has_vkmemorydedicatedrequirements_chain_elem()) {
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkMemoryDedicatedRequirements*>(base->pNext), pnext.vkmemorydedicatedrequirements_chain_elem());
+    }
+    base = base->pNext;
+  }
+  base->pNext = nullptr;
+  VkMemoryRequirements &pMemoryRequirements_ref_memoryRequirements = pMemoryRequirements_ref.memoryRequirements;
+  FillStructFromProto(pMemoryRequirements_ref_memoryRequirements, response.vkgetimagememoryrequirements2khr().pmemoryrequirements().memoryrequirements());
+}
+void PackAndCallVkGetBufferMemoryRequirements2(VvkCommandClientBidiStream& stream, VkDevice device, const VkBufferMemoryRequirementsInfo2* pInfo, VkMemoryRequirements2* pMemoryRequirements) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkGetBufferMemoryRequirements2");
+  request.mutable_vkgetbuffermemoryrequirements2()->set_device(reinterpret_cast<uint64_t>(device));
+  FillProtoFromStruct(request.mutable_vkgetbuffermemoryrequirements2()->mutable_pinfo(), pInfo);
+  FillProtoFromStruct(request.mutable_vkgetbuffermemoryrequirements2()->mutable_pmemoryrequirements(), pMemoryRequirements);
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+
+  if (!stream.Read(&response)) {
+    spdlog::error("Failed to read response from server");
+  }
+  VkMemoryRequirements2& pMemoryRequirements_ref = *pMemoryRequirements;
+  pMemoryRequirements_ref.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
+  VkBaseOutStructure* base = reinterpret_cast<VkBaseOutStructure*>(&pMemoryRequirements_ref);
+  for (const auto& pnext : response.vkgetbuffermemoryrequirements2().pmemoryrequirements().pnext()) {
+    if (pnext.has_vkmemorydedicatedrequirements_chain_elem()) {
+      FillStructFromProtoNoPNext(*reinterpret_cast<VkMemoryDedicatedRequirements*>(base->pNext), pnext.vkmemorydedicatedrequirements_chain_elem());
+    }
+    base = base->pNext;
+  }
+  base->pNext = nullptr;
+  VkMemoryRequirements &pMemoryRequirements_ref_memoryRequirements = pMemoryRequirements_ref.memoryRequirements;
+  FillStructFromProto(pMemoryRequirements_ref_memoryRequirements, response.vkgetbuffermemoryrequirements2().pmemoryrequirements().memoryrequirements());
 }
 }  // namespace vvk
 

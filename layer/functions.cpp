@@ -543,20 +543,20 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
       .vkGetPhysicalDeviceMemoryProperties = GetPhysicalDeviceMemoryProperties,
       .vkAllocateMemory = AllocateMemory,
       .vkFreeMemory = FreeMemory,
-      .vkMapMemory = reinterpret_cast<PFN_vkMapMemory>(0xDEADBEEF),
-      .vkUnmapMemory = reinterpret_cast<PFN_vkUnmapMemory>(0xDEADBEEF),
-      .vkFlushMappedMemoryRanges = reinterpret_cast<PFN_vkFlushMappedMemoryRanges>(0xDEADBEEF),
-      .vkInvalidateMappedMemoryRanges = reinterpret_cast<PFN_vkInvalidateMappedMemoryRanges>(0xDEADBEEF),
-      .vkBindBufferMemory = reinterpret_cast<PFN_vkBindBufferMemory>(0xDEADBEEF),
+      .vkMapMemory = MapMemory,
+      .vkUnmapMemory = UnmapMemory,
+      .vkFlushMappedMemoryRanges = FlushMappedMemoryRanges,
+      .vkInvalidateMappedMemoryRanges = InvalidateMappedMemoryRanges,
+      .vkBindBufferMemory = BindBufferMemory,
       .vkBindImageMemory = BindImageMemory,
-      .vkGetBufferMemoryRequirements = reinterpret_cast<PFN_vkGetBufferMemoryRequirements>(0xDEADBEEF),
+      .vkGetBufferMemoryRequirements = GetBufferMemoryRequirements,
       .vkGetImageMemoryRequirements = GetImageMemoryRequirements,
-      .vkCreateBuffer = reinterpret_cast<PFN_vkCreateBuffer>(0xDEADBEEF),
-      .vkDestroyBuffer = reinterpret_cast<PFN_vkDestroyBuffer>(0xDEADBEEF),
+      .vkCreateBuffer = CreateBuffer,
+      .vkDestroyBuffer = DestroyBuffer,
       .vkCreateImage = CreateImage,
       .vkDestroyImage = DestroyImage,
-      .vkCmdCopyBuffer = reinterpret_cast<PFN_vkCmdCopyBuffer>(0xDEADBEEF),
-      .vkGetBufferMemoryRequirements2KHR = reinterpret_cast<PFN_vkGetBufferMemoryRequirements2KHR>(0xDEADBEEF),
+      .vkCmdCopyBuffer = CmdCopyBuffer,
+      .vkGetBufferMemoryRequirements2KHR = GetBufferMemoryRequirements2,
       .vkGetImageMemoryRequirements2KHR = GetImageMemoryRequirements2,
       .vkBindBufferMemory2KHR = reinterpret_cast<PFN_vkBindBufferMemory2KHR>(0xDEADBEEF),
       .vkBindImageMemory2KHR = BindImageMemory2,
@@ -1681,5 +1681,22 @@ VKAPI_ATTR void VKAPI_CALL CmdCopyBuffer(VkCommandBuffer commandBuffer, VkBuffer
   DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
   PackAndCallVkCmdCopyBuffer(device_info.instance_info().command_stream(), device_info.GetRemoteHandle(commandBuffer),
                              srcBuffer, dstBuffer, regionCount, pRegions);
+}
+
+VKAPI_ATTR void VKAPI_CALL GetBufferMemoryRequirements2KHR(VkDevice device,
+                                                           const VkBufferMemoryRequirementsInfo2* pInfo,
+                                                           VkMemoryRequirements2* pMemoryRequirements) {
+  GetBufferMemoryRequirements2(device, pInfo, pMemoryRequirements);
+}
+VKAPI_ATTR void VKAPI_CALL GetImageMemoryRequirements2KHR(VkDevice device, const VkImageMemoryRequirementsInfo2* pInfo,
+                                                          VkMemoryRequirements2* pMemoryRequirements) {
+  GetImageMemoryRequirements2(device, pInfo, pMemoryRequirements);
+}
+VKAPI_ATTR void VKAPI_CALL GetBufferMemoryRequirements2(VkDevice device, const VkBufferMemoryRequirementsInfo2* pInfo,
+                                                        VkMemoryRequirements2* pMemoryRequirements) {
+  DeviceInfo& device_info = GetDeviceInfo(device);
+  PackAndCallVkGetBufferMemoryRequirements2(device_info.instance_info().command_stream(),
+                                            device_info.instance_info().GetRemoteHandle(device), pInfo,
+                                            pMemoryRequirements);
 }
 }  // namespace vvk
