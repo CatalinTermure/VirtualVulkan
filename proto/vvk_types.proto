@@ -3854,6 +3854,12 @@ message VkCommandBufferBeginInfo {
   optional VkCommandBufferInheritanceInfo pInheritanceInfo = 2; // const VkCommandBufferInheritanceInfo* pInheritanceInfo
 }
 
+message VkBufferCopy {
+  uint64 srcOffset = 1; // VkDeviceSize srcOffset
+  uint64 dstOffset = 2; // VkDeviceSize dstOffset
+  uint64 size = 3; // VkDeviceSize size
+}
+
 message VkImageSubresourceLayers {
   uint32 aspectMask = 1; // VkImageAspectFlags aspectMask
   uint32 mipLevel = 2; // uint32_t mipLevel

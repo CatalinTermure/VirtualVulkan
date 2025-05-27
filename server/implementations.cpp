@@ -47,6 +47,7 @@ void FillStructFromProto(VkApplicationInfo& original_struct, const vvk::server::
 void FillStructFromProto(VkAttachmentDescription& original_struct, const vvk::server::VkAttachmentDescription& proto);
 void FillStructFromProto(VkAttachmentReference& original_struct, const vvk::server::VkAttachmentReference& proto);
 void FillStructFromProto(VkBindImageMemoryInfo& original_struct, const vvk::server::VkBindImageMemoryInfo& proto);
+void FillStructFromProto(VkBufferCopy& original_struct, const vvk::server::VkBufferCopy& proto);
 void FillStructFromProto(VkBufferCreateInfo& original_struct, const vvk::server::VkBufferCreateInfo& proto);
 void FillStructFromProto(VkBufferImageCopy& original_struct, const vvk::server::VkBufferImageCopy& proto);
 void FillStructFromProto(VkBufferMemoryBarrier& original_struct, const vvk::server::VkBufferMemoryBarrier& proto);
@@ -892,6 +893,11 @@ void FillStructFromProto(VkBindImageMemoryInfo& original_struct, const vvk::serv
   original_struct.image = reinterpret_cast<VkImage>(proto.image());
   original_struct.memory = reinterpret_cast<VkDeviceMemory>(proto.memory());
   original_struct.memoryOffset = static_cast<VkDeviceSize>(proto.memoryoffset());
+}
+void FillStructFromProto(VkBufferCopy& original_struct, const vvk::server::VkBufferCopy& proto) {
+  original_struct.srcOffset = static_cast<VkDeviceSize>(proto.srcoffset());
+  original_struct.dstOffset = static_cast<VkDeviceSize>(proto.dstoffset());
+  original_struct.size = static_cast<VkDeviceSize>(proto.size());
 }
 void FillStructFromProto(VkBufferCreateInfo& original_struct, const vvk::server::VkBufferCreateInfo& proto) {
   original_struct.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -3681,5 +3687,14 @@ void UnpackAndExecuteVkInvalidateMappedMemoryRanges(vvk::ExecutionContext& conte
   }
   VkResult result = context.device_dispatch_table().InvalidateMappedMemoryRanges(reinterpret_cast<VkDevice>(request.vkinvalidatemappedmemoryranges().device()), request.vkinvalidatemappedmemoryranges().memoryrangecount(), pMemoryRanges.data());
   response->mutable_vkinvalidatemappedmemoryranges()->set_result(static_cast<vvk::server::VkResult>(result));
+}
+void UnpackAndExecuteVkCmdCopyBuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCmdCopyBuffer");
+
+  std::vector<VkBufferCopy> pRegions(request.vkcmdcopybuffer().regioncount());
+  for (uint32_t i = 0; i < pRegions.size(); i++) {
+    FillStructFromProto(pRegions[i], request.vkcmdcopybuffer().pregions(i));
+  }
+  context.device_dispatch_table().CmdCopyBuffer(reinterpret_cast<VkCommandBuffer>(request.vkcmdcopybuffer().commandbuffer()), reinterpret_cast<VkBuffer>(request.vkcmdcopybuffer().srcbuffer()), reinterpret_cast<VkBuffer>(request.vkcmdcopybuffer().dstbuffer()), request.vkcmdcopybuffer().regioncount(), pRegions.data());
 }
 

@@ -15,6 +15,7 @@ void FillProtoFromStruct(vvk::server::VkApplicationInfo* proto, const VkApplicat
 void FillProtoFromStruct(vvk::server::VkAttachmentDescription* proto, const VkAttachmentDescription* original_struct);
 void FillProtoFromStruct(vvk::server::VkAttachmentReference* proto, const VkAttachmentReference* original_struct);
 void FillProtoFromStruct(vvk::server::VkBindImageMemoryInfo* proto, const VkBindImageMemoryInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkBufferCopy* proto, const VkBufferCopy* original_struct);
 void FillProtoFromStruct(vvk::server::VkBufferCreateInfo* proto, const VkBufferCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkBufferImageCopy* proto, const VkBufferImageCopy* original_struct);
 void FillProtoFromStruct(vvk::server::VkBufferMemoryBarrier* proto, const VkBufferMemoryBarrier* original_struct);
@@ -177,6 +178,11 @@ void FillProtoFromStruct(vvk::server::VkBindImageMemoryInfo* proto, const VkBind
   proto->set_image(reinterpret_cast<uint64_t>(original_struct->image));
   proto->set_memory(reinterpret_cast<uint64_t>(original_struct->memory));
   proto->set_memoryoffset(static_cast<uint64_t>(original_struct->memoryOffset));
+}
+void FillProtoFromStruct(vvk::server::VkBufferCopy* proto, const VkBufferCopy* original_struct) {
+  proto->set_srcoffset(static_cast<uint64_t>(original_struct->srcOffset));
+  proto->set_dstoffset(static_cast<uint64_t>(original_struct->dstOffset));
+  proto->set_size(static_cast<uint64_t>(original_struct->size));
 }
 void FillProtoFromStruct(vvk::server::VkBufferCreateInfo* proto, const VkBufferCreateInfo* original_struct) {
   if (original_struct->pNext) {
@@ -4102,6 +4108,22 @@ VkResult PackAndCallVkInvalidateMappedMemoryRanges(VvkCommandClientBidiStream& s
     spdlog::error("Failed to read response from server");
   }
   return static_cast<VkResult>(response.vkinvalidatemappedmemoryranges().result());
+}
+void PackAndCallVkCmdCopyBuffer(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkBuffer dstBuffer, uint32_t regionCount, const VkBufferCopy* pRegions) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdCopyBuffer");
+  request.mutable_vkcmdcopybuffer()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  request.mutable_vkcmdcopybuffer()->set_srcbuffer(reinterpret_cast<uint64_t>(srcBuffer));
+  request.mutable_vkcmdcopybuffer()->set_dstbuffer(reinterpret_cast<uint64_t>(dstBuffer));
+  request.mutable_vkcmdcopybuffer()->set_regioncount(regionCount);
+  for (uint32_t pRegions_indx = 0; pRegions_indx < regionCount; pRegions_indx++) {
+    FillProtoFromStruct(request.mutable_vkcmdcopybuffer()->add_pregions(), &pRegions[pRegions_indx]);
+  }
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
 }
 }  // namespace vvk
 

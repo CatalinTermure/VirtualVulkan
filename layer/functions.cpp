@@ -1675,4 +1675,11 @@ VKAPI_ATTR VkResult VKAPI_CALL InvalidateMappedMemoryRanges(VkDevice device, uin
                                                             const VkMappedMemoryRange* pMemoryRanges) {
   throw std::runtime_error("InvalidateMappedMemoryRanges is not supported in VirtualVulkan.");
 }
+
+VKAPI_ATTR void VKAPI_CALL CmdCopyBuffer(VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkBuffer dstBuffer,
+                                         uint32_t regionCount, const VkBufferCopy* pRegions) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdCopyBuffer(device_info.instance_info().command_stream(), device_info.GetRemoteHandle(commandBuffer),
+                             srcBuffer, dstBuffer, regionCount, pRegions);
+}
 }  // namespace vvk
