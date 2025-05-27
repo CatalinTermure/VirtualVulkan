@@ -4348,5 +4348,20 @@ void PackAndCallVkCmdPushConstants(VvkCommandClientBidiStream& stream, VkCommand
     spdlog::error("Failed to write request to server");
   }
 }
+void PackAndCallVkCmdBindIndexBuffer(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, VkIndexType indexType) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdBindIndexBuffer");
+  request.mutable_vkcmdbindindexbuffer()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  if (buffer) {
+    request.mutable_vkcmdbindindexbuffer()->set_buffer(reinterpret_cast<uint64_t>(buffer));
+  }
+  request.mutable_vkcmdbindindexbuffer()->set_offset(static_cast<uint64_t>(offset));
+  request.mutable_vkcmdbindindexbuffer()->set_indextype(static_cast<vvk::server::VkIndexType>(indexType));
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+}
 }  // namespace vvk
 

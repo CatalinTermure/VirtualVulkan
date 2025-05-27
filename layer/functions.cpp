@@ -1754,4 +1754,11 @@ VKAPI_ATTR void VKAPI_CALL CmdPushConstants(VkCommandBuffer commandBuffer, VkPip
   PackAndCallVkCmdPushConstants(device_info.instance_info().command_stream(),
                                 device_info.GetRemoteHandle(commandBuffer), layout, stageFlags, offset, size, pValues);
 }
+
+VKAPI_ATTR void VKAPI_CALL CmdBindIndexBuffer(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
+                                              VkIndexType indexType) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdBindIndexBuffer(device_info.instance_info().command_stream(),
+                                  device_info.GetRemoteHandle(commandBuffer), buffer, offset, indexType);
+}
 }  // namespace vvk

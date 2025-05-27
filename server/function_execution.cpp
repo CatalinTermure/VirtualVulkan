@@ -102,6 +102,7 @@ const std::unordered_map<
         {"vkCreateComputePipelines", UnpackAndExecuteVkCreateComputePipelines},
         {"vkCmdDispatch", UnpackAndExecuteVkCmdDispatch},
         {"vkCmdPushConstants", UnpackAndExecuteVkCmdPushConstants},
+        {"vkCmdBindIndexBuffer", UnpackAndExecuteVkCmdBindIndexBuffer},
 };
 
 }  // namespace

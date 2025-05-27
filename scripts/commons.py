@@ -125,6 +125,7 @@ COMMANDS_TO_GENERATE = [
     "vkCreateComputePipelines",
     "vkCmdDispatch",
     "vkCmdPushConstants",
+    "vkCmdBindIndexBuffer",
 ]
 
 TRIVIAL_TYPES: dict[str, TypeInfo] = {

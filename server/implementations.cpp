@@ -3845,4 +3845,9 @@ void UnpackAndExecuteVkCmdPushConstants(vvk::ExecutionContext& context, const vv
 
   context.device_dispatch_table().CmdPushConstants(reinterpret_cast<VkCommandBuffer>(request.vkcmdpushconstants().commandbuffer()), reinterpret_cast<VkPipelineLayout>(request.vkcmdpushconstants().layout()), static_cast<VkShaderStageFlags>(request.vkcmdpushconstants().stageflags()), request.vkcmdpushconstants().offset(), request.vkcmdpushconstants().size(), reinterpret_cast<const void*>(request.vkcmdpushconstants().pvalues().data()));
 }
+void UnpackAndExecuteVkCmdBindIndexBuffer(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request, vvk::server::VvkResponse* response){
+  assert(request.method() == "vkCmdBindIndexBuffer");
+
+  context.device_dispatch_table().CmdBindIndexBuffer(reinterpret_cast<VkCommandBuffer>(request.vkcmdbindindexbuffer().commandbuffer()), reinterpret_cast<VkBuffer>(request.vkcmdbindindexbuffer().buffer()), static_cast<VkDeviceSize>(request.vkcmdbindindexbuffer().offset()), static_cast<VkIndexType>(request.vkcmdbindindexbuffer().indextype()));
+}
 

@@ -101,6 +101,7 @@ void PackAndCallVkCmdCopyBufferToImage(VvkCommandClientBidiStream& stream, VkCom
 VkResult PackAndCallVkCreateComputePipelines(VvkCommandClientBidiStream& stream, VkDevice device, VkPipelineCache pipelineCache, uint32_t createInfoCount, const VkComputePipelineCreateInfo* pCreateInfos, const VkAllocationCallbacks* pAllocator, VkPipeline* pPipelines);
 void PackAndCallVkCmdDispatch(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ);
 void PackAndCallVkCmdPushConstants(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkPipelineLayout layout, VkShaderStageFlags stageFlags, uint32_t offset, uint32_t size, const void* pValues);
+void PackAndCallVkCmdBindIndexBuffer(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, VkIndexType indexType);
 }  // namespace vvk
 
 #endif  // VVK_COMMONS_REMOTE_CALL_H
