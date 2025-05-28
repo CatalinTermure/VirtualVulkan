@@ -43,10 +43,24 @@ class H264Encoder : public Encoder {
     AllocateDpbImages();
     InitializeRateControl();
     AllocateOutputBuffer();
+    AllocateIntermediaryYuvImage();
     AllocateInputImage();
   }
 
   ~H264Encoder() override {
+    if (yuv_image_ != VK_NULL_HANDLE) {
+      vmaDestroyImage(execution_context_.allocator(), yuv_image_, yuv_image_allocation_);
+      yuv_image_ = VK_NULL_HANDLE;
+      yuv_image_allocation_ = VK_NULL_HANDLE;
+    }
+    if (yuv_image_y_plane_view_ != VK_NULL_HANDLE) {
+      dev_dispatch_.DestroyImageView(device_, yuv_image_y_plane_view_, nullptr);
+      yuv_image_y_plane_view_ = VK_NULL_HANDLE;
+    }
+    if (yuv_image_uv_plane_view_ != VK_NULL_HANDLE) {
+      dev_dispatch_.DestroyImageView(device_, yuv_image_uv_plane_view_, nullptr);
+      yuv_image_uv_plane_view_ = VK_NULL_HANDLE;
+    }
     if (input_image_ != VK_NULL_HANDLE) {
       vmaDestroyImage(execution_context_.allocator(), input_image_, input_image_allocation_);
       input_image_ = VK_NULL_HANDLE;
@@ -183,6 +197,11 @@ class H264Encoder : public Encoder {
   VmaAllocation input_image_allocation_ = VK_NULL_HANDLE;
   VmaAllocationInfo input_image_allocation_info_;
   VkImageView input_image_view_ = VK_NULL_HANDLE;
+  VkImage yuv_image_ = VK_NULL_HANDLE;
+  VmaAllocation yuv_image_allocation_ = VK_NULL_HANDLE;
+  VmaAllocationInfo yuv_image_allocation_info_;
+  VkImageView yuv_image_y_plane_view_ = VK_NULL_HANDLE;
+  VkImageView yuv_image_uv_plane_view_ = VK_NULL_HANDLE;
 
  private:
   void CreateQueryPool() {
@@ -564,7 +583,63 @@ class H264Encoder : public Encoder {
     };
     result = dev_dispatch_.CreateImageView(device_, image_view_create_info, nullptr, &input_image_view_);
     if (result != VK_SUCCESS) {
-      throw std::runtime_error("Failed to create Y plane image view for H264 encoding input image");
+      throw std::runtime_error("Failed to create image view for H264 encoding input image");
+    }
+  }
+
+  void AllocateIntermediaryYuvImage() {
+    VmaAllocationCreateInfo allocation_create_info = {};
+    std::array queue_family_indices = {video_queue_index_, compute_queue_index_};
+    VkResult result =
+        vmaCreateImage(execution_context_.allocator(),
+                       vk::ImageCreateInfo{
+                           vk::ImageCreateFlagBits::eMutableFormat | vk::ImageCreateFlagBits::eExtendedUsage,
+                           vk::ImageType::e2D,
+                           kInputImageFormat,
+                           vk::Extent3D{padded_image_extent_, 1},
+                           1,  // mipLevels
+                           1,  // arrayLayers
+                           vk::SampleCountFlagBits::e1,
+                           vk::ImageTiling::eOptimal,
+                           vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferSrc,
+                           vk::SharingMode::eConcurrent,  // NVIDIA does not observe any performance penalties for
+                                                          // concurrent usage between queues
+                           queue_family_indices,
+                           vk::ImageLayout::eUndefined,
+                           video_profile_list_info_,
+                       },
+                       &allocation_create_info, &yuv_image_, &yuv_image_allocation_, &yuv_image_allocation_info_);
+    if (result != VK_SUCCESS) {
+      throw std::runtime_error("Failed to create intermediate image for RGB to YUV conversion");
+    }
+
+    vk::ImageViewUsageCreateInfo image_view_usage_create_info{
+        vk::ImageUsageFlagBits::eStorage,
+    };
+    vk::ImageViewCreateInfo image_view_create_info{
+        vk::ImageViewCreateFlags{},
+        yuv_image_,
+        vk::ImageViewType::e2D,
+        kYPlaneFormat,
+        vk::ComponentMapping{},
+        vk::ImageSubresourceRange{
+            vk::ImageAspectFlagBits::ePlane0,
+            0,  // baseMipLevel
+            1,  // levelCount
+            0,  // baseArrayLayer
+            1,  // layerCount
+        },
+        image_view_usage_create_info,
+    };
+    result = dev_dispatch_.CreateImageView(device_, image_view_create_info, nullptr, &yuv_image_y_plane_view_);
+    if (result != VK_SUCCESS) {
+      throw std::runtime_error("Failed to create Y plane image view for intermediary YUV image");
+    }
+    image_view_create_info.format = kUvPlaneFormat;
+    image_view_create_info.subresourceRange.aspectMask = vk::ImageAspectFlagBits::ePlane1;
+    result = dev_dispatch_.CreateImageView(device_, image_view_create_info, nullptr, &yuv_image_uv_plane_view_);
+    if (result != VK_SUCCESS) {
+      throw std::runtime_error("Failed to create UV plane image view for intermediary YUV image");
     }
   }
 
@@ -587,6 +662,8 @@ class H264Encoder : public Encoder {
   constexpr static StdVideoH264ChromaFormatIdc kChromaFormatIdc = STD_VIDEO_H264_CHROMA_FORMAT_IDC_420;
   constexpr static vk::Format kDpbImageFormat = vk::Format::eG8B8R82Plane420Unorm;
   constexpr static vk::Format kInputImageFormat = vk::Format::eG8B8R82Plane420Unorm;
+  constexpr static vk::Format kYPlaneFormat = vk::Format::eR8Unorm;
+  constexpr static vk::Format kUvPlaneFormat = vk::Format::eR8G8Unorm;
 };
 
 }  // namespace vvk
