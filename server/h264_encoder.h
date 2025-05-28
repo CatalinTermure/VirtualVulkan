@@ -43,9 +43,19 @@ class H264Encoder : public Encoder {
     AllocateDpbImages();
     InitializeRateControl();
     AllocateOutputBuffer();
+    AllocateInputImage();
   }
 
   ~H264Encoder() override {
+    if (input_image_ != VK_NULL_HANDLE) {
+      vmaDestroyImage(execution_context_.allocator(), input_image_, input_image_allocation_);
+      input_image_ = VK_NULL_HANDLE;
+      input_image_allocation_ = VK_NULL_HANDLE;
+    }
+    if (input_image_view_ != VK_NULL_HANDLE) {
+      dev_dispatch_.DestroyImageView(device_, input_image_view_, nullptr);
+      input_image_view_ = VK_NULL_HANDLE;
+    }
     if (dpb_images_.size() > 0) {
       for (size_t i = 0; i < dpb_images_.size(); i++) {
         vmaDestroyImage(execution_context_.allocator(), dpb_images_[i], dpb_allocations_[i]);
@@ -169,6 +179,10 @@ class H264Encoder : public Encoder {
   std::vector<VmaAllocation> dpb_allocations_;
   std::vector<VmaAllocationInfo> dpb_allocation_infos_;
   std::vector<VkImageView> dpb_image_views_;
+  VkImage input_image_ = VK_NULL_HANDLE;
+  VmaAllocation input_image_allocation_ = VK_NULL_HANDLE;
+  VmaAllocationInfo input_image_allocation_info_;
+  VkImageView input_image_view_ = VK_NULL_HANDLE;
 
  private:
   void CreateQueryPool() {
@@ -224,9 +238,9 @@ class H264Encoder : public Encoder {
                                             video_queue_index_,
                                             vk::VideoSessionCreateFlagsKHR{},
                                             &video_profile_info_,
-                                            vk::Format::eG8B8R82Plane420Unorm,
+                                            kInputImageFormat,
                                             padded_image_extent_,
-                                            vk::Format::eG8B8R82Plane420Unorm,
+                                            kDpbImageFormat,
                                             kMaxDpbSlots,
                                             kMaxActiveReferenceSlots,
                                             &h264_std_extension_version,
@@ -283,7 +297,7 @@ class H264Encoder : public Encoder {
                                        vk::ImageCreateInfo{
                                            vk::ImageCreateFlags{},
                                            vk::ImageType::e2D,
-                                           vk::Format::eG8B8R82Plane420Unorm,
+                                           kDpbImageFormat,
                                            vk::Extent3D{padded_image_extent_, 1},
                                            1,  // mipLevels
                                            1,  // arrayLayers
@@ -304,7 +318,7 @@ class H264Encoder : public Encoder {
                                                  vk::ImageViewCreateFlags{},
                                                  image,
                                                  vk::ImageViewType::e2D,
-                                                 vk::Format::eG8B8R82Plane420Unorm,
+                                                 kDpbImageFormat,
                                                  vk::ComponentMapping{},
                                                  vk::ImageSubresourceRange{
                                                      vk::ImageAspectFlagBits::eColor,
@@ -508,6 +522,52 @@ class H264Encoder : public Encoder {
     }
   }
 
+  void AllocateInputImage() {
+    VmaAllocationCreateInfo allocation_create_info = {};
+    std::array queue_family_indices = {video_queue_index_, compute_queue_index_};
+    VkResult result =
+        vmaCreateImage(execution_context_.allocator(),
+                       vk::ImageCreateInfo{
+                           vk::ImageCreateFlags{},
+                           vk::ImageType::e2D,
+                           kInputImageFormat,
+                           vk::Extent3D{padded_image_extent_, 1},
+                           1,  // mipLevels
+                           1,  // arrayLayers
+                           vk::SampleCountFlagBits::e1,
+                           vk::ImageTiling::eOptimal,
+                           vk::ImageUsageFlagBits::eVideoEncodeSrcKHR | vk::ImageUsageFlagBits::eTransferDst,
+                           vk::SharingMode::eConcurrent,  // NVIDIA does not observe any performance penalties for
+                                                          // concurrent usage between queues
+                           queue_family_indices,
+                           vk::ImageLayout::eUndefined,
+                           video_profile_list_info_,
+                       },
+                       &allocation_create_info, &input_image_, &input_image_allocation_, &input_image_allocation_info_);
+    if (result != VK_SUCCESS) {
+      throw std::runtime_error("Failed to create input image for H264 encoding");
+    }
+
+    vk::ImageViewCreateInfo image_view_create_info{
+        vk::ImageViewCreateFlags{},
+        input_image_,
+        vk::ImageViewType::e2D,
+        kInputImageFormat,
+        vk::ComponentMapping{},
+        vk::ImageSubresourceRange{
+            vk::ImageAspectFlagBits::eColor,
+            0,  // baseMipLevel
+            1,  // levelCount
+            0,  // baseArrayLayer
+            1,  // layerCount
+        },
+    };
+    result = dev_dispatch_.CreateImageView(device_, image_view_create_info, nullptr, &input_image_view_);
+    if (result != VK_SUCCESS) {
+      throw std::runtime_error("Failed to create Y plane image view for H264 encoding input image");
+    }
+  }
+
   constexpr static uint32_t kIdrPeriod = 16;
   constexpr static uint32_t kGopFrameCount = 16;
   constexpr static uint32_t kMaxDpbSlots = 16;
@@ -525,6 +585,8 @@ class H264Encoder : public Encoder {
   constexpr static StdVideoH264LevelIdc kLevelIdc = STD_VIDEO_H264_LEVEL_IDC_4_1;
   constexpr static vk::VideoChromaSubsamplingFlagsKHR kChromaSubsampling = vk::VideoChromaSubsamplingFlagBitsKHR::e420;
   constexpr static StdVideoH264ChromaFormatIdc kChromaFormatIdc = STD_VIDEO_H264_CHROMA_FORMAT_IDC_420;
+  constexpr static vk::Format kDpbImageFormat = vk::Format::eG8B8R82Plane420Unorm;
+  constexpr static vk::Format kInputImageFormat = vk::Format::eG8B8R82Plane420Unorm;
 };
 
 }  // namespace vvk
