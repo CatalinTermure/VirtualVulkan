@@ -18,6 +18,7 @@ message UncompressedStreamCreateInfo {
 
 message H264StreamCreateInfo {
   uint32 video_queue_family_index = 1;
+  uint32 compute_queue_family_index = 2;
 }
 
 message UncompressedStreamInfo {

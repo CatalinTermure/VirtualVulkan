@@ -26,8 +26,8 @@ std::unique_ptr<FrameStream> FrameStream::Create(
   }
 
   if (server_streaming_capabilities.supports_h264_stream() && client_streaming_capabilities.supports_h264_stream()) {
-    return std::unique_ptr<FrameStream>(
-        new H264FrameStream(local_instance, local_device, remote_video_queue_family_index));
+    return std::unique_ptr<FrameStream>(new H264FrameStream(
+        local_instance, local_device, remote_graphics_queue_family_index, remote_video_queue_family_index));
   }
 
   return std::unique_ptr<FrameStream>(

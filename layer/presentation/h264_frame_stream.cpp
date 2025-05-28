@@ -5,8 +5,12 @@
 #include "spdlog/spdlog.h"
 
 namespace vvk {
-H264FrameStream::H264FrameStream(VkInstance instance, VkDevice device, uint32_t queue_family_index)
-    : local_instance_(instance), local_device_(device), remote_video_queue_family_index_(queue_family_index) {}
+H264FrameStream::H264FrameStream(VkInstance instance, VkDevice device, uint32_t graphics_queue_family_index,
+                                 uint32_t video_queue_family_index)
+    : local_instance_(instance),
+      local_device_(device),
+      remote_video_queue_family_index_(video_queue_family_index),
+      remote_graphics_queue_family_index_(graphics_queue_family_index) {}
 
 void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) {
   InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
@@ -23,6 +27,7 @@ void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExten
   setup_presentation.set_height(swapchain_image_extent.height);
   vvk::server::H264StreamCreateInfo &h264_stream_create_info = *setup_presentation.mutable_h264_stream_create_info();
   h264_stream_create_info.set_video_queue_family_index(remote_video_queue_family_index_);
+  h264_stream_create_info.set_compute_queue_family_index(remote_graphics_queue_family_index_);
   if (!instance_info.command_stream().Write(request)) {
     throw std::runtime_error("Failed to send setup presentation request");
   }

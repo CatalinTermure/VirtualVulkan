@@ -23,11 +23,12 @@ constexpr T PadValueToMultipleOf(T value, T multiple) {
 class H264Encoder : public Encoder {
  public:
   H264Encoder(const vvk::ExecutionContext& execution_context, VkDevice device, uint32_t video_queue_index,
-              vk::Extent2D image_extent)
+              uint32_t compute_queue_index, vk::Extent2D image_extent)
       : execution_context_(execution_context),
         dev_dispatch_(execution_context.device_dispatch_table()),
         device_(device),
         video_queue_index_(video_queue_index),
+        compute_queue_index_(compute_queue_index),
         real_image_extent_(image_extent),
         padded_image_extent_(vk::Extent2D{
             PadValueToMultipleOf(image_extent.width, kPictureGranularity),
@@ -143,6 +144,7 @@ class H264Encoder : public Encoder {
   const VkuDeviceDispatchTable& dev_dispatch_;
   VkDevice device_;
   uint32_t video_queue_index_;
+  uint32_t compute_queue_index_;
   uint32_t encoded_frame_count_ = 0;
   vk::Extent2D real_image_extent_;
   vk::Extent2D padded_image_extent_;
