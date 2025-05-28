@@ -4,6 +4,8 @@
 #include <vulkan/vulkan.h>
 
 #include <cstddef>
+#include <filesystem>
+#include <fstream>
 #include <vector>
 #include <vulkan/vulkan.hpp>
 
@@ -49,9 +51,31 @@ class H264Encoder : public Encoder {
     AllocateIntermediaryYuvImage();
     AllocateInputImage();
     CreateViewsForEncodableImages();
+    CreateRgbToYuvComputePipeline();
+    AllocateRgbToYuvDescriptorSets();
   }
 
   ~H264Encoder() override {
+    if (compute_pipeline_ != VK_NULL_HANDLE) {
+      dev_dispatch_.DestroyPipeline(device_, compute_pipeline_, nullptr);
+      compute_pipeline_ = VK_NULL_HANDLE;
+    }
+    if (compute_pipeline_layout_ != VK_NULL_HANDLE) {
+      dev_dispatch_.DestroyPipelineLayout(device_, compute_pipeline_layout_, nullptr);
+      compute_pipeline_layout_ = VK_NULL_HANDLE;
+    }
+    if (rgb_to_yuv_shader_module_ != VK_NULL_HANDLE) {
+      dev_dispatch_.DestroyShaderModule(device_, rgb_to_yuv_shader_module_, nullptr);
+      rgb_to_yuv_shader_module_ = VK_NULL_HANDLE;
+    }
+    if (compute_descriptor_set_layout_ != VK_NULL_HANDLE) {
+      dev_dispatch_.DestroyDescriptorSetLayout(device_, compute_descriptor_set_layout_, nullptr);
+      compute_descriptor_set_layout_ = VK_NULL_HANDLE;
+    }
+    if (compute_descriptor_pool_ != VK_NULL_HANDLE) {
+      dev_dispatch_.DestroyDescriptorPool(device_, compute_descriptor_pool_, nullptr);
+      compute_descriptor_pool_ = VK_NULL_HANDLE;
+    }
     if (encodable_image_views_.size() > 0) {
       for (auto image_view : encodable_image_views_) {
         dev_dispatch_.DestroyImageView(device_, image_view, nullptr);
@@ -215,6 +239,12 @@ class H264Encoder : public Encoder {
   VmaAllocationInfo yuv_image_allocation_info_;
   VkImageView yuv_image_y_plane_view_ = VK_NULL_HANDLE;
   VkImageView yuv_image_uv_plane_view_ = VK_NULL_HANDLE;
+  VkDescriptorPool compute_descriptor_pool_ = VK_NULL_HANDLE;
+  std::vector<VkDescriptorSet> compute_descriptor_sets_;
+  VkDescriptorSetLayout compute_descriptor_set_layout_ = VK_NULL_HANDLE;
+  VkShaderModule rgb_to_yuv_shader_module_ = VK_NULL_HANDLE;
+  VkPipelineLayout compute_pipeline_layout_ = VK_NULL_HANDLE;
+  VkPipeline compute_pipeline_ = VK_NULL_HANDLE;
 
  private:
   void CreateQueryPool() {
@@ -678,6 +708,145 @@ class H264Encoder : public Encoder {
         throw std::runtime_error("Failed to create image view for encodable image");
       }
       encodable_image_views_.push_back(image_view);
+    }
+  }
+
+  void CreateRgbToYuvComputePipeline() {
+    std::filesystem::path shader_path = std::filesystem::current_path() / "shaders" / "rgb_to_ycrcb_2plane.comp.spv";
+    std::ifstream shader_file(shader_path, std::ios::binary | std::ios::ate);
+    if (!shader_file.is_open()) {
+      throw std::runtime_error("Failed to open shader file: " + shader_path.string());
+    }
+    size_t shader_file_size = shader_file.tellg();
+    shader_file.seekg(0, std::ios::beg);
+    std::vector<uint32_t> shader_code(shader_file_size / sizeof(uint32_t));
+    shader_file.read(reinterpret_cast<char*>(shader_code.data()), shader_file_size);
+    if (!shader_file) {
+      throw std::runtime_error("Failed to read shader file: " + shader_path.string());
+    }
+    shader_file.close();
+    vk::ShaderModuleCreateInfo shader_module_create_info{
+        vk::ShaderModuleCreateFlags{},
+        shader_code,
+    };
+    dev_dispatch_.CreateShaderModule(device_, shader_module_create_info, nullptr, &rgb_to_yuv_shader_module_);
+
+    constexpr std::array descriptor_set_bindings_ = {
+        vk::DescriptorSetLayoutBinding{
+            0,  // binding
+            vk::DescriptorType::eStorageImage,
+            1,  // descriptorCount
+            vk::ShaderStageFlagBits::eCompute,
+        },
+        vk::DescriptorSetLayoutBinding{
+            1,  // binding
+            vk::DescriptorType::eStorageImage,
+            1,  // descriptorCount
+            vk::ShaderStageFlagBits::eCompute,
+        },
+        vk::DescriptorSetLayoutBinding{
+            2,  // binding
+            vk::DescriptorType::eStorageImage,
+            1,  // descriptorCount
+            vk::ShaderStageFlagBits::eCompute,
+        },
+    };
+
+    dev_dispatch_.CreateDescriptorSetLayout(device_,
+                                            vk::DescriptorSetLayoutCreateInfo{
+                                                vk::DescriptorSetLayoutCreateFlags{},
+                                                descriptor_set_bindings_,
+                                            },
+                                            nullptr, &compute_descriptor_set_layout_);
+    {
+      VkPipelineLayoutCreateInfo pipeline_layout_create_info = {
+          .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+          .pNext = nullptr,
+          .flags = 0,
+          .setLayoutCount = 1,
+          .pSetLayouts = &compute_descriptor_set_layout_,
+          .pushConstantRangeCount = 0,
+          .pPushConstantRanges = nullptr,
+      };
+      dev_dispatch_.CreatePipelineLayout(device_, &pipeline_layout_create_info, nullptr, &compute_pipeline_layout_);
+    }
+
+    dev_dispatch_.CreateComputePipelines(device_, vk::PipelineCache{}, 1,
+                                         vk::ComputePipelineCreateInfo{
+                                             vk::PipelineCreateFlags{},
+                                             vk::PipelineShaderStageCreateInfo{
+                                                 vk::PipelineShaderStageCreateFlags{},
+                                                 vk::ShaderStageFlagBits::eCompute,
+                                                 rgb_to_yuv_shader_module_,
+                                                 "main",
+                                             },
+                                             compute_pipeline_layout_,
+                                         },
+                                         nullptr, &compute_pipeline_);
+  }
+
+  void AllocateRgbToYuvDescriptorSets() {
+    vk::DescriptorPoolSize descriptor_pool_size{
+        vk::DescriptorType::eStorageImage,
+        static_cast<uint32_t>(encodable_images_.size()),
+    };
+    dev_dispatch_.CreateDescriptorPool(device_,
+                                       vk::DescriptorPoolCreateInfo{
+                                           vk::DescriptorPoolCreateFlags{},
+                                           static_cast<uint32_t>(encodable_images_.size()),
+                                           descriptor_pool_size,
+                                       },
+                                       nullptr, &compute_descriptor_pool_);
+    compute_descriptor_sets_.resize(encodable_images_.size());
+    std::vector<vk::DescriptorSetLayout> layouts(encodable_images_.size(), compute_descriptor_set_layout_);
+    dev_dispatch_.AllocateDescriptorSets(device_,
+                                         vk::DescriptorSetAllocateInfo{
+                                             compute_descriptor_pool_,
+                                             layouts,
+                                         },
+                                         compute_descriptor_sets_.data());
+    for (int i = 0; i < encodable_images_.size(); i++) {
+      vk::DescriptorImageInfo rgb_image_info{
+          {},                         // sampler
+          encodable_image_views_[i],  // imageView
+          vk::ImageLayout::eGeneral,  // imageLayout
+      };
+      vk::DescriptorImageInfo y_image_info{
+          {},                         // sampler
+          yuv_image_y_plane_view_,    // imageView
+          vk::ImageLayout::eGeneral,  // imageLayout
+      };
+      vk::DescriptorImageInfo uv_image_info{
+          {},                         // sampler
+          yuv_image_uv_plane_view_,   // imageView
+          vk::ImageLayout::eGeneral,  // imageLayout
+      };
+      std::array descriptor_writes = {
+          static_cast<VkWriteDescriptorSet>(vk::WriteDescriptorSet{
+              compute_descriptor_sets_[i],
+              0,  // binding
+              0,  // arrayElement
+              vk::DescriptorType::eStorageImage,
+              rgb_image_info,
+          }),
+          static_cast<VkWriteDescriptorSet>(vk::WriteDescriptorSet{
+              compute_descriptor_sets_[i],
+              1,  // binding
+              0,  // arrayElement
+              vk::DescriptorType::eStorageImage,
+              y_image_info,
+          }),
+          static_cast<VkWriteDescriptorSet>(vk::WriteDescriptorSet{
+              compute_descriptor_sets_[i],
+              2,  // binding
+              0,  // arrayElement
+              vk::DescriptorType::eStorageImage,
+              uv_image_info,
+          }),
+      };
+
+      dev_dispatch_.UpdateDescriptorSets(device_, static_cast<uint32_t>(descriptor_writes.size()),
+                                         descriptor_writes.data(), 0, nullptr);
     }
   }
 
