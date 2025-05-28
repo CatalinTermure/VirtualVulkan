@@ -27,11 +27,26 @@ class H264Encoder : public Encoder {
     InitializeVideoSession();
     BindVideoSessionMemory();
     InitializeVideoSessionParameters();
+    AllocateDpbImages();
     InitializeRateControl();
     AllocateOutputBuffer();
   }
 
   ~H264Encoder() override {
+    if (dpb_images_.size() > 0) {
+      for (size_t i = 0; i < dpb_images_.size(); i++) {
+        vmaDestroyImage(execution_context_.allocator(), dpb_images_[i], dpb_allocations_[i]);
+      }
+      dpb_images_.clear();
+      dpb_allocations_.clear();
+      dpb_allocation_infos_.clear();
+    }
+    if (dpb_image_views_.size() > 0) {
+      for (auto image_view : dpb_image_views_) {
+        dev_dispatch_.DestroyImageView(device_, image_view, nullptr);
+      }
+      dpb_image_views_.clear();
+    }
     if (output_buffer_data_ != nullptr) {
       vmaUnmapMemory(execution_context_.allocator(), output_buffer_allocation_);
       output_buffer_data_ = nullptr;
@@ -135,6 +150,10 @@ class H264Encoder : public Encoder {
   VkBuffer output_buffer_ = VK_NULL_HANDLE;
   VmaAllocation output_buffer_allocation_ = VK_NULL_HANDLE;
   char* output_buffer_data_ = nullptr;
+  std::vector<VkImage> dpb_images_;
+  std::vector<VmaAllocation> dpb_allocations_;
+  std::vector<VmaAllocationInfo> dpb_allocation_infos_;
+  std::vector<VkImageView> dpb_image_views_;
 
  private:
   void CreateQueryPool() {
@@ -236,6 +255,59 @@ class H264Encoder : public Encoder {
     dev_dispatch_.BindVideoSessionMemoryKHR(device_, video_session_,
                                             static_cast<uint32_t>(bind_video_session_memory_infos.size()),
                                             bind_video_session_memory_infos.data());
+  }
+
+  void AllocateDpbImages() {
+    for (int i = 0; i < kReferencePictureCount; i++) {
+      VkImage image;
+      VkImageView image_view;
+      VmaAllocation image_allocation;
+      VmaAllocationCreateInfo allocation_create_info = {};
+      VmaAllocationInfo image_allocation_info = {};
+      VkResult result = vmaCreateImage(execution_context_.allocator(),
+                                       vk::ImageCreateInfo{
+                                           vk::ImageCreateFlags{},
+                                           vk::ImageType::e2D,
+                                           vk::Format::eG8B8R82Plane422Unorm,
+                                           vk::Extent3D{image_extent_, 1},
+                                           1,  // mipLevels
+                                           1,  // arrayLayers
+                                           vk::SampleCountFlagBits::e1,
+                                           vk::ImageTiling::eOptimal,
+                                           vk::ImageUsageFlagBits::eVideoEncodeDpbKHR,
+                                           vk::SharingMode::eExclusive,
+                                           video_queue_index_,  // pQueueFamilyIndices
+                                           vk::ImageLayout::eUndefined,
+                                           video_profile_list_info_,
+                                       },
+                                       &allocation_create_info, &image, &image_allocation, &image_allocation_info);
+      if (result != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create image for H264 encoding DPB");
+      }
+      result = dev_dispatch_.CreateImageView(device_,
+                                             vk::ImageViewCreateInfo{
+                                                 vk::ImageViewCreateFlags{},
+                                                 image,
+                                                 vk::ImageViewType::e2D,
+                                                 vk::Format::eG8B8R82Plane420Unorm,
+                                                 vk::ComponentMapping{},
+                                                 vk::ImageSubresourceRange{
+                                                     vk::ImageAspectFlagBits::eColor,
+                                                     0,  // baseMipLevel
+                                                     1,  // levelCount
+                                                     0,  // baseArrayLayer
+                                                     1,  // layerCount
+                                                 },
+                                             },
+                                             nullptr, &image_view);
+      if (result != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create image view for H264 encoding DPB");
+      }
+      dpb_images_.push_back(image);
+      dpb_image_views_.push_back(image_view);
+      dpb_allocations_.push_back(image_allocation);
+      dpb_allocation_infos_.push_back(image_allocation_info);
+    }
   }
 
   void InitializeVideoSessionParameters() {
@@ -425,6 +497,7 @@ class H264Encoder : public Encoder {
   constexpr static uint32_t kGopFrameCount = 16;
   constexpr static uint32_t kMaxDpbSlots = 16;
   constexpr static uint32_t kMaxActiveReferenceSlots = 16;
+  constexpr static uint32_t kReferencePictureCount = 2;
   constexpr static uint32_t kVirtualBufferSizeInMs = 200;
   constexpr static uint32_t kInitialVirtualBufferSizeInMs = 100;
   constexpr static uint32_t kAverageBitrate = 5'000'000;            // 5 Mbps
