@@ -12,6 +12,14 @@
 
 namespace vvk {
 
+namespace {
+template <typename T>
+  requires std::is_integral_v<T>
+constexpr T PadValueToMultipleOf(T value, T multiple) {
+  return (value + multiple - 1) / multiple * multiple;
+}
+}  // namespace
+
 class H264Encoder : public Encoder {
  public:
   H264Encoder(const vvk::ExecutionContext& execution_context, VkDevice device, uint32_t video_queue_index,
@@ -20,7 +28,11 @@ class H264Encoder : public Encoder {
         dev_dispatch_(execution_context.device_dispatch_table()),
         device_(device),
         video_queue_index_(video_queue_index),
-        image_extent_(image_extent) {
+        real_image_extent_(image_extent),
+        padded_image_extent_(vk::Extent2D{
+            PadValueToMultipleOf(image_extent.width, kPictureGranularity),
+            PadValueToMultipleOf(image_extent.height, kPictureGranularity),
+        }) {
     InitializeVideoProfile();
     CreateQueryPool();
     AllocateCommandBuffer();
@@ -132,7 +144,8 @@ class H264Encoder : public Encoder {
   VkDevice device_;
   uint32_t video_queue_index_;
   uint32_t encoded_frame_count_ = 0;
-  vk::Extent2D image_extent_;
+  vk::Extent2D real_image_extent_;
+  vk::Extent2D padded_image_extent_;
   vk::VideoEncodeRateControlInfoKHR encode_rate_control_info_;
   vk::VideoEncodeH264RateControlInfoKHR h264_rate_control_info_;
   vk::VideoEncodeRateControlLayerInfoKHR encode_rate_control_layer_info_;
@@ -210,7 +223,7 @@ class H264Encoder : public Encoder {
                                             vk::VideoSessionCreateFlagsKHR{},
                                             &video_profile_info_,
                                             vk::Format::eG8B8R82Plane420Unorm,
-                                            image_extent_,
+                                            padded_image_extent_,
                                             vk::Format::eG8B8R82Plane420Unorm,
                                             kMaxDpbSlots,
                                             kMaxActiveReferenceSlots,
@@ -268,8 +281,8 @@ class H264Encoder : public Encoder {
                                        vk::ImageCreateInfo{
                                            vk::ImageCreateFlags{},
                                            vk::ImageType::e2D,
-                                           vk::Format::eG8B8R82Plane422Unorm,
-                                           vk::Extent3D{image_extent_, 1},
+                                           vk::Format::eG8B8R82Plane420Unorm,
+                                           vk::Extent3D{padded_image_extent_, 1},
                                            1,  // mipLevels
                                            1,  // arrayLayers
                                            vk::SampleCountFlagBits::e1,
@@ -497,6 +510,7 @@ class H264Encoder : public Encoder {
   constexpr static uint32_t kGopFrameCount = 16;
   constexpr static uint32_t kMaxDpbSlots = 16;
   constexpr static uint32_t kMaxActiveReferenceSlots = 16;
+  constexpr static uint32_t kPictureGranularity = 16;
   constexpr static uint32_t kReferencePictureCount = 2;
   constexpr static uint32_t kVirtualBufferSizeInMs = 200;
   constexpr static uint32_t kInitialVirtualBufferSizeInMs = 100;
