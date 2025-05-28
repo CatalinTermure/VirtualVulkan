@@ -23,7 +23,8 @@ constexpr T PadValueToMultipleOf(T value, T multiple) {
 class H264Encoder : public Encoder {
  public:
   H264Encoder(const vvk::ExecutionContext& execution_context, VkDevice device, uint32_t video_queue_index,
-              uint32_t compute_queue_index, vk::Extent2D image_extent)
+              uint32_t compute_queue_index, vk::Extent2D image_extent, std::vector<VkImage> encodable_images,
+              VkFormat encodable_images_format)
       : execution_context_(execution_context),
         dev_dispatch_(execution_context.device_dispatch_table()),
         device_(device),
@@ -33,7 +34,9 @@ class H264Encoder : public Encoder {
         padded_image_extent_(vk::Extent2D{
             PadValueToMultipleOf(image_extent.width, kPictureGranularity),
             PadValueToMultipleOf(image_extent.height, kPictureGranularity),
-        }) {
+        }),
+        encodable_images_(std::move(encodable_images)),
+        encodable_images_format_(encodable_images_format) {
     InitializeVideoProfile();
     CreateQueryPool();
     AllocateCommandBuffer();
@@ -45,9 +48,16 @@ class H264Encoder : public Encoder {
     AllocateOutputBuffer();
     AllocateIntermediaryYuvImage();
     AllocateInputImage();
+    CreateViewsForEncodableImages();
   }
 
   ~H264Encoder() override {
+    if (encodable_image_views_.size() > 0) {
+      for (auto image_view : encodable_image_views_) {
+        dev_dispatch_.DestroyImageView(device_, image_view, nullptr);
+      }
+      encodable_image_views_.clear();
+    }
     if (yuv_image_ != VK_NULL_HANDLE) {
       vmaDestroyImage(execution_context_.allocator(), yuv_image_, yuv_image_allocation_);
       yuv_image_ = VK_NULL_HANDLE;
@@ -172,6 +182,9 @@ class H264Encoder : public Encoder {
   uint32_t encoded_frame_count_ = 0;
   vk::Extent2D real_image_extent_;
   vk::Extent2D padded_image_extent_;
+  std::vector<VkImage> encodable_images_;
+  VkFormat encodable_images_format_;
+  std::vector<VkImageView> encodable_image_views_;
   vk::VideoEncodeRateControlInfoKHR encode_rate_control_info_;
   vk::VideoEncodeH264RateControlInfoKHR h264_rate_control_info_;
   vk::VideoEncodeRateControlLayerInfoKHR encode_rate_control_layer_info_;
@@ -257,7 +270,7 @@ class H264Encoder : public Encoder {
                                             video_queue_index_,
                                             vk::VideoSessionCreateFlagsKHR{},
                                             &video_profile_info_,
-                                            kInputImageFormat,
+                                            kEncodeInputImageFormat,
                                             padded_image_extent_,
                                             kDpbImageFormat,
                                             kMaxDpbSlots,
@@ -549,7 +562,7 @@ class H264Encoder : public Encoder {
                        vk::ImageCreateInfo{
                            vk::ImageCreateFlags{},
                            vk::ImageType::e2D,
-                           kInputImageFormat,
+                           kEncodeInputImageFormat,
                            vk::Extent3D{padded_image_extent_, 1},
                            1,  // mipLevels
                            1,  // arrayLayers
@@ -571,7 +584,7 @@ class H264Encoder : public Encoder {
         vk::ImageViewCreateFlags{},
         input_image_,
         vk::ImageViewType::e2D,
-        kInputImageFormat,
+        kEncodeInputImageFormat,
         vk::ComponentMapping{},
         vk::ImageSubresourceRange{
             vk::ImageAspectFlagBits::eColor,
@@ -595,7 +608,7 @@ class H264Encoder : public Encoder {
                        vk::ImageCreateInfo{
                            vk::ImageCreateFlagBits::eMutableFormat | vk::ImageCreateFlagBits::eExtendedUsage,
                            vk::ImageType::e2D,
-                           kInputImageFormat,
+                           kEncodeInputImageFormat,
                            vk::Extent3D{padded_image_extent_, 1},
                            1,  // mipLevels
                            1,  // arrayLayers
@@ -643,6 +656,31 @@ class H264Encoder : public Encoder {
     }
   }
 
+  void CreateViewsForEncodableImages() {
+    for (const auto& image : encodable_images_) {
+      vk::ImageViewCreateInfo image_view_create_info{
+          vk::ImageViewCreateFlags{},
+          image,
+          vk::ImageViewType::e2D,
+          vk::Format{encodable_images_format_},
+          vk::ComponentMapping{},
+          vk::ImageSubresourceRange{
+              vk::ImageAspectFlagBits::eColor,
+              0,  // baseMipLevel
+              1,  // levelCount
+              0,  // baseArrayLayer
+              1,  // layerCount
+          },
+      };
+      VkImageView image_view;
+      VkResult result = dev_dispatch_.CreateImageView(device_, image_view_create_info, nullptr, &image_view);
+      if (result != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create image view for encodable image");
+      }
+      encodable_image_views_.push_back(image_view);
+    }
+  }
+
   constexpr static uint32_t kIdrPeriod = 16;
   constexpr static uint32_t kGopFrameCount = 16;
   constexpr static uint32_t kMaxDpbSlots = 16;
@@ -661,7 +699,7 @@ class H264Encoder : public Encoder {
   constexpr static vk::VideoChromaSubsamplingFlagsKHR kChromaSubsampling = vk::VideoChromaSubsamplingFlagBitsKHR::e420;
   constexpr static StdVideoH264ChromaFormatIdc kChromaFormatIdc = STD_VIDEO_H264_CHROMA_FORMAT_IDC_420;
   constexpr static vk::Format kDpbImageFormat = vk::Format::eG8B8R82Plane420Unorm;
-  constexpr static vk::Format kInputImageFormat = vk::Format::eG8B8R82Plane420Unorm;
+  constexpr static vk::Format kEncodeInputImageFormat = vk::Format::eG8B8R82Plane420Unorm;
   constexpr static vk::Format kYPlaneFormat = vk::Format::eR8Unorm;
   constexpr static vk::Format kUvPlaneFormat = vk::Format::eR8G8Unorm;
 };

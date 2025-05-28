@@ -28,6 +28,8 @@ void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExten
   vvk::server::H264StreamCreateInfo &h264_stream_create_info = *setup_presentation.mutable_h264_stream_create_info();
   h264_stream_create_info.set_video_queue_family_index(remote_video_queue_family_index_);
   h264_stream_create_info.set_compute_queue_family_index(remote_graphics_queue_family_index_);
+  h264_stream_create_info.set_remote_images_format(
+      static_cast<vvk::server::VkFormat>(swapchain_info.GetRemoteImageFormat()));
   if (!instance_info.command_stream().Write(request)) {
     throw std::runtime_error("Failed to send setup presentation request");
   }

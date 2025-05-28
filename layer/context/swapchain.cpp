@@ -192,6 +192,7 @@ VkImage SwapchainInfo::CreateImageRemote(const VkImageCreateInfo& create_info,
     return VK_NULL_HANDLE;
   }
   remote_images_.emplace_back(remote_image, remote_allocation);
+  remote_image_format_ = create_info.format;
   return remote_image;
 }
 

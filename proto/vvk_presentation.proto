@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package vvk.server;
 
+import "vvk_types.proto";
+
 message VvkGetFrameStreamingCapabilitiesRequest {
   uint64 physical_device = 1;
 }
@@ -19,6 +21,7 @@ message UncompressedStreamCreateInfo {
 message H264StreamCreateInfo {
   uint32 video_queue_family_index = 1;
   uint32 compute_queue_family_index = 2;
+  VkFormat remote_images_format = 3;
 }
 
 message UncompressedStreamInfo {

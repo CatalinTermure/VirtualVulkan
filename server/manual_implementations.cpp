@@ -83,9 +83,14 @@ void SetupPresentationUncompressedStream(vvk::ExecutionContext& context,
 
 void SetupPresentationH264Stream(vvk::ExecutionContext& context, const vvk::server::VvkSetupPresentationRequest& params,
                                  vvk::server::VvkResponse* response) {
+  std::vector<VkImage> remote_images;
+  for (uint64_t image_handle : params.remote_images()) {
+    remote_images.push_back(reinterpret_cast<VkImage>(image_handle));
+  }
   auto encoder = std::make_unique<vvk::H264Encoder>(
       context, reinterpret_cast<VkDevice>(params.device()), params.h264_stream_create_info().video_queue_family_index(),
-      params.h264_stream_create_info().compute_queue_family_index(), vk::Extent2D{params.width(), params.height()});
+      params.h264_stream_create_info().compute_queue_family_index(), vk::Extent2D{params.width(), params.height()},
+      std::move(remote_images), static_cast<VkFormat>(params.h264_stream_create_info().remote_images_format()));
   auto& h264_stream_info = *response->mutable_setuppresentation()->mutable_h264_stream_info();
   h264_stream_info.set_header(encoder->GetEncodedHeader());
 
