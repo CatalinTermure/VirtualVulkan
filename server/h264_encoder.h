@@ -51,6 +51,7 @@ class H264Encoder : public Encoder {
     AllocateIntermediaryYuvImage();
     AllocateInputImage();
     CreateViewsForEncodableImages();
+    InitializePictureParameters();
     CreateRgbToYuvComputePipeline();
     AllocateRgbToYuvDescriptorSets();
   }
@@ -162,9 +163,10 @@ class H264Encoder : public Encoder {
 
     std::vector<vk::VideoReferenceSlotInfoKHR> reference_slots;
 
-    vk::VideoBeginCodingInfoKHR video_begin_coding_info = {vk::VideoBeginCodingFlagsKHR{}, video_session_,
-                                                           video_session_parameters_, reference_slots,
-                                                           encode_rate_control_info_};
+    vk::VideoBeginCodingInfoKHR video_begin_coding_info = {
+        vk::VideoBeginCodingFlagsKHR{}, video_session_, video_session_parameters_, reference_slots,
+        encode_rate_control_info_,
+    };
 
     dev_dispatch_.CmdBeginVideoCodingKHR(command_buffer, video_begin_coding_info);
   }
@@ -216,6 +218,19 @@ class H264Encoder : public Encoder {
   vk::VideoProfileListInfoKHR video_profile_list_info_;
   vk::VideoProfileInfoKHR video_profile_info_;
   vk::VideoEncodeH264ProfileInfoKHR h264_profile_info_;
+  StdVideoH264SpsVuiFlags std_sps_vui_flags_;
+  StdVideoH264SequenceParameterSetVui std_sps_vui_;
+  StdVideoH264SpsFlags std_sps_flags_;
+  StdVideoH264SequenceParameterSet std_sps_;
+  StdVideoH264PpsFlags std_pps_flags_;
+  StdVideoH264PictureParameterSet std_pps_;
+  std::vector<StdVideoEncodeH264SliceHeaderFlags> std_slice_header_flags_;
+  std::vector<StdVideoEncodeH264SliceHeader> std_slice_headers_;
+  std::vector<VkVideoEncodeH264NaluSliceInfoKHR> h264_nalu_slice_infos_;
+  std::vector<StdVideoEncodeH264PictureInfoFlags> std_picture_info_flags_;
+  std::vector<StdVideoEncodeH264PictureInfo> std_picture_infos_;
+  std::vector<StdVideoEncodeH264ReferenceListsInfo> std_reference_lists_infos_;
+  std::vector<VkVideoEncodeH264PictureInfoKHR> h264_picture_infos_;
 
   VkQueryPool query_pool_ = VK_NULL_HANDLE;
   VkCommandPool command_pool_ = VK_NULL_HANDLE;
@@ -401,8 +416,10 @@ class H264Encoder : public Encoder {
     }
   }
 
+  // Parameters are taken from:
+  // https://github.com/clemy/vulkan-video-encode-simple/blob/5dffdb83917e55bc2d22d5143de8bec3e220e8f4/h264parameterset.hpp
   void InitializeVideoSessionParameters() {
-    StdVideoH264SpsVuiFlags std_sps_vui_flags = {
+    std_sps_vui_flags_ = {
         .aspect_ratio_info_present_flag = 0u,
         .overscan_info_present_flag = 0u,
         .overscan_appropriate_flag = 0u,
@@ -410,14 +427,14 @@ class H264Encoder : public Encoder {
         .video_full_range_flag = 0u,
         .color_description_present_flag = 0u,
         .chroma_loc_info_present_flag = 0u,
-        .timing_info_present_flag = 0u,
-        .fixed_frame_rate_flag = 0u,
+        .timing_info_present_flag = 1u,
+        .fixed_frame_rate_flag = 1u,
         .bitstream_restriction_flag = 0u,
         .nal_hrd_parameters_present_flag = 0u,
         .vcl_hrd_parameters_present_flag = 0u,
     };
-    StdVideoH264SequenceParameterSetVui std_sps_vui = {
-        .flags = std_sps_vui_flags,
+    std_sps_vui_ = {
+        .flags = std_sps_vui_flags_,
         .aspect_ratio_idc = {},
         .sar_width = 0u,
         .sar_height = 0u,
@@ -425,8 +442,8 @@ class H264Encoder : public Encoder {
         .colour_primaries = 0u,
         .transfer_characteristics = 0u,
         .matrix_coefficients = 0u,
-        .num_units_in_tick = 0u,
-        .time_scale = 0u,
+        .num_units_in_tick = 1u,
+        .time_scale = kFrameRateDenominator * 2,
         .max_num_reorder_frames = 0u,
         .max_dec_frame_buffering = 0u,
         .chroma_sample_loc_type_top_field = 0u,
@@ -434,26 +451,29 @@ class H264Encoder : public Encoder {
         .reserved1 = 0u,
         .pHrdParameters = 0u,
     };
-    StdVideoH264SpsFlags std_sps_flags = {
+    std_sps_flags_ = {
         .constraint_set0_flag = 0u,
         .constraint_set1_flag = 0u,
         .constraint_set2_flag = 0u,
         .constraint_set3_flag = 0u,
         .constraint_set4_flag = 0u,
         .constraint_set5_flag = 0u,
-        .direct_8x8_inference_flag = 0u,
+        .direct_8x8_inference_flag = 1u,
         .mb_adaptive_frame_field_flag = 0u,
-        .frame_mbs_only_flag = 0u,
+        .frame_mbs_only_flag = 1u,
         .delta_pic_order_always_zero_flag = 0u,
         .separate_colour_plane_flag = 0u,
         .gaps_in_frame_num_value_allowed_flag = 0u,
         .qpprime_y_zero_transform_bypass_flag = 0u,
-        .frame_cropping_flag = 0u,
+        .frame_cropping_flag = (padded_image_extent_.width == real_image_extent_.width &&
+                                padded_image_extent_.height == real_image_extent_.height)
+                                   ? 0u
+                                   : 1u,
         .seq_scaling_matrix_present_flag = 0u,
         .vui_parameters_present_flag = 1u,
     };
-    StdVideoH264SequenceParameterSet std_sps = {
-        .flags = std_sps_flags,
+    std_sps_ = {
+        .flags = std_sps_flags_,
         .profile_idc = kProfileIdc,
         .level_idc = kLevelIdc,
         .chroma_format_idc = kChromaFormatIdc,
@@ -464,33 +484,33 @@ class H264Encoder : public Encoder {
         .pic_order_cnt_type = STD_VIDEO_H264_POC_TYPE_0,
         .offset_for_non_ref_pic = 0u,
         .offset_for_top_to_bottom_field = 0u,
-        .log2_max_pic_order_cnt_lsb_minus4 = 0u,
+        .log2_max_pic_order_cnt_lsb_minus4 = 4u,
         .num_ref_frames_in_pic_order_cnt_cycle = 0u,
         .max_num_ref_frames = 1u,
         .reserved1 = 0u,
-        .pic_width_in_mbs_minus1 = 0u,
-        .pic_height_in_map_units_minus1 = 0u,
+        .pic_width_in_mbs_minus1 = padded_image_extent_.width / kPictureGranularity - 1u,
+        .pic_height_in_map_units_minus1 = padded_image_extent_.height / kPictureGranularity - 1u,
         .frame_crop_left_offset = 0u,
-        .frame_crop_right_offset = 0u,
+        .frame_crop_right_offset = (padded_image_extent_.width - real_image_extent_.width) / 2,
         .frame_crop_top_offset = 0u,
-        .frame_crop_bottom_offset = 0u,
+        .frame_crop_bottom_offset = (padded_image_extent_.height - real_image_extent_.height) / 2,
         .reserved2 = 0u,
         .pOffsetForRefFrame = 0u,
         .pScalingLists = 0u,
-        .pSequenceParameterSetVui = &std_sps_vui,
+        .pSequenceParameterSetVui = &std_sps_vui_,
     };
-    StdVideoH264PpsFlags std_pps_flags = {
+    std_pps_flags_ = {
         .transform_8x8_mode_flag = 0u,
         .redundant_pic_cnt_present_flag = 0u,
         .constrained_intra_pred_flag = 0u,
-        .deblocking_filter_control_present_flag = 0u,
+        .deblocking_filter_control_present_flag = 1u,
         .weighted_pred_flag = 0u,
         .bottom_field_pic_order_in_frame_present_flag = 0u,
-        .entropy_coding_mode_flag = 0u,
+        .entropy_coding_mode_flag = 1u,
         .pic_scaling_matrix_present_flag = 0u,
     };
-    StdVideoH264PictureParameterSet std_pps = {
-        .flags = std_pps_flags,
+    std_pps_ = {
+        .flags = std_pps_flags_,
         .seq_parameter_set_id = 0u,
         .pic_parameter_set_id = 0u,
         .num_ref_idx_l0_default_active_minus1 = 0u,
@@ -502,7 +522,7 @@ class H264Encoder : public Encoder {
         .second_chroma_qp_index_offset = 0u,
         .pScalingLists = 0u,
     };
-    vk::VideoEncodeH264SessionParametersAddInfoKHR h264_parameters_add_info{std_sps, std_pps};
+    vk::VideoEncodeH264SessionParametersAddInfoKHR h264_parameters_add_info{std_sps_, std_pps_};
     dev_dispatch_.CreateVideoSessionParametersKHR(device_,
                                                   vk::VideoSessionParametersCreateInfoKHR{
                                                       vk::VideoSessionParametersCreateFlagsKHR{},
@@ -847,6 +867,74 @@ class H264Encoder : public Encoder {
 
       dev_dispatch_.UpdateDescriptorSets(device_, static_cast<uint32_t>(descriptor_writes.size()),
                                          descriptor_writes.data(), 0, nullptr);
+    }
+  }
+
+  // Picture parameters taken from:
+  // https://github.com/clemy/vulkan-video-encode-simple/blob/5dffdb83917e55bc2d22d5143de8bec3e220e8f4/h264parameterset.hpp
+  // which was adapted from NVIDIA's Vulkan Video Encode Samples:
+  // https://github.com/nvpro-samples/vk_video_samples
+  void InitializePictureParameters() {
+    std_slice_header_flags_.resize(encodable_images_.size(), {});
+    std_slice_headers_.resize(encodable_images_.size(), {});
+    h264_nalu_slice_infos_.resize(encodable_images_.size(), {});
+    std_picture_info_flags_.resize(encodable_images_.size(), {});
+    std_picture_infos_.resize(encodable_images_.size(), {});
+    std_reference_lists_infos_.resize(encodable_images_.size(), {});
+    h264_picture_infos_.resize(encodable_images_.size(), {});
+
+    for (int i = 0; i < encodable_images_.size(); i++) {
+      std_slice_header_flags_[i].direct_spatial_mv_pred_flag = 1;
+      std_slice_header_flags_[i].num_ref_idx_active_override_flag = 0;
+      std_slice_headers_[i].flags = std_slice_header_flags_[i];
+      std_slice_headers_[i].cabac_init_idc = StdVideoH264CabacInitIdc::STD_VIDEO_H264_CABAC_INIT_IDC_0;
+      std_slice_headers_[i].disable_deblocking_filter_idc =
+          StdVideoH264DisableDeblockingFilterIdc::STD_VIDEO_H264_DISABLE_DEBLOCKING_FILTER_IDC_DISABLED;
+      std_slice_headers_[i].slice_alpha_c0_offset_div2 = 0;
+      std_slice_headers_[i].slice_beta_offset_div2 = 0;
+
+      h264_nalu_slice_infos_[i].sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_NALU_SLICE_INFO_KHR;
+      h264_nalu_slice_infos_[i].pStdSliceHeader = &std_slice_headers_[i];
+      h264_nalu_slice_infos_[i].constantQp = 0;  // No constant QP, use rate control
+
+      std_picture_info_flags_[i].is_reference = 1;
+      std_picture_info_flags_[i].adaptive_ref_pic_marking_mode_flag = 0;
+
+      std_picture_infos_[i].seq_parameter_set_id = 0;
+      std_picture_infos_[i].idr_pic_id = 0;
+
+      std_reference_lists_infos_[i].num_ref_idx_l0_active_minus1 = 0;
+      std_reference_lists_infos_[i].num_ref_idx_l1_active_minus1 = 0;
+      std::fill_n(std_reference_lists_infos_[i].RefPicList0, STD_VIDEO_H264_MAX_NUM_LIST_REF,
+                  STD_VIDEO_H264_NO_REFERENCE_PICTURE);
+      std::fill_n(std_reference_lists_infos_[i].RefPicList1, STD_VIDEO_H264_MAX_NUM_LIST_REF,
+                  STD_VIDEO_H264_NO_REFERENCE_PICTURE);
+      std_picture_infos_[i].pRefLists = &std_reference_lists_infos_[i];
+
+      h264_picture_infos_[i].sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_PICTURE_INFO_KHR;
+      h264_picture_infos_[i].naluSliceEntryCount = 1;
+      h264_picture_infos_[i].pNaluSliceEntries = &h264_nalu_slice_infos_[i];
+      h264_picture_infos_[i].pStdPictureInfo = &std_picture_infos_[i];
+
+      UpdatePictureParameters(i);
+    }
+  }
+
+  void UpdatePictureParameters(uint32_t picture_index) {
+    bool is_idr = encoded_frame_count_ % kIdrPeriod == 0;
+    uint32_t gop_frame_index = encoded_frame_count_ % kGopFrameCount;
+    uint32_t max_pic_order_cnt_lsb = 1 << (std_sps_.log2_max_pic_order_cnt_lsb_minus4 + 4);
+    std_slice_headers_[picture_index].slice_type = is_idr ? STD_VIDEO_H264_SLICE_TYPE_I : STD_VIDEO_H264_SLICE_TYPE_P;
+    std_picture_info_flags_[picture_index].IdrPicFlag = is_idr ? 1 : 0;
+    std_picture_info_flags_[picture_index].no_output_of_prior_pics_flag = is_idr ? 1 : 0;
+    std_picture_infos_[picture_index].flags = std_picture_info_flags_[picture_index];
+    std_picture_infos_[picture_index].pic_parameter_set_id = std_pps_.pic_parameter_set_id;
+    std_picture_infos_[picture_index].primary_pic_type =
+        is_idr ? STD_VIDEO_H264_PICTURE_TYPE_IDR : STD_VIDEO_H264_PICTURE_TYPE_P;
+    std_picture_infos_[picture_index].frame_num = gop_frame_index;
+    std_picture_infos_[picture_index].PicOrderCnt = (gop_frame_index * 2) % max_pic_order_cnt_lsb;
+    if (!is_idr) {
+      std_reference_lists_infos_[picture_index].RefPicList0[0] = !(gop_frame_index & 1);
     }
   }
 
