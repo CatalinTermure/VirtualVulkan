@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "3rdparty/ctpl_stl.h"
+
 namespace vvk {
 
 namespace {
@@ -15,6 +17,8 @@ std::mutex pool_to_command_buffers_lock;
 std::map<VkCommandPool, std::vector<VkCommandBuffer>> g_pool_to_command_buffers;
 
 constexpr size_t kFencePoolSize = 16;
+
+ctpl::thread_pool g_thread_pool(32);
 }  // namespace
 
 DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
@@ -103,13 +107,30 @@ void DeviceInfo::AddMappedMemory(void* local_address, void* remote_address, VkDe
 }
 
 void DeviceInfo::UploadMappedMemory(VkDeviceMemory memory) {
-  grpc::ClientContext context;
-  vvk::server::VvkWriteMappedMemoryRequest request;
-  MappedMemoryInfo& mapped_memory_info = mapped_memory_infos_.at(memory);
-  request.set_address(reinterpret_cast<uint64_t>(mapped_memory_info.remote_memory));
-  request.set_data(reinterpret_cast<const char*>(mapped_memory_info.local_memory), mapped_memory_info.map_size);
-  google::protobuf::Empty empty;
-  instance_info_.stub().WriteMappedMemory(&context, request, &empty);
+  constexpr size_t kChunkSize = 3 * 1024 * 1024;  // 3 MB
+  std::vector<std::future<void>> futures;
+  for (size_t offset = 0; offset < mapped_memory_infos_.at(memory).map_size; offset += kChunkSize) {
+    futures.push_back(g_thread_pool.push([offset, this, memory, kChunkSize](int unused) {
+      size_t chunk_size = std::min(kChunkSize, mapped_memory_infos_.at(memory).map_size - offset);
+      grpc::ClientContext context;
+      vvk::server::VvkWriteMappedMemoryRequest request;
+      MappedMemoryInfo& mapped_memory_info = mapped_memory_infos_.at(memory);
+      request.set_address(reinterpret_cast<uint64_t>(mapped_memory_info.remote_memory) + offset);
+      request.set_data(reinterpret_cast<const char*>(mapped_memory_info.local_memory) + offset, chunk_size);
+      google::protobuf::Empty empty;
+      auto status = instance_info_.stub().WriteMappedMemory(&context, request, &empty);
+      if (!status.ok()) {
+        throw std::runtime_error("Failed to upload mapped memory: " + status.error_message());
+      }
+    }));
+  }
+  for (auto& future : futures) {
+    try {
+      future.get();
+    } catch (const std::exception& e) {
+      throw std::runtime_error(std::string("Error uploading mapped memory: ") + e.what());
+    }
+  }
 }
 
 void DeviceInfo::UploadMappedMemories() {

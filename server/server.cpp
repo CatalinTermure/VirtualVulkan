@@ -87,7 +87,7 @@ grpc::Status VvkServerImpl::RequestFrame(grpc::ServerContext* context, const vvk
   VmaAllocationInfo allocation_info;
   vmaGetAllocationInfo(allocator, buffer_allocation, &allocation_info);
   uint32_t data_size = allocation_info.size;
-  constexpr uint32_t kChunkSize = 128 * 1024;  // 128 KiB, randomly chosen
+  constexpr uint32_t kChunkSize = 3 * 1024 * 1024;  // 3MB
   uint32_t num_chunks = (data_size + kChunkSize - 1) / kChunkSize;
   spdlog::trace("Sending {} bytes in {} chunks", data_size, num_chunks);
   vvk::server::VvkGetFrameResponse response;
