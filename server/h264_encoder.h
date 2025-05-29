@@ -1042,7 +1042,7 @@ class H264Encoder : public Encoder {
                            1,  // arrayLayers
                            vk::SampleCountFlagBits::e1,
                            vk::ImageTiling::eOptimal,
-                           vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferSrc,
+                           vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferDst,
                            vk::SharingMode::eExclusive,
                            compute_queue_index_,
                            vk::ImageLayout::eUndefined,
