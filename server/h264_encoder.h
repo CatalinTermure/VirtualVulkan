@@ -49,7 +49,7 @@ class H264Encoder : public Encoder {
     AllocateOutputBuffer();
     AllocateIntermediaryYuvImage();
     AllocateInputImage();
-    CreateViewsForEncodableImages();
+    CreateIntermediaryRgbImage();
     InitializePictureParameters();
     CreateRgbToYuvComputePipeline();
     AllocateRgbToYuvDescriptorSets();
@@ -78,11 +78,14 @@ class H264Encoder : public Encoder {
       dev_dispatch_.DestroyDescriptorPool(device_, compute_descriptor_pool_, nullptr);
       compute_descriptor_pool_ = VK_NULL_HANDLE;
     }
-    if (encodable_image_views_.size() > 0) {
-      for (auto image_view : encodable_image_views_) {
-        dev_dispatch_.DestroyImageView(device_, image_view, nullptr);
-      }
-      encodable_image_views_.clear();
+    if (rgb_image_view_ != VK_NULL_HANDLE) {
+      dev_dispatch_.DestroyImageView(device_, rgb_image_view_, nullptr);
+      rgb_image_view_ = VK_NULL_HANDLE;
+    }
+    if (rgb_image_ != VK_NULL_HANDLE) {
+      vmaDestroyImage(execution_context_.allocator(), rgb_image_, rgb_image_allocation_);
+      rgb_image_ = VK_NULL_HANDLE;
+      rgb_image_allocation_ = VK_NULL_HANDLE;
     }
     if (yuv_image_ != VK_NULL_HANDLE) {
       vmaDestroyImage(execution_context_.allocator(), yuv_image_, yuv_image_allocation_);
@@ -171,17 +174,87 @@ class H264Encoder : public Encoder {
 
     dev_dispatch_.CmdResetQueryPool(command_buffer, query_pool_, 0, 1);
 
-    // wait for color attachment to be ready
-    vk::ImageMemoryBarrier2 render_to_compute_barrier = {
+    // wait for the image to be rendered, then blit it to an RGB image
+    vk::ImageMemoryBarrier2 render_to_blit_barrier = {
         vk::PipelineStageFlagBits2::eColorAttachmentOutput,
         vk::AccessFlagBits2::eColorAttachmentWrite,
-        vk::PipelineStageFlagBits2::eComputeShader,
-        vk::AccessFlagBits2::eShaderStorageRead,
+        vk::PipelineStageFlagBits2::eTransfer,
+        vk::AccessFlagBits2::eTransferRead,
         vk::ImageLayout::eColorAttachmentOptimal,
-        vk::ImageLayout::eGeneral,
+        vk::ImageLayout::eTransferSrcOptimal,
         compute_queue_index_,
         compute_queue_index_,
         image,
+        vk::ImageSubresourceRange{
+            vk::ImageAspectFlagBits::eColor,
+            0,  // baseMipLevel
+            1,  // levelCount
+            0,  // baseArrayLayer
+            1,  // layerCount
+        },
+    };
+
+    // wait for the previous compute shader to finish reading the image before blitting
+    vk::ImageMemoryBarrier2 compute_to_blit_barrier = {
+        vk::PipelineStageFlagBits2::eComputeShader,
+        vk::AccessFlagBits2::eShaderStorageRead,
+        vk::PipelineStageFlagBits2::eTransfer,
+        vk::AccessFlagBits2::eTransferWrite,
+        vk::ImageLayout::eUndefined,
+        vk::ImageLayout::eTransferDstOptimal,
+        compute_queue_index_,
+        compute_queue_index_,
+        rgb_image_,
+        vk::ImageSubresourceRange{
+            vk::ImageAspectFlagBits::eColor,
+            0,  // baseMipLevel
+            1,  // levelCount
+            0,  // baseArrayLayer
+            1,  // layerCount
+        },
+    };
+    std::vector<vk::ImageMemoryBarrier2> image_barriers = {render_to_blit_barrier, compute_to_blit_barrier};
+    dev_dispatch_.CmdPipelineBarrier2(command_buffer, vk::DependencyInfoKHR{
+                                                          vk::DependencyFlags{},
+                                                          nullptr,  // no memory barriers
+                                                          nullptr,  // no buffer barriers
+                                                          image_barriers,
+                                                      });
+
+    dev_dispatch_.CmdBlitImage(
+        command_buffer, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, rgb_image_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+        1,
+        vk::ImageBlit{
+            vk::ImageSubresourceLayers{
+                vk::ImageAspectFlagBits::eColor,
+                0,  // mipLevel
+                0,  // baseArrayLayer
+                1,  // layerCount
+            },
+            {vk::Offset3D{0, 0, 1},
+             vk::Offset3D{static_cast<int>(real_image_extent_.width), static_cast<int>(real_image_extent_.height), 1}},
+            vk::ImageSubresourceLayers{
+                vk::ImageAspectFlagBits::eColor,
+                0,  // mipLevel
+                0,  // baseArrayLayer
+                1,  // layerCount
+            },
+            {vk::Offset3D{0, 0, 1},
+             vk::Offset3D{static_cast<int>(real_image_extent_.width), static_cast<int>(real_image_extent_.height), 1}},
+        },
+        VK_FILTER_LINEAR);
+
+    // wait for rgb image to be ready
+    vk::ImageMemoryBarrier2 blit_to_compute_barrier = {
+        vk::PipelineStageFlagBits2::eTransfer,
+        vk::AccessFlagBits2::eTransferWrite,
+        vk::PipelineStageFlagBits2::eComputeShader,
+        vk::AccessFlagBits2::eShaderStorageRead,
+        vk::ImageLayout::eTransferDstOptimal,
+        vk::ImageLayout::eGeneral,
+        compute_queue_index_,
+        compute_queue_index_,
+        rgb_image_,
         vk::ImageSubresourceRange{
             vk::ImageAspectFlagBits::eColor,
             0,  // baseMipLevel
@@ -210,7 +283,7 @@ class H264Encoder : public Encoder {
             1,  // layerCount
         },
     };
-    std::vector<vk::ImageMemoryBarrier2> image_barriers = {render_to_compute_barrier, compute_to_compute_barrier};
+    image_barriers = {blit_to_compute_barrier, compute_to_compute_barrier};
     dev_dispatch_.CmdPipelineBarrier2(command_buffer, vk::DependencyInfoKHR{
                                                           vk::DependencyFlags{},
                                                           nullptr,  // no memory barriers
@@ -219,9 +292,8 @@ class H264Encoder : public Encoder {
                                                       });
     // dispatch the compute kernel to convert the RGB image to YUV
     dev_dispatch_.CmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline_);
-    dev_dispatch_.CmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline_layout_, 0,
-                                        static_cast<uint32_t>(compute_descriptor_sets_.size()),
-                                        compute_descriptor_sets_.data(), 0, nullptr);
+    dev_dispatch_.CmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline_layout_, 0, 1,
+                                        &compute_descriptor_set_, 0, nullptr);
     dev_dispatch_.CmdDispatch(command_buffer, padded_image_extent_.width / 16, padded_image_extent_.height / 16, 1);
     // wait for the compute kernel to finish
     vk::ImageMemoryBarrier2 compute_to_transfer_barrier{
@@ -311,7 +383,7 @@ class H264Encoder : public Encoder {
             padded_image_extent_.height,
         },
         0,
-        encodable_image_views_[!(gop_frame_index & 1)],
+        dpb_image_views_[!(gop_frame_index & 1)],
     };
     StdVideoEncodeH264ReferenceInfo reference_picture_reference_info = {
         .flags = 0,
@@ -457,7 +529,6 @@ class H264Encoder : public Encoder {
   vk::Extent2D padded_image_extent_;
   std::vector<VkImage> encodable_images_;
   VkFormat encodable_images_format_;
-  std::vector<VkImageView> encodable_image_views_;
   vk::VideoEncodeRateControlInfoKHR encode_rate_control_info_;
   vk::VideoEncodeH264RateControlInfoKHR h264_rate_control_info_;
   vk::VideoEncodeRateControlLayerInfoKHR encode_rate_control_layer_info_;
@@ -497,13 +568,17 @@ class H264Encoder : public Encoder {
   VmaAllocation input_image_allocation_ = VK_NULL_HANDLE;
   VmaAllocationInfo input_image_allocation_info_;
   VkImageView input_image_view_ = VK_NULL_HANDLE;
+  VkImage rgb_image_ = VK_NULL_HANDLE;
+  VmaAllocation rgb_image_allocation_ = VK_NULL_HANDLE;
+  VmaAllocationInfo rgb_image_allocation_info_;
+  VkImageView rgb_image_view_ = VK_NULL_HANDLE;
   VkImage yuv_image_ = VK_NULL_HANDLE;
   VmaAllocation yuv_image_allocation_ = VK_NULL_HANDLE;
   VmaAllocationInfo yuv_image_allocation_info_;
   VkImageView yuv_image_y_plane_view_ = VK_NULL_HANDLE;
   VkImageView yuv_image_uv_plane_view_ = VK_NULL_HANDLE;
   VkDescriptorPool compute_descriptor_pool_ = VK_NULL_HANDLE;
-  std::vector<VkDescriptorSet> compute_descriptor_sets_;
+  VkDescriptorSet compute_descriptor_set_;
   VkDescriptorSetLayout compute_descriptor_set_layout_ = VK_NULL_HANDLE;
   VkShaderModule rgb_to_yuv_shader_module_ = VK_NULL_HANDLE;
   VkPipelineLayout compute_pipeline_layout_ = VK_NULL_HANDLE;
@@ -954,28 +1029,47 @@ class H264Encoder : public Encoder {
     }
   }
 
-  void CreateViewsForEncodableImages() {
-    for (const auto& image : encodable_images_) {
-      vk::ImageViewCreateInfo image_view_create_info{
-          vk::ImageViewCreateFlags{},
-          image,
-          vk::ImageViewType::e2D,
-          vk::Format{encodable_images_format_},
-          vk::ComponentMapping{},
-          vk::ImageSubresourceRange{
-              vk::ImageAspectFlagBits::eColor,
-              0,  // baseMipLevel
-              1,  // levelCount
-              0,  // baseArrayLayer
-              1,  // layerCount
-          },
-      };
-      VkImageView image_view;
-      VkResult result = dev_dispatch_.CreateImageView(device_, image_view_create_info, nullptr, &image_view);
-      if (result != VK_SUCCESS) {
-        throw std::runtime_error("Failed to create image view for encodable image");
-      }
-      encodable_image_views_.push_back(image_view);
+  void CreateIntermediaryRgbImage() {
+    VmaAllocationCreateInfo allocation_create_info = {};
+    VkResult result =
+        vmaCreateImage(execution_context_.allocator(),
+                       vk::ImageCreateInfo{
+                           vk::ImageCreateFlags{},
+                           vk::ImageType::e2D,
+                           kRgbFormat,
+                           vk::Extent3D{padded_image_extent_, 1},
+                           1,  // mipLevels
+                           1,  // arrayLayers
+                           vk::SampleCountFlagBits::e1,
+                           vk::ImageTiling::eOptimal,
+                           vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferSrc,
+                           vk::SharingMode::eExclusive,
+                           compute_queue_index_,
+                           vk::ImageLayout::eUndefined,
+                       },
+                       &allocation_create_info, &rgb_image_, &rgb_image_allocation_, &rgb_image_allocation_info_);
+    if (result != VK_SUCCESS) {
+      throw std::runtime_error("Failed to create intermediary RGB image");
+    }
+
+    vk::ImageViewCreateInfo image_view_create_info{
+        vk::ImageViewCreateFlags{},
+        rgb_image_,
+        vk::ImageViewType::e2D,
+        kRgbFormat,
+        vk::ComponentMapping{},
+        vk::ImageSubresourceRange{
+            vk::ImageAspectFlagBits::eColor,
+            0,  // baseMipLevel
+            1,  // levelCount
+            0,  // baseArrayLayer
+            1,  // layerCount
+        },
+    };
+    VkImageView image_view;
+    result = dev_dispatch_.CreateImageView(device_, image_view_create_info, nullptr, &rgb_image_view_);
+    if (result != VK_SUCCESS) {
+      throw std::runtime_error("Failed to create intermediary RGB image view");
     }
   }
 
@@ -1056,66 +1150,71 @@ class H264Encoder : public Encoder {
   void AllocateRgbToYuvDescriptorSets() {
     vk::DescriptorPoolSize descriptor_pool_size{
         vk::DescriptorType::eStorageImage,
-        static_cast<uint32_t>(encodable_images_.size()),
+        1,
     };
-    dev_dispatch_.CreateDescriptorPool(device_,
-                                       vk::DescriptorPoolCreateInfo{
-                                           vk::DescriptorPoolCreateFlags{},
-                                           static_cast<uint32_t>(encodable_images_.size()),
-                                           descriptor_pool_size,
-                                       },
-                                       nullptr, &compute_descriptor_pool_);
-    compute_descriptor_sets_.resize(encodable_images_.size());
-    std::vector<vk::DescriptorSetLayout> layouts(encodable_images_.size(), compute_descriptor_set_layout_);
-    dev_dispatch_.AllocateDescriptorSets(device_,
-                                         vk::DescriptorSetAllocateInfo{
-                                             compute_descriptor_pool_,
-                                             layouts,
-                                         },
-                                         compute_descriptor_sets_.data());
-    for (int i = 0; i < encodable_images_.size(); i++) {
-      vk::DescriptorImageInfo rgb_image_info{
-          {},                         // sampler
-          encodable_image_views_[i],  // imageView
-          vk::ImageLayout::eGeneral,  // imageLayout
-      };
-      vk::DescriptorImageInfo y_image_info{
-          {},                         // sampler
-          yuv_image_y_plane_view_,    // imageView
-          vk::ImageLayout::eGeneral,  // imageLayout
-      };
-      vk::DescriptorImageInfo uv_image_info{
-          {},                         // sampler
-          yuv_image_uv_plane_view_,   // imageView
-          vk::ImageLayout::eGeneral,  // imageLayout
-      };
-      std::array descriptor_writes = {
-          static_cast<VkWriteDescriptorSet>(vk::WriteDescriptorSet{
-              compute_descriptor_sets_[i],
-              0,  // binding
-              0,  // arrayElement
-              vk::DescriptorType::eStorageImage,
-              rgb_image_info,
-          }),
-          static_cast<VkWriteDescriptorSet>(vk::WriteDescriptorSet{
-              compute_descriptor_sets_[i],
-              1,  // binding
-              0,  // arrayElement
-              vk::DescriptorType::eStorageImage,
-              y_image_info,
-          }),
-          static_cast<VkWriteDescriptorSet>(vk::WriteDescriptorSet{
-              compute_descriptor_sets_[i],
-              2,  // binding
-              0,  // arrayElement
-              vk::DescriptorType::eStorageImage,
-              uv_image_info,
-          }),
-      };
-
-      dev_dispatch_.UpdateDescriptorSets(device_, static_cast<uint32_t>(descriptor_writes.size()),
-                                         descriptor_writes.data(), 0, nullptr);
+    VkResult result = dev_dispatch_.CreateDescriptorPool(device_,
+                                                         vk::DescriptorPoolCreateInfo{
+                                                             vk::DescriptorPoolCreateFlags{},
+                                                             1,
+                                                             descriptor_pool_size,
+                                                         },
+                                                         nullptr, &compute_descriptor_pool_);
+    if (result != VK_SUCCESS) {
+      throw std::runtime_error("Failed to create descriptor pool for RGB to YUV conversion");
     }
+
+    vk::DescriptorSetLayout descriptor_set_layout{compute_descriptor_set_layout_};
+    result = dev_dispatch_.AllocateDescriptorSets(device_,
+                                                  vk::DescriptorSetAllocateInfo{
+                                                      compute_descriptor_pool_,
+                                                      descriptor_set_layout,
+                                                  },
+                                                  &compute_descriptor_set_);
+    if (result != VK_SUCCESS) {
+      throw std::runtime_error("Failed to allocate descriptor sets for RGB to YUV conversion");
+    }
+
+    vk::DescriptorImageInfo rgb_image_info{
+        {},                         // sampler
+        rgb_image_view_,            // imageView
+        vk::ImageLayout::eGeneral,  // imageLayout
+    };
+    vk::DescriptorImageInfo y_image_info{
+        {},                         // sampler
+        yuv_image_y_plane_view_,    // imageView
+        vk::ImageLayout::eGeneral,  // imageLayout
+    };
+    vk::DescriptorImageInfo uv_image_info{
+        {},                         // sampler
+        yuv_image_uv_plane_view_,   // imageView
+        vk::ImageLayout::eGeneral,  // imageLayout
+    };
+    std::array descriptor_writes = {
+        static_cast<VkWriteDescriptorSet>(vk::WriteDescriptorSet{
+            compute_descriptor_set_,
+            0,  // binding
+            0,  // arrayElement
+            vk::DescriptorType::eStorageImage,
+            rgb_image_info,
+        }),
+        static_cast<VkWriteDescriptorSet>(vk::WriteDescriptorSet{
+            compute_descriptor_set_,
+            1,  // binding
+            0,  // arrayElement
+            vk::DescriptorType::eStorageImage,
+            y_image_info,
+        }),
+        static_cast<VkWriteDescriptorSet>(vk::WriteDescriptorSet{
+            compute_descriptor_set_,
+            2,  // binding
+            0,  // arrayElement
+            vk::DescriptorType::eStorageImage,
+            uv_image_info,
+        }),
+    };
+
+    dev_dispatch_.UpdateDescriptorSets(device_, static_cast<uint32_t>(descriptor_writes.size()),
+                                       descriptor_writes.data(), 0, nullptr);
   }
 
   // Picture parameters taken from:
@@ -1205,6 +1304,7 @@ class H264Encoder : public Encoder {
   constexpr static StdVideoH264ChromaFormatIdc kChromaFormatIdc = STD_VIDEO_H264_CHROMA_FORMAT_IDC_420;
   constexpr static vk::Format kDpbImageFormat = vk::Format::eG8B8R82Plane420Unorm;
   constexpr static vk::Format kEncodeInputImageFormat = vk::Format::eG8B8R82Plane420Unorm;
+  constexpr static vk::Format kRgbFormat = vk::Format::eR8G8B8A8Unorm;
   constexpr static vk::Format kYPlaneFormat = vk::Format::eR8Unorm;
   constexpr static vk::Format kUvPlaneFormat = vk::Format::eR8G8Unorm;
 };
