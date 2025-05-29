@@ -1328,6 +1328,8 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
   local_semaphores_to_signal_from_remote.reserve(submitCount);  // not the exact size but it's a good guess
   std::vector<VkSubmitInfo> submit_infos;
   submit_infos.reserve(submitCount);
+  std::vector<std::vector<VkPipelineStageFlags>> wait_stages;
+  wait_stages.resize(submitCount);
   std::vector<std::vector<VkSemaphore>> semaphores_to_wait_remote;
   semaphores_to_wait_remote.resize(submitCount);
   std::vector<std::vector<VkSemaphore>> semaphores_to_signal_remote;
@@ -1347,10 +1349,12 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
         semaphores_to_wait_local.push_back(submit_info.pWaitSemaphores[j]);
       } else {
         semaphores_to_wait_remote[submit_info_indx].push_back(submit_info.pWaitSemaphores[j]->remote_handle);
+        wait_stages[submit_info_indx].push_back(submit_info.pWaitDstStageMask[j]);
       }
     }
     submit_info.waitSemaphoreCount = semaphores_to_wait_remote[submit_info_indx].size();
     submit_info.pWaitSemaphores = semaphores_to_wait_remote[submit_info_indx].data();
+    submit_info.pWaitDstStageMask = wait_stages[submit_info_indx].data();
 
     for (uint32_t j = 0; j < submit_info.signalSemaphoreCount; j++) {
       semaphores_to_signal_remote[submit_info_indx].push_back(submit_info.pSignalSemaphores[j]->remote_handle);
@@ -1370,7 +1374,8 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
   }
 
   {
-    std::vector<VkPipelineStageFlags> wait_stages(semaphores_to_wait_local.size(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
+    std::vector<VkPipelineStageFlags> local_wait_stages(semaphores_to_wait_local.size(),
+                                                        VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
     std::vector<VkSemaphore> semaphores_to_wait_local_handles(semaphores_to_wait_local.size());
     for (size_t i = 0; i < semaphores_to_wait_local.size(); i++) {
       semaphores_to_wait_local_handles[i] = semaphores_to_wait_local[i]->local_handle;
@@ -1381,7 +1386,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
         .pNext = nullptr,
         .waitSemaphoreCount = static_cast<uint32_t>(semaphores_to_wait_local_handles.size()),
         .pWaitSemaphores = semaphores_to_wait_local_handles.data(),
-        .pWaitDstStageMask = wait_stages.data(),
+        .pWaitDstStageMask = local_wait_stages.data(),
         .commandBufferCount = 0,
         .pCommandBuffers = nullptr,
         .signalSemaphoreCount = 0,
@@ -1401,7 +1406,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
          semaphores_to_signal = std::move(local_semaphores_to_signal_from_remote),
          // we need to move the vectors into this thread so they don't get deleted
          unused1 = std::move(semaphores_to_wait_remote), unused2 = std::move(semaphores_to_signal_remote),
-         unused3 = std::move(command_buffers_remote)](int unused) {
+         unused3 = std::move(command_buffers_remote), unused4 = std::move(wait_stages)](int unused) {
           // Wait for local semaphores
           spdlog::trace("VkQueueSubmit: Waiting for local semaphores");
           VkResult result = dispatch_table.WaitForFences(device, 1, aux_fence.get(), VK_TRUE, UINT64_MAX);
