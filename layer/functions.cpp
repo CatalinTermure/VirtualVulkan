@@ -755,12 +755,21 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 
 VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCallbacks* pAllocator) {
   DeviceInfo& device_info = GetDeviceInfo(device);
+  InstanceInfo& instance_info = device_info.instance_info();
+
+  device_info.fence_pool().ForAllFences([&](VkFence& fence) {
+    PackAndCallVkDestroyFence(instance_info.command_stream(), instance_info.GetRemoteHandle(device),
+                              device_info.GetRemoteHandle(fence), pAllocator);
+    device_info.RemoveRemoteHandle(fence);
+    device_info.dispatch_table().DestroyFence(device, fence, pAllocator);
+  });
+
   device_info.dispatch_table().DestroyDevice(device, pAllocator);
 
-  auto& reader_writer = device_info.instance_info().command_stream();
-  PackAndCallVkDestroyDevice(reader_writer, device_info.instance_info().GetRemoteHandle(device), pAllocator);
+  PackAndCallVkDestroyDevice(instance_info.command_stream(), device_info.instance_info().GetRemoteHandle(device),
+                             pAllocator);
 
-  device_info.instance_info().RemoveRemoteHandle(device);
+  instance_info.RemoveRemoteHandle(device);
 
   RemoveDeviceInfo(device);
 }
