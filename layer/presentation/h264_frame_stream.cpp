@@ -1,10 +1,15 @@
 #include "h264_frame_stream.h"
 
+#include <fstream>
+
 #include "layer/context/instance.h"
 #include "layer/context/swapchain.h"
 #include "spdlog/spdlog.h"
 
 namespace vvk {
+namespace {
+std::ofstream h264_log_file("h264_frame_stream.h264", std::ios::out | std::ios::binary);
+}
 H264FrameStream::H264FrameStream(VkInstance instance, VkDevice device, uint32_t graphics_queue_family_index,
                                  uint32_t video_queue_family_index)
     : local_instance_(instance),
@@ -42,6 +47,7 @@ void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExten
   std::string encoded_header = response.setuppresentation().h264_stream_info().header();
   spdlog::info("Received H264 stream header of size {} bytes", encoded_header.size());
   spdlog::info("H264 stream header: {}", encoded_header);
+  h264_log_file << encoded_header;
   std::vector<uint64_t> remote_frame_keys;
   remote_frame_keys.reserve(response.setuppresentation().frame_keys_size());
   for (int i = 0; i < response.setuppresentation().frame_keys_size(); i++) {
@@ -103,6 +109,8 @@ VkResult H264FrameStream::PresentFrame(VkQueue queue, const VkPresentInfoKHR &or
       throw std::runtime_error("Failed to read frame response from server");
     }
     spdlog::info("Received response data with size {} bytes", response.frame_data().size());
+    h264_log_file << response.frame_data();
+    h264_log_file.flush();
   }
 
   return VK_SUCCESS;
