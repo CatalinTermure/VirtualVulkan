@@ -126,7 +126,7 @@ class ServerProtoGenerator(VvkGenerator):
         params_types_oneof = []
         response_types_oneof = []
         out = []
-        params_index = 3
+        params_index = 4
         response_index = 2
         out.append("// GENERATED FILE - DO NOT EDIT\n")
         out.append("// clang-format off\n")
@@ -146,7 +146,6 @@ service VvkServer {
 
   rpc GetFrameStreamingCapabilities (VvkGetFrameStreamingCapabilitiesRequest) returns (StreamingCapabilities) {}
   rpc RequestFrame (VvkGetFrameRequest) returns (stream VvkGetFrameResponse) {}
-  rpc SetupFrame (VvkSetupFrameRequest) returns (google.protobuf.Empty) {}
   rpc WriteMappedMemory (VvkWriteMappedMemoryRequest) returns (google.protobuf.Empty) {}
 }
 
@@ -154,6 +153,7 @@ message VvkRequest {
   string method = 1;
   oneof params {
     VvkSetupPresentationRequest setupPresentation = 2;
+    VvkSetupFrameRequest setupFrame = 3;
 ''')
         for command in self.vk.commands.values():
             if command.name not in COMMANDS_TO_GENERATE:

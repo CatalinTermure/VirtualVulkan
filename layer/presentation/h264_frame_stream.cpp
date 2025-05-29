@@ -65,13 +65,15 @@ void H264FrameStream::RemoveSwapchain(VkSwapchainKHR swapchain) {
 void H264FrameStream::SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t swapchain_image_index) {
   InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
   for (auto &swapchain_present_info : swapchains_) {
-    vvk::server::VvkSetupFrameRequest request;
-    request.set_session_key(swapchain_present_info.remote_session_key);
-    request.set_frame_key(swapchain_present_info.remote_frame_keys[swapchain_image_index]);
-    request.set_command_buffer(reinterpret_cast<uint64_t>(remote_command_buffer));
+    vvk::server::VvkRequest request;
+    request.set_method("setupFrame");
+    auto *setup_frame = request.mutable_setupframe();
+    setup_frame->set_session_key(swapchain_present_info.remote_session_key);
+    setup_frame->set_frame_key(swapchain_present_info.remote_frame_keys[swapchain_image_index]);
+    setup_frame->set_command_buffer(reinterpret_cast<uint64_t>(remote_command_buffer));
     google::protobuf::Empty response;
     grpc::ClientContext context;
-    instance_info.stub().SetupFrame(&context, request, &response);
+    instance_info.command_stream().Write(request);
   }
 }
 

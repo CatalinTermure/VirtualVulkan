@@ -17,4 +17,7 @@ void UnpackAndExecuteVkEnumeratePhysicalDevicesManual(vvk::ExecutionContext& con
 void UnpackAndExecuteSetupPresentation(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
                                        vvk::server::VvkResponse* response);
 
+void UnpackAndExecuteSetupFrame(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
+                                vvk::server::VvkResponse* response);
+
 #endif  // VVK_SERVER_MANUAL_IMPLEMENTATIONS_H

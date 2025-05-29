@@ -213,7 +213,7 @@ class H264Encoder : public Encoder {
             1,  // layerCount
         },
     };
-    std::vector<vk::ImageMemoryBarrier2> image_barriers = {render_to_blit_barrier, compute_to_blit_barrier};
+    std::vector<vk::ImageMemoryBarrier2> image_barriers = {compute_to_blit_barrier};
     dev_dispatch_.CmdPipelineBarrier2(command_buffer, vk::DependencyInfoKHR{
                                                           vk::DependencyFlags{},
                                                           nullptr,  // no memory barriers

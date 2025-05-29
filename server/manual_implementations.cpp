@@ -169,3 +169,11 @@ void UnpackAndExecuteSetupPresentation(vvk::ExecutionContext& context, const vvk
     spdlog::error("Unsupported presentation stream type");
   }
 }
+
+void UnpackAndExecuteSetupFrame(vvk::ExecutionContext& context, const vvk::server::VvkRequest& request,
+                                vvk::server::VvkResponse* response) {
+  vvk::Encoder* encoder = reinterpret_cast<vvk::Encoder*>(request.setupframe().session_key());
+  VkImage image = reinterpret_cast<VkImage>(request.setupframe().frame_key());
+  VkCommandBuffer command_buffer = reinterpret_cast<VkCommandBuffer>(request.setupframe().command_buffer());
+  encoder->WriteEncodeCommands(command_buffer, image);
+}
