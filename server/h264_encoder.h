@@ -40,6 +40,11 @@ class H264Encoder : public Encoder {
         encodable_images_(std::move(encodable_images)),
         encodable_images_format_(encodable_images_format) {
     dev_dispatch_.GetDeviceQueue(device_, video_queue_index_, 0, &video_queue_);
+    VkResult result = dev_dispatch_.CreateFence(device_, vk::FenceCreateInfo{}, nullptr, &encode_finished_fence_);
+    if (result != VK_SUCCESS) {
+      throw std::runtime_error("Failed to create fence for H264 encoding");
+    }
+
     InitializeVideoProfile();
     CreateQueryPool();
     AllocateCommandBuffer();
@@ -53,14 +58,8 @@ class H264Encoder : public Encoder {
     CreateIntermediaryRgbImage();
     InitializePictureParameters();
     CreateRgbToYuvComputePipeline();
-    AllocateRgbToYuvDescriptorSets();
-
     InitializeRateControl();
-
-    VkResult result = dev_dispatch_.CreateFence(device_, vk::FenceCreateInfo{}, nullptr, &encode_finished_fence_);
-    if (result != VK_SUCCESS) {
-      throw std::runtime_error("Failed to create fence for H264 encoding");
-    }
+    AllocateRgbToYuvDescriptorSets();
   }
 
   ~H264Encoder() override {
@@ -1010,6 +1009,49 @@ class H264Encoder : public Encoder {
     };
 
     dev_dispatch_.BeginCommandBuffer(video_command_buffer_, vk::CommandBufferBeginInfo{});
+    vk::ImageMemoryBarrier2 rgb_image_init = {
+        vk::PipelineStageFlagBits2::eNone,
+        vk::AccessFlagBits2::eNone,
+        vk::PipelineStageFlagBits2::eNone,
+        vk::AccessFlagBits2::eNone,
+        vk::ImageLayout::eUndefined,
+        vk::ImageLayout::eGeneral,
+        compute_queue_index_,
+        compute_queue_index_,
+        rgb_image_,
+        vk::ImageSubresourceRange{
+            vk::ImageAspectFlagBits::eColor,
+            0,  // baseMipLevel
+            1,  // levelCount
+            0,  // baseArrayLayer
+            1,  // layerCount
+        },
+    };
+    vk::ImageMemoryBarrier2 yuv_image_init = {
+        vk::PipelineStageFlagBits2::eNone,
+        vk::AccessFlagBits2::eNone,
+        vk::PipelineStageFlagBits2::eNone,
+        vk::AccessFlagBits2::eNone,
+        vk::ImageLayout::eUndefined,
+        vk::ImageLayout::eGeneral,
+        compute_queue_index_,
+        compute_queue_index_,
+        rgb_image_,
+        vk::ImageSubresourceRange{
+            vk::ImageAspectFlagBits::eColor,
+            0,  // baseMipLevel
+            1,  // levelCount
+            0,  // baseArrayLayer
+            1,  // layerCount
+        },
+    };
+    std::array image_barriers = {rgb_image_init, yuv_image_init};
+    dev_dispatch_.CmdPipelineBarrier2(video_command_buffer_, vk::DependencyInfo{
+                                                                 vk::DependencyFlags{},
+                                                                 nullptr,  // No memory barriers
+                                                                 nullptr,  // No buffer barriers
+                                                                 image_barriers,
+                                                             });
     dev_dispatch_.CmdBeginVideoCodingKHR(video_command_buffer_,
                                          vk::VideoBeginCodingInfoKHR{
                                              vk::VideoBeginCodingFlagsKHR{},
@@ -1027,10 +1069,12 @@ class H264Encoder : public Encoder {
     submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submit_info.commandBufferCount = 1;
     submit_info.pCommandBuffers = &video_command_buffer_;
-    VkResult result = dev_dispatch_.QueueSubmit(video_queue_, 1, &submit_info, VK_NULL_HANDLE);
+    VkResult result = dev_dispatch_.QueueSubmit(video_queue_, 1, &submit_info, encode_finished_fence_);
     if (result != VK_SUCCESS) {
       throw std::runtime_error("Failed to submit command buffer for H264 encoding rate control initialization");
     }
+    dev_dispatch_.WaitForFences(device_, 1, &encode_finished_fence_, VK_TRUE, UINT64_MAX);
+    dev_dispatch_.ResetFences(device_, 1, &encode_finished_fence_);
   }
 
   void AllocateOutputBuffer() {
