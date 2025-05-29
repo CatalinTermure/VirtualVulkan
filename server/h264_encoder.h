@@ -231,7 +231,7 @@ class H264Encoder : public Encoder {
                 0,  // baseArrayLayer
                 1,  // layerCount
             },
-            {vk::Offset3D{0, 0, 1},
+            {vk::Offset3D{0, 0, 0},
              vk::Offset3D{static_cast<int>(real_image_extent_.width), static_cast<int>(real_image_extent_.height), 1}},
             vk::ImageSubresourceLayers{
                 vk::ImageAspectFlagBits::eColor,
@@ -239,7 +239,7 @@ class H264Encoder : public Encoder {
                 0,  // baseArrayLayer
                 1,  // layerCount
             },
-            {vk::Offset3D{0, 0, 1},
+            {vk::Offset3D{0, 0, 0},
              vk::Offset3D{static_cast<int>(real_image_extent_.width), static_cast<int>(real_image_extent_.height), 1}},
         },
         VK_FILTER_LINEAR);
