@@ -56,8 +56,6 @@ message VvkSetupPresentationResponse {
 message VvkGetFrameRequest {
   uint64 session_key = 1;
   uint64 frame_key = 2;
-  uint32 width = 3;
-  uint32 height = 4;
 }
 
 message VvkGetFrameResponse {

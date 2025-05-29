@@ -171,8 +171,6 @@ VkResult UncompressedFrameStream::PresentFrame(VkQueue queue, const VkPresentInf
       if (swapchain_present_info.swapchain == present_info.pSwapchains[i]) {
         request.set_session_key(swapchain_present_info.remote_session_key);
         request.set_frame_key(swapchain_present_info.remote_frame_keys[present_info.pImageIndices[i]]);
-        request.set_width(swapchain_present_info.image_extent.width);
-        request.set_height(swapchain_present_info.image_extent.height);
         swapchain_exists = true;
         break;
       }
