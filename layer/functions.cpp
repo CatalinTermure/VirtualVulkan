@@ -35,6 +35,19 @@ const std::unordered_set<std::string> kAllowedLayers = {
 };
 
 template <typename T, VkStructureType sType>
+T* FindStructInChain(const void* p_next_chain) {
+  const T* struct_info = nullptr;
+  while (p_next_chain) {
+    struct_info = reinterpret_cast<const T*>(p_next_chain);
+    p_next_chain = struct_info->pNext;
+    if (struct_info->sType == sType) {
+      return const_cast<T*>(struct_info);
+    }
+  }
+  return nullptr;
+}
+
+template <typename T, VkStructureType sType>
 T* FindLayerLinkInfo(const void* p_next_chain) {
   const T* layer_info = nullptr;
   while (p_next_chain) {
@@ -641,15 +654,32 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     VkDevice remote_device = *pDevice;
 
     // Add timeline semaphore feature
-    // TODO: check if pNext chain contains VkPhysicalDevice12Features
-    VkPhysicalDeviceTimelineSemaphoreFeatures timeline_semaphore_features = {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES,
-        .pNext = nullptr,
-        .timelineSemaphore = VK_TRUE,
-    };
+    VkPhysicalDeviceVulkan12Features required_vulkan_1_2_features = {};
+    required_vulkan_1_2_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+    required_vulkan_1_2_features.timelineSemaphore = 1;
+    VkPhysicalDeviceVulkan12Features* vulkan_1_2_features =
+        FindStructInChain<VkPhysicalDeviceVulkan12Features, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES>(
+            remote_create_info.pNext);
+    if (!vulkan_1_2_features) {
+      AddStructToChain(reinterpret_cast<VkBaseOutStructure*>(&remote_create_info),
+                       reinterpret_cast<VkBaseOutStructure*>(&required_vulkan_1_2_features));
+    } else {
+      vulkan_1_2_features->timelineSemaphore = VK_TRUE;
+    }
 
-    AddStructToChain(reinterpret_cast<VkBaseOutStructure*>(&remote_create_info),
-                     reinterpret_cast<VkBaseOutStructure*>(&timeline_semaphore_features));
+    // Add synchronization2 feature
+    VkPhysicalDeviceVulkan13Features required_vulkan_1_3_features = {};
+    required_vulkan_1_3_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+    required_vulkan_1_3_features.synchronization2 = 1;
+    VkPhysicalDeviceVulkan13Features* vulkan_1_3_features =
+        FindStructInChain<VkPhysicalDeviceVulkan13Features, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES>(
+            remote_create_info.pNext);
+    if (!vulkan_1_3_features) {
+      AddStructToChain(reinterpret_cast<VkBaseOutStructure*>(&remote_create_info),
+                       reinterpret_cast<VkBaseOutStructure*>(&required_vulkan_1_3_features));
+    } else {
+      vulkan_1_3_features->synchronization2 = VK_TRUE;
+    }
 
     // Add extensions
     std::vector<const char*> enabled_extensions;
