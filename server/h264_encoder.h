@@ -46,7 +46,6 @@ class H264Encoder : public Encoder {
     BindVideoSessionMemory();
     InitializeVideoSessionParameters();
     AllocateDpbImages();
-    InitializeRateControl();
     AllocateOutputBuffer();
     AllocateIntermediaryYuvImage();
     AllocateInputImage();
@@ -54,6 +53,8 @@ class H264Encoder : public Encoder {
     InitializePictureParameters();
     CreateRgbToYuvComputePipeline();
     AllocateRgbToYuvDescriptorSets();
+
+    InitializeRateControl();
   }
 
   ~H264Encoder() override {
@@ -157,21 +158,267 @@ class H264Encoder : public Encoder {
   }
 
   void WriteEncodeCommands(VkCommandBuffer command_buffer, VkImage image) override {
-    dev_dispatch_.ResetQueryPool(device_, query_pool_, 0, 1);
+    uint32_t encodable_image_index = std::numeric_limits<uint32_t>::max();
+    for (uint32_t i = 0; i < encodable_images_.size(); i++) {
+      if (encodable_images_[i] == image) {
+        encodable_image_index = i;
+        break;
+      }
+    }
+    if (encodable_image_index == std::numeric_limits<uint32_t>::max()) {
+      throw std::runtime_error("Image not found in encodable images");
+    }
 
-    bool is_idr_frame = encoded_frame_count_ % kIdrPeriod == 0;
+    dev_dispatch_.CmdResetQueryPool(command_buffer, query_pool_, 0, 1);
 
-    std::vector<vk::VideoReferenceSlotInfoKHR> reference_slots;
-
-    vk::VideoBeginCodingInfoKHR video_begin_coding_info = {
-        vk::VideoBeginCodingFlagsKHR{}, video_session_, video_session_parameters_, reference_slots,
-        encode_rate_control_info_,
+    // wait for color attachment to be ready
+    vk::ImageMemoryBarrier2 render_to_compute_barrier = {
+        vk::PipelineStageFlagBits2::eColorAttachmentOutput,
+        vk::AccessFlagBits2::eColorAttachmentWrite,
+        vk::PipelineStageFlagBits2::eComputeShader,
+        vk::AccessFlagBits2::eShaderStorageRead,
+        vk::ImageLayout::eColorAttachmentOptimal,
+        vk::ImageLayout::eGeneral,
+        compute_queue_index_,
+        compute_queue_index_,
+        image,
+        vk::ImageSubresourceRange{
+            vk::ImageAspectFlagBits::eColor,
+            0,  // baseMipLevel
+            1,  // levelCount
+            0,  // baseArrayLayer
+            1,  // layerCount
+        },
     };
 
-    dev_dispatch_.CmdBeginVideoCodingKHR(command_buffer, video_begin_coding_info);
+    // wait for the previous RGB to YUV conversion to finish
+    vk::ImageMemoryBarrier2 compute_to_compute_barrier = {
+        vk::PipelineStageFlagBits2::eTransfer,
+        vk::AccessFlagBits2::eTransferRead,
+        vk::PipelineStageFlagBits2::eComputeShader,
+        vk::AccessFlagBits2::eShaderStorageWrite,
+        vk::ImageLayout::eUndefined,
+        vk::ImageLayout::eGeneral,
+        video_queue_index_,
+        compute_queue_index_,
+        yuv_image_,
+        vk::ImageSubresourceRange{
+            vk::ImageAspectFlagBits::eColor,
+            0,  // baseMipLevel
+            1,  // levelCount
+            0,  // baseArrayLayer
+            1,  // layerCount
+        },
+    };
+    std::vector<vk::ImageMemoryBarrier2> image_barriers = {render_to_compute_barrier, compute_to_compute_barrier};
+    dev_dispatch_.CmdPipelineBarrier2(command_buffer, vk::DependencyInfoKHR{
+                                                          vk::DependencyFlags{},
+                                                          nullptr,  // no memory barriers
+                                                          nullptr,  // no buffer barriers
+                                                          image_barriers,
+                                                      });
+    // dispatch the compute kernel to convert the RGB image to YUV
+    dev_dispatch_.CmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline_);
+    dev_dispatch_.CmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline_layout_, 0,
+                                        static_cast<uint32_t>(compute_descriptor_sets_.size()),
+                                        compute_descriptor_sets_.data(), 0, nullptr);
+    dev_dispatch_.CmdDispatch(command_buffer, padded_image_extent_.width / 16, padded_image_extent_.height / 16, 1);
+    // wait for the compute kernel to finish
+    vk::ImageMemoryBarrier2 compute_to_transfer_barrier{
+        vk::PipelineStageFlagBits2::eComputeShader,
+        vk::AccessFlagBits2::eShaderStorageWrite,
+        vk::PipelineStageFlagBits2::eTransfer,
+        vk::AccessFlagBits2::eTransferRead,
+        vk::ImageLayout::eGeneral,
+        vk::ImageLayout::eTransferSrcOptimal,
+        compute_queue_index_,
+        video_queue_index_,
+        yuv_image_,
+        vk::ImageSubresourceRange{
+            vk::ImageAspectFlagBits::eColor,
+            0,  // baseMipLevel
+            1,  // levelCount
+            0,  // baseArrayLayer
+            1,  // layerCount
+        },
+    };
+    // wait for the previous frame to be encoded
+    vk::ImageMemoryBarrier2 encode_to_transfer_barrier{
+        vk::PipelineStageFlagBits2::eVideoEncodeKHR,
+        vk::AccessFlagBits2::eVideoEncodeReadKHR,
+        vk::PipelineStageFlagBits2::eTransfer,
+        vk::AccessFlagBits2::eTransferWrite,
+        vk::ImageLayout::eUndefined,
+        vk::ImageLayout::eTransferDstOptimal,
+        video_queue_index_,
+        video_queue_index_,
+        input_image_,
+        vk::ImageSubresourceRange{
+            vk::ImageAspectFlagBits::eColor,
+            0,  // baseMipLevel
+            1,  // levelCount
+            0,  // baseArrayLayer
+            1,  // layerCount
+        },
+    };
+    image_barriers = {compute_to_transfer_barrier, encode_to_transfer_barrier};
+    dev_dispatch_.CmdPipelineBarrier2(command_buffer, vk::DependencyInfoKHR{
+                                                          vk::DependencyFlags{},
+                                                          nullptr,  // no memory barriers
+                                                          nullptr,  // no buffer barriers
+                                                          image_barriers,
+                                                      });
+    // transfer the YUV image to the input image
+    dev_dispatch_.CmdCopyImage(command_buffer, yuv_image_, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, input_image_,
+                               VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1,
+                               vk::ImageCopy{
+                                   vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1},
+                                   vk::Offset3D{0, 0, 0},
+                                   vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1},
+                                   vk::Offset3D{0, 0, 0},
+                               });
+
+    bool is_idr_frame = encoded_frame_count_ % kIdrPeriod == 0;
+    uint32_t gop_frame_index = encoded_frame_count_ % kGopFrameCount;
+    uint32_t max_pic_order_cnt_lsb = 1 << (std_sps_.log2_max_pic_order_cnt_lsb_minus4 + 4);
+
+    vk::VideoPictureResourceInfoKHR dpb_picture_resource{
+        vk::Offset2D{0, 0},
+        vk::Extent2D{
+            padded_image_extent_.width,
+            padded_image_extent_.height,
+        },
+        0,
+        dpb_image_views_[gop_frame_index & 1],
+    };
+    StdVideoEncodeH264ReferenceInfo std_dpb_reference_info = {
+        .flags = 0,
+        .primary_pic_type = is_idr_frame ? STD_VIDEO_H264_PICTURE_TYPE_IDR : STD_VIDEO_H264_PICTURE_TYPE_P,
+        .FrameNum = gop_frame_index,
+        .PicOrderCnt = static_cast<int>((gop_frame_index * 2) % max_pic_order_cnt_lsb),
+        .long_term_pic_num = 0,
+        .long_term_frame_idx = 0,
+        .temporal_id = 0,
+    };
+    vk::VideoEncodeH264DpbSlotInfoKHR dpb_slot_info{
+        &std_dpb_reference_info,
+    };
+
+    vk::VideoPictureResourceInfoKHR reference_picture_resource{
+        vk::Offset2D{0, 0},
+        vk::Extent2D{
+            padded_image_extent_.width,
+            padded_image_extent_.height,
+        },
+        0,
+        encodable_image_views_[!(gop_frame_index & 1)],
+    };
+    StdVideoEncodeH264ReferenceInfo reference_picture_reference_info = {
+        .flags = 0,
+        .primary_pic_type =
+            (gop_frame_index - 1 == 0) ? STD_VIDEO_H264_PICTURE_TYPE_IDR : STD_VIDEO_H264_PICTURE_TYPE_P,
+        .FrameNum = gop_frame_index - 1,
+        .PicOrderCnt = static_cast<int>(((gop_frame_index - 1) * 2) % max_pic_order_cnt_lsb),
+        .long_term_pic_num = 0,
+        .long_term_frame_idx = 0,
+        .temporal_id = 0,
+    };
+    vk::VideoEncodeH264DpbSlotInfoKHR reference_slot_info{
+        &reference_picture_reference_info,
+    };
+
+    std::vector<vk::VideoReferenceSlotInfoKHR> reference_slots;
+    reference_slots.push_back(vk::VideoReferenceSlotInfoKHR{
+        -1,  // slotIndex
+        &dpb_picture_resource,
+        dpb_slot_info,
+    });
+    if (!is_idr_frame) {
+      reference_slots.push_back(vk::VideoReferenceSlotInfoKHR{
+          !(gop_frame_index & 1),
+          &reference_picture_resource,
+          reference_slot_info,
+      });
+    }
+
+    dev_dispatch_.CmdBeginVideoCodingKHR(command_buffer, vk::VideoBeginCodingInfoKHR{
+                                                             vk::VideoBeginCodingFlagsKHR{},
+                                                             video_session_,
+                                                             video_session_parameters_,
+                                                             reference_slots,
+                                                             encode_rate_control_info_,
+                                                         });
+
+    // wait for the YUV image to be transferred to the input image
+    vk::ImageMemoryBarrier2 transfer_to_encode_barrier{
+        vk::PipelineStageFlagBits2::eTransfer,
+        vk::AccessFlagBits2::eTransferWrite,
+        vk::PipelineStageFlagBits2::eVideoEncodeKHR,
+        vk::AccessFlagBits2::eVideoEncodeReadKHR,
+        vk::ImageLayout::eTransferDstOptimal,
+        vk::ImageLayout::eVideoEncodeSrcKHR,
+        video_queue_index_,
+        video_queue_index_,
+        input_image_,
+        vk::ImageSubresourceRange{
+            vk::ImageAspectFlagBits::eColor,
+            0,  // baseMipLevel
+            1,  // levelCount
+            0,  // baseArrayLayer
+            1,  // layerCount
+        },
+    };
+    dev_dispatch_.CmdPipelineBarrier2(command_buffer, vk::DependencyInfoKHR{
+                                                          vk::DependencyFlags{},
+                                                          nullptr,  // no memory barriers
+                                                          nullptr,  // no buffer barriers
+                                                          transfer_to_encode_barrier,
+                                                      });
+
+    dev_dispatch_.CmdBeginQuery(command_buffer, query_pool_, 0, 0);
+
+    reference_slots[0].slotIndex = gop_frame_index & 1;
+    std::vector<vk::VideoReferenceSlotInfoKHR> references;
+    if (is_idr_frame) {
+      references.push_back(reference_slots[1]);
+    }
+
+    dev_dispatch_.CmdEncodeVideoKHR(command_buffer, vk::VideoEncodeInfoKHR{
+                                                        vk::VideoEncodeFlagsKHR{},
+                                                        output_buffer_,
+                                                        0,
+                                                        output_buffer_allocation_info_.size,
+                                                        vk::VideoPictureResourceInfoKHR{
+                                                            vk::Offset2D{0, 0},
+                                                            vk::Extent2D{
+                                                                padded_image_extent_.width,
+                                                                padded_image_extent_.height,
+                                                            },
+                                                            0,
+                                                            input_image_view_,
+                                                        },
+                                                        &reference_slots[0],
+                                                        references,
+                                                    });
+    dev_dispatch_.CmdEndQuery(command_buffer, query_pool_, 0);
+    dev_dispatch_.CmdEndVideoCodingKHR(command_buffer, vk::VideoEndCodingInfoKHR{});
   }
 
-  std::string GetEncodedData(VkImage image) override { return {}; }
+  std::string GetEncodedData(VkImage image) override {
+    struct EncodeQueryResult {
+      uint32_t bitstreamStartOffset;
+      uint32_t bitstreamSize;
+      VkQueryResultStatusKHR status;
+    };
+    EncodeQueryResult query_result = {};
+    VkResult result = dev_dispatch_.GetQueryPoolResults(device_, query_pool_, 0, 1, sizeof(EncodeQueryResult),
+                                                        &query_result, sizeof(EncodeQueryResult),
+                                                        VK_QUERY_RESULT_WITH_STATUS_BIT_KHR | VK_QUERY_RESULT_WAIT_BIT);
+    if (result != VK_SUCCESS || query_result.status != VK_QUERY_RESULT_STATUS_COMPLETE_KHR) {
+      throw std::runtime_error("Failed to get query pool results for H264 encoding");
+    }
+    return std::string{output_buffer_data_ + query_result.bitstreamStartOffset, query_result.bitstreamSize};
+  }
 
   std::string GetEncodedHeader() const {
     vk::VideoEncodeH264SessionParametersGetInfoKHR h264_param_get_info{
@@ -240,6 +487,7 @@ class H264Encoder : public Encoder {
   std::vector<VmaAllocation> allocations_;
   VkBuffer output_buffer_ = VK_NULL_HANDLE;
   VmaAllocation output_buffer_allocation_ = VK_NULL_HANDLE;
+  VmaAllocationInfo output_buffer_allocation_info_;
   char* output_buffer_data_ = nullptr;
   std::vector<VkImage> dpb_images_;
   std::vector<VmaAllocation> dpb_allocations_;
@@ -593,7 +841,7 @@ class H264Encoder : public Encoder {
     allocation_create_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT;
     VmaAllocation output_allocation;
     VkResult result = vmaCreateBuffer(execution_context_.allocator(), buffer_create_info, &allocation_create_info,
-                                      &output_buffer_, &output_buffer_allocation_, nullptr);
+                                      &output_buffer_, &output_buffer_allocation_, &output_buffer_allocation_info_);
     if (result != VK_SUCCESS) {
       throw std::runtime_error("Failed to create output buffer for H264 encoding");
     }
