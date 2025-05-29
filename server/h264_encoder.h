@@ -579,7 +579,11 @@ class H264Encoder : public Encoder {
 
     dev_dispatch_.EndCommandBuffer(command_buffer_);
 
-    dev_dispatch_.QueueSubmit(video_queue_, 1, vk::SubmitInfo{}, encode_finished_fence_);
+    VkSubmitInfo submit_info = {};
+    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submit_info.commandBufferCount = 1;
+    submit_info.pCommandBuffers = &command_buffer_;
+    dev_dispatch_.QueueSubmit(video_queue_, 1, &submit_info, encode_finished_fence_);
   }
 
   std::string GetEncodedData(VkImage image) override {
