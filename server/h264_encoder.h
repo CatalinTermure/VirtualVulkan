@@ -39,6 +39,7 @@ class H264Encoder : public Encoder {
         }),
         encodable_images_(std::move(encodable_images)),
         encodable_images_format_(encodable_images_format) {
+    dev_dispatch_.GetDeviceQueue(device_, video_queue_index_, 0, &video_queue_);
     InitializeVideoProfile();
     CreateQueryPool();
     AllocateCommandBuffer();
@@ -55,9 +56,18 @@ class H264Encoder : public Encoder {
     AllocateRgbToYuvDescriptorSets();
 
     InitializeRateControl();
+
+    VkResult result = dev_dispatch_.CreateFence(device_, vk::FenceCreateInfo{}, nullptr, &encode_finished_fence_);
+    if (result != VK_SUCCESS) {
+      throw std::runtime_error("Failed to create fence for H264 encoding");
+    }
   }
 
   ~H264Encoder() override {
+    if (encode_finished_fence_ != VK_NULL_HANDLE) {
+      dev_dispatch_.DestroyFence(device_, encode_finished_fence_, nullptr);
+      encode_finished_fence_ = VK_NULL_HANDLE;
+    }
     if (compute_pipeline_ != VK_NULL_HANDLE) {
       dev_dispatch_.DestroyPipeline(device_, compute_pipeline_, nullptr);
       compute_pipeline_ = VK_NULL_HANDLE;
@@ -162,6 +172,7 @@ class H264Encoder : public Encoder {
 
   void WriteEncodeCommands(VkCommandBuffer command_buffer, VkImage image) override {
     uint32_t encodable_image_index = std::numeric_limits<uint32_t>::max();
+    std::vector<vk::ImageMemoryBarrier2> image_barriers;
     for (uint32_t i = 0; i < encodable_images_.size(); i++) {
       if (encodable_images_[i] == image) {
         encodable_image_index = i;
@@ -172,183 +183,243 @@ class H264Encoder : public Encoder {
       throw std::runtime_error("Image not found in encodable images");
     }
 
-    dev_dispatch_.CmdResetQueryPool(command_buffer, query_pool_, 0, 1);
-
     // wait for the image to be rendered, then blit it to an RGB image
-    vk::ImageMemoryBarrier2 render_to_blit_barrier = {
-        vk::PipelineStageFlagBits2::eColorAttachmentOutput,
-        vk::AccessFlagBits2::eColorAttachmentWrite,
-        vk::PipelineStageFlagBits2::eTransfer,
-        vk::AccessFlagBits2::eTransferRead,
-        vk::ImageLayout::eColorAttachmentOptimal,
-        vk::ImageLayout::eTransferSrcOptimal,
-        compute_queue_index_,
-        compute_queue_index_,
-        image,
-        vk::ImageSubresourceRange{
-            vk::ImageAspectFlagBits::eColor,
-            0,  // baseMipLevel
-            1,  // levelCount
-            0,  // baseArrayLayer
-            1,  // layerCount
-        },
-    };
+    // vk::ImageMemoryBarrier2 render_to_blit_barrier = {
+    //     vk::PipelineStageFlagBits2::eColorAttachmentOutput,
+    //     vk::AccessFlagBits2::eColorAttachmentWrite,
+    //     vk::PipelineStageFlagBits2::eTransfer,
+    //     vk::AccessFlagBits2::eTransferRead,
+    //     vk::ImageLayout::eColorAttachmentOptimal,
+    //     vk::ImageLayout::eTransferSrcOptimal,
+    //     compute_queue_index_,
+    //     compute_queue_index_,
+    //     image,
+    //     vk::ImageSubresourceRange{
+    //         vk::ImageAspectFlagBits::eColor,
+    //         0,  // baseMipLevel
+    //         1,  // levelCount
+    //         0,  // baseArrayLayer
+    //         1,  // layerCount
+    //     },
+    // };
 
-    // wait for the previous compute shader to finish reading the image before blitting
-    vk::ImageMemoryBarrier2 compute_to_blit_barrier = {
-        vk::PipelineStageFlagBits2::eComputeShader,
-        vk::AccessFlagBits2::eShaderStorageRead,
-        vk::PipelineStageFlagBits2::eTransfer,
-        vk::AccessFlagBits2::eTransferWrite,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eTransferDstOptimal,
-        compute_queue_index_,
-        compute_queue_index_,
-        rgb_image_,
-        vk::ImageSubresourceRange{
-            vk::ImageAspectFlagBits::eColor,
-            0,  // baseMipLevel
-            1,  // levelCount
-            0,  // baseArrayLayer
-            1,  // layerCount
-        },
-    };
-    std::vector<vk::ImageMemoryBarrier2> image_barriers = {compute_to_blit_barrier};
-    dev_dispatch_.CmdPipelineBarrier2(command_buffer, vk::DependencyInfoKHR{
-                                                          vk::DependencyFlags{},
-                                                          nullptr,  // no memory barriers
-                                                          nullptr,  // no buffer barriers
-                                                          image_barriers,
-                                                      });
+    {
+      // wait for the previous compute shader to finish reading the image before blitting
+      vk::ImageMemoryBarrier2 compute_to_blit_barrier = {
+          vk::PipelineStageFlagBits2::eComputeShader,
+          vk::AccessFlagBits2::eShaderStorageRead,
+          vk::PipelineStageFlagBits2::eTransfer,
+          vk::AccessFlagBits2::eTransferWrite,
+          vk::ImageLayout::eUndefined,
+          vk::ImageLayout::eTransferDstOptimal,
+          compute_queue_index_,
+          compute_queue_index_,
+          rgb_image_,
+          vk::ImageSubresourceRange{
+              vk::ImageAspectFlagBits::eColor,
+              0,  // baseMipLevel
+              1,  // levelCount
+              0,  // baseArrayLayer
+              1,  // layerCount
+          },
+      };
+      image_barriers = {compute_to_blit_barrier};
+      dev_dispatch_.CmdPipelineBarrier2(command_buffer, vk::DependencyInfoKHR{
+                                                            vk::DependencyFlags{},
+                                                            nullptr,  // no memory barriers
+                                                            nullptr,  // no buffer barriers
+                                                            image_barriers,
+                                                        });
+    }
 
-    dev_dispatch_.CmdBlitImage(
-        command_buffer, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, rgb_image_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        1,
-        vk::ImageBlit{
-            vk::ImageSubresourceLayers{
-                vk::ImageAspectFlagBits::eColor,
-                0,  // mipLevel
-                0,  // baseArrayLayer
-                1,  // layerCount
-            },
-            {vk::Offset3D{0, 0, 0},
-             vk::Offset3D{static_cast<int>(real_image_extent_.width), static_cast<int>(real_image_extent_.height), 1}},
-            vk::ImageSubresourceLayers{
-                vk::ImageAspectFlagBits::eColor,
-                0,  // mipLevel
-                0,  // baseArrayLayer
-                1,  // layerCount
-            },
-            {vk::Offset3D{0, 0, 0},
-             vk::Offset3D{static_cast<int>(real_image_extent_.width), static_cast<int>(real_image_extent_.height), 1}},
-        },
-        VK_FILTER_LINEAR);
+    {
+      dev_dispatch_.CmdBlitImage(
+          command_buffer, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, rgb_image_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+          1,
+          vk::ImageBlit{
+              vk::ImageSubresourceLayers{
+                  vk::ImageAspectFlagBits::eColor,
+                  0,  // mipLevel
+                  0,  // baseArrayLayer
+                  1,  // layerCount
+              },
+              {vk::Offset3D{0, 0, 0}, vk::Offset3D{static_cast<int>(real_image_extent_.width),
+                                                   static_cast<int>(real_image_extent_.height), 1}},
+              vk::ImageSubresourceLayers{
+                  vk::ImageAspectFlagBits::eColor,
+                  0,  // mipLevel
+                  0,  // baseArrayLayer
+                  1,  // layerCount
+              },
+              {vk::Offset3D{0, 0, 0}, vk::Offset3D{static_cast<int>(real_image_extent_.width),
+                                                   static_cast<int>(real_image_extent_.height), 1}},
+          },
+          VK_FILTER_LINEAR);
+    }
 
-    // wait for rgb image to be ready
-    vk::ImageMemoryBarrier2 blit_to_compute_barrier = {
-        vk::PipelineStageFlagBits2::eTransfer,
-        vk::AccessFlagBits2::eTransferWrite,
-        vk::PipelineStageFlagBits2::eComputeShader,
-        vk::AccessFlagBits2::eShaderStorageRead,
-        vk::ImageLayout::eTransferDstOptimal,
-        vk::ImageLayout::eGeneral,
-        compute_queue_index_,
-        compute_queue_index_,
-        rgb_image_,
-        vk::ImageSubresourceRange{
-            vk::ImageAspectFlagBits::eColor,
-            0,  // baseMipLevel
-            1,  // levelCount
-            0,  // baseArrayLayer
-            1,  // layerCount
-        },
-    };
+    {
+      // wait for rgb image to be ready
+      vk::ImageMemoryBarrier2 blit_to_compute_barrier = {
+          vk::PipelineStageFlagBits2::eTransfer,
+          vk::AccessFlagBits2::eTransferWrite,
+          vk::PipelineStageFlagBits2::eComputeShader,
+          vk::AccessFlagBits2::eShaderStorageRead,
+          vk::ImageLayout::eTransferDstOptimal,
+          vk::ImageLayout::eGeneral,
+          compute_queue_index_,
+          compute_queue_index_,
+          rgb_image_,
+          vk::ImageSubresourceRange{
+              vk::ImageAspectFlagBits::eColor,
+              0,  // baseMipLevel
+              1,  // levelCount
+              0,  // baseArrayLayer
+              1,  // layerCount
+          },
+      };
 
-    // wait for the previous RGB to YUV conversion to finish
-    vk::ImageMemoryBarrier2 compute_to_compute_barrier = {
-        vk::PipelineStageFlagBits2::eTransfer,
-        vk::AccessFlagBits2::eTransferRead,
-        vk::PipelineStageFlagBits2::eComputeShader,
-        vk::AccessFlagBits2::eShaderStorageWrite,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eGeneral,
-        video_queue_index_,
-        compute_queue_index_,
-        yuv_image_,
-        vk::ImageSubresourceRange{
-            vk::ImageAspectFlagBits::eColor,
-            0,  // baseMipLevel
-            1,  // levelCount
-            0,  // baseArrayLayer
-            1,  // layerCount
-        },
-    };
-    image_barriers = {blit_to_compute_barrier, compute_to_compute_barrier};
-    dev_dispatch_.CmdPipelineBarrier2(command_buffer, vk::DependencyInfoKHR{
-                                                          vk::DependencyFlags{},
-                                                          nullptr,  // no memory barriers
-                                                          nullptr,  // no buffer barriers
-                                                          image_barriers,
-                                                      });
+      // acquire the YUV image for compute shader
+      vk::ImageMemoryBarrier2 acquire_yuv_image_barrier = {
+          vk::PipelineStageFlagBits2::eNone,
+          vk::AccessFlagBits2::eNone,
+          vk::PipelineStageFlagBits2::eComputeShader,
+          vk::AccessFlagBits2::eShaderStorageWrite,
+          vk::ImageLayout::eUndefined,
+          vk::ImageLayout::eGeneral,
+          video_queue_index_,
+          compute_queue_index_,
+          yuv_image_,
+          vk::ImageSubresourceRange{
+              vk::ImageAspectFlagBits::eColor,
+              0,  // baseMipLevel
+              1,  // levelCount
+              0,  // baseArrayLayer
+              1,  // layerCount
+          },
+      };
+      image_barriers = {blit_to_compute_barrier, acquire_yuv_image_barrier};
+      dev_dispatch_.CmdPipelineBarrier2(command_buffer, vk::DependencyInfoKHR{
+                                                            vk::DependencyFlags{},
+                                                            nullptr,  // no memory barriers
+                                                            nullptr,  // no buffer barriers
+                                                            image_barriers,
+                                                        });
+    }
+
     // dispatch the compute kernel to convert the RGB image to YUV
-    dev_dispatch_.CmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline_);
-    dev_dispatch_.CmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline_layout_, 0, 1,
-                                        &compute_descriptor_set_, 0, nullptr);
-    dev_dispatch_.CmdDispatch(command_buffer, padded_image_extent_.width / 16, padded_image_extent_.height / 16, 1);
-    // wait for the compute kernel to finish
-    vk::ImageMemoryBarrier2 compute_to_transfer_barrier{
-        vk::PipelineStageFlagBits2::eComputeShader,
-        vk::AccessFlagBits2::eShaderStorageWrite,
-        vk::PipelineStageFlagBits2::eTransfer,
-        vk::AccessFlagBits2::eTransferRead,
-        vk::ImageLayout::eGeneral,
-        vk::ImageLayout::eTransferSrcOptimal,
-        compute_queue_index_,
-        video_queue_index_,
-        yuv_image_,
-        vk::ImageSubresourceRange{
-            vk::ImageAspectFlagBits::eColor,
-            0,  // baseMipLevel
-            1,  // levelCount
-            0,  // baseArrayLayer
-            1,  // layerCount
-        },
-    };
-    // wait for the previous frame to be encoded
-    vk::ImageMemoryBarrier2 encode_to_transfer_barrier{
-        vk::PipelineStageFlagBits2::eVideoEncodeKHR,
-        vk::AccessFlagBits2::eVideoEncodeReadKHR,
-        vk::PipelineStageFlagBits2::eTransfer,
-        vk::AccessFlagBits2::eTransferWrite,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eTransferDstOptimal,
-        video_queue_index_,
-        video_queue_index_,
-        input_image_,
-        vk::ImageSubresourceRange{
-            vk::ImageAspectFlagBits::eColor,
-            0,  // baseMipLevel
-            1,  // levelCount
-            0,  // baseArrayLayer
-            1,  // layerCount
-        },
-    };
-    image_barriers = {compute_to_transfer_barrier, encode_to_transfer_barrier};
-    dev_dispatch_.CmdPipelineBarrier2(command_buffer, vk::DependencyInfoKHR{
-                                                          vk::DependencyFlags{},
-                                                          nullptr,  // no memory barriers
-                                                          nullptr,  // no buffer barriers
-                                                          image_barriers,
+    {
+      dev_dispatch_.CmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline_);
+      dev_dispatch_.CmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline_layout_, 0,
+                                          1, &compute_descriptor_set_, 0, nullptr);
+      dev_dispatch_.CmdDispatch(command_buffer, padded_image_extent_.width / 16, padded_image_extent_.height / 16, 1);
+    }
+
+    {
+      // release the YUV image for video encoding
+      vk::ImageMemoryBarrier2 release_yuv_image_barrier = {
+          vk::PipelineStageFlagBits2::eComputeShader,
+          vk::AccessFlagBits2::eShaderStorageWrite,
+          vk::PipelineStageFlagBits2::eNone,
+          vk::AccessFlagBits2::eNone,
+          vk::ImageLayout::eGeneral,
+          vk::ImageLayout::eGeneral,
+          compute_queue_index_,
+          video_queue_index_,
+          yuv_image_,
+          vk::ImageSubresourceRange{
+              vk::ImageAspectFlagBits::eColor,
+              0,  // baseMipLevel
+              1,  // levelCount
+              0,  // baseArrayLayer
+              1,  // layerCount
+          },
+      };
+      dev_dispatch_.CmdPipelineBarrier2(command_buffer, vk::DependencyInfoKHR{
+                                                            vk::DependencyFlags{},
+                                                            nullptr,  // no memory barriers
+                                                            nullptr,  // no buffer barriers
+                                                            release_yuv_image_barrier,
+                                                        });
+    }
+
+    dev_dispatch_.ResetCommandPool(device_, command_pool_, 0);
+
+    dev_dispatch_.BeginCommandBuffer(command_buffer_, vk::CommandBufferBeginInfo{
+                                                          vk::CommandBufferUsageFlagBits::eOneTimeSubmit,
+                                                          nullptr,  // no inheritance info
                                                       });
-    // transfer the YUV image to the input image
-    dev_dispatch_.CmdCopyImage(command_buffer, yuv_image_, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, input_image_,
-                               VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1,
-                               vk::ImageCopy{
-                                   vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1},
-                                   vk::Offset3D{0, 0, 0},
-                                   vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1},
-                                   vk::Offset3D{0, 0, 0},
-                               });
+
+    dev_dispatch_.CmdResetQueryPool(command_buffer_, query_pool_, 0, 1);
+
+    {
+      // acquire the YUV image for video encoding
+      vk::ImageMemoryBarrier2 acquire_yuv_image_barrier{
+          vk::PipelineStageFlagBits2::eNone,
+          vk::AccessFlagBits2::eNone,
+          vk::PipelineStageFlagBits2::eTransfer,
+          vk::AccessFlagBits2::eTransferRead,
+          vk::ImageLayout::eGeneral,
+          vk::ImageLayout::eTransferSrcOptimal,
+          compute_queue_index_,
+          video_queue_index_,
+          yuv_image_,
+          vk::ImageSubresourceRange{
+              vk::ImageAspectFlagBits::eColor,
+              0,  // baseMipLevel
+              1,  // levelCount
+              0,  // baseArrayLayer
+              1,  // layerCount
+          },
+      };
+      // wait for the previous frame to be encoded
+      vk::ImageMemoryBarrier2 encode_to_transfer_barrier{
+          vk::PipelineStageFlagBits2::eVideoEncodeKHR,
+          vk::AccessFlagBits2::eVideoEncodeReadKHR,
+          vk::PipelineStageFlagBits2::eTransfer,
+          vk::AccessFlagBits2::eTransferWrite,
+          vk::ImageLayout::eUndefined,
+          vk::ImageLayout::eTransferDstOptimal,
+          video_queue_index_,
+          video_queue_index_,
+          input_image_,
+          vk::ImageSubresourceRange{
+              vk::ImageAspectFlagBits::eColor,
+              0,  // baseMipLevel
+              1,  // levelCount
+              0,  // baseArrayLayer
+              1,  // layerCount
+          },
+      };
+      image_barriers = {acquire_yuv_image_barrier, encode_to_transfer_barrier};
+      dev_dispatch_.CmdPipelineBarrier2(command_buffer_, vk::DependencyInfoKHR{
+                                                             vk::DependencyFlags{},
+                                                             nullptr,  // no memory barriers
+                                                             nullptr,  // no buffer barriers
+                                                             image_barriers,
+                                                         });
+    }
+
+    {
+      // transfer the YUV image to the input image
+      std::array image_copies = {
+          static_cast<VkImageCopy>(vk::ImageCopy{
+              vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::ePlane0, 0, 0, 1},
+              vk::Offset3D{0, 0, 0},
+              vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::ePlane0, 0, 0, 1},
+              vk::Offset3D{0, 0, 0},
+              vk::Extent3D{padded_image_extent_.width, padded_image_extent_.height, 1},
+          }),
+          static_cast<VkImageCopy>(vk::ImageCopy{
+              vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::ePlane1, 0, 0, 1},
+              vk::Offset3D{0, 0, 0},
+              vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::ePlane1, 0, 0, 1},
+              vk::Offset3D{0, 0, 0},
+              vk::Extent3D{padded_image_extent_.width / 2, padded_image_extent_.height / 2, 1},
+          }),
+      };
+      dev_dispatch_.CmdCopyImage(command_buffer_, yuv_image_, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, input_image_,
+                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, image_copies.size(), image_copies.data());
+    }
 
     bool is_idr_frame = encoded_frame_count_ % kIdrPeriod == 0;
     uint32_t gop_frame_index = encoded_frame_count_ % kGopFrameCount;
@@ -413,13 +484,13 @@ class H264Encoder : public Encoder {
       });
     }
 
-    dev_dispatch_.CmdBeginVideoCodingKHR(command_buffer, vk::VideoBeginCodingInfoKHR{
-                                                             vk::VideoBeginCodingFlagsKHR{},
-                                                             video_session_,
-                                                             video_session_parameters_,
-                                                             reference_slots,
-                                                             encode_rate_control_info_,
-                                                         });
+    dev_dispatch_.CmdBeginVideoCodingKHR(command_buffer_, vk::VideoBeginCodingInfoKHR{
+                                                              vk::VideoBeginCodingFlagsKHR{},
+                                                              video_session_,
+                                                              video_session_parameters_,
+                                                              reference_slots,
+                                                              encode_rate_control_info_,
+                                                          });
 
     // wait for the YUV image to be transferred to the input image
     vk::ImageMemoryBarrier2 transfer_to_encode_barrier{
@@ -440,43 +511,81 @@ class H264Encoder : public Encoder {
             1,  // layerCount
         },
     };
-    dev_dispatch_.CmdPipelineBarrier2(command_buffer, vk::DependencyInfoKHR{
-                                                          vk::DependencyFlags{},
-                                                          nullptr,  // no memory barriers
-                                                          nullptr,  // no buffer barriers
-                                                          transfer_to_encode_barrier,
-                                                      });
+    dev_dispatch_.CmdPipelineBarrier2(command_buffer_, vk::DependencyInfoKHR{
+                                                           vk::DependencyFlags{},
+                                                           nullptr,  // no memory barriers
+                                                           nullptr,  // no buffer barriers
+                                                           transfer_to_encode_barrier,
+                                                       });
 
-    dev_dispatch_.CmdBeginQuery(command_buffer, query_pool_, 0, 0);
+    dev_dispatch_.CmdBeginQuery(command_buffer_, query_pool_, 0, 0);
 
     reference_slots[0].slotIndex = gop_frame_index & 1;
     std::vector<vk::VideoReferenceSlotInfoKHR> references;
-    if (is_idr_frame) {
+    if (!is_idr_frame) {
       references.push_back(reference_slots[1]);
     }
 
-    dev_dispatch_.CmdEncodeVideoKHR(command_buffer, vk::VideoEncodeInfoKHR{
-                                                        vk::VideoEncodeFlagsKHR{},
-                                                        output_buffer_,
-                                                        0,
-                                                        output_buffer_allocation_info_.size,
-                                                        vk::VideoPictureResourceInfoKHR{
-                                                            vk::Offset2D{0, 0},
-                                                            vk::Extent2D{
-                                                                padded_image_extent_.width,
-                                                                padded_image_extent_.height,
-                                                            },
-                                                            0,
-                                                            input_image_view_,
-                                                        },
-                                                        &reference_slots[0],
-                                                        references,
-                                                    });
-    dev_dispatch_.CmdEndQuery(command_buffer, query_pool_, 0);
-    dev_dispatch_.CmdEndVideoCodingKHR(command_buffer, vk::VideoEndCodingInfoKHR{});
+    dev_dispatch_.CmdEncodeVideoKHR(command_buffer_, vk::VideoEncodeInfoKHR{
+                                                         vk::VideoEncodeFlagsKHR{},
+                                                         output_buffer_,
+                                                         0,
+                                                         output_buffer_allocation_info_.size,
+                                                         vk::VideoPictureResourceInfoKHR{
+                                                             vk::Offset2D{0, 0},
+                                                             vk::Extent2D{
+                                                                 padded_image_extent_.width,
+                                                                 padded_image_extent_.height,
+                                                             },
+                                                             0,
+                                                             input_image_view_,
+                                                         },
+                                                         &reference_slots[0],
+                                                         references,
+                                                         0,
+                                                         &h264_picture_infos_[encodable_image_index],
+                                                     });
+    dev_dispatch_.CmdEndQuery(command_buffer_, query_pool_, 0);
+    dev_dispatch_.CmdEndVideoCodingKHR(command_buffer_, vk::VideoEndCodingInfoKHR{});
+
+    {
+      // release the YUV image for the compute shader
+      vk::ImageMemoryBarrier2 return_yuv_image_barrier = {
+          vk::PipelineStageFlagBits2::eTransfer,
+          vk::AccessFlagBits2::eTransferRead,
+          vk::PipelineStageFlagBits2::eNone,
+          vk::AccessFlagBits2::eNone,
+          vk::ImageLayout::eTransferSrcOptimal,
+          vk::ImageLayout::eTransferSrcOptimal,
+          video_queue_index_,
+          compute_queue_index_,
+          yuv_image_,
+          vk::ImageSubresourceRange{
+              vk::ImageAspectFlagBits::eColor,
+              0,  // baseMipLevel
+              1,  // levelCount
+              0,  // baseArrayLayer
+              1,  // layerCount
+          },
+      };
+
+      dev_dispatch_.CmdPipelineBarrier2(command_buffer_, vk::DependencyInfoKHR{
+                                                             vk::DependencyFlags{},
+                                                             nullptr,  // no memory barriers
+                                                             nullptr,  // no buffer barriers
+                                                             return_yuv_image_barrier,
+                                                         });
+    }
+
+    dev_dispatch_.EndCommandBuffer(command_buffer_);
+
+    dev_dispatch_.QueueSubmit(video_queue_, 1, vk::SubmitInfo{}, encode_finished_fence_);
   }
 
   std::string GetEncodedData(VkImage image) override {
+    dev_dispatch_.WaitForFences(device_, 1, &encode_finished_fence_, VK_TRUE, UINT64_MAX);
+    dev_dispatch_.ResetFences(device_, 1, &encode_finished_fence_);
+
     struct EncodeQueryResult {
       uint32_t bitstreamStartOffset;
       uint32_t bitstreamSize;
@@ -523,6 +632,7 @@ class H264Encoder : public Encoder {
   const VkuDeviceDispatchTable& dev_dispatch_;
   VkDevice device_;
   uint32_t video_queue_index_;
+  VkQueue video_queue_ = VK_NULL_HANDLE;
   uint32_t compute_queue_index_;
   uint32_t encoded_frame_count_ = 0;
   vk::Extent2D real_image_extent_;
@@ -583,6 +693,7 @@ class H264Encoder : public Encoder {
   VkShaderModule rgb_to_yuv_shader_module_ = VK_NULL_HANDLE;
   VkPipelineLayout compute_pipeline_layout_ = VK_NULL_HANDLE;
   VkPipeline compute_pipeline_ = VK_NULL_HANDLE;
+  VkFence encode_finished_fence_ = VK_NULL_HANDLE;
 
  private:
   void CreateQueryPool() {
@@ -929,7 +1040,6 @@ class H264Encoder : public Encoder {
 
   void AllocateInputImage() {
     VmaAllocationCreateInfo allocation_create_info = {};
-    std::array queue_family_indices = {video_queue_index_, compute_queue_index_};
     VkResult result =
         vmaCreateImage(execution_context_.allocator(),
                        vk::ImageCreateInfo{
@@ -942,9 +1052,8 @@ class H264Encoder : public Encoder {
                            vk::SampleCountFlagBits::e1,
                            vk::ImageTiling::eOptimal,
                            vk::ImageUsageFlagBits::eVideoEncodeSrcKHR | vk::ImageUsageFlagBits::eTransferDst,
-                           vk::SharingMode::eConcurrent,  // NVIDIA does not observe any performance penalties for
-                                                          // concurrent usage between queues
-                           queue_family_indices,
+                           vk::SharingMode::eExclusive,
+                           video_queue_index_,
                            vk::ImageLayout::eUndefined,
                            video_profile_list_info_,
                        },
@@ -988,9 +1097,9 @@ class H264Encoder : public Encoder {
                            vk::SampleCountFlagBits::e1,
                            vk::ImageTiling::eOptimal,
                            vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferSrc,
-                           vk::SharingMode::eConcurrent,  // NVIDIA does not observe any performance penalties for
-                                                          // concurrent usage between queues
-                           queue_family_indices,
+                           vk::SharingMode::eExclusive,  // NVIDIA does not observe any performance penalties for
+                                                         // concurrent usage between queues
+                           compute_queue_index_,
                            vk::ImageLayout::eUndefined,
                            video_profile_list_info_,
                        },

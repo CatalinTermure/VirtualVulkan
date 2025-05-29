@@ -95,6 +95,7 @@ VkResult H264FrameStream::PresentFrame(VkQueue queue, const VkPresentInfoKHR &or
     vvk::server::VvkGetFrameRequest request;
     request.set_session_key(swapchain_present_info->remote_session_key);
     request.set_frame_key(swapchain_present_info->remote_frame_keys[original_present_info.pImageIndices[i]]);
+    request.set_stream_type(vvk::server::VvkStreamType::VVK_STREAM_TYPE_H264);
     vvk::server::VvkGetFrameResponse response;
     grpc::ClientContext context;
     auto reader = instance_info.stub().RequestFrame(&context, request);
