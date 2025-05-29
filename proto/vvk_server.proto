@@ -16,6 +16,7 @@ service VvkServer {
 
   rpc GetFrameStreamingCapabilities (VvkGetFrameStreamingCapabilitiesRequest) returns (StreamingCapabilities) {}
   rpc RequestFrame (VvkGetFrameRequest) returns (stream VvkGetFrameResponse) {}
+  rpc SetupFrame (VvkSetupFrameRequest) returns (google.protobuf.Empty) {}
   rpc WriteMappedMemory (VvkWriteMappedMemoryRequest) returns (google.protobuf.Empty) {}
 }
 

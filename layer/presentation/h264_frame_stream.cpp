@@ -44,7 +44,7 @@ void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExten
   spdlog::info("H264 stream header: {}", encoded_header);
   std::vector<uint64_t> remote_frame_keys;
   remote_frame_keys.reserve(response.setuppresentation().frame_keys_size());
-  for (int i = 0; i < response.setuppresentation().uncompressed_stream_info().remote_buffers_size(); i++) {
+  for (int i = 0; i < response.setuppresentation().frame_keys_size(); i++) {
     remote_frame_keys.push_back(response.setuppresentation().frame_keys(i));
   }
   swapchains_.push_back(SwapchainPresentationInfo{.swapchain = swapchain,
@@ -62,10 +62,46 @@ void H264FrameStream::RemoveSwapchain(VkSwapchainKHR swapchain) {
 }
 
 // Called during command buffer recording for a presentable frame.
-void H264FrameStream::SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t swapchain_image_index) {}
+void H264FrameStream::SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t swapchain_image_index) {
+  InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
+  for (auto &swapchain_present_info : swapchains_) {
+    vvk::server::VvkSetupFrameRequest request;
+    request.set_session_key(swapchain_present_info.remote_session_key);
+    request.set_frame_key(swapchain_present_info.remote_frame_keys[swapchain_image_index]);
+    request.set_command_buffer(reinterpret_cast<uint64_t>(remote_command_buffer));
+    google::protobuf::Empty response;
+    grpc::ClientContext context;
+    instance_info.stub().SetupFrame(&context, request, &response);
+  }
+}
 
 // Called when a frame should be presented.
 VkResult H264FrameStream::PresentFrame(VkQueue queue, const VkPresentInfoKHR &original_present_info) {
+  InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
+
+  for (int i = 0; i < original_present_info.swapchainCount; i++) {
+    auto swapchain_present_info =
+        std::find_if(swapchains_.begin(), swapchains_.end(),
+                     [swapchain = original_present_info.pSwapchains[i]](const SwapchainPresentationInfo &info) {
+                       return info.swapchain == swapchain;
+                     });
+    if (swapchain_present_info == swapchains_.end()) {
+      spdlog::warn("Swapchain not found in H264FrameStream for presentation");
+      continue;
+    }
+
+    vvk::server::VvkGetFrameRequest request;
+    request.set_session_key(swapchain_present_info->remote_session_key);
+    request.set_frame_key(swapchain_present_info->remote_frame_keys[original_present_info.pImageIndices[i]]);
+    vvk::server::VvkGetFrameResponse response;
+    grpc::ClientContext context;
+    auto reader = instance_info.stub().RequestFrame(&context, request);
+    if (!reader->Read(&response)) {
+      throw std::runtime_error("Failed to read frame response from server");
+    }
+    spdlog::info("Received response data with size {} bytes", response.frame_data().size());
+  }
+
   return VK_SUCCESS;
 }
 }  // namespace vvk

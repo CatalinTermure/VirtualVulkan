@@ -59,6 +59,12 @@ message VvkSetupPresentationResponse {
   repeated uint64 frame_keys = 4;
 }
 
+message VvkSetupFrameRequest {
+  uint64 session_key = 1;
+  uint64 frame_key = 2;
+  uint64 command_buffer = 3;
+}
+
 message VvkGetFrameRequest {
   uint64 session_key = 1;
   uint64 frame_key = 2;

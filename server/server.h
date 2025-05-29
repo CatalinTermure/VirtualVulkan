@@ -17,6 +17,9 @@ class VvkServerImpl final : public VvkServer::Service {
   grpc::Status RequestFrame(grpc::ServerContext* context, const vvk::server::VvkGetFrameRequest* request,
                             grpc::ServerWriter<vvk::server::VvkGetFrameResponse>* writer);
 
+  grpc::Status SetupFrame(grpc::ServerContext* context, const vvk::server::VvkSetupFrameRequest* request,
+                          google::protobuf::Empty* response) override;
+
   grpc::Status WriteMappedMemory(grpc::ServerContext* context, const vvk::server::VvkWriteMappedMemoryRequest* request,
                                  google::protobuf::Empty* response) override;
 };

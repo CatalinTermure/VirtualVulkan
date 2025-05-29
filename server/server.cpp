@@ -112,6 +112,18 @@ grpc::Status VvkServerImpl::RequestFrame(grpc::ServerContext* context, const vvk
   return grpc::Status::OK;
 }
 
+grpc::Status VvkServerImpl::SetupFrame(grpc::ServerContext* context, const vvk::server::VvkSetupFrameRequest* request,
+                                       google::protobuf::Empty* response) {
+  if (rdoc_api) rdoc_api->EndFrameCapture(NULL, NULL);
+
+  Encoder* encoder = reinterpret_cast<Encoder*>(request->session_key());
+  VkImage image = reinterpret_cast<VkImage>(request->frame_key());
+  VkCommandBuffer command_buffer = reinterpret_cast<VkCommandBuffer>(request->command_buffer());
+  encoder->WriteEncodeCommands(command_buffer, image);
+
+  return grpc::Status::OK;
+}
+
 grpc::Status VvkServerImpl::WriteMappedMemory(grpc::ServerContext* context,
                                               const vvk::server::VvkWriteMappedMemoryRequest* request,
                                               google::protobuf::Empty* response) {
