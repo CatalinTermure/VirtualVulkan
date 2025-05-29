@@ -5,6 +5,7 @@
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.h>
 
+#include "server/encoder.h"
 #include "server/execution_context.h"
 #include "server/function_execution.h"
 #include "vvk_server.pb.h"
@@ -80,25 +81,34 @@ grpc::Status VvkServerImpl::RequestFrame(grpc::ServerContext* context, const vvk
                                          grpc::ServerWriter<vvk::server::VvkGetFrameResponse>* writer) {
   if (rdoc_api) rdoc_api->EndFrameCapture(NULL, NULL);
 
-  VmaAllocator allocator = reinterpret_cast<VmaAllocator>(request->session_key());
-  VmaAllocation buffer_allocation = reinterpret_cast<VmaAllocation>(request->frame_key());
-  void* data = nullptr;
-  vmaMapMemory(allocator, buffer_allocation, &data);
-  VmaAllocationInfo allocation_info;
-  vmaGetAllocationInfo(allocator, buffer_allocation, &allocation_info);
-  uint32_t data_size = allocation_info.size;
-  constexpr uint32_t kChunkSize = 256 * 1024;  // 256 KB
-  uint32_t num_chunks = (data_size + kChunkSize - 1) / kChunkSize;
-  spdlog::trace("Sending {} bytes in {} chunks", data_size, num_chunks);
-  vvk::server::VvkGetFrameResponse response;
-  response.mutable_frame_data()->resize(kChunkSize);
-  for (uint32_t i = 0; i < num_chunks; ++i) {
-    uint32_t chunk_size = std::min(kChunkSize, data_size - i * kChunkSize);
-    std::memcpy(response.mutable_frame_data()->data(), static_cast<uint8_t*>(data) + i * kChunkSize, chunk_size);
+  if (request->stream_type() == vvk::server::VvkStreamType::VVK_STREAM_TYPE_UNCOMPRESSED) {
+    VmaAllocator allocator = reinterpret_cast<VmaAllocator>(request->session_key());
+    VmaAllocation buffer_allocation = reinterpret_cast<VmaAllocation>(request->frame_key());
+    void* data = nullptr;
+    vmaMapMemory(allocator, buffer_allocation, &data);
+    VmaAllocationInfo allocation_info;
+    vmaGetAllocationInfo(allocator, buffer_allocation, &allocation_info);
+    uint32_t data_size = allocation_info.size;
+    constexpr uint32_t kChunkSize = 256 * 1024;  // 256 KB
+    uint32_t num_chunks = (data_size + kChunkSize - 1) / kChunkSize;
+    spdlog::trace("Sending {} bytes in {} chunks", data_size, num_chunks);
+    vvk::server::VvkGetFrameResponse response;
+    response.mutable_frame_data()->resize(kChunkSize);
+    for (uint32_t i = 0; i < num_chunks; ++i) {
+      uint32_t chunk_size = std::min(kChunkSize, data_size - i * kChunkSize);
+      std::memcpy(response.mutable_frame_data()->data(), static_cast<uint8_t*>(data) + i * kChunkSize, chunk_size);
+      writer->Write(response);
+    }
+
+    vmaUnmapMemory(allocator, buffer_allocation);
+  } else if (request->stream_type() == vvk::server::VvkStreamType::VVK_STREAM_TYPE_H264) {
+    Encoder* encoder = reinterpret_cast<Encoder*>(request->session_key());
+    VkImage image = reinterpret_cast<VkImage>(request->frame_key());
+    vvk::server::VvkGetFrameResponse response;
+    response.set_frame_data(encoder->GetEncodedData(image));
+    spdlog::trace("Sending H264 encoded data of size {}", response.frame_data().size());
     writer->Write(response);
   }
-
-  vmaUnmapMemory(allocator, buffer_allocation);
   return grpc::Status::OK;
 }
 

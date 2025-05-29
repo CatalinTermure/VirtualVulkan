@@ -4,6 +4,12 @@ package vvk.server;
 
 import "vvk_types.proto";
 
+enum VvkStreamType {
+  VVK_STREAM_TYPE_UNCOMPRESSED = 0;
+  VVK_STREAM_TYPE_H264 = 1;
+  VVK_STREAM_TYPE_H265 = 2;
+}
+
 message VvkGetFrameStreamingCapabilitiesRequest {
   uint64 physical_device = 1;
 }
@@ -56,6 +62,7 @@ message VvkSetupPresentationResponse {
 message VvkGetFrameRequest {
   uint64 session_key = 1;
   uint64 frame_key = 2;
+  VvkStreamType stream_type = 3;
 }
 
 message VvkGetFrameResponse {
