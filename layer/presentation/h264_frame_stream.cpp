@@ -42,9 +42,24 @@ void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExten
   std::string encoded_header = response.setuppresentation().h264_stream_info().header();
   spdlog::info("Received H264 stream header of size {} bytes", encoded_header.size());
   spdlog::info("H264 stream header: {}", encoded_header);
+  std::vector<uint64_t> remote_frame_keys;
+  remote_frame_keys.reserve(response.setuppresentation().frame_keys_size());
+  for (int i = 0; i < response.setuppresentation().uncompressed_stream_info().remote_buffers_size(); i++) {
+    remote_frame_keys.push_back(response.setuppresentation().frame_keys(i));
+  }
+  swapchains_.push_back(SwapchainPresentationInfo{.swapchain = swapchain,
+                                                  .remote_session_key = response.setuppresentation().session_key(),
+                                                  .remote_frame_keys = remote_frame_keys,
+                                                  .image_extent = swapchain_image_extent});
 }
 
-void H264FrameStream::RemoveSwapchain(VkSwapchainKHR swapchain) {}
+void H264FrameStream::RemoveSwapchain(VkSwapchainKHR swapchain) {
+  swapchains_.erase(std::remove_if(swapchains_.begin(), swapchains_.end(),
+                                   [swapchain](const SwapchainPresentationInfo &swapchain_present_info) {
+                                     return swapchain_present_info.swapchain == swapchain;
+                                   }),
+                    swapchains_.end());
+}
 
 // Called during command buffer recording for a presentable frame.
 void H264FrameStream::SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t swapchain_image_index) {}

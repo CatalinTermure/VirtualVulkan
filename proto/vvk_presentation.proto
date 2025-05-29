@@ -32,8 +32,6 @@ message H264StreamCreateInfo {
 
 message UncompressedStreamInfo {
   repeated uint64 remote_buffers = 1;
-  uint64 session_key = 2;
-  repeated uint64 frame_keys = 3;
 }
 
 message H264StreamInfo {
@@ -57,6 +55,8 @@ message VvkSetupPresentationResponse {
     UncompressedStreamInfo uncompressed_stream_info = 1;
     H264StreamInfo h264_stream_info = 2;
   }
+  uint64 session_key = 3;
+  repeated uint64 frame_keys = 4;
 }
 
 message VvkGetFrameRequest {

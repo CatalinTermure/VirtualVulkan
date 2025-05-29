@@ -38,7 +38,8 @@ void SetupPresentationUncompressedStream(vvk::ExecutionContext& context,
 
   VmaAllocator allocator = context.allocator();
 
-  const auto& uncompressed_stream_info = response->mutable_setuppresentation()->mutable_uncompressed_stream_info();
+  auto* setup_presentation_response = response->mutable_setuppresentation();
+  auto* uncompressed_stream_info = response->mutable_setuppresentation()->mutable_uncompressed_stream_info();
 
   // Create a buffer to copy the image data to
   for (uint64_t image_handle : params.remote_images()) {
@@ -74,11 +75,11 @@ void SetupPresentationUncompressedStream(vvk::ExecutionContext& context,
           [allocator, buffer_allocation, buffer]() { vmaDestroyBuffer(allocator, buffer, buffer_allocation); });
 
       uncompressed_stream_info->add_remote_buffers(reinterpret_cast<uint64_t>(buffer));
-      uncompressed_stream_info->add_frame_keys(reinterpret_cast<uint64_t>(buffer_allocation));
+      setup_presentation_response->add_frame_keys(reinterpret_cast<uint64_t>(buffer_allocation));
     }
   }
 
-  uncompressed_stream_info->set_session_key(reinterpret_cast<uint64_t>(context.allocator()));
+  setup_presentation_response->set_session_key(reinterpret_cast<uint64_t>(context.allocator()));
 }
 
 void SetupPresentationH264Stream(vvk::ExecutionContext& context, const vvk::server::VvkSetupPresentationRequest& params,
@@ -95,6 +96,11 @@ void SetupPresentationH264Stream(vvk::ExecutionContext& context, const vvk::serv
   h264_stream_info.set_header(encoder->GetEncodedHeader());
 
   context.set_encoder(std::move(encoder));
+  auto* setup_presentation_response = response->mutable_setuppresentation();
+  setup_presentation_response->set_session_key(reinterpret_cast<uint64_t>(context.encoder()));
+  for (uint64_t image : params.remote_images()) {
+    setup_presentation_response->add_frame_keys(image);
+  }
 }
 }  // namespace
 

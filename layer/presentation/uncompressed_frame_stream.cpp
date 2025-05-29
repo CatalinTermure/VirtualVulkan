@@ -41,17 +41,16 @@ void UncompressedFrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const
   std::vector<uint64_t> remote_buffers;
   std::vector<uint64_t> remote_frame_keys;
   remote_buffers.reserve(response.setuppresentation().uncompressed_stream_info().remote_buffers_size());
-  remote_frame_keys.reserve(response.setuppresentation().uncompressed_stream_info().frame_keys_size());
+  remote_frame_keys.reserve(response.setuppresentation().frame_keys_size());
   for (int i = 0; i < response.setuppresentation().uncompressed_stream_info().remote_buffers_size(); i++) {
     remote_buffers.push_back(response.setuppresentation().uncompressed_stream_info().remote_buffers(i));
-    remote_frame_keys.push_back(response.setuppresentation().uncompressed_stream_info().frame_keys(i));
+    remote_frame_keys.push_back(response.setuppresentation().frame_keys(i));
   }
-  swapchains.push_back(SwapchainPresentationInfo{
-      .swapchain = swapchain,
-      .remote_session_key = response.setuppresentation().uncompressed_stream_info().session_key(),
-      .remote_buffers = remote_buffers,
-      .remote_frame_keys = remote_frame_keys,
-      .image_extent = swapchain_image_extent});
+  swapchains.push_back(SwapchainPresentationInfo{.swapchain = swapchain,
+                                                 .remote_session_key = response.setuppresentation().session_key(),
+                                                 .remote_buffers = remote_buffers,
+                                                 .remote_frame_keys = remote_frame_keys,
+                                                 .image_extent = swapchain_image_extent});
 }
 
 void UncompressedFrameStream::RemoveSwapchain(VkSwapchainKHR swapchain) {
