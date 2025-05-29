@@ -156,9 +156,9 @@ class H264Encoder : public Encoder {
       dev_dispatch_.DestroyVideoSessionKHR(device_, video_session_, nullptr);
       video_session_ = VK_NULL_HANDLE;
     }
-    if (command_buffer_ != VK_NULL_HANDLE) {
-      dev_dispatch_.FreeCommandBuffers(device_, command_pool_, 1, &command_buffer_);
-      command_buffer_ = VK_NULL_HANDLE;
+    if (video_command_buffer_ != VK_NULL_HANDLE) {
+      dev_dispatch_.FreeCommandBuffers(device_, command_pool_, 1, &video_command_buffer_);
+      video_command_buffer_ = VK_NULL_HANDLE;
     }
     if (command_pool_ != VK_NULL_HANDLE) {
       dev_dispatch_.DestroyCommandPool(device_, command_pool_, nullptr);
@@ -344,12 +344,12 @@ class H264Encoder : public Encoder {
 
     dev_dispatch_.ResetCommandPool(device_, command_pool_, 0);
 
-    dev_dispatch_.BeginCommandBuffer(command_buffer_, vk::CommandBufferBeginInfo{
-                                                          vk::CommandBufferUsageFlagBits::eOneTimeSubmit,
-                                                          nullptr,  // no inheritance info
-                                                      });
+    dev_dispatch_.BeginCommandBuffer(video_command_buffer_, vk::CommandBufferBeginInfo{
+                                                                vk::CommandBufferUsageFlagBits::eOneTimeSubmit,
+                                                                nullptr,  // no inheritance info
+                                                            });
 
-    dev_dispatch_.CmdResetQueryPool(command_buffer_, query_pool_, 0, 1);
+    dev_dispatch_.CmdResetQueryPool(video_command_buffer_, query_pool_, 0, 1);
 
     {
       // acquire the YUV image for video encoding
@@ -391,12 +391,12 @@ class H264Encoder : public Encoder {
           },
       };
       image_barriers = {acquire_yuv_image_barrier, encode_to_transfer_barrier};
-      dev_dispatch_.CmdPipelineBarrier2(command_buffer_, vk::DependencyInfoKHR{
-                                                             vk::DependencyFlags{},
-                                                             nullptr,  // no memory barriers
-                                                             nullptr,  // no buffer barriers
-                                                             image_barriers,
-                                                         });
+      dev_dispatch_.CmdPipelineBarrier2(video_command_buffer_, vk::DependencyInfoKHR{
+                                                                   vk::DependencyFlags{},
+                                                                   nullptr,  // no memory barriers
+                                                                   nullptr,  // no buffer barriers
+                                                                   image_barriers,
+                                                               });
     }
 
     {
@@ -417,7 +417,7 @@ class H264Encoder : public Encoder {
               vk::Extent3D{padded_image_extent_.width / 2, padded_image_extent_.height / 2, 1},
           }),
       };
-      dev_dispatch_.CmdCopyImage(command_buffer_, yuv_image_, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, input_image_,
+      dev_dispatch_.CmdCopyImage(video_command_buffer_, yuv_image_, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, input_image_,
                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, image_copies.size(), image_copies.data());
     }
 
@@ -484,13 +484,13 @@ class H264Encoder : public Encoder {
       });
     }
 
-    dev_dispatch_.CmdBeginVideoCodingKHR(command_buffer_, vk::VideoBeginCodingInfoKHR{
-                                                              vk::VideoBeginCodingFlagsKHR{},
-                                                              video_session_,
-                                                              video_session_parameters_,
-                                                              reference_slots,
-                                                              encode_rate_control_info_,
-                                                          });
+    dev_dispatch_.CmdBeginVideoCodingKHR(video_command_buffer_, vk::VideoBeginCodingInfoKHR{
+                                                                    vk::VideoBeginCodingFlagsKHR{},
+                                                                    video_session_,
+                                                                    video_session_parameters_,
+                                                                    reference_slots,
+                                                                    encode_rate_control_info_,
+                                                                });
 
     // wait for the YUV image to be transferred to the input image
     vk::ImageMemoryBarrier2 transfer_to_encode_barrier{
@@ -511,14 +511,14 @@ class H264Encoder : public Encoder {
             1,  // layerCount
         },
     };
-    dev_dispatch_.CmdPipelineBarrier2(command_buffer_, vk::DependencyInfoKHR{
-                                                           vk::DependencyFlags{},
-                                                           nullptr,  // no memory barriers
-                                                           nullptr,  // no buffer barriers
-                                                           transfer_to_encode_barrier,
-                                                       });
+    dev_dispatch_.CmdPipelineBarrier2(video_command_buffer_, vk::DependencyInfoKHR{
+                                                                 vk::DependencyFlags{},
+                                                                 nullptr,  // no memory barriers
+                                                                 nullptr,  // no buffer barriers
+                                                                 transfer_to_encode_barrier,
+                                                             });
 
-    dev_dispatch_.CmdBeginQuery(command_buffer_, query_pool_, 0, 0);
+    dev_dispatch_.CmdBeginQuery(video_command_buffer_, query_pool_, 0, 0);
 
     reference_slots[0].slotIndex = gop_frame_index & 1;
     std::vector<vk::VideoReferenceSlotInfoKHR> references;
@@ -526,27 +526,27 @@ class H264Encoder : public Encoder {
       references.push_back(reference_slots[1]);
     }
 
-    dev_dispatch_.CmdEncodeVideoKHR(command_buffer_, vk::VideoEncodeInfoKHR{
-                                                         vk::VideoEncodeFlagsKHR{},
-                                                         output_buffer_,
-                                                         0,
-                                                         output_buffer_allocation_info_.size,
-                                                         vk::VideoPictureResourceInfoKHR{
-                                                             vk::Offset2D{0, 0},
-                                                             vk::Extent2D{
-                                                                 padded_image_extent_.width,
-                                                                 padded_image_extent_.height,
-                                                             },
-                                                             0,
-                                                             input_image_view_,
-                                                         },
-                                                         &reference_slots[0],
-                                                         references,
-                                                         0,
-                                                         &h264_picture_infos_[encodable_image_index],
-                                                     });
-    dev_dispatch_.CmdEndQuery(command_buffer_, query_pool_, 0);
-    dev_dispatch_.CmdEndVideoCodingKHR(command_buffer_, vk::VideoEndCodingInfoKHR{});
+    dev_dispatch_.CmdEncodeVideoKHR(video_command_buffer_, vk::VideoEncodeInfoKHR{
+                                                               vk::VideoEncodeFlagsKHR{},
+                                                               output_buffer_,
+                                                               0,
+                                                               output_buffer_allocation_info_.size,
+                                                               vk::VideoPictureResourceInfoKHR{
+                                                                   vk::Offset2D{0, 0},
+                                                                   vk::Extent2D{
+                                                                       padded_image_extent_.width,
+                                                                       padded_image_extent_.height,
+                                                                   },
+                                                                   0,
+                                                                   input_image_view_,
+                                                               },
+                                                               &reference_slots[0],
+                                                               references,
+                                                               0,
+                                                               &h264_picture_infos_[encodable_image_index],
+                                                           });
+    dev_dispatch_.CmdEndQuery(video_command_buffer_, query_pool_, 0);
+    dev_dispatch_.CmdEndVideoCodingKHR(video_command_buffer_, vk::VideoEndCodingInfoKHR{});
 
     {
       // release the YUV image for the compute shader
@@ -569,21 +569,24 @@ class H264Encoder : public Encoder {
           },
       };
 
-      dev_dispatch_.CmdPipelineBarrier2(command_buffer_, vk::DependencyInfoKHR{
-                                                             vk::DependencyFlags{},
-                                                             nullptr,  // no memory barriers
-                                                             nullptr,  // no buffer barriers
-                                                             return_yuv_image_barrier,
-                                                         });
+      dev_dispatch_.CmdPipelineBarrier2(video_command_buffer_, vk::DependencyInfoKHR{
+                                                                   vk::DependencyFlags{},
+                                                                   nullptr,  // no memory barriers
+                                                                   nullptr,  // no buffer barriers
+                                                                   return_yuv_image_barrier,
+                                                               });
     }
 
-    dev_dispatch_.EndCommandBuffer(command_buffer_);
+    dev_dispatch_.EndCommandBuffer(video_command_buffer_);
 
     VkSubmitInfo submit_info = {};
     submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submit_info.commandBufferCount = 1;
-    submit_info.pCommandBuffers = &command_buffer_;
-    dev_dispatch_.QueueSubmit(video_queue_, 1, &submit_info, encode_finished_fence_);
+    submit_info.pCommandBuffers = &video_command_buffer_;
+    VkResult result = dev_dispatch_.QueueSubmit(video_queue_, 1, &submit_info, encode_finished_fence_);
+    if (result != VK_SUCCESS) {
+      throw std::runtime_error("Failed to submit video encoding command buffer");
+    }
   }
 
   std::string GetEncodedData(VkImage image) override {
@@ -666,7 +669,7 @@ class H264Encoder : public Encoder {
 
   VkQueryPool query_pool_ = VK_NULL_HANDLE;
   VkCommandPool command_pool_ = VK_NULL_HANDLE;
-  VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
+  VkCommandBuffer video_command_buffer_ = VK_NULL_HANDLE;
   VkVideoSessionKHR video_session_ = VK_NULL_HANDLE;
   VkVideoSessionParametersKHR video_session_parameters_ = VK_NULL_HANDLE;
   std::vector<VmaAllocation> allocations_;
@@ -736,12 +739,12 @@ class H264Encoder : public Encoder {
     };
     dev_dispatch_.CreateCommandPool(device_, command_pool_create_info, nullptr, &command_pool_);
 
-    vk::CommandBufferAllocateInfo command_buffer_allocate_info = {
+    vk::CommandBufferAllocateInfo video_command_buffer_allocate_info = {
         command_pool_,
         vk::CommandBufferLevel::ePrimary,
         1,
     };
-    dev_dispatch_.AllocateCommandBuffers(device_, command_buffer_allocate_info, &command_buffer_);
+    dev_dispatch_.AllocateCommandBuffers(device_, video_command_buffer_allocate_info, &video_command_buffer_);
   }
 
   void InitializeVideoSession() {
@@ -1006,19 +1009,28 @@ class H264Encoder : public Encoder {
         h264_rate_control_info_,
     };
 
-    dev_dispatch_.BeginCommandBuffer(command_buffer_, vk::CommandBufferBeginInfo{});
-    dev_dispatch_.CmdBeginVideoCodingKHR(command_buffer_,
+    dev_dispatch_.BeginCommandBuffer(video_command_buffer_, vk::CommandBufferBeginInfo{});
+    dev_dispatch_.CmdBeginVideoCodingKHR(video_command_buffer_,
                                          vk::VideoBeginCodingInfoKHR{
                                              vk::VideoBeginCodingFlagsKHR{},
                                              video_session_,
                                              video_session_parameters_,  // VideoSessionParametersKHR
                                              {},  // Reference slots are not required just to reset the video session
                                          });
-    dev_dispatch_.CmdControlVideoCodingKHR(command_buffer_, vk::VideoCodingControlInfoKHR{
-                                                                vk::VideoCodingControlFlagBitsKHR::eReset,
-                                                                encode_rate_control_info_,
-                                                            });
-    dev_dispatch_.CmdEndVideoCodingKHR(command_buffer_, vk::VideoEndCodingInfoKHR{});
+    dev_dispatch_.CmdControlVideoCodingKHR(video_command_buffer_, vk::VideoCodingControlInfoKHR{
+                                                                      vk::VideoCodingControlFlagBitsKHR::eReset,
+                                                                      encode_rate_control_info_,
+                                                                  });
+    dev_dispatch_.CmdEndVideoCodingKHR(video_command_buffer_, vk::VideoEndCodingInfoKHR{});
+    dev_dispatch_.EndCommandBuffer(video_command_buffer_);
+    VkSubmitInfo submit_info = {};
+    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submit_info.commandBufferCount = 1;
+    submit_info.pCommandBuffers = &video_command_buffer_;
+    VkResult result = dev_dispatch_.QueueSubmit(video_queue_, 1, &submit_info, VK_NULL_HANDLE);
+    if (result != VK_SUCCESS) {
+      throw std::runtime_error("Failed to submit command buffer for H264 encoding rate control initialization");
+    }
   }
 
   void AllocateOutputBuffer() {
