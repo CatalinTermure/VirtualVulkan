@@ -1059,10 +1059,12 @@ class H264Encoder : public Encoder {
                                              video_session_parameters_,  // VideoSessionParametersKHR
                                              {},  // Reference slots are not required just to reset the video session
                                          });
-    dev_dispatch_.CmdControlVideoCodingKHR(video_command_buffer_, vk::VideoCodingControlInfoKHR{
-                                                                      vk::VideoCodingControlFlagBitsKHR::eReset,
-                                                                      encode_rate_control_info_,
-                                                                  });
+    dev_dispatch_.CmdControlVideoCodingKHR(
+        video_command_buffer_,
+        vk::VideoCodingControlInfoKHR{
+            vk::VideoCodingControlFlagBitsKHR::eReset | vk::VideoCodingControlFlagBitsKHR::eEncodeRateControl,
+            encode_rate_control_info_,
+        });
     dev_dispatch_.CmdEndVideoCodingKHR(video_command_buffer_, vk::VideoEndCodingInfoKHR{});
     dev_dispatch_.EndCommandBuffer(video_command_buffer_);
     VkSubmitInfo submit_info = {};
