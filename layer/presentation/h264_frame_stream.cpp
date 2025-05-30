@@ -8,10 +8,32 @@
 #include "layer/context/swapchain.h"
 #include "spdlog/spdlog.h"
 
-namespace vvk {
-namespace {
-std::ofstream h264_log_file("h264_frame_stream.h264", std::ios::out | std::ios::binary);
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libavutil/hwcontext.h>
+#include <libavutil/imgutils.h>
+#include <libavutil/opt.h>
 }
+
+namespace vvk {
+
+namespace {
+int read_buffer(void *opaque, uint8_t *buf, int buf_size) {
+  H264FrameStream::SwapchainPresentationInfo *swapchain_present_info =
+      static_cast<H264FrameStream::SwapchainPresentationInfo *>(opaque);
+  if (swapchain_present_info->decode_buffer.empty()) {
+    return AVERROR_EOF;
+  }
+  size_t bytes_to_copy = std::min(static_cast<size_t>(buf_size), swapchain_present_info->decode_buffer.size());
+  std::memcpy(buf, swapchain_present_info->decode_buffer.data(), bytes_to_copy);
+  swapchain_present_info->decode_buffer.erase(0, bytes_to_copy);
+  return static_cast<int>(bytes_to_copy);
+}
+constexpr int kBufferSize = 4096;
+constexpr AVHWDeviceType kHwDeviceType = AV_HWDEVICE_TYPE_VAAPI;
+}  // namespace
+
 H264FrameStream::H264FrameStream(VkInstance instance, VkDevice device, uint32_t graphics_queue_family_index,
                                  uint32_t video_queue_family_index)
     : local_instance_(instance),
@@ -69,7 +91,6 @@ void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExten
   std::string encoded_header = response.setuppresentation().h264_stream_info().header();
   spdlog::info("Received H264 stream header of size {} bytes", encoded_header.size());
   spdlog::info("H264 stream header: {}", encoded_header);
-  h264_log_file << encoded_header;
   std::vector<uint64_t> remote_frame_keys;
   remote_frame_keys.reserve(response.setuppresentation().frame_keys_size());
   for (int i = 0; i < response.setuppresentation().frame_keys_size(); i++) {
@@ -78,7 +99,9 @@ void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExten
   swapchains_.push_back(SwapchainPresentationInfo{.swapchain = swapchain,
                                                   .remote_session_key = response.setuppresentation().session_key(),
                                                   .remote_frame_keys = remote_frame_keys,
-                                                  .image_extent = swapchain_image_extent});
+                                                  .image_extent = swapchain_image_extent,
+                                                  .decode_buffer = std::move(encoded_header),
+                                                  .decode_info = std::nullopt});
 }
 
 void H264FrameStream::RemoveSwapchain(VkSwapchainKHR swapchain) {
@@ -132,9 +155,144 @@ VkResult H264FrameStream::PresentFrame(VkQueue queue, const VkPresentInfoKHR &or
     if (!reader->Read(&response)) {
       throw std::runtime_error("Failed to read frame response from server");
     }
-    spdlog::info("Received response data with size {} bytes", response.frame_data().size());
-    h264_log_file << response.frame_data();
-    h264_log_file.flush();
+    swapchain_present_info->decode_buffer += std::move(*response.mutable_frame_data());
+    if (!swapchain_present_info->decode_info.has_value()) {
+      swapchain_present_info->decode_info = DecodeInfo{};
+      DecodeInfo &decode_info = swapchain_present_info->decode_info.value();
+      decode_info.aux_buffer = static_cast<unsigned char *>(av_malloc(kBufferSize));
+      AVFormatContext *format_context = nullptr;
+      const AVCodec *decoder = nullptr;
+      AVCodecContext *decoder_context = nullptr;
+      AVPixelFormat hw_format;
+      AVStream *video = nullptr;
+      AVBufferRef *hw_device_ctx = nullptr;
+      format_context = avformat_alloc_context();
+      if (!format_context) {
+        throw std::runtime_error("Failed to allocate AVFormatContext");
+      }
+      format_context->pb = avio_alloc_context(decode_info.aux_buffer, kBufferSize, 0, &*swapchain_present_info,
+                                              read_buffer, nullptr, nullptr);
+      if (!format_context->pb) {
+        throw std::runtime_error("Failed to allocate AVIOContext");
+      }
+      int ret = avformat_open_input(&format_context, nullptr, nullptr, nullptr);
+      if (ret < 0) {
+        throw std::runtime_error("Failed to open input for AVFormatContext");
+      }
+      if (avformat_find_stream_info(format_context, nullptr) < 0) {
+        throw std::runtime_error("Failed to find stream info for AVFormatContext");
+      }
+      int best_stream_index = av_find_best_stream(format_context, AVMEDIA_TYPE_VIDEO, -1, -1, &decoder, 0);
+      if (best_stream_index < 0) {
+        throw std::runtime_error("Failed to find best video stream in AVFormatContext");
+      }
+      for (int i = 0;; i++) {
+        const AVCodecHWConfig *config = avcodec_get_hw_config(decoder, i);
+        if (!config) {
+          throw std::runtime_error("No hardware codec configuration found for decoder");
+        }
+        if (config->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX && config->device_type == kHwDeviceType) {
+          hw_format = config->pix_fmt;
+          break;
+        }
+      }
+      decoder_context = avcodec_alloc_context3(decoder);
+      if (!decoder_context) {
+        throw std::runtime_error("Failed to allocate AVCodecContext");
+      }
+      video = format_context->streams[best_stream_index];
+      ret = avcodec_parameters_to_context(decoder_context, video->codecpar);
+      if (ret < 0) {
+        throw std::runtime_error("Failed to copy codec parameters to AVCodecContext");
+      }
+      decoder_context->opaque = reinterpret_cast<void *>(hw_format);
+      decoder_context->get_format = [](AVCodecContext *ctx, const enum AVPixelFormat *pix_fmts) {
+        for (int i = 0; pix_fmts[i] != AV_PIX_FMT_NONE; i++) {
+          if (pix_fmts[i] == static_cast<AVPixelFormat>(reinterpret_cast<uintptr_t>(ctx->opaque))) {
+            return pix_fmts[i];
+          }
+        }
+        spdlog::error("No suitable pixel format found for decoder");
+        return AV_PIX_FMT_NONE;
+      };
+      av_opt_set_int(decoder_context, "refcounted_frames", 1, 0);
+      ret = av_hwdevice_ctx_create(&hw_device_ctx, kHwDeviceType, "/dev/dri/renderD129", nullptr, 0);
+      if (ret < 0) {
+        throw std::runtime_error("Failed to create hardware device context");
+      }
+      decoder_context->hw_device_ctx = av_buffer_ref(hw_device_ctx);
+      ret = avcodec_open2(decoder_context, decoder, nullptr);
+      if (ret < 0) {
+        throw std::runtime_error("Failed to open codec for AVCodecContext");
+      }
+
+      decode_info.format_context = format_context;
+      decode_info.decoder = decoder;
+      decode_info.decoder_context = decoder_context;
+      decode_info.hw_format = hw_format;
+      decode_info.video = video;
+      decode_info.hw_device_ctx = hw_device_ctx;
+    }
+    DecodeInfo &decode_info = swapchain_present_info->decode_info.value();
+    AVPacket packet;
+    int ret = av_read_frame(decode_info.format_context, &packet);
+    if (ret < 0) {
+      if (ret == AVERROR_EOF) {
+        spdlog::info("End of stream reached for H264 frame");
+      } else {
+        throw std::runtime_error("Failed to read frame from AVFormatContext");
+      }
+    }
+    AVFrame *frame = av_frame_alloc();
+    if (!frame) {
+      throw std::runtime_error("Failed to allocate AVFrame");
+    }
+    ret = avcodec_send_packet(decode_info.decoder_context, &packet);
+    if (ret < 0) {
+      throw std::runtime_error("Failed to send packet to decoder");
+    }
+    ret = avcodec_receive_frame(decode_info.decoder_context, frame);
+    if (ret < 0) {
+      if (ret == AVERROR(EAGAIN)) {
+        spdlog::info("Decoder needs more input data");
+      } else if (ret == AVERROR_EOF) {
+        spdlog::info("End of stream reached for H264 frame");
+      } else {
+        throw std::runtime_error("Failed to receive frame from decoder");
+      }
+    } else {
+      spdlog::info("Decoded frame successfully");
+      AVFrame *sw_frame = av_frame_alloc();
+      if (!sw_frame) {
+        throw std::runtime_error("Failed to allocate AVFrame for hw to sw transfer");
+      }
+      sw_frame->format = AV_PIX_FMT_BGRA;
+      ret = av_hwframe_transfer_data(sw_frame, frame, 0);
+      if (ret < 0) {
+        throw std::runtime_error("Failed to transfer frame from hardware to software");
+      }
+      int size =
+          av_image_get_buffer_size(static_cast<AVPixelFormat>(sw_frame->format), sw_frame->width, sw_frame->height, 1);
+      if (size < 0) {
+        char buf[4096];
+        av_strerror(size, buf, 4096);
+        throw std::runtime_error(std::format("Failed to get buffer size for decoded frame {}", (char *)buf));
+      }
+      uint8_t *buffer = static_cast<uint8_t *>(av_malloc(size));
+      if (!buffer) {
+        throw std::runtime_error("Failed to allocate buffer for decoded frame");
+      }
+      ret = av_image_copy_to_buffer(buffer, size, static_cast<const uint8_t *const *>(sw_frame->data),
+                                    static_cast<const int *>(sw_frame->linesize),
+                                    static_cast<AVPixelFormat>(sw_frame->format), sw_frame->width, sw_frame->height, 1);
+      if (ret < 0) {
+        throw std::runtime_error("Failed to copy image data to buffer");
+      }
+      spdlog::info("Decoded frame size: {} bytes", size);
+      av_frame_free(&frame);
+
+      DeviceInfo &device_info = GetDeviceInfo(local_device_);
+    }
   }
 
   return VK_SUCCESS;

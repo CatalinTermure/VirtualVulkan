@@ -3,6 +3,11 @@
 
 #include "frame_stream.h"
 
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+}
+
 namespace vvk {
 
 class H264FrameStream final : public FrameStream {
@@ -21,20 +26,33 @@ class H264FrameStream final : public FrameStream {
 
   ~H264FrameStream() override;
 
- private:
+  struct DecodeInfo {
+    unsigned char *aux_buffer;
+    AVFormatContext *format_context = nullptr;
+    const AVCodec *decoder = nullptr;
+    AVCodecContext *decoder_context = nullptr;
+    AVPixelFormat hw_format;
+    AVStream *video = nullptr;
+    AVBufferRef *hw_device_ctx = nullptr;
+  };
+
   struct SwapchainPresentationInfo {
     VkSwapchainKHR swapchain;
     uint64_t remote_session_key;
     std::vector<uint64_t> remote_frame_keys;
     VkExtent2D image_extent;
+    std::string decode_buffer;
+    std::optional<DecodeInfo> decode_info;
   };
 
+ private:
   VkInstance local_instance_;
   VkDevice local_device_;
   uint32_t remote_video_queue_family_index_;
   uint32_t remote_graphics_queue_family_index_;
-  std::vector<SwapchainPresentationInfo> swapchains_;
+  std::list<SwapchainPresentationInfo> swapchains_;
   VkSemaphore remote_encode_wait_semaphore_ = VK_NULL_HANDLE;
+  std::string decode_buffer_;
 };
 }  // namespace vvk
 
