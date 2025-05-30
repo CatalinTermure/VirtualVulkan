@@ -28,6 +28,7 @@ message H264StreamCreateInfo {
   uint32 video_queue_family_index = 1;
   uint32 compute_queue_family_index = 2;
   VkFormat remote_images_format = 3;
+  uint64 encode_wait_semaphore = 4;
 }
 
 message UncompressedStreamInfo {

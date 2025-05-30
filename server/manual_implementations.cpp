@@ -91,7 +91,8 @@ void SetupPresentationH264Stream(vvk::ExecutionContext& context, const vvk::serv
   auto encoder = std::make_unique<vvk::H264Encoder>(
       context, reinterpret_cast<VkDevice>(params.device()), params.h264_stream_create_info().video_queue_family_index(),
       params.h264_stream_create_info().compute_queue_family_index(), vk::Extent2D{params.width(), params.height()},
-      std::move(remote_images), static_cast<VkFormat>(params.h264_stream_create_info().remote_images_format()));
+      std::move(remote_images), static_cast<VkFormat>(params.h264_stream_create_info().remote_images_format()),
+      reinterpret_cast<VkSemaphore>(params.h264_stream_create_info().encode_wait_semaphore()));
   auto& h264_stream_info = *response->mutable_setuppresentation()->mutable_h264_stream_info();
   h264_stream_info.set_header(encoder->GetEncodedHeader());
 

@@ -80,6 +80,7 @@ struct DeviceInfo {
   std::unordered_map<VkImageView, uint32_t> swapchain_image_views;
   std::unordered_map<VkFramebuffer, uint32_t> swapchain_framebuffers;
   std::unordered_map<VkCommandBuffer, uint32_t> swapchain_render_command_buffers;
+  std::unordered_map<VkCommandBuffer, VkSemaphore> additional_semaphores;
 
  private:
   std::map<void*, void*> local_to_remote_handle_;

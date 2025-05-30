@@ -19,7 +19,7 @@ class H264FrameStream final : public FrameStream {
   // Called when a frame should be presented.
   VkResult PresentFrame(VkQueue queue, const VkPresentInfoKHR &original_present_info) override;
 
-  ~H264FrameStream() override = default;
+  ~H264FrameStream() override;
 
  private:
   struct SwapchainPresentationInfo {
@@ -34,6 +34,7 @@ class H264FrameStream final : public FrameStream {
   uint32_t remote_video_queue_family_index_;
   uint32_t remote_graphics_queue_family_index_;
   std::vector<SwapchainPresentationInfo> swapchains_;
+  VkSemaphore remote_encode_wait_semaphore_ = VK_NULL_HANDLE;
 };
 }  // namespace vvk
 

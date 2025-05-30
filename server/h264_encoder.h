@@ -26,7 +26,7 @@ class H264Encoder : public Encoder {
  public:
   H264Encoder(const vvk::ExecutionContext& execution_context, VkDevice device, uint32_t video_queue_index,
               uint32_t compute_queue_index, vk::Extent2D image_extent, std::vector<VkImage> encodable_images,
-              VkFormat encodable_images_format)
+              VkFormat encodable_images_format, VkSemaphore encode_wait_semaphore)
       : execution_context_(execution_context),
         dev_dispatch_(execution_context.device_dispatch_table()),
         device_(device),
@@ -38,7 +38,8 @@ class H264Encoder : public Encoder {
             PadValueToMultipleOf(image_extent.height, kPictureGranularity),
         }),
         encodable_images_(std::move(encodable_images)),
-        encodable_images_format_(encodable_images_format) {
+        encodable_images_format_(encodable_images_format),
+        encode_wait_semaphore_(encode_wait_semaphore) {
     dev_dispatch_.GetDeviceQueue(device_, video_queue_index_, 0, &video_queue_);
     VkResult result = dev_dispatch_.CreateFence(device_, vk::FenceCreateInfo{}, nullptr, &encode_finished_fence_);
     if (result != VK_SUCCESS) {
@@ -582,6 +583,10 @@ class H264Encoder : public Encoder {
     submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submit_info.commandBufferCount = 1;
     submit_info.pCommandBuffers = &video_command_buffer_;
+    submit_info.waitSemaphoreCount = 1;
+    submit_info.pWaitSemaphores = &encode_wait_semaphore_;
+    VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+    submit_info.pWaitDstStageMask = &wait_stage;
     VkResult result = dev_dispatch_.QueueSubmit(video_queue_, 1, &submit_info, encode_finished_fence_);
     if (result != VK_SUCCESS) {
       throw std::runtime_error("Failed to submit video encoding command buffer");
@@ -639,6 +644,7 @@ class H264Encoder : public Encoder {
   VkDevice device_;
   uint32_t video_queue_index_;
   VkQueue video_queue_ = VK_NULL_HANDLE;
+  VkSemaphore encode_wait_semaphore_ = VK_NULL_HANDLE;
   uint32_t compute_queue_index_;
   uint32_t encoded_frame_count_ = 0;
   vk::Extent2D real_image_extent_;

@@ -634,24 +634,11 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     return VK_ERROR_INITIALIZATION_FAILED;
   }
 
-  DeviceInfo& device_info =
-      SetDeviceInfo(*pDevice, nxt_gdpa, physicalDevice, allocator_create_info, present_queue_family_index,
-                    *remote_graphics_queue_family_index, *remote_video_queue_family_index, streaming_capabilities);
-
-  for (uint32_t i = 0; i < pCreateInfo->queueCreateInfoCount; i++) {
-    const VkDeviceQueueCreateInfo& queue_create_info = pCreateInfo->pQueueCreateInfos[i];
-    device_info.CreateFakeQueueFamily(queue_create_info.queueFamilyIndex, queue_create_info.queueCount);
-  }
-
-  if (device_info.present_queue().has_value()) {
-    AssociateQueueWithDevice(device_info.present_queue().value(), *pDevice);
-  }
-
+  VkDevice remote_device = *pDevice;
   {
     VkDeviceCreateInfo remote_create_info = *pCreateInfo;
     RemoveStructsFromChain(reinterpret_cast<VkBaseOutStructure*>(&remote_create_info),
                            VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO);
-    VkDevice remote_device = *pDevice;
 
     // Add timeline semaphore feature
     VkPhysicalDeviceVulkan12Features required_vulkan_1_2_features = {};
@@ -732,23 +719,36 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     PackAndCallVkCreateDevice(instance_info.command_stream(), physicalDevice, &remote_create_info, pAllocator,
                               &remote_device);
     instance_info.SetRemoteHandle(*pDevice, remote_device);
-
-    device_info.fence_pool().ForAllFences([&](VkFence& fence) {
-      VkFenceCreateInfo fence_create_info = {
-          .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-          .pNext = nullptr,
-          .flags = 0,
-      };
-      VkFence remote_fence = VK_NULL_HANDLE;
-      VkResult result = PackAndCallVkCreateFence(instance_info.command_stream(), remote_device, &fence_create_info,
-                                                 pAllocator, &remote_fence);
-      if (result != VK_SUCCESS) {
-        spdlog::error("Failed to create remote fence for local fence in fence pool {}: {}", (void*)fence, (int)result);
-        return;
-      }
-      device_info.SetRemoteHandle(fence, remote_fence);
-    });
   }
+
+  DeviceInfo& device_info =
+      SetDeviceInfo(*pDevice, nxt_gdpa, physicalDevice, allocator_create_info, present_queue_family_index,
+                    *remote_graphics_queue_family_index, *remote_video_queue_family_index, streaming_capabilities);
+
+  for (uint32_t i = 0; i < pCreateInfo->queueCreateInfoCount; i++) {
+    const VkDeviceQueueCreateInfo& queue_create_info = pCreateInfo->pQueueCreateInfos[i];
+    device_info.CreateFakeQueueFamily(queue_create_info.queueFamilyIndex, queue_create_info.queueCount);
+  }
+
+  if (device_info.present_queue().has_value()) {
+    AssociateQueueWithDevice(device_info.present_queue().value(), *pDevice);
+  }
+
+  device_info.fence_pool().ForAllFences([&](VkFence& fence) {
+    VkFenceCreateInfo fence_create_info = {
+        .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = 0,
+    };
+    VkFence remote_fence = VK_NULL_HANDLE;
+    VkResult result = PackAndCallVkCreateFence(instance_info.command_stream(), remote_device, &fence_create_info,
+                                               pAllocator, &remote_fence);
+    if (result != VK_SUCCESS) {
+      spdlog::error("Failed to create remote fence for local fence in fence pool {}: {}", (void*)fence, (int)result);
+      return;
+    }
+    device_info.SetRemoteHandle(fence, remote_fence);
+  });
 
   return result;
 }
@@ -1394,6 +1394,17 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
     submit_info.pWaitSemaphores = semaphores_to_wait_remote[submit_info_indx].data();
     submit_info.pWaitDstStageMask = wait_stages[submit_info_indx].data();
 
+    for (uint32_t j = 0; j < submit_info.commandBufferCount; j++) {
+      VkCommandBuffer remote_command_buffer = device_info.GetRemoteHandle(submit_info.pCommandBuffers[j]);
+      command_buffers_remote[submit_info_indx].push_back(remote_command_buffer);
+      auto additional_semaphore = device_info.additional_semaphores.find(remote_command_buffer);
+      if (additional_semaphore != device_info.additional_semaphores.end()) {
+        semaphores_to_signal_remote[submit_info_indx].push_back(additional_semaphore->second);
+      }
+    }
+    submit_info.commandBufferCount = command_buffers_remote[submit_info_indx].size();
+    submit_info.pCommandBuffers = command_buffers_remote[submit_info_indx].data();
+
     for (uint32_t j = 0; j < submit_info.signalSemaphoreCount; j++) {
       semaphores_to_signal_remote[submit_info_indx].push_back(submit_info.pSignalSemaphores[j]->remote_handle);
       submit_info.pSignalSemaphores[j]->state = SemaphoreState::kToBeSignaledRemote;
@@ -1401,12 +1412,6 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
     }
     submit_info.signalSemaphoreCount = semaphores_to_signal_remote[submit_info_indx].size();
     submit_info.pSignalSemaphores = semaphores_to_signal_remote[submit_info_indx].data();
-
-    for (uint32_t j = 0; j < submit_info.commandBufferCount; j++) {
-      command_buffers_remote[submit_info_indx].push_back(device_info.GetRemoteHandle(submit_info.pCommandBuffers[j]));
-    }
-    submit_info.commandBufferCount = command_buffers_remote[submit_info_indx].size();
-    submit_info.pCommandBuffers = command_buffers_remote[submit_info_indx].data();
 
     submit_infos.emplace_back(std::move(submit_info));
   }

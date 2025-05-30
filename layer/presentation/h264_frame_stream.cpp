@@ -2,6 +2,8 @@
 
 #include <fstream>
 
+#include "commons/remote_call.h"
+#include "layer/context/device.h"
 #include "layer/context/instance.h"
 #include "layer/context/swapchain.h"
 #include "spdlog/spdlog.h"
@@ -15,7 +17,26 @@ H264FrameStream::H264FrameStream(VkInstance instance, VkDevice device, uint32_t 
     : local_instance_(instance),
       local_device_(device),
       remote_video_queue_family_index_(video_queue_family_index),
-      remote_graphics_queue_family_index_(graphics_queue_family_index) {}
+      remote_graphics_queue_family_index_(graphics_queue_family_index) {
+  InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
+  VkSemaphoreCreateInfo sempahore_create_info = {};
+  sempahore_create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+  VkResult result =
+      PackAndCallVkCreateSemaphore(instance_info.command_stream(), instance_info.GetRemoteHandle(local_device_),
+                                   &sempahore_create_info, nullptr, &remote_encode_wait_semaphore_);
+  if (result != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create remote encode wait semaphore");
+  }
+}
+
+H264FrameStream::~H264FrameStream() {
+  if (remote_encode_wait_semaphore_ != VK_NULL_HANDLE) {
+    InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
+    PackAndCallVkDestroySemaphore(instance_info.command_stream(), instance_info.GetRemoteHandle(local_device_),
+                                  remote_encode_wait_semaphore_, nullptr);
+    remote_encode_wait_semaphore_ = VK_NULL_HANDLE;
+  }
+}
 
 void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) {
   InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
@@ -35,6 +56,7 @@ void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExten
   h264_stream_create_info.set_compute_queue_family_index(remote_graphics_queue_family_index_);
   h264_stream_create_info.set_remote_images_format(
       static_cast<vvk::server::VkFormat>(swapchain_info.GetRemoteImageFormat()));
+  h264_stream_create_info.set_encode_wait_semaphore(reinterpret_cast<uint64_t>(remote_encode_wait_semaphore_));
   if (!instance_info.command_stream().Write(request)) {
     throw std::runtime_error("Failed to send setup presentation request");
   }
@@ -70,6 +92,8 @@ void H264FrameStream::RemoveSwapchain(VkSwapchainKHR swapchain) {
 // Called during command buffer recording for a presentable frame.
 void H264FrameStream::SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t swapchain_image_index) {
   InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
+  DeviceInfo &device_info = GetDeviceInfo(local_device_);
+  device_info.additional_semaphores[remote_command_buffer] = remote_encode_wait_semaphore_;
   for (auto &swapchain_present_info : swapchains_) {
     vvk::server::VvkRequest request;
     request.set_method("setupFrame");
