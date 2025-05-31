@@ -27,11 +27,7 @@ class SwapchainInfo {
   VkImage CreateImageRemote(const VkImageCreateInfo& create_info, const VmaAllocationCreateInfo& alloc_info);
 
   std::span<const std::pair<VkImage, VmaAllocation>> GetRemoteImages() const { return remote_images_; }
-  std::span<const VkImage> GetLocalSwapchainImages() const { return local_swapchain_images_; }
-
-  VkResult CopyMemoryToImage(uint32_t image_index, std::string_view data, std::span<VkSemaphore> semaphores_to_wait,
-                             std::span<VkPipelineStageFlags> wait_stages, std::span<VkSemaphore> semaphores_to_signal,
-                             VkFence fence_to_signal);
+  std::span<VkImage> GetLocalSwapchainImages() { return local_swapchain_images_; }
 
   std::mutex& GetLock() { return lock_; }
 
@@ -48,10 +44,6 @@ class SwapchainInfo {
   InstanceInfo& instance_info_;
   VmaAllocator remote_allocator_;
   std::vector<std::pair<VkImage, VmaAllocation>> remote_images_;
-  VkCommandPool command_pool_;
-  std::vector<VkBuffer> staging_buffers_;
-  std::vector<VmaAllocation> buffer_allocations_;
-  std::vector<VkCommandBuffer> command_buffers_;
   std::vector<VkImage> local_swapchain_images_;
   std::mutex lock_;
   std::counting_semaphore<64> acquired_images_;

@@ -2,6 +2,7 @@
 #define VVK_LAYER_PRESENTATION_UNCOMPRESSED_FRAME_STREAM_H
 
 #include "layer/presentation/frame_stream.h"
+#include "layer/presentation/memory_to_image_copy.h"
 
 namespace vvk {
 class UncompressedFrameStream final : public FrameStream {
@@ -26,6 +27,7 @@ class UncompressedFrameStream final : public FrameStream {
     std::vector<uint64_t> remote_buffers;
     std::vector<uint64_t> remote_frame_keys;
     VkExtent2D image_extent;
+    MemoryToImageCopyContext copy_context;
   };
 
   VkInstance local_instance;

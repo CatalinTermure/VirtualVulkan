@@ -46,11 +46,15 @@ void UncompressedFrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const
     remote_buffers.push_back(response.setuppresentation().uncompressed_stream_info().remote_buffers(i));
     remote_frame_keys.push_back(response.setuppresentation().frame_keys(i));
   }
-  swapchains.push_back(SwapchainPresentationInfo{.swapchain = swapchain,
-                                                 .remote_session_key = response.setuppresentation().session_key(),
-                                                 .remote_buffers = remote_buffers,
-                                                 .remote_frame_keys = remote_frame_keys,
-                                                 .image_extent = swapchain_image_extent});
+  swapchains.push_back(SwapchainPresentationInfo{
+      .swapchain = swapchain,
+      .remote_session_key = response.setuppresentation().session_key(),
+      .remote_buffers = remote_buffers,
+      .remote_frame_keys = remote_frame_keys,
+      .image_extent = swapchain_image_extent,
+      .copy_context = MemoryToImageCopyContext(local_device, swapchain_info.GetLocalSwapchainImages(),
+                                               swapchain_image_extent, BufferLayout{}, true, false),
+  });
 }
 
 void UncompressedFrameStream::RemoveSwapchain(VkSwapchainKHR swapchain) {
@@ -184,10 +188,9 @@ VkResult UncompressedFrameStream::PresentFrame(VkQueue queue, const VkPresentInf
   }
 
   {
-    std::vector<VkFenceProxy> fences;
-    fences.reserve(present_info.swapchainCount);
+    std::vector<VkFence> fences_to_wait;
+    fences_to_wait.reserve(present_info.swapchainCount);
     for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
-      fences.emplace_back(device_info.fence_pool().GetFence());
       vvk::server::VvkGetFrameResponse response;
       std::string data;
       while (client_readers[i]->Read(&response)) {
@@ -195,13 +198,12 @@ VkResult UncompressedFrameStream::PresentFrame(VkQueue queue, const VkPresentInf
       }
       client_readers[i]->Finish();
 
-      swapchain_infos[i]->CopyMemoryToImage(present_info.pImageIndices[i], data, {}, {}, {}, *fences.back());
-    }
-
-    std::vector<VkFence> fences_to_wait;
-    fences_to_wait.reserve(fences.size());
-    for (auto &fence : fences) {
-      fences_to_wait.push_back(*fence);
+      for (auto &swapchain_present_info : swapchains) {
+        if (swapchain_present_info.swapchain == present_info.pSwapchains[i]) {
+          swapchain_present_info.copy_context.CopyMemoryToImage(present_info.pImageIndices[i], data);
+          fences_to_wait.push_back(*swapchain_present_info.copy_context.GetFenceToSignal());
+        }
+      }
     }
 
     dispatch_table.WaitForFences(local_device, fences_to_wait.size(), fences_to_wait.data(), VK_TRUE, UINT64_MAX);

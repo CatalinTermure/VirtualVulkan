@@ -290,8 +290,6 @@ VkResult H264FrameStream::PresentFrame(VkQueue queue, const VkPresentInfoKHR &or
       }
       spdlog::info("Decoded frame size: {} bytes", size);
       av_frame_free(&frame);
-
-      DeviceInfo &device_info = GetDeviceInfo(local_device_);
     }
   }
 

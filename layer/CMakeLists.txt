@@ -17,6 +17,7 @@ add_library(
     presentation/frame_stream.h presentation/frame_stream.cpp
     presentation/uncompressed_frame_stream.h presentation/uncompressed_frame_stream.cpp
     presentation/h264_frame_stream.h presentation/h264_frame_stream.cpp
+    presentation/memory_to_image_copy.h presentation/memory_to_image_copy.cpp
 )
 target_include_directories(VirtualVulkanLayer PRIVATE ../)
 target_include_directories(VirtualVulkanLayer PRIVATE ../Vulkan-Utility-Libraries/include)
