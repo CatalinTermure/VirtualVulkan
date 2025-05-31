@@ -1,7 +1,12 @@
 #ifndef VVK_LAYER_PRESENTATION_H264_FRAME_STREAM_H
 #define VVK_LAYER_PRESENTATION_H264_FRAME_STREAM_H
 
+// clang-format off
+#include "layer/wsi_support.h"
+// clang-format on
+
 #include "frame_stream.h"
+#include "memory_to_image_copy.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -43,6 +48,7 @@ class H264FrameStream final : public FrameStream {
     VkExtent2D image_extent;
     std::string decode_buffer;
     std::optional<DecodeInfo> decode_info;
+    MemoryToImageCopyContext copy_context;
   };
 
  private:

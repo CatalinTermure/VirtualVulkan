@@ -170,6 +170,8 @@ class H264Encoder : public Encoder {
     }
   }
 
+  VkExtent2D GetPaddedSize() const { return padded_image_extent_; }
+
   void WriteEncodeCommands(VkCommandBuffer command_buffer, VkImage image) override {
     uint32_t encodable_image_index = std::numeric_limits<uint32_t>::max();
     std::vector<vk::ImageMemoryBarrier2> image_barriers;
@@ -911,10 +913,7 @@ class H264Encoder : public Encoder {
         .separate_colour_plane_flag = 0u,
         .gaps_in_frame_num_value_allowed_flag = 0u,
         .qpprime_y_zero_transform_bypass_flag = 0u,
-        .frame_cropping_flag = (padded_image_extent_.width == real_image_extent_.width &&
-                                padded_image_extent_.height == real_image_extent_.height)
-                                   ? 0u
-                                   : 1u,
+        .frame_cropping_flag = 0u,
         .seq_scaling_matrix_present_flag = 0u,
         .vui_parameters_present_flag = 1u,
     };
@@ -937,9 +936,9 @@ class H264Encoder : public Encoder {
         .pic_width_in_mbs_minus1 = padded_image_extent_.width / kPictureGranularity - 1u,
         .pic_height_in_map_units_minus1 = padded_image_extent_.height / kPictureGranularity - 1u,
         .frame_crop_left_offset = 0u,
-        .frame_crop_right_offset = (padded_image_extent_.width - real_image_extent_.width) / 2,
+        .frame_crop_right_offset = 0u,
         .frame_crop_top_offset = 0u,
-        .frame_crop_bottom_offset = (padded_image_extent_.height - real_image_extent_.height) / 2,
+        .frame_crop_bottom_offset = 0u,
         .reserved2 = 0u,
         .pOffsetForRefFrame = 0u,
         .pScalingLists = 0u,

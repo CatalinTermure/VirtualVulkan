@@ -29,7 +29,7 @@ MemoryToImageCopyContext::MemoryToImageCopyContext(VkDevice device, std::span<Vk
   VkBufferCreateInfo buffer_create_info = {.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
                                            .pNext = nullptr,
                                            .flags = 0,
-                                           .size = image_extent.width * image_extent.height * 4,
+                                           .size = buffer_layout.row_length * buffer_layout.image_height * 4,
                                            .usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                                            .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
                                            .queueFamilyIndexCount = 1,

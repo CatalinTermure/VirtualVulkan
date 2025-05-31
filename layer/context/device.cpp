@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "3rdparty/ctpl_stl.h"
+#include "spdlog/spdlog.h"
 
 namespace vvk {
 
@@ -90,6 +91,7 @@ DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhys
     // The Vulkan Validation Layers expect the loader data to be set, so we need to set it manually.
     *reinterpret_cast<VK_LOADER_DATA*>(present_queue) = *reinterpret_cast<VK_LOADER_DATA*>(device);
     present_queue_ = present_queue;
+    spdlog::info("DeviceInfo: Present queue set to {}", (void*)present_queue);
     present_queue_family_index_ = present_queue_family_index;
     frame_stream_ = FrameStream::Create(
         GetInstanceForPhysicalDevice(physical_device), device, instance_info_.GetRemoteHandle(physical_device),

@@ -37,6 +37,7 @@ message UncompressedStreamInfo {
 
 message H264StreamInfo {
   bytes header = 1;
+  VkExtent2D remote_images_size = 2;
 }
 
 message VvkSetupPresentationRequest {

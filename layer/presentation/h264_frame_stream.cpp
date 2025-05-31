@@ -6,6 +6,7 @@
 #include "layer/context/device.h"
 #include "layer/context/instance.h"
 #include "layer/context/swapchain.h"
+#include "layer/sempahore_handle.h"
 #include "spdlog/spdlog.h"
 
 extern "C" {
@@ -89,6 +90,10 @@ void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExten
   }
 
   std::string encoded_header = response.setuppresentation().h264_stream_info().header();
+  VkExtent2D remote_images_size = {
+      .width = response.setuppresentation().h264_stream_info().remote_images_size().width(),
+      .height = response.setuppresentation().h264_stream_info().remote_images_size().height(),
+  };
   spdlog::info("Received H264 stream header of size {} bytes", encoded_header.size());
   spdlog::info("H264 stream header: {}", encoded_header);
   std::vector<uint64_t> remote_frame_keys;
@@ -96,12 +101,17 @@ void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExten
   for (int i = 0; i < response.setuppresentation().frame_keys_size(); i++) {
     remote_frame_keys.push_back(response.setuppresentation().frame_keys(i));
   }
-  swapchains_.push_back(SwapchainPresentationInfo{.swapchain = swapchain,
-                                                  .remote_session_key = response.setuppresentation().session_key(),
-                                                  .remote_frame_keys = remote_frame_keys,
-                                                  .image_extent = swapchain_image_extent,
-                                                  .decode_buffer = std::move(encoded_header),
-                                                  .decode_info = std::nullopt});
+  swapchains_.push_back(SwapchainPresentationInfo{
+      .swapchain = swapchain,
+      .remote_session_key = response.setuppresentation().session_key(),
+      .remote_frame_keys = remote_frame_keys,
+      .image_extent = swapchain_image_extent,
+      .decode_buffer = std::move(encoded_header),
+      .decode_info = std::nullopt,
+      .copy_context = MemoryToImageCopyContext(
+          local_device_, swapchain_info.GetLocalSwapchainImages(), swapchain_image_extent,
+          BufferLayout{.offset = 0, .row_length = remote_images_size.width, .image_height = remote_images_size.height},
+          false, true)});
 }
 
 void H264FrameStream::RemoveSwapchain(VkSwapchainKHR swapchain) {
@@ -133,6 +143,24 @@ void H264FrameStream::SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t
 // Called when a frame should be presented.
 VkResult H264FrameStream::PresentFrame(VkQueue queue, const VkPresentInfoKHR &original_present_info) {
   InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
+
+  std::vector<VkSemaphore> remote_wait_semaphores;
+  std::vector<VkSemaphore> local_wait_semaphores;
+  local_wait_semaphores.reserve(original_present_info.waitSemaphoreCount + original_present_info.swapchainCount);
+
+  for (uint32_t i = 0; i < original_present_info.waitSemaphoreCount; i++) {
+    VkSemaphore semaphore = original_present_info.pWaitSemaphores[i];
+    if (semaphore->state == SemaphoreState::kToBeSignaledRemote) {
+      remote_wait_semaphores.push_back(semaphore);
+      semaphore->state = SemaphoreState::kUnsignaled;
+    } else if (semaphore->state == SemaphoreState::kToBeSignaledLocal) {
+      local_wait_semaphores.push_back(semaphore->local_handle);
+      semaphore->state = SemaphoreState::kUnsignaled;
+    } else {
+      throw std::runtime_error(
+          std::format("Invalid semaphore state in QueuePresentKHR for semaphore: {}", (void *)semaphore));
+    }
+  }
 
   for (int i = 0; i < original_present_info.swapchainCount; i++) {
     auto swapchain_present_info =
@@ -290,7 +318,44 @@ VkResult H264FrameStream::PresentFrame(VkQueue queue, const VkPresentInfoKHR &or
       }
       spdlog::info("Decoded frame size: {} bytes", size);
       av_frame_free(&frame);
+
+      swapchain_present_info->copy_context.CopyMemoryToImage(
+          original_present_info.pImageIndices[i], std::string_view(reinterpret_cast<const char *>(buffer), size));
+      local_wait_semaphores.push_back(*swapchain_present_info->copy_context.GetSemaphoreToSignal());
     }
+  }
+
+  DeviceInfo &device_info = GetDeviceInfo(local_device_);
+
+  for (auto &remote_semaphore : remote_wait_semaphores) {
+    remote_semaphore->remote_to_local_semaphore.acquire();
+    // Unsignal the semaphore on the remote side
+    {
+      VkPipelineStageFlags wait_dst_stage_mask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+      VkSubmitInfo submit = {
+          .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+          .pNext = nullptr,
+          .waitSemaphoreCount = 1,
+          .pWaitSemaphores = &remote_semaphore->remote_handle,
+          .pWaitDstStageMask = &wait_dst_stage_mask,
+          .commandBufferCount = 0,
+          .pCommandBuffers = nullptr,
+          .signalSemaphoreCount = 0,
+          .pSignalSemaphores = nullptr,
+      };
+      PackAndCallVkQueueSubmit(instance_info.command_stream(), device_info.GetRemoteHandle(queue), 1, &submit, nullptr);
+    }
+  }
+
+  VkPresentInfoKHR present_info = original_present_info;
+  present_info.waitSemaphoreCount = local_wait_semaphores.size();
+  present_info.pWaitSemaphores = local_wait_semaphores.data();
+
+  device_info.dispatch_table().QueuePresentKHR(*device_info.present_queue(), &present_info);
+  for (uint32_t i = 0; i < original_present_info.swapchainCount; i++) {
+    GetSwapchainInfo(original_present_info.pSwapchains[i]).SetImageReleased();
+    spdlog::info("Released image {} for swapchain {}", original_present_info.pImageIndices[i],
+                 (void *)original_present_info.pSwapchains[i]);
   }
 
   return VK_SUCCESS;

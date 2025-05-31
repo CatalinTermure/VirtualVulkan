@@ -95,6 +95,9 @@ void SetupPresentationH264Stream(vvk::ExecutionContext& context, const vvk::serv
       reinterpret_cast<VkSemaphore>(params.h264_stream_create_info().encode_wait_semaphore()));
   auto& h264_stream_info = *response->mutable_setuppresentation()->mutable_h264_stream_info();
   h264_stream_info.set_header(encoder->GetEncodedHeader());
+  VkExtent2D remote_images_size = encoder->GetPaddedSize();
+  h264_stream_info.mutable_remote_images_size()->set_width(remote_images_size.width);
+  h264_stream_info.mutable_remote_images_size()->set_height(remote_images_size.height);
 
   context.set_encoder(std::move(encoder));
   auto* setup_presentation_response = response->mutable_setuppresentation();
