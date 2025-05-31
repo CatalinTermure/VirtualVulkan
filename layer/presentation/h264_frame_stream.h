@@ -39,6 +39,9 @@ class H264FrameStream final : public FrameStream {
     AVPixelFormat hw_format;
     AVStream *video = nullptr;
     AVBufferRef *hw_device_ctx = nullptr;
+    AVFrame *frame = nullptr;
+    AVFrame *sw_frame = nullptr;
+    uint8_t *buffer = nullptr;
   };
 
   struct SwapchainPresentationInfo {

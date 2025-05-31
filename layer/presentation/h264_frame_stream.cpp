@@ -260,6 +260,9 @@ VkResult H264FrameStream::PresentFrame(VkQueue queue, const VkPresentInfoKHR &or
       decode_info.hw_format = hw_format;
       decode_info.video = video;
       decode_info.hw_device_ctx = hw_device_ctx;
+      decode_info.frame = av_frame_alloc();
+      decode_info.sw_frame = av_frame_alloc();
+      decode_info.buffer = static_cast<uint8_t *>(av_malloc(4096 * 4096 * 4));
     }
     DecodeInfo &decode_info = swapchain_present_info->decode_info.value();
     AVPacket packet;
@@ -271,15 +274,11 @@ VkResult H264FrameStream::PresentFrame(VkQueue queue, const VkPresentInfoKHR &or
         throw std::runtime_error("Failed to read frame from AVFormatContext");
       }
     }
-    AVFrame *frame = av_frame_alloc();
-    if (!frame) {
-      throw std::runtime_error("Failed to allocate AVFrame");
-    }
     ret = avcodec_send_packet(decode_info.decoder_context, &packet);
     if (ret < 0) {
       throw std::runtime_error("Failed to send packet to decoder");
     }
-    ret = avcodec_receive_frame(decode_info.decoder_context, frame);
+    ret = avcodec_receive_frame(decode_info.decoder_context, decode_info.frame);
     if (ret < 0) {
       if (ret == AVERROR(EAGAIN)) {
         spdlog::info("Decoder needs more input data");
@@ -290,37 +289,31 @@ VkResult H264FrameStream::PresentFrame(VkQueue queue, const VkPresentInfoKHR &or
       }
     } else {
       spdlog::info("Decoded frame successfully");
-      AVFrame *sw_frame = av_frame_alloc();
-      if (!sw_frame) {
-        throw std::runtime_error("Failed to allocate AVFrame for hw to sw transfer");
-      }
-      sw_frame->format = AV_PIX_FMT_BGRA;
-      ret = av_hwframe_transfer_data(sw_frame, frame, 0);
+      decode_info.sw_frame->format = AV_PIX_FMT_BGRA;
+      ret = av_hwframe_transfer_data(decode_info.sw_frame, decode_info.frame, 0);
       if (ret < 0) {
         throw std::runtime_error("Failed to transfer frame from hardware to software");
       }
-      int size =
-          av_image_get_buffer_size(static_cast<AVPixelFormat>(sw_frame->format), sw_frame->width, sw_frame->height, 1);
+      int size = av_image_get_buffer_size(static_cast<AVPixelFormat>(decode_info.sw_frame->format),
+                                          decode_info.sw_frame->width, decode_info.sw_frame->height, 1);
       if (size < 0) {
         char buf[4096];
         av_strerror(size, buf, 4096);
         throw std::runtime_error(std::format("Failed to get buffer size for decoded frame {}", (char *)buf));
       }
-      uint8_t *buffer = static_cast<uint8_t *>(av_malloc(size));
-      if (!buffer) {
-        throw std::runtime_error("Failed to allocate buffer for decoded frame");
-      }
-      ret = av_image_copy_to_buffer(buffer, size, static_cast<const uint8_t *const *>(sw_frame->data),
-                                    static_cast<const int *>(sw_frame->linesize),
-                                    static_cast<AVPixelFormat>(sw_frame->format), sw_frame->width, sw_frame->height, 1);
+      ret = av_image_copy_to_buffer(decode_info.buffer, size,
+                                    static_cast<const uint8_t *const *>(decode_info.sw_frame->data),
+                                    static_cast<const int *>(decode_info.sw_frame->linesize),
+                                    static_cast<AVPixelFormat>(decode_info.sw_frame->format),
+                                    decode_info.sw_frame->width, decode_info.sw_frame->height, 1);
       if (ret < 0) {
         throw std::runtime_error("Failed to copy image data to buffer");
       }
       spdlog::info("Decoded frame size: {} bytes", size);
-      av_frame_free(&frame);
 
       swapchain_present_info->copy_context.CopyMemoryToImage(
-          original_present_info.pImageIndices[i], std::string_view(reinterpret_cast<const char *>(buffer), size));
+          original_present_info.pImageIndices[i],
+          std::string_view(reinterpret_cast<const char *>(decode_info.buffer), size));
       local_wait_semaphores.push_back(*swapchain_present_info->copy_context.GetSemaphoreToSignal());
     }
   }
