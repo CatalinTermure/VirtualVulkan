@@ -11,6 +11,7 @@
 
 #include "server/encoder.h"
 #include "server/execution_context.h"
+#include "spdlog/spdlog.h"
 
 namespace vvk {
 
@@ -343,7 +344,20 @@ class H264Encoder : public Encoder {
                                                             release_yuv_image_barrier,
                                                         });
     }
+  }
 
+  std::string GetEncodedData(VkImage image) override {
+    std::vector<vk::ImageMemoryBarrier2> image_barriers;
+    uint32_t encodable_image_index = std::numeric_limits<uint32_t>::max();
+    for (uint32_t i = 0; i < encodable_images_.size(); i++) {
+      if (encodable_images_[i] == image) {
+        encodable_image_index = i;
+        break;
+      }
+    }
+    if (encodable_image_index == std::numeric_limits<uint32_t>::max()) {
+      throw std::runtime_error("Image not found in encodable images");
+    }
     dev_dispatch_.ResetCommandPool(device_, command_pool_, 0);
 
     dev_dispatch_.BeginCommandBuffer(video_command_buffer_, vk::CommandBufferBeginInfo{
@@ -590,12 +604,11 @@ class H264Encoder : public Encoder {
     VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
     submit_info.pWaitDstStageMask = &wait_stage;
     VkResult result = dev_dispatch_.QueueSubmit(video_queue_, 1, &submit_info, encode_finished_fence_);
+    spdlog::info("Will submit video encoding command buffer with fence: {}", (void*)encode_finished_fence_);
     if (result != VK_SUCCESS) {
       throw std::runtime_error("Failed to submit video encoding command buffer");
     }
-  }
-
-  std::string GetEncodedData(VkImage image) override {
+    spdlog::info("Waiting for video encoding to finish for fence: {}", (void*)encode_finished_fence_);
     dev_dispatch_.WaitForFences(device_, 1, &encode_finished_fence_, VK_TRUE, UINT64_MAX);
     dev_dispatch_.ResetFences(device_, 1, &encode_finished_fence_);
 
@@ -605,9 +618,9 @@ class H264Encoder : public Encoder {
       VkQueryResultStatusKHR status;
     };
     EncodeQueryResult query_result = {};
-    VkResult result = dev_dispatch_.GetQueryPoolResults(device_, query_pool_, 0, 1, sizeof(EncodeQueryResult),
-                                                        &query_result, sizeof(EncodeQueryResult),
-                                                        VK_QUERY_RESULT_WITH_STATUS_BIT_KHR | VK_QUERY_RESULT_WAIT_BIT);
+    result = dev_dispatch_.GetQueryPoolResults(device_, query_pool_, 0, 1, sizeof(EncodeQueryResult), &query_result,
+                                               sizeof(EncodeQueryResult),
+                                               VK_QUERY_RESULT_WITH_STATUS_BIT_KHR | VK_QUERY_RESULT_WAIT_BIT);
     if (result != VK_SUCCESS || query_result.status != VK_QUERY_RESULT_STATUS_COMPLETE_KHR) {
       throw std::runtime_error("Failed to get query pool results for H264 encoding");
     }
