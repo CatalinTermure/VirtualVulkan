@@ -604,13 +604,12 @@ class H264Encoder : public Encoder {
     VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
     submit_info.pWaitDstStageMask = &wait_stage;
     VkResult result = dev_dispatch_.QueueSubmit(video_queue_, 1, &submit_info, encode_finished_fence_);
-    spdlog::info("Will submit video encoding command buffer with fence: {}", (void*)encode_finished_fence_);
     if (result != VK_SUCCESS) {
       throw std::runtime_error("Failed to submit video encoding command buffer");
     }
-    spdlog::info("Waiting for video encoding to finish for fence: {}", (void*)encode_finished_fence_);
     dev_dispatch_.WaitForFences(device_, 1, &encode_finished_fence_, VK_TRUE, UINT64_MAX);
     dev_dispatch_.ResetFences(device_, 1, &encode_finished_fence_);
+    encoded_frame_count_++;
 
     struct EncodeQueryResult {
       uint32_t bitstreamStartOffset;
