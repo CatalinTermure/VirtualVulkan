@@ -46,6 +46,7 @@ void FillProtoFromStruct(vvk::server::VkFenceCreateInfo* proto, const VkFenceCre
 void FillProtoFromStruct(vvk::server::VkFormatProperties* proto, const VkFormatProperties* original_struct);
 void FillProtoFromStruct(vvk::server::VkFramebufferCreateInfo* proto, const VkFramebufferCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkGraphicsPipelineCreateInfo* proto, const VkGraphicsPipelineCreateInfo* original_struct);
+void FillProtoFromStruct(vvk::server::VkImageCopy* proto, const VkImageCopy* original_struct);
 void FillProtoFromStruct(vvk::server::VkImageCreateInfo* proto, const VkImageCreateInfo* original_struct);
 void FillProtoFromStruct(vvk::server::VkImageMemoryBarrier* proto, const VkImageMemoryBarrier* original_struct);
 void FillProtoFromStruct(vvk::server::VkImageMemoryRequirementsInfo2* proto, const VkImageMemoryRequirementsInfo2* original_struct);
@@ -582,6 +583,13 @@ void FillProtoFromStruct(vvk::server::VkGraphicsPipelineCreateInfo* proto, const
     proto->set_basepipelinehandle(reinterpret_cast<uint64_t>(original_struct->basePipelineHandle));
   }
   proto->set_basepipelineindex(original_struct->basePipelineIndex);
+}
+void FillProtoFromStruct(vvk::server::VkImageCopy* proto, const VkImageCopy* original_struct) {
+  FillProtoFromStruct(proto->mutable_srcsubresource(), &original_struct->srcSubresource);
+  FillProtoFromStruct(proto->mutable_srcoffset(), &original_struct->srcOffset);
+  FillProtoFromStruct(proto->mutable_dstsubresource(), &original_struct->dstSubresource);
+  FillProtoFromStruct(proto->mutable_dstoffset(), &original_struct->dstOffset);
+  FillProtoFromStruct(proto->mutable_extent(), &original_struct->extent);
 }
 void FillProtoFromStruct(vvk::server::VkImageCreateInfo* proto, const VkImageCreateInfo* original_struct) {
   if (original_struct->pNext) {
@@ -4372,6 +4380,24 @@ void PackAndCallVkCmdDrawIndexed(VvkCommandClientBidiStream& stream, VkCommandBu
   request.mutable_vkcmddrawindexed()->set_firstindex(firstIndex);
   request.mutable_vkcmddrawindexed()->set_vertexoffset(vertexOffset);
   request.mutable_vkcmddrawindexed()->set_firstinstance(firstInstance);
+  vvk::server::VvkResponse response;
+
+  if (!stream.Write(request)) {
+    spdlog::error("Failed to write request to server");
+  }
+}
+void PackAndCallVkCmdCopyImage(VvkCommandClientBidiStream& stream, VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout, VkImage dstImage, VkImageLayout dstImageLayout, uint32_t regionCount, const VkImageCopy* pRegions) {
+  vvk::server::VvkRequest request;
+  request.set_method("vkCmdCopyImage");
+  request.mutable_vkcmdcopyimage()->set_commandbuffer(reinterpret_cast<uint64_t>(commandBuffer));
+  request.mutable_vkcmdcopyimage()->set_srcimage(reinterpret_cast<uint64_t>(srcImage));
+  request.mutable_vkcmdcopyimage()->set_srcimagelayout(static_cast<vvk::server::VkImageLayout>(srcImageLayout));
+  request.mutable_vkcmdcopyimage()->set_dstimage(reinterpret_cast<uint64_t>(dstImage));
+  request.mutable_vkcmdcopyimage()->set_dstimagelayout(static_cast<vvk::server::VkImageLayout>(dstImageLayout));
+  request.mutable_vkcmdcopyimage()->set_regioncount(regionCount);
+  for (uint32_t pRegions_indx = 0; pRegions_indx < regionCount; pRegions_indx++) {
+    FillProtoFromStruct(request.mutable_vkcmdcopyimage()->add_pregions(), &pRegions[pRegions_indx]);
+  }
   vvk::server::VvkResponse response;
 
   if (!stream.Write(request)) {

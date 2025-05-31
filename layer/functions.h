@@ -437,6 +437,14 @@ VKAPI_ATTR void VKAPI_CALL CmdDrawIndexed(
     uint32_t                                    firstIndex,
     int32_t                                     vertexOffset,
     uint32_t                                    firstInstance);
+VKAPI_ATTR void VKAPI_CALL CmdCopyImage(
+    VkCommandBuffer                             commandBuffer,
+    VkImage                                     srcImage,
+    VkImageLayout                               srcImageLayout,
+    VkImage                                     dstImage,
+    VkImageLayout                               dstImageLayout,
+    uint32_t                                    regionCount,
+    const VkImageCopy*                          pRegions);
 VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(
     VkDevice                                    device,
     const VkSwapchainCreateInfoKHR*             pCreateInfo,
@@ -571,6 +579,7 @@ inline std::unordered_map<std::string, PFN_vkVoidFunction> g_name_to_func_ptr = 
     {"vkCmdPushConstants", reinterpret_cast<PFN_vkVoidFunction>(CmdPushConstants)},
     {"vkCmdBindIndexBuffer", reinterpret_cast<PFN_vkVoidFunction>(CmdBindIndexBuffer)},
     {"vkCmdDrawIndexed", reinterpret_cast<PFN_vkVoidFunction>(CmdDrawIndexed)},
+    {"vkCmdCopyImage", reinterpret_cast<PFN_vkVoidFunction>(CmdCopyImage)},
     {"vkCreateSwapchainKHR", reinterpret_cast<PFN_vkVoidFunction>(CreateSwapchainKHR)},
     {"vkDestroySwapchainKHR", reinterpret_cast<PFN_vkVoidFunction>(DestroySwapchainKHR)},
     {"vkGetSwapchainImagesKHR", reinterpret_cast<PFN_vkVoidFunction>(GetSwapchainImagesKHR)},

@@ -127,6 +127,7 @@ COMMANDS_TO_GENERATE = [
     "vkCmdPushConstants",
     "vkCmdBindIndexBuffer",
     "vkCmdDrawIndexed",
+    "vkCmdCopyImage",
 ]
 
 TRIVIAL_TYPES: dict[str, TypeInfo] = {

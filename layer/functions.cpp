@@ -1817,4 +1817,12 @@ VKAPI_ATTR void VKAPI_CALL CmdDrawIndexed(VkCommandBuffer commandBuffer, uint32_
   PackAndCallVkCmdDrawIndexed(device_info.instance_info().command_stream(), device_info.GetRemoteHandle(commandBuffer),
                               indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 }
+
+VKAPI_ATTR void VKAPI_CALL CmdCopyImage(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout,
+                                        VkImage dstImage, VkImageLayout dstImageLayout, uint32_t regionCount,
+                                        const VkImageCopy* pRegions) {
+  DeviceInfo& device_info = GetDeviceInfo(commandBuffer);
+  PackAndCallVkCmdCopyImage(device_info.instance_info().command_stream(), device_info.GetRemoteHandle(commandBuffer),
+                            srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions);
+}
 }  // namespace vvk

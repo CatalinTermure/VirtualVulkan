@@ -3901,6 +3901,14 @@ message VkClearValue {
   VkClearDepthStencilValue depthStencil = 2; // VkClearDepthStencilValue depthStencil
 }
 
+message VkImageCopy {
+  VkImageSubresourceLayers srcSubresource = 1; // VkImageSubresourceLayers srcSubresource
+  VkOffset3D srcOffset = 2; // VkOffset3D srcOffset
+  VkImageSubresourceLayers dstSubresource = 3; // VkImageSubresourceLayers dstSubresource
+  VkOffset3D dstOffset = 4; // VkOffset3D dstOffset
+  VkExtent3D extent = 5; // VkExtent3D extent
+}
+
 message VkRenderPassBeginInfo {
   uint64 renderPass = 1; // VkRenderPass renderPass
   uint64 framebuffer = 2; // VkFramebuffer framebuffer
