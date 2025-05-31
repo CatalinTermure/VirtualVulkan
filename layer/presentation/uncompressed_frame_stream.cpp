@@ -53,7 +53,7 @@ void UncompressedFrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const
       .remote_frame_keys = remote_frame_keys,
       .image_extent = swapchain_image_extent,
       .copy_context = MemoryToImageCopyContext(local_device, swapchain_info.GetLocalSwapchainImages(),
-                                               swapchain_image_extent, BufferLayout{}, true, false),
+                                               swapchain_image_extent, BufferLayout{}, false, true),
   });
 }
 
@@ -188,8 +188,6 @@ VkResult UncompressedFrameStream::PresentFrame(VkQueue queue, const VkPresentInf
   }
 
   {
-    std::vector<VkFence> fences_to_wait;
-    fences_to_wait.reserve(present_info.swapchainCount);
     for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
       vvk::server::VvkGetFrameResponse response;
       std::string data;
@@ -201,14 +199,13 @@ VkResult UncompressedFrameStream::PresentFrame(VkQueue queue, const VkPresentInf
       for (auto &swapchain_present_info : swapchains) {
         if (swapchain_present_info.swapchain == present_info.pSwapchains[i]) {
           swapchain_present_info.copy_context.CopyMemoryToImage(present_info.pImageIndices[i], data);
-          fences_to_wait.push_back(*swapchain_present_info.copy_context.GetFenceToSignal());
+          local_semaphores_to_wait.push_back(*swapchain_present_info.copy_context.GetSemaphoreToSignal());
         }
       }
     }
-
-    dispatch_table.WaitForFences(local_device, fences_to_wait.size(), fences_to_wait.data(), VK_TRUE, UINT64_MAX);
-    dispatch_table.ResetFences(local_device, fences_to_wait.size(), fences_to_wait.data());
   }
+  present_info.waitSemaphoreCount = local_semaphores_to_wait.size();
+  present_info.pWaitSemaphores = local_semaphores_to_wait.data();
 
   dispatch_table.QueuePresentKHR(local_queue, &present_info);
   for (uint32_t i = 0; i < present_info.swapchainCount; i++) {
