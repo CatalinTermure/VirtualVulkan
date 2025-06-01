@@ -9,7 +9,7 @@ RUN apt-get update && \
   # dependencies for Vulkan-Loader
   build-essential libx11-xcb-dev libxkbcommon-dev libwayland-dev libxrandr-dev \
   # dependencies for VirtualVulkan
-  protobuf-compiler-grpc libgrpc++-dev libspdlog-dev libvulkan-memory-allocator-dev \
+  protobuf-compiler-grpc libgrpc++-dev libspdlog-dev libvulkan-memory-allocator-dev glslc \
   # misc
   vulkan-tools mesa-utils vulkan-validationlayers
 
@@ -39,6 +39,7 @@ COPY server /src/server
 COPY proto /src/proto
 COPY commons /src/commons
 WORKDIR /src
+RUN mkdir shaders
 RUN cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build build/
 
