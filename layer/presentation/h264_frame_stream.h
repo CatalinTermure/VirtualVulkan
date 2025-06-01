@@ -13,6 +13,8 @@ extern "C" {
 #include <libavformat/avformat.h>
 }
 
+#include <list>
+
 namespace vvk {
 
 class H264FrameStream final : public FrameStream {
