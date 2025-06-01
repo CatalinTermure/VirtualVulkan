@@ -8,6 +8,7 @@ struct MappedMemoryInfo {
   void* local_memory = nullptr;
   void* remote_memory = nullptr;
   std::size_t map_size = 0;
+  std::size_t hash = 0;
 };
 }  // namespace vvk
 

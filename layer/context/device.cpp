@@ -105,12 +105,28 @@ void DeviceInfo::AddMappedMemory(void* local_address, void* remote_address, VkDe
   if (it != mapped_memory_infos_.end()) {
     throw std::runtime_error("Mapped memory already exists");
   }
-  mapped_memory_infos_[memory_handle] = {local_address, remote_address, map_size};
+  mapped_memory_infos_[memory_handle] = MappedMemoryInfo{
+      .local_memory = local_address,
+      .remote_memory = remote_address,
+      .map_size = map_size,
+      .hash = 0,
+  };
 }
 
 void DeviceInfo::UploadMappedMemory(VkDeviceMemory memory) {
+  // Compute memory hash
+  MappedMemoryInfo& mapped_memory_info = mapped_memory_infos_.at(memory);
+  std::size_t hash = std::hash<std::string_view>()(
+      std::string_view(reinterpret_cast<const char*>(mapped_memory_info.local_memory), mapped_memory_info.map_size));
+  if (mapped_memory_info.hash != 0 && mapped_memory_info.hash == hash) {
+    spdlog::info("DeviceInfo: Mapped memory already uploaded, skipping upload for memory {}", (void*)memory);
+    return;
+  }
+  mapped_memory_info.hash = hash;
+
   constexpr size_t kChunkSize = 3 * 1024 * 1024;  // 3 MB
   std::vector<std::future<void>> futures;
+
   for (size_t offset = 0; offset < mapped_memory_infos_.at(memory).map_size; offset += kChunkSize) {
     futures.push_back(g_thread_pool.push([offset, this, memory, kChunkSize](int unused) {
       size_t chunk_size = std::min(kChunkSize, mapped_memory_infos_.at(memory).map_size - offset);
