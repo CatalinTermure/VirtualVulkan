@@ -18,6 +18,7 @@ std::mutex pool_to_command_buffers_lock;
 std::map<VkCommandPool, std::vector<VkCommandBuffer>> g_pool_to_command_buffers;
 
 constexpr size_t kFencePoolSize = 16;
+constexpr size_t kChunkSize = 128 * 1024;
 
 ctpl::thread_pool g_thread_pool(32);
 }  // namespace
@@ -109,30 +110,26 @@ void DeviceInfo::AddMappedMemory(void* local_address, void* remote_address, VkDe
       .local_memory = local_address,
       .remote_memory = remote_address,
       .map_size = map_size,
-      .hash = 0,
+      .hashes = std::vector<std::size_t>((map_size + kChunkSize - 1) / kChunkSize, 0),
   };
 }
 
 void DeviceInfo::UploadMappedMemory(VkDeviceMemory memory) {
-  // Compute memory hash
-  MappedMemoryInfo& mapped_memory_info = mapped_memory_infos_.at(memory);
-  std::size_t hash = std::hash<std::string_view>()(
-      std::string_view(reinterpret_cast<const char*>(mapped_memory_info.local_memory), mapped_memory_info.map_size));
-  if (mapped_memory_info.hash != 0 && mapped_memory_info.hash == hash) {
-    spdlog::info("DeviceInfo: Mapped memory already uploaded, skipping upload for memory {}", (void*)memory);
-    return;
-  }
-  mapped_memory_info.hash = hash;
-
-  constexpr size_t kChunkSize = 3 * 1024 * 1024;  // 3 MB
   std::vector<std::future<void>> futures;
 
   for (size_t offset = 0; offset < mapped_memory_infos_.at(memory).map_size; offset += kChunkSize) {
-    futures.push_back(g_thread_pool.push([offset, this, memory, kChunkSize](int unused) {
-      size_t chunk_size = std::min(kChunkSize, mapped_memory_infos_.at(memory).map_size - offset);
+    MappedMemoryInfo& mapped_memory_info = mapped_memory_infos_.at(memory);
+    size_t chunk_size = std::min(kChunkSize, mapped_memory_info.map_size - offset);
+    std::size_t hash = std::hash<std::string_view>()(
+        std::string_view(reinterpret_cast<const char*>(mapped_memory_info.local_memory) + offset, chunk_size));
+    if (mapped_memory_info.hashes[offset / kChunkSize] == hash) {
+      spdlog::debug("Skipping upload for memory {} at offset {}: data unchanged", (void*)memory, offset);
+      continue;
+    }
+    mapped_memory_info.hashes[offset / kChunkSize] = hash;
+    futures.push_back(g_thread_pool.push([offset, this, &mapped_memory_info, chunk_size](int unused) {
       grpc::ClientContext context;
       vvk::server::VvkWriteMappedMemoryRequest request;
-      MappedMemoryInfo& mapped_memory_info = mapped_memory_infos_.at(memory);
       request.set_address(reinterpret_cast<uint64_t>(mapped_memory_info.remote_memory) + offset);
       request.set_data(reinterpret_cast<const char*>(mapped_memory_info.local_memory) + offset, chunk_size);
       google::protobuf::Empty empty;
