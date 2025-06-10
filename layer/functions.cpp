@@ -887,32 +887,8 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphor
     device_info.dispatch_table().DestroySemaphore(device, (*pSemaphore)->local_handle, pAllocator);
     return result;
   }
-  VkSemaphore remote_timeline_semaphore = VK_NULL_HANDLE;
-  {
-    VkSemaphoreTypeCreateInfo timeline_semaphore_type_create_info = {
-        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
-        .pNext = nullptr,
-        .semaphoreType = VK_SEMAPHORE_TYPE_TIMELINE,
-        .initialValue = 0,
-    };
-    VkSemaphoreCreateInfo timeline_semaphore_create_info = {
-        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
-        .pNext = &timeline_semaphore_type_create_info,
-        .flags = 0,
-    };
 
-    result = PackAndCallVkCreateSemaphore(device_info.instance_info().command_stream(),
-                                          device_info.instance_info().GetRemoteHandle(device),
-                                          &timeline_semaphore_create_info, pAllocator, &remote_timeline_semaphore);
-    if (result != VK_SUCCESS) {
-      device_info.dispatch_table().DestroySemaphore(device, (*pSemaphore)->local_handle, pAllocator);
-      PackAndCallVkDestroySemaphore(instance_info.command_stream(), instance_info.GetRemoteHandle(device),
-                                    remote_semaphore, pAllocator);
-      return result;
-    }
-  }
   (*pSemaphore)->remote_handle = remote_semaphore;
-  (*pSemaphore)->remote_timeline_semaphore = remote_timeline_semaphore;
   (*pSemaphore)->state = SemaphoreState::kUnsignaled;
   spdlog::info("Created semaphore: {}, remote handle: {}", (void*)(*pSemaphore), (void*)remote_semaphore);
   return result;
@@ -925,8 +901,6 @@ VKAPI_ATTR void VKAPI_CALL DestroySemaphore(VkDevice device, VkSemaphore semapho
   device_info.dispatch_table().DestroySemaphore(device, semaphore->local_handle, pAllocator);
   PackAndCallVkDestroySemaphore(instance_info.command_stream(), instance_info.GetRemoteHandle(device),
                                 semaphore->remote_handle, pAllocator);
-  PackAndCallVkDestroySemaphore(instance_info.command_stream(), instance_info.GetRemoteHandle(device),
-                                semaphore->remote_timeline_semaphore, pAllocator);
   delete semaphore;
 }
 

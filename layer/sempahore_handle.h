@@ -14,7 +14,6 @@ enum class SemaphoreState {
 struct VkSemaphore_T {
   VkSemaphore local_handle = VK_NULL_HANDLE;
   VkSemaphore remote_handle = VK_NULL_HANDLE;
-  VkSemaphore remote_timeline_semaphore = VK_NULL_HANDLE;
   std::binary_semaphore remote_to_local_semaphore{0};
   SemaphoreState state = SemaphoreState::kUnsignaled;
 };
