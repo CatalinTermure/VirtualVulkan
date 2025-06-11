@@ -154,48 +154,89 @@ def indent(text: str, spaces: int) -> str:
     return '\n'.join(' ' * spaces + line for line in lines) + '\n'
 
 
-def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
-    pre_fill_declarations = []
-    out = []
-    after = []
-    struct = generator.vk.structs[struct_type]
-    if member.name == "sType":
-        out.append(f'  {name}.sType = {struct.sType};\n')
-    elif member.type == 'char' and member.fixedSizeArray:
-        out.append(
-            f'  strncpy({name}.{member.name}, {proto_accessor}.{member.name.lower()}().c_str(), {member.length});\n')
-    elif "Flags" in member.type or "FlagBits" in member.type:
+class StructMemberHandler:
+    def __init__(self, next_handler: 'StructMemberHandler | None' = None):
+        self.next_handler = next_handler
+
+    def generate(self, generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
+        raise NotImplementedError(
+            "This method should be implemented by subclasses to generate struct members.")
+
+    def can_handle_struct_member(self, generator: VvkGenerator, member: Member) -> bool:
+        raise NotImplementedError(
+            "This method should be implemented by subclasses to indicate if they can handle struct members.")
+
+    def handle_struct_member(self, generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
+        if self.can_handle_struct_member(generator, member):
+            return self.generate(generator, struct_type, name, proto_accessor, member, allow_alloc)
+        if self.next_handler is None:
+            raise ValueError(
+                f"No handler found for struct member: {member.cDeclaration} in struct {struct_type}")
+        return self.next_handler.handle_struct_member(generator, struct_type, name, proto_accessor, member, allow_alloc)
+
+
+class STypeMemberHandler(StructMemberHandler):
+    def can_handle_struct_member(self, generator: VvkGenerator, member: Member) -> bool:
+        return member.name == "sType"
+
+    def generate(self, generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
+        return "", f'  {name}.sType = {generator.vk.structs[struct_type].sType};\n', ""
+
+
+class CharArrayMemberHandler(StructMemberHandler):
+    def can_handle_struct_member(self, generator: VvkGenerator, member: Member) -> bool:
+        return member.type == 'char' and bool(member.fixedSizeArray)
+
+    def generate(self, generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
+        return "", f'  strncpy({name}.{member.name}, {proto_accessor}.{member.name.lower()}().c_str(), {member.length});\n', ""
+
+
+class FlagsMemberHandler(StructMemberHandler):
+    def can_handle_struct_member(self, generator: VvkGenerator, member: Member) -> bool:
+        return "Flags" in member.type or "FlagBits" in member.type
+
+    def generate(self, generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
         if member.length is None:
-            out.append(
-                f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
+            return "", f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n', ""
         else:
             assert (allow_alloc)
             aux_var = f'{name}_{member.name}'
             index_name = f'{member.name}_indx'
-            pre_fill_declarations.append(
-                f'  {member.type}* {aux_var} = new {member.type}[{proto_accessor}.{member.name.lower()}_size()]();\n')
-            pre_fill_declarations.append(
-                f'  {name}.{member.name} = {aux_var};\n')
-            out.append(
-                f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
-            out.append(' {\n')
-            out.append(
-                f'    {aux_var}[{index_name}] = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}({index_name}));\n')
-            out.append('  }\n')
-            after.append(f'  delete[] {name}.{member.name};\n')
-    elif member.type in generator.vk.enums:
+            pre_fill_declarations = "".join([
+                f'  {member.type}* {aux_var} = new {member.type}[{proto_accessor}.{member.name.lower()}_size()]();\n',
+                f'  {name}.{member.name} = {aux_var};\n'
+            ])
+            out = "".join([
+                f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++) {{\n',
+                f'    {aux_var}[{index_name}] = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}({index_name}));\n',
+                f'  }}\n'
+            ])
+            after = f'  delete[] {name}.{member.name};\n'
+            return pre_fill_declarations, out, after
+
+
+class EnumMemberHandler(StructMemberHandler):
+    def can_handle_struct_member(self, generator: VvkGenerator, member: Member) -> bool:
+        return member.type in generator.vk.enums
+
+    def generate(self, generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
         if member.length is None:
-            out.append(
-                f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
+            return "", f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n', ""
         else:
             assert (member.fixedSizeArray or member.pointer)
-            # TODO: this const_cast is not really elegant, but it should be fine
-            out.append(
-                f'  {name}.{member.name} = reinterpret_cast<{member.type}*>(const_cast<vvk::server::{struct_type}&>({proto_accessor}).mutable_{member.name.lower()}()->mutable_data());\n')
-    elif member.type in TRIVIAL_TYPES:
+            out = f'  {name}.{member.name} = reinterpret_cast<{member.type}*>(const_cast<vvk::server::{struct_type}&>({proto_accessor}).mutable_{member.name.lower()}()->mutable_data());\n'
+            return "", out, ""
+
+
+class TrivialTypeMemberHandler(StructMemberHandler):
+    def can_handle_struct_member(self, generator: VvkGenerator, member: Member) -> bool:
+        return member.type in TRIVIAL_TYPES
+
+    def generate(self, generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
         type_info = TRIVIAL_TYPES[member.type]
         if member.fixedSizeArray:
             index_name = f'{member.name}_indx'
+            out = []
             out.append(access_length_member_from_struct(
                 generator, struct_type, name, name, member))
             out.append(
@@ -207,139 +248,219 @@ def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, n
                 out.append(
                     f'    {name}.{member.name}[{index_name}] = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}({index_name}));\n')
             out.append('  }\n')
+            return "", "".join(out), ""
         elif member.length is None:
             if type_info.cast_to is None:
-                out.append(
-                    f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}();\n')
+                return '', f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}();\n', ''
             else:
-                out.append(
-                    f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
+                return '', f'  {name}.{member.name} = static_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n', ''
         else:
             assert (allow_alloc)
             aux_var = f'{name}_{member.name}'
             index_name = f'{member.name}_indx'
             # we use the aux_var because the members have const qualifiers
-            pre_fill_declarations.append(
-                f'  {member.type}* {aux_var} = new {member.type}[{proto_accessor}.{member.name.lower()}_size()]();\n')
-            pre_fill_declarations.append(
-                f'  {name}.{member.name} = {aux_var};\n')
-            out.append(
-                f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
-            out.append(' {\n')
-            out.append(
-                f'    {aux_var}[{index_name}] = {proto_accessor}.{member.name.lower()}({index_name});\n')
-            out.append('  }\n')
-            after.append(f'  delete[] {name}.{member.name};\n')
-    elif member.pointer and member.const and member.type in generator.vk.structs:
-        if member.length is None:
-            assert (allow_alloc)
-            aux_var = f'{name}_{member.name}'
-            _, after_ = fill_struct_from_proto(generator,
-                                               member.type, aux_var, f'{proto_accessor}.{member.name.lower()}()')
-            out.append(f'  {member.type}* {aux_var} = new {member.type};\n')
-            out.append(
-                f'  FillStructFromProto(*{aux_var}, {proto_accessor}.{member.name.lower()}());\n')
-            out.append(f'  {name}.{member.name} = {aux_var};\n')
-            generator.required_functions.add(
-                f'FillStructFromProto/{member.type}')
-            after.append(
-                f'  const {member.type} &{aux_var} = *{name}.{member.name};\n')
-            if after_:
-                after.append(after_)
-            after.append(f'  delete {name}.{member.name};\n')
-        else:
-            assert (allow_alloc)
-            index_name = f'{member.name}_indx'
-            pre_fill_declarations.append(
-                f'  {member.type}* {name}_{member.name} = new {member.type}[{proto_accessor}.{member.name.lower()}_size()]();\n')
-            pre_fill_declarations.append(
-                f'  {name}.{member.name} = {name}_{member.name};\n')
-            out.append(
-                f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
-            out.append(' {\n')
-            out.append(
-                f'    {member.type} &{name}_{member.name}_i = {name}_{member.name}[{index_name}];\n')
-            _, after_ = fill_struct_from_proto(
-                generator, member.type, f'{name}_{member.name}_i', f'{proto_accessor}.{member.name.lower()}({index_name})')
-            out.append(
-                f'    FillStructFromProto({name}_{member.name}_i, {proto_accessor}.{member.name.lower()}({index_name}));\n')
-            generator.required_functions.add(
-                f'FillStructFromProto/{member.type}')
-            out.append('  }\n')
-            if after_:
-                after.append(
-                    f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
-                after.append('  {\n')
-                after.append(
-                    f'    const {member.type} &{name}_{member.name}_i = {name}.{member.name}[{index_name}];\n')
-                after.append(indent(after_, 2))
-                after.append('  }\n')
-            after.append(f'  delete[] {name}.{member.name};\n')
-    elif not member.pointer and member.type in generator.vk.structs:
-        if member.length is None:
-            aux_var = f'{name}_{member.name}'
-            pre_fill_declarations.append(
-                f'  {member.type} &{aux_var} = {name}.{member.name};\n')
-            _, after_ = fill_struct_from_proto(generator, member.type,
-                                               aux_var, f'{proto_accessor}.{member.name.lower()}()')
-            out.append(
-                f'  FillStructFromProto({aux_var}, {proto_accessor}.{member.name.lower()}());\n')
-            generator.required_functions.add(
-                f'FillStructFromProto/{member.type}')
-            if after_:
-                after.append(
-                    f'  const {member.type} &{aux_var} = {name}.{member.name};\n')
-                after.append(after_)
-        else:
-            # if it's not a pointer, it must be a fixed size array
-            assert (member.fixedSizeArray)
-            index_name = f'{member.name}_indx'
-            out.append(
-                f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
-            out.append(' {\n')
-            _, after_ = fill_struct_from_proto(
-                generator, member.type, f'{name}_{member.name}_i', f'{proto_accessor}.{member.name.lower()}({index_name})')
-            out.append(
-                f'    FillStructFromProto({name}.{member.name}[{index_name}], {proto_accessor}.{member.name.lower()}({index_name}));\n')
-            generator.required_functions.add(
-                f'FillStructFromProto/{member.type}')
-            out.append('  }\n')
-            after.append(after_)
-    elif member.pointer and member.type in generator.vk.handles:
-        assert (member.const)
-        out.append(
-            f'  {name}.{member.name} = reinterpret_cast<const {member.type}*>({proto_accessor}.{member.name.lower()}().data());\n')
-    elif not member.pointer and member.type in generator.vk.handles:
-        out.append(
-            f'  {name}.{member.name} = reinterpret_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n')
-    elif 'const char* const*' in member.cDeclaration:
+            pre_fill_declarations = "".join([
+                f'  {member.type}* {aux_var} = new {member.type}[{proto_accessor}.{member.name.lower()}_size()]();\n',
+                f'  {name}.{member.name} = {aux_var};\n'
+            ])
+            out = "".join([
+                f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++) {{\n',
+                f'    {aux_var}[{index_name}] = {proto_accessor}.{member.name.lower()}({index_name});\n',
+                f'  }}\n'
+            ])
+            after = f'  delete[] {name}.{member.name};\n'
+            return pre_fill_declarations, out, after
+
+
+class ConstPointerToStructMemberHandler(StructMemberHandler):
+    def can_handle_struct_member(self, generator: VvkGenerator, member: Member) -> bool:
+        return member.length is None and member.pointer and member.const and member.type in generator.vk.structs
+
+    def generate(self, generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
+        after = []
         assert (allow_alloc)
         aux_var = f'{name}_{member.name}'
-        pre_fill_declarations.append(
-            f'  const char** {aux_var} = new const char*[{proto_accessor}.{member.name.lower()}_size()]();\n')
-        pre_fill_declarations.append(
-            f'  {name}.{member.name} = {aux_var};\n')
+        out = "".join([
+            f'  {member.type}* {aux_var} = new {member.type};\n',
+            f'  FillStructFromProto(*{aux_var}, {proto_accessor}.{member.name.lower()}());\n',
+            f'  {name}.{member.name} = {aux_var};\n'
+        ])
+
+        generator.required_functions.add(f'FillStructFromProto/{member.type}')
+
+        after.append(
+            f'  const {member.type} &{aux_var} = *{name}.{member.name};\n')
+        _, after_ = fill_struct_from_proto(generator,
+                                           member.type, aux_var, f'{proto_accessor}.{member.name.lower()}()')
+        if after_:
+            after.append(after_)
+        after.append(f'  delete {name}.{member.name};\n')
+
+        return '', out, "".join(after)
+
+
+class ConstPointerStructArrayMemberHandler(StructMemberHandler):
+    def can_handle_struct_member(self, generator: VvkGenerator, member: Member) -> bool:
+        return member.length is not None and member.pointer and member.const and member.type in generator.vk.structs
+
+    def generate(self, generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
+        assert (allow_alloc)
         index_name = f'{member.name}_indx'
-        out.append(
-            f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
-        out.append(' {\n')
-        out.append(
-            f'    {aux_var}[{index_name}] = {proto_accessor}.{member.name.lower()}({index_name}).data();\n')
-        out.append('  }\n')
+        pre_fill_declarations = "".join([
+            f'  {member.type}* {name}_{member.name} = new {member.type}[{proto_accessor}.{member.name.lower()}_size()]();\n',
+            f'  {name}.{member.name} = {name}_{member.name};\n'
+        ])
+        out = "".join([
+            f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++) {{\n',
+            f'    {member.type} &{name}_{member.name}_i = {name}_{member.name}[{index_name}];\n',
+            f'    FillStructFromProto({name}_{member.name}_i, {proto_accessor}.{member.name.lower()}({index_name}));\n'
+            f'  }}\n'
+        ])
+        generator.required_functions.add(f'FillStructFromProto/{member.type}')
+
+        after = []
+        _, after_ = fill_struct_from_proto(
+            generator, member.type, f'{name}_{member.name}_i', f'{proto_accessor}.{member.name.lower()}({index_name})')
+        if after_:
+            after.append(
+                f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)')
+            after.append('  {\n')
+            after.append(
+                f'    const {member.type} &{name}_{member.name}_i = {name}.{member.name}[{index_name}];\n')
+            after.append(indent(after_, 2))
+            after.append('  }\n')
         after.append(f'  delete[] {name}.{member.name};\n')
-    elif member.pointer and member.const:
-        out.append(
-            f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}().data();\n')
-    else:
-        out.append(f'  // Unsupported member: {member.cDeclaration}\n')
-        print("UNSUPPORTED MEMBER:", name, member.cDeclaration)
-    return "".join(pre_fill_declarations), "".join(out), "".join(after)
+
+        return "".join(pre_fill_declarations), "".join(out), "".join(after)
+
+
+class NonPointerStructMemberHandler(StructMemberHandler):
+    def can_handle_struct_member(self, generator: VvkGenerator, member: Member) -> bool:
+        return not member.pointer and member.type in generator.vk.structs and member.length is None
+
+    def generate(self, generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
+        aux_var = f'{name}_{member.name}'
+        pre_fill_declarations = f'  {member.type} &{aux_var} = {name}.{member.name};\n'
+
+        out = f'  FillStructFromProto({aux_var}, {proto_accessor}.{member.name.lower()}());\n'
+        generator.required_functions.add(f'FillStructFromProto/{member.type}')
+
+        _, after_ = fill_struct_from_proto(generator, member.type,
+                                           aux_var, f'{proto_accessor}.{member.name.lower()}()')
+        after = ""
+        if after_:
+            after = f'  const {member.type} &{aux_var} = {name}.{member.name};\n{after_}'
+
+        return pre_fill_declarations, out, after
+
+
+class NonPointerStructArrayMemberHandler(StructMemberHandler):
+    def can_handle_struct_member(self, generator: VvkGenerator, member: Member) -> bool:
+        return not member.pointer and member.type in generator.vk.structs and member.length is not None
+
+    def generate(self, generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
+        # If it's not a pointer but has a length, it must be a fixed size array
+        assert (member.fixedSizeArray)
+
+        index_name = f'{member.name}_indx'
+        out = [
+            f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++)',
+            ' {\n',
+            f'    FillStructFromProto({name}.{member.name}[{index_name}], {proto_accessor}.{member.name.lower()}({index_name}));\n',
+            '  }\n'
+        ]
+        generator.required_functions.add(f'FillStructFromProto/{member.type}')
+
+        _, after_ = fill_struct_from_proto(
+            generator, member.type, f'{name}_{member.name}_i', f'{proto_accessor}.{member.name.lower()}({index_name})')
+
+        return "", "".join(out), after_
+
+
+class ConstPointerToHandleMemberHandler(StructMemberHandler):
+    def can_handle_struct_member(self, generator: VvkGenerator, member: Member) -> bool:
+        return member.pointer and member.const and member.type in generator.vk.handles
+
+    def generate(self, generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
+        return "", f'  {name}.{member.name} = reinterpret_cast<const {member.type}*>({proto_accessor}.{member.name.lower()}().data());\n', ""
+
+
+class NonPointerHandleMemberHandler(StructMemberHandler):
+    def can_handle_struct_member(self, generator: VvkGenerator, member: Member) -> bool:
+        return not member.pointer and member.type in generator.vk.handles
+
+    def generate(self, generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
+        return "", f'  {name}.{member.name} = reinterpret_cast<{member.type}>({proto_accessor}.{member.name.lower()}());\n', ""
+
+
+class StringArrayMemberHandler(StructMemberHandler):
+    def can_handle_struct_member(self, generator: VvkGenerator, member: Member) -> bool:
+        return 'const char* const*' in member.cDeclaration
+
+    def generate(self, generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
+        assert (allow_alloc)
+        aux_var = f'{name}_{member.name}'
+        pre_fill_declarations = [
+            f'  const char** {aux_var} = new const char*[{proto_accessor}.{member.name.lower()}_size()]();\n',
+            f'  {name}.{member.name} = {aux_var};\n'
+        ]
+        index_name = f'{member.name}_indx'
+        out = [
+            f'  for (int {index_name} = 0; {index_name} < {proto_accessor}.{member.name.lower()}_size(); {index_name}++) {{\n',
+            f'    {aux_var}[{index_name}] = {proto_accessor}.{member.name.lower()}({index_name}).data();\n',
+            '  }\n'
+        ]
+        after = f'  delete[] {name}.{member.name};\n'
+        return "".join(pre_fill_declarations), "".join(out), after
+
+
+class ConstPointerMemberHandler(StructMemberHandler):
+    def can_handle_struct_member(self, generator: VvkGenerator, member: Member) -> bool:
+        return member.pointer and member.const and not member.type in generator.vk.handles and not member.type in generator.vk.structs
+
+    def generate(self, generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, allow_alloc: bool = True) -> tuple[str, str, str]:
+        return "", f'  {name}.{member.name} = {proto_accessor}.{member.name.lower()}().data();\n', ""
+
+
+MEMBER_HANDLERS: list[type[StructMemberHandler]] = [
+    STypeMemberHandler,
+    CharArrayMemberHandler,
+    FlagsMemberHandler,
+    EnumMemberHandler,
+    TrivialTypeMemberHandler,
+    ConstPointerToStructMemberHandler,
+    ConstPointerStructArrayMemberHandler,
+    NonPointerStructMemberHandler,
+    NonPointerStructArrayMemberHandler,
+    ConstPointerToHandleMemberHandler,
+    NonPointerHandleMemberHandler,
+    StringArrayMemberHandler,
+    ConstPointerMemberHandler
+]
+
+
+def get_struct_member_handler_chain() -> StructMemberHandler:
+    """
+    Returns a chain of handlers for struct members.
+    Each handler can handle a specific subset of types of struct members.
+    If a handler cannot handle a member, it passes it to the next handler in the chain, implementing the Chain of Responsibility pattern.
+    """
+    handlers = [handler() for handler in MEMBER_HANDLERS]
+    for i in range(len(handlers) - 1):
+        handlers[i].next_handler = handlers[i + 1]
+    return handlers[0]
+
+
+def __fill_struct_member_from_proto(generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, member: Member, member_handler: StructMemberHandler, allow_alloc: bool = True) -> tuple[str, str, str]:
+    return member_handler.handle_struct_member(
+        generator, struct_type, name, proto_accessor, member, allow_alloc)
 
 
 def fill_struct_from_proto(generator: VvkGenerator, struct_type: str, name: str, proto_accessor: str, allow_alloc: bool = True, skip_pnext: bool = False) -> tuple[str, str]:
     out = []
     after = []
     struct = generator.vk.structs[struct_type]
+    member_handler_chain = get_struct_member_handler_chain()
     for member in struct.members:
         if member.optional:
             if member.name == "pNext":
@@ -387,7 +508,7 @@ def fill_struct_from_proto(generator: VvkGenerator, struct_type: str, name: str,
                 # TODO: fix memory leak
             else:
                 declarations_, out_, after_ = __fill_struct_member_from_proto(
-                    generator, struct_type, name, proto_accessor, member, allow_alloc)
+                    generator, struct_type, name, proto_accessor, member, member_handler_chain, allow_alloc)
                 out.append(declarations_)
                 if member.length is None:
                     out.append(
@@ -421,7 +542,7 @@ def fill_struct_from_proto(generator: VvkGenerator, struct_type: str, name: str,
                         after.append(after_)
         else:
             out1_, out2_, after_ = __fill_struct_member_from_proto(
-                generator, struct_type, name, proto_accessor, member, allow_alloc)
+                generator, struct_type, name, proto_accessor, member, member_handler_chain, allow_alloc)
             out.append(out1_)
             out.append(out2_)
             after.append(after_)
