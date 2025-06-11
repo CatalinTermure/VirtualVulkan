@@ -33,7 +33,7 @@ EXTENSIONS_TO_ALLOW = {
     "VK_KHR_dedicated_allocation",
 }
 
-COMMANDS_TO_GENERATE = [
+COMMANDS_TO_GENERATE = sorted([
     "vkCreateInstance",
     "vkDestroyInstance",
     "vkEnumeratePhysicalDevices",
@@ -128,7 +128,7 @@ COMMANDS_TO_GENERATE = [
     "vkCmdBindIndexBuffer",
     "vkCmdDrawIndexed",
     "vkCmdCopyImage",
-]
+])
 
 TRIVIAL_TYPES: dict[str, TypeInfo] = {
     "uint32_t": TypeInfo(cast_to=None),
