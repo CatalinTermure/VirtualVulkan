@@ -34,6 +34,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateFence(VkDevice device, const VkFenceCreateI
     device_info.dispatch_table().DestroyFence(device, *pFence, pAllocator);
     return result;
   }
+  device_info.RegisterFence(*pFence);
   device_info.SetRemoteHandle(*pFence, remote_fence);
   return result;
 }
@@ -45,6 +46,7 @@ VKAPI_ATTR void VKAPI_CALL DestroyFence(VkDevice device, VkFence fence, const Vk
                             device_info.instance_info().GetRemoteHandle(device), device_info.GetRemoteHandle(fence),
                             pAllocator);
   device_info.RemoveRemoteHandle(fence);
+  device_info.UnregisterFence(fence);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL WaitForFences(VkDevice device, uint32_t fenceCount, const VkFence* pFences,
@@ -55,6 +57,7 @@ VKAPI_ATTR VkResult VKAPI_CALL WaitForFences(VkDevice device, uint32_t fenceCoun
   DeviceInfo& device_info = GetDeviceInfo(device);
 
   std::vector<VkFence> local_fences;
+  std::vector<std::unique_lock<std::mutex>> local_fence_locks;
   local_fences.reserve(fenceCount);
   std::vector<VkFence> remote_fences;
   remote_fences.reserve(fenceCount);
@@ -62,6 +65,7 @@ VKAPI_ATTR VkResult VKAPI_CALL WaitForFences(VkDevice device, uint32_t fenceCoun
   for (uint32_t i = 0; i < fenceCount; i++) {
     if (device_info.IsLocalFence(pFences[i])) {
       local_fences.push_back(pFences[i]);
+      local_fence_locks.emplace_back(device_info.GetFenceLock(pFences[i]));
     } else {
       remote_fences.push_back(device_info.GetRemoteHandle(pFences[i]));
     }

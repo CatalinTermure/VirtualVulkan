@@ -49,6 +49,11 @@ struct DeviceInfo {
 
   void RemoveRemoteHandle(void* local_handle) { local_to_remote_handle_.erase(local_handle); }
 
+  void RegisterFence(VkFence fence) { local_fence_mutexes_[fence]; }
+  std::unique_lock<std::mutex> GetFenceLock(VkFence fence) {
+    return std::unique_lock<std::mutex>(local_fence_mutexes_.at(fence));
+  }
+  void UnregisterFence(VkFence fence) { local_fence_mutexes_.erase(fence); }
   bool IsLocalFence(VkFence fence) const {
     return local_synchronization_primitives_.find(reinterpret_cast<void*>(fence)) !=
            local_synchronization_primitives_.end();
@@ -97,6 +102,7 @@ struct DeviceInfo {
   FencePool fence_pool_;
   std::unordered_map<VkDeviceMemory, MappedMemoryInfo> mapped_memory_infos_;
   std::unordered_map<VkDeviceMemory, std::size_t> memory_sizes_;
+  std::unordered_map<VkFence, std::mutex> local_fence_mutexes_;
 };
 
 DeviceInfo& GetDeviceInfo(VkDevice device);

@@ -37,6 +37,8 @@ DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhys
   }
   vkuInitDeviceDispatchTable(device, &dispatch_table_, nxt_gdpa);
 
+  fence_pool_.ForAllFences([this](VkFence& fence) { RegisterFence(fence); });
+
   VmaVulkanFunctions vma_vulkan_funcs = {
       .vkGetInstanceProcAddr = nullptr,
       .vkGetDeviceProcAddr = nullptr,
