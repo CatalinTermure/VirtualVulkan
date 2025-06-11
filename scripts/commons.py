@@ -357,7 +357,7 @@ def fill_struct_from_proto(generator: VvkGenerator, struct_type: str, name: str,
                         f'  {name}.{member.name} = nullptr;  // Empty pNext chain\n')
                     continue
 
-                after_: list[str] = []
+                after_list_: list[str] = []
                 out.append(
                     f'  VkBaseOutStructure* base = reinterpret_cast<VkBaseOutStructure*>(&{name});\n')
                 out.append(
@@ -371,7 +371,7 @@ def fill_struct_from_proto(generator: VvkGenerator, struct_type: str, name: str,
 
                     _, deletions = fill_struct_from_proto(
                         generator, extended_by, f'base->pNext', f'pnext.{extended_by.lower()}_chain_elem()', allow_alloc)
-                    after_.append(deletions)
+                    after_list_.append(deletions)
 
                     out.append(
                         f'      FillStructFromProtoNoPNext(*reinterpret_cast<{extended_by}*>(base->pNext), pnext.{extended_by.lower()}_chain_elem());\n')
@@ -441,6 +441,9 @@ def access_length_member_from_struct(generator: VvkGenerator, struct_type: str, 
         str: A string representing code necessary to access the length of a struct member.
     """
     struct = generator.vk.structs[struct_type] if struct_type in generator.vk.structs else None
+    if member.length is None:
+        raise ValueError(
+            f"Member {member.name} of struct {struct_type} does not have a length defined.")
     length = member.length
     for word in re.findall(r'\w+', member.length):
         if struct is not None and word in [m.name for m in struct.members]:

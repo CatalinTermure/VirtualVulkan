@@ -61,13 +61,16 @@ def get_proto_type(generator: VvkGenerator, param: Param | Member | RetVal) -> s
         if param.type == 'char':
             return "bytes"
         non_pointer_param = copy.deepcopy(param)
-        non_pointer_param.fixedSizeArray = None
+        non_pointer_param.fixedSizeArray = []
         return f'repeated {get_proto_type(generator, non_pointer_param)}'
     if param_type in C_TYPE_TO_PROTO_TYPE:
         return C_TYPE_TO_PROTO_TYPE[param_type]
     if param.pointer:
         non_pointer_param = copy.deepcopy(param)
         non_pointer_param.pointer = False
+        if isinstance(param, RetVal):
+            raise ValueError(
+                f"RetVal {param.name} should not have a pointer, but it does.")
         if param.length:
             return f'repeated {get_proto_type(generator, non_pointer_param)}'
         else:
