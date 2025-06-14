@@ -35,8 +35,6 @@ class SynchronizedClientBidiStream {
 };
 
 using VvkCommandClientBidiStream = SynchronizedClientBidiStream<vvk::server::VvkRequest, vvk::server::VvkResponse>;
-using VvkPresentationClientBidiStream =
-    SynchronizedClientBidiStream<vvk::server::VvkGetFrameRequest, vvk::server::VvkGetFrameResponse>;
 
 }  // namespace vvk
 
