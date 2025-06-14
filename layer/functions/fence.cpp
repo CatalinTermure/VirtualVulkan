@@ -73,16 +73,8 @@ VKAPI_ATTR VkResult VKAPI_CALL WaitForFences(VkDevice device, uint32_t fenceCoun
 
   VkResult local_result = VK_SUCCESS;
   VkResult remote_result = VK_SUCCESS;
-  std::future<void> local_wait_future;
   std::future<void> remote_wait_future;
 
-  if (!local_fences.empty()) {
-    local_wait_future = g_fence_wait_thread_pool.push(
-        [&device_info, &local_fences, &local_result, device, waitAll, timeout](int unused) {
-          local_result = device_info.dispatch_table().WaitForFences(device, local_fences.size(), local_fences.data(),
-                                                                    waitAll, timeout);
-        });
-  }
   if (!remote_fences.empty()) {
     remote_wait_future = g_fence_wait_thread_pool.push(
         [&device_info, &remote_fences, &remote_result, device, waitAll, timeout](int unused) {
@@ -93,8 +85,10 @@ VKAPI_ATTR VkResult VKAPI_CALL WaitForFences(VkDevice device, uint32_t fenceCoun
   }
 
   if (!local_fences.empty()) {
-    local_wait_future.wait();
+    local_result =
+        device_info.dispatch_table().WaitForFences(device, local_fences.size(), local_fences.data(), waitAll, timeout);
   }
+
   if (!remote_fences.empty()) {
     remote_wait_future.wait();
   }
