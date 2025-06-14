@@ -17,12 +17,12 @@
 
 namespace vvk {
 
-class SwapchainInfo {
+class Swapchain {
  public:
-  SwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAllocator remote_allocator,
-                const std::vector<VkImage>& swapchain_images, const VkExtent2D& swapchain_image_extent);
-  SwapchainInfo(const SwapchainInfo&) = delete;
-  SwapchainInfo& operator=(const SwapchainInfo&) = delete;
+  Swapchain(VkSwapchainKHR swapchain, VkDevice device, VmaAllocator remote_allocator,
+            const std::vector<VkImage>& swapchain_images, const VkExtent2D& swapchain_image_extent);
+  Swapchain(const Swapchain&) = delete;
+  Swapchain& operator=(const Swapchain&) = delete;
 
   VkImage CreateImageRemote(const VkImageCreateInfo& create_info, const VmaAllocationCreateInfo& alloc_info);
 
@@ -36,7 +36,7 @@ class SwapchainInfo {
 
   VkFormat GetRemoteImageFormat() const { return remote_image_format_; }
 
-  ~SwapchainInfo();
+  ~Swapchain();
 
  private:
   VkSwapchainKHR swapchain_handle_;
@@ -50,9 +50,9 @@ class SwapchainInfo {
   VkFormat remote_image_format_;
 };
 
-SwapchainInfo& GetSwapchainInfo(VkSwapchainKHR swapchain);
-SwapchainInfo& SetSwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAllocator remote_allocator,
-                                const std::vector<VkImage>& swapchain_images, const VkExtent2D& swapchain_image_extent);
+Swapchain& GetSwapchainInfo(VkSwapchainKHR swapchain);
+Swapchain& SetSwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAllocator remote_allocator,
+                            const std::vector<VkImage>& swapchain_images, const VkExtent2D& swapchain_image_extent);
 void RemoveSwapchainInfo(VkSwapchainKHR swapchain);
 
 }  // namespace vvk

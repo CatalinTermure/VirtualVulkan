@@ -30,7 +30,7 @@ std::optional<std::vector<VkImage>> GetLocalImagesForSwapchain(VkDevice device, 
 }
 
 void CleanupSwapchainInfo(Device& device_info, VkSwapchainKHR swapchain) {
-  SwapchainInfo& swapchain_info = GetSwapchainInfo(swapchain);
+  Swapchain& swapchain_info = GetSwapchainInfo(swapchain);
   {
     std::lock_guard g(swapchain_info.GetLock());
     auto local_images = swapchain_info.GetLocalSwapchainImages();
@@ -65,8 +65,8 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
     CleanupSwapchainInfo(device_info, pCreateInfo->oldSwapchain);
   }
 
-  SwapchainInfo& swapchain_info = SetSwapchainInfo(*pSwapchain, device, device_info.remote_allocator(),
-                                                   *client_swapchain_images, pCreateInfo->imageExtent);
+  Swapchain& swapchain_info = SetSwapchainInfo(*pSwapchain, device, device_info.remote_allocator(),
+                                               *client_swapchain_images, pCreateInfo->imageExtent);
 
   // Create remote images for the swapchain
   VkImageCreateInfo image_create_info = {
@@ -161,7 +161,7 @@ VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(VkDevice device, VkSwapchainK
     device_info.SetFenceLocal(fence);
   }
   spdlog::trace("Signaling acquire semaphore: {}, fence: {}", (void*)semaphore, (void*)fence);
-  SwapchainInfo& swapchain_info = GetSwapchainInfo(swapchain);
+  Swapchain& swapchain_info = GetSwapchainInfo(swapchain);
   swapchain_info.SetImageAcquired();
   spdlog::trace("Acquiring next image available for swapchain {}", (void*)swapchain);
   VkResult result = device_info.dispatch_table().AcquireNextImageKHR(device, swapchain, timeout,

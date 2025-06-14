@@ -63,7 +63,7 @@ H264FrameStream::~H264FrameStream() {
 
 void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) {
   Instance &instance_info = GetInstanceInfo(local_instance_);
-  SwapchainInfo &swapchain_info = GetSwapchainInfo(swapchain);
+  Swapchain &swapchain_info = GetSwapchainInfo(swapchain);
   vvk::server::VvkRequest request;
   request.set_method("setupPresentation");
   vvk::server::VvkSetupPresentationRequest &setup_presentation = *request.mutable_setuppresentation();

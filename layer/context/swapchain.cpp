@@ -10,11 +10,11 @@ namespace vvk {
 
 namespace {
 std::mutex swapchain_info_lock;
-std::map<VkSwapchainKHR, SwapchainInfo> g_swapchain_infos;
+std::map<VkSwapchainKHR, Swapchain> g_swapchain_infos;
 }  // namespace
 
-SwapchainInfo::SwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAllocator remote_allocator,
-                             const std::vector<VkImage>& swapchain_images, const VkExtent2D& swapchain_image_extent)
+Swapchain::Swapchain(VkSwapchainKHR swapchain, VkDevice device, VmaAllocator remote_allocator,
+                     const std::vector<VkImage>& swapchain_images, const VkExtent2D& swapchain_image_extent)
     : swapchain_handle_(swapchain),
       device_(device),
       instance_info_(GetInstanceInfo(device)),
@@ -24,7 +24,7 @@ SwapchainInfo::SwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAlloc
   local_swapchain_images_ = swapchain_images;
 }  // namespace vvk
 
-SwapchainInfo::~SwapchainInfo() {
+Swapchain::~Swapchain() {
   std::lock_guard g(lock_);
   Device& device_info = GetDeviceInfo(device_);
   for (auto [remote_image, remote_allocation] : remote_images_) {
@@ -33,8 +33,7 @@ SwapchainInfo::~SwapchainInfo() {
   }
 }
 
-VkImage SwapchainInfo::CreateImageRemote(const VkImageCreateInfo& create_info,
-                                         const VmaAllocationCreateInfo& alloc_info) {
+VkImage Swapchain::CreateImageRemote(const VkImageCreateInfo& create_info, const VmaAllocationCreateInfo& alloc_info) {
   VkImage remote_image;
   VmaAllocation remote_allocation;
   VkResult result =
@@ -47,14 +46,13 @@ VkImage SwapchainInfo::CreateImageRemote(const VkImageCreateInfo& create_info,
   return remote_image;
 }
 
-SwapchainInfo& GetSwapchainInfo(VkSwapchainKHR swapchain) {
+Swapchain& GetSwapchainInfo(VkSwapchainKHR swapchain) {
   std::lock_guard lock(swapchain_info_lock);
   return g_swapchain_infos.at(swapchain);
 }
 
-SwapchainInfo& SetSwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAllocator remote_allocator,
-                                const std::vector<VkImage>& swapchain_images,
-                                const VkExtent2D& swapchain_image_extent) {
+Swapchain& SetSwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAllocator remote_allocator,
+                            const std::vector<VkImage>& swapchain_images, const VkExtent2D& swapchain_image_extent) {
   std::lock_guard lock(swapchain_info_lock);
   auto [iter, inserted] = g_swapchain_infos.try_emplace(swapchain, swapchain, device, remote_allocator,
                                                         swapchain_images, swapchain_image_extent);

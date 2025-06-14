@@ -17,7 +17,7 @@ UncompressedFrameStream::UncompressedFrameStream(VkInstance instance, VkDevice d
 
 void UncompressedFrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) {
   Instance &instance_info = GetInstanceInfo(local_instance);
-  SwapchainInfo &swapchain_info = GetSwapchainInfo(swapchain);
+  Swapchain &swapchain_info = GetSwapchainInfo(swapchain);
   vvk::server::VvkRequest request;
   request.set_method("setupPresentation");
   vvk::server::VvkSetupPresentationRequest &setup_presentation = *request.mutable_setuppresentation();
@@ -69,7 +69,7 @@ void UncompressedFrameStream::SetupFrame(VkCommandBuffer remote_command_buffer, 
   auto &command_stream = GetInstanceInfo(local_instance).command_stream();
 
   for (auto &swapchain_present_info : swapchains) {
-    SwapchainInfo &swapchain_info = GetSwapchainInfo(swapchain_present_info.swapchain);
+    Swapchain &swapchain_info = GetSwapchainInfo(swapchain_present_info.swapchain);
     VkImage remote_image = swapchain_info.GetRemoteImages()[swapchain_image_index].first;
 
     VkBufferImageCopy region = {
@@ -105,7 +105,7 @@ VkResult UncompressedFrameStream::PresentFrame(VkQueue queue, const VkPresentInf
   std::vector<VkSemaphore> local_semaphores_to_wait;
   std::vector<VkSemaphore> remote_semaphores_to_wait;
   std::vector<VkSwapchainKHR> swapchains_to_present;
-  std::vector<SwapchainInfo *> swapchain_infos;
+  std::vector<Swapchain *> swapchain_infos;
   std::vector<uint32_t> image_indices;
 
   VkPresentInfoKHR present_info = original_present_info;
