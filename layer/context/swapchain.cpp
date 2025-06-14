@@ -26,7 +26,7 @@ SwapchainInfo::SwapchainInfo(VkSwapchainKHR swapchain, VkDevice device, VmaAlloc
 
 SwapchainInfo::~SwapchainInfo() {
   std::lock_guard g(lock_);
-  DeviceInfo& device_info = GetDeviceInfo(device_);
+  Device& device_info = GetDeviceInfo(device_);
   for (auto [remote_image, remote_allocation] : remote_images_) {
     vmaDestroyImage(remote_allocator_, remote_image, remote_allocation);
     device_info.swapchain_images.erase(remote_image);

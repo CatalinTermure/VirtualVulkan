@@ -10,7 +10,7 @@ namespace vvk {
 
 VKAPI_ATTR VkResult VKAPI_CALL AllocateMemory(VkDevice device, const VkMemoryAllocateInfo* pAllocateInfo,
                                               const VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMemory) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   VkResult result = PackAndCallVkAllocateMemory(device_info.instance_info().command_stream(),
                                                 device_info.instance_info().GetRemoteHandle(device), pAllocateInfo,
                                                 pAllocator, pMemory);
@@ -23,7 +23,7 @@ VKAPI_ATTR VkResult VKAPI_CALL AllocateMemory(VkDevice device, const VkMemoryAll
 }
 
 VKAPI_ATTR void VKAPI_CALL FreeMemory(VkDevice device, VkDeviceMemory memory, const VkAllocationCallbacks* pAllocator) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   PackAndCallVkFreeMemory(device_info.instance_info().command_stream(),
                           device_info.instance_info().GetRemoteHandle(device), memory, pAllocator);
   device_info.UnregisterMemorySize(memory);
@@ -31,7 +31,7 @@ VKAPI_ATTR void VKAPI_CALL FreeMemory(VkDevice device, VkDeviceMemory memory, co
 
 VKAPI_ATTR VkResult VKAPI_CALL MapMemory(VkDevice device, VkDeviceMemory memory, VkDeviceSize offset, VkDeviceSize size,
                                          VkMemoryMapFlags flags, void** ppData) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
 
   if (size == VK_WHOLE_SIZE) {
     size = device_info.GetMemorySize(memory) - offset;
@@ -56,7 +56,7 @@ VKAPI_ATTR VkResult VKAPI_CALL MapMemory(VkDevice device, VkDeviceMemory memory,
 }
 
 VKAPI_ATTR void VKAPI_CALL UnmapMemory(VkDevice device, VkDeviceMemory memory) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
 
   device_info.UploadMappedMemory(memory);
 
@@ -68,7 +68,7 @@ VKAPI_ATTR void VKAPI_CALL UnmapMemory(VkDevice device, VkDeviceMemory memory) {
 
 VKAPI_ATTR VkResult VKAPI_CALL FlushMappedMemoryRanges(VkDevice device, uint32_t memoryRangeCount,
                                                        const VkMappedMemoryRange* pMemoryRanges) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   for (uint32_t i = 0; i < memoryRangeCount; i++) {
     device_info.UploadMappedMemory(pMemoryRanges[i].memory);
   }
@@ -95,7 +95,7 @@ VKAPI_ATTR void VKAPI_CALL GetImageMemoryRequirements2KHR(VkDevice device, const
 
 VKAPI_ATTR void VKAPI_CALL GetBufferMemoryRequirements2(VkDevice device, const VkBufferMemoryRequirementsInfo2* pInfo,
                                                         VkMemoryRequirements2* pMemoryRequirements) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   PackAndCallVkGetBufferMemoryRequirements2(device_info.instance_info().command_stream(),
                                             device_info.instance_info().GetRemoteHandle(device), pInfo,
                                             pMemoryRequirements);
@@ -103,7 +103,7 @@ VKAPI_ATTR void VKAPI_CALL GetBufferMemoryRequirements2(VkDevice device, const V
 
 VKAPI_ATTR void VKAPI_CALL GetBufferMemoryRequirements(VkDevice device, VkBuffer buffer,
                                                        VkMemoryRequirements* pMemoryRequirements) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   PackAndCallVkGetBufferMemoryRequirements(device_info.instance_info().command_stream(),
                                            device_info.instance_info().GetRemoteHandle(device), buffer,
                                            pMemoryRequirements);
@@ -111,7 +111,7 @@ VKAPI_ATTR void VKAPI_CALL GetBufferMemoryRequirements(VkDevice device, VkBuffer
 
 VKAPI_ATTR VkResult VKAPI_CALL BindBufferMemory(VkDevice device, VkBuffer buffer, VkDeviceMemory memory,
                                                 VkDeviceSize memoryOffset) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   return PackAndCallVkBindBufferMemory(device_info.instance_info().command_stream(),
                                        device_info.instance_info().GetRemoteHandle(device), buffer, memory,
                                        memoryOffset);
@@ -119,21 +119,21 @@ VKAPI_ATTR VkResult VKAPI_CALL BindBufferMemory(VkDevice device, VkBuffer buffer
 
 VKAPI_ATTR VkResult VKAPI_CALL BindImageMemory(VkDevice device, VkImage image, VkDeviceMemory memory,
                                                VkDeviceSize memoryOffset) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   return PackAndCallVkBindImageMemory(device_info.instance_info().command_stream(),
                                       device_info.instance_info().GetRemoteHandle(device), image, memory, memoryOffset);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL BindImageMemory2(VkDevice device, uint32_t bindInfoCount,
                                                 const VkBindImageMemoryInfo* pBindInfos) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   return PackAndCallVkBindImageMemory2(device_info.instance_info().command_stream(),
                                        device_info.instance_info().GetRemoteHandle(device), bindInfoCount, pBindInfos);
 }
 
 VKAPI_ATTR void VKAPI_CALL GetImageMemoryRequirements(VkDevice device, VkImage image,
                                                       VkMemoryRequirements* pMemoryRequirements) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   PackAndCallVkGetImageMemoryRequirements(device_info.instance_info().command_stream(),
                                           device_info.instance_info().GetRemoteHandle(device), image,
                                           pMemoryRequirements);
@@ -141,7 +141,7 @@ VKAPI_ATTR void VKAPI_CALL GetImageMemoryRequirements(VkDevice device, VkImage i
 
 VKAPI_ATTR void VKAPI_CALL GetImageMemoryRequirements2(VkDevice device, const VkImageMemoryRequirementsInfo2* pInfo,
                                                        VkMemoryRequirements2* pMemoryRequirements) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   PackAndCallVkGetImageMemoryRequirements2(device_info.instance_info().command_stream(),
                                            device_info.instance_info().GetRemoteHandle(device), pInfo,
                                            pMemoryRequirements);

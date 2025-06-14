@@ -298,7 +298,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     instance_info.SetRemoteHandle(*pDevice, remote_device);
   }
 
-  DeviceInfo& device_info =
+  Device& device_info =
       SetDeviceInfo(*pDevice, nxt_gdpa, physicalDevice, allocator_create_info, present_queue_family_index,
                     *remote_graphics_queue_family_index, *remote_video_queue_family_index, streaming_capabilities);
 
@@ -331,7 +331,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 }
 
 VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCallbacks* pAllocator) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   InstanceInfo& instance_info = device_info.instance_info();
 
   device_info.fence_pool().ForAllFences([&](VkFence& fence) {
@@ -368,7 +368,7 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(VkPhysicalDevi
 
 VKAPI_ATTR void VKAPI_CALL GetDeviceQueue(VkDevice device, uint32_t queueFamilyIndex, uint32_t queueIndex,
                                           VkQueue* pQueue) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
 
   *pQueue = device_info.GetFakeQueue(queueFamilyIndex, queueIndex);
 

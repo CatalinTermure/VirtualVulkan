@@ -125,7 +125,7 @@ void H264FrameStream::RemoveSwapchain(VkSwapchainKHR swapchain) {
 // Called during command buffer recording for a presentable frame.
 void H264FrameStream::SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t swapchain_image_index) {
   InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
-  DeviceInfo &device_info = GetDeviceInfo(local_device_);
+  Device &device_info = GetDeviceInfo(local_device_);
   device_info.additional_semaphores[remote_command_buffer] = remote_encode_wait_semaphore_;
   for (auto &swapchain_present_info : swapchains_) {
     vvk::server::VvkRequest request;
@@ -318,7 +318,7 @@ VkResult H264FrameStream::PresentFrame(VkQueue queue, const VkPresentInfoKHR &or
     }
   }
 
-  DeviceInfo &device_info = GetDeviceInfo(local_device_);
+  Device &device_info = GetDeviceInfo(local_device_);
 
   for (auto &remote_semaphore : remote_wait_semaphores) {
     remote_semaphore->remote_to_local_semaphore.acquire();

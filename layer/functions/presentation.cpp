@@ -10,7 +10,7 @@ namespace vvk {
 
 namespace {
 std::optional<std::vector<VkImage>> GetLocalImagesForSwapchain(VkDevice device, VkSwapchainKHR swapchain) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   uint32_t swapchain_image_count = 0;
   std::vector<VkImage> client_swapchain_images;
   VkResult result =
@@ -29,7 +29,7 @@ std::optional<std::vector<VkImage>> GetLocalImagesForSwapchain(VkDevice device, 
   return client_swapchain_images;
 }
 
-void CleanupSwapchainInfo(DeviceInfo& device_info, VkSwapchainKHR swapchain) {
+void CleanupSwapchainInfo(Device& device_info, VkSwapchainKHR swapchain) {
   SwapchainInfo& swapchain_info = GetSwapchainInfo(swapchain);
   {
     std::lock_guard g(swapchain_info.GetLock());
@@ -49,7 +49,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
   VkSwapchainCreateInfoKHR create_info = *pCreateInfo;
   create_info.imageUsage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   VkResult result = device_info.dispatch_table().CreateSwapchainKHR(device, &create_info, pAllocator, pSwapchain);
   if (result != VK_SUCCESS) {
     return result;
@@ -116,7 +116,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSwapchainKHR(VkDevice device, const VkSwapc
 
 VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(VkDevice device, VkSwapchainKHR swapchain,
                                                const VkAllocationCallbacks* pAllocator) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   try {
     CleanupSwapchainInfo(device_info, swapchain);
   } catch (std::out_of_range& e) {
@@ -130,7 +130,7 @@ VKAPI_ATTR void VKAPI_CALL DestroySwapchainKHR(VkDevice device, VkSwapchainKHR s
 
 VKAPI_ATTR VkResult VKAPI_CALL GetSwapchainImagesKHR(VkDevice device, VkSwapchainKHR swapchain,
                                                      uint32_t* pSwapchainImageCount, VkImage* pSwapchainImages) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
 
   if (pSwapchainImages == nullptr) {
     return device_info.dispatch_table().GetSwapchainImagesKHR(device, swapchain, pSwapchainImageCount, nullptr);
@@ -150,7 +150,7 @@ VKAPI_ATTR VkResult VKAPI_CALL GetSwapchainImagesKHR(VkDevice device, VkSwapchai
 
 VKAPI_ATTR VkResult VKAPI_CALL AcquireNextImageKHR(VkDevice device, VkSwapchainKHR swapchain, uint64_t timeout,
                                                    VkSemaphore semaphore, VkFence fence, uint32_t* pImageIndex) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   if (semaphore != VK_NULL_HANDLE) {
     if (fence != VK_NULL_HANDLE) {
       throw std::runtime_error("Cannot use both semaphore and fence in AcquireNextImageKHR");

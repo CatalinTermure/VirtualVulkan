@@ -9,7 +9,7 @@ namespace vvk {
 
 namespace {
 std::mutex device_info_lock;
-std::map<VkDevice, DeviceInfo> g_device_infos;
+std::map<VkDevice, Device> g_device_infos;
 std::mutex command_buffer_to_device_lock;
 std::map<VkCommandBuffer, VkDevice> g_command_buffer_to_device;
 std::mutex queue_to_device_lock;
@@ -23,11 +23,11 @@ constexpr size_t kChunkSize = 128 * 1024;
 ctpl::thread_pool g_thread_pool(32);
 }  // namespace
 
-DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
-                       const VmaAllocatorCreateInfo& remote_allocator_create_info,
-                       std::optional<uint32_t> present_queue_family_index, uint32_t remote_graphics_queue_family_index,
-                       uint32_t remote_video_queue_family_index,
-                       const vvk::server::StreamingCapabilities& streaming_capabilities)
+Device::Device(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
+               const VmaAllocatorCreateInfo& remote_allocator_create_info,
+               std::optional<uint32_t> present_queue_family_index, uint32_t remote_graphics_queue_family_index,
+               uint32_t remote_video_queue_family_index,
+               const vvk::server::StreamingCapabilities& streaming_capabilities)
     : nxt_gdpa_(nxt_gdpa),
       instance_info_(GetInstanceInfo(physical_device)),
       frame_stream_(nullptr),
@@ -94,7 +94,7 @@ DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhys
     // The Vulkan Validation Layers expect the loader data to be set, so we need to set it manually.
     *reinterpret_cast<VK_LOADER_DATA*>(present_queue) = *reinterpret_cast<VK_LOADER_DATA*>(device);
     present_queue_ = present_queue;
-    spdlog::info("DeviceInfo: Present queue set to {}", (void*)present_queue);
+    spdlog::info("Device: Present queue set to {}", (void*)present_queue);
     present_queue_family_index_ = present_queue_family_index;
     frame_stream_ = FrameStream::Create(
         GetInstanceForPhysicalDevice(physical_device), device, instance_info_.GetRemoteHandle(physical_device),
@@ -102,8 +102,8 @@ DeviceInfo::DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhys
   }
 }
 
-void DeviceInfo::AddMappedMemory(void* local_address, void* remote_address, VkDeviceMemory memory_handle,
-                                 std::size_t map_size) {
+void Device::AddMappedMemory(void* local_address, void* remote_address, VkDeviceMemory memory_handle,
+                             std::size_t map_size) {
   auto it = mapped_memory_infos_.find(memory_handle);
   if (it != mapped_memory_infos_.end()) {
     throw std::runtime_error("Mapped memory already exists");
@@ -123,7 +123,7 @@ void DeviceInfo::AddMappedMemory(void* local_address, void* remote_address, VkDe
   }
 }
 
-void DeviceInfo::UploadMappedMemory(VkDeviceMemory memory) {
+void Device::UploadMappedMemory(VkDeviceMemory memory) {
   std::vector<std::future<void>> futures;
 
   for (size_t offset = 0; offset < mapped_memory_infos_.at(memory).map_size; offset += kChunkSize) {
@@ -157,13 +157,13 @@ void DeviceInfo::UploadMappedMemory(VkDeviceMemory memory) {
   }
 }
 
-void DeviceInfo::UploadMappedMemories() {
+void Device::UploadMappedMemories() {
   for (auto& [memory, mapped_memory_info] : mapped_memory_infos_) {
     UploadMappedMemory(memory);
   }
 }
 
-void DeviceInfo::RemoveMappedMemory(VkDeviceMemory memory_handle) {
+void Device::RemoveMappedMemory(VkDeviceMemory memory_handle) {
   auto it = mapped_memory_infos_.find(memory_handle);
   if (it != mapped_memory_infos_.end()) {
     free(it->second.local_memory);
@@ -173,7 +173,7 @@ void DeviceInfo::RemoveMappedMemory(VkDeviceMemory memory_handle) {
   }
 }
 
-void DeviceInfo::RegisterMemorySize(VkDeviceMemory memory_handle, std::size_t size) {
+void Device::RegisterMemorySize(VkDeviceMemory memory_handle, std::size_t size) {
   auto it = memory_sizes_.find(memory_handle);
   if (it != memory_sizes_.end()) {
     throw std::runtime_error("Memory size already registered");
@@ -181,7 +181,7 @@ void DeviceInfo::RegisterMemorySize(VkDeviceMemory memory_handle, std::size_t si
   memory_sizes_[memory_handle] = size;
 }
 
-std::size_t DeviceInfo::GetMemorySize(VkDeviceMemory memory_handle) {
+std::size_t Device::GetMemorySize(VkDeviceMemory memory_handle) {
   auto it = memory_sizes_.find(memory_handle);
   if (it == memory_sizes_.end()) {
     throw std::runtime_error("Memory size not found");
@@ -189,7 +189,7 @@ std::size_t DeviceInfo::GetMemorySize(VkDeviceMemory memory_handle) {
   return it->second;
 }
 
-void DeviceInfo::UnregisterMemorySize(VkDeviceMemory memory_handle) {
+void Device::UnregisterMemorySize(VkDeviceMemory memory_handle) {
   auto it = memory_sizes_.find(memory_handle);
   if (it != memory_sizes_.end()) {
     memory_sizes_.erase(it);
@@ -198,7 +198,7 @@ void DeviceInfo::UnregisterMemorySize(VkDeviceMemory memory_handle) {
   }
 }
 
-void DeviceInfo::CreateFakeQueueFamily(uint32_t queue_family_index, uint32_t queue_count) {
+void Device::CreateFakeQueueFamily(uint32_t queue_family_index, uint32_t queue_count) {
   if (fake_queue_families_.find(queue_family_index) != fake_queue_families_.end()) {
     throw std::runtime_error("Fake queue family already exists");
   }
@@ -212,7 +212,7 @@ void DeviceInfo::CreateFakeQueueFamily(uint32_t queue_family_index, uint32_t que
   }
 }
 
-VkQueue DeviceInfo::GetFakeQueue(uint32_t queue_family_index, uint32_t queue_index) {
+VkQueue Device::GetFakeQueue(uint32_t queue_family_index, uint32_t queue_index) {
   auto map_iterator = fake_queue_families_.find(queue_family_index);
   if (map_iterator == fake_queue_families_.end()) {
     throw std::runtime_error("Fake queue family not found");
@@ -226,22 +226,22 @@ VkQueue DeviceInfo::GetFakeQueue(uint32_t queue_family_index, uint32_t queue_ind
   return reinterpret_cast<VkQueue>(&(*list_iterator));
 }
 
-DeviceInfo& GetDeviceInfo(VkDevice device) {
+Device& GetDeviceInfo(VkDevice device) {
   std::lock_guard lock(device_info_lock);
   return g_device_infos.at(device);
 }
 
-DeviceInfo& GetDeviceInfo(VkCommandBuffer command_buffer) {
+Device& GetDeviceInfo(VkCommandBuffer command_buffer) {
   return GetDeviceInfo(GetDeviceForCommandBuffer(command_buffer));
 }
 
-DeviceInfo& GetDeviceInfo(VkQueue queue) { return GetDeviceInfo(GetDeviceForQueue(queue)); }
+Device& GetDeviceInfo(VkQueue queue) { return GetDeviceInfo(GetDeviceForQueue(queue)); }
 
-DeviceInfo& SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
-                          const VmaAllocatorCreateInfo& remote_allocator_create_info,
-                          std::optional<uint32_t> present_queue_family_index,
-                          uint32_t remote_graphics_queue_family_index, uint32_t remote_video_queue_family_index,
-                          const vvk::server::StreamingCapabilities& streaming_capabilities) {
+Device& SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
+                      const VmaAllocatorCreateInfo& remote_allocator_create_info,
+                      std::optional<uint32_t> present_queue_family_index, uint32_t remote_graphics_queue_family_index,
+                      uint32_t remote_video_queue_family_index,
+                      const vvk::server::StreamingCapabilities& streaming_capabilities) {
   std::lock_guard lock(device_info_lock);
   auto [iter, inserted] = g_device_infos.try_emplace(
       device, device, nxt_gdpa, physical_device, remote_allocator_create_info, present_queue_family_index,

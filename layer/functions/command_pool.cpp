@@ -4,16 +4,9 @@
 
 namespace vvk {
 
-VKAPI_ATTR VkResult VKAPI_CALL CreateCommandPool(VkDevice device, const VkCommandPoolCreateInfo* pCreateInfo,
-                                                 const VkAllocationCallbacks* pAllocator, VkCommandPool* pCommandPool) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
-  return PackAndCallVkCreateCommandPool(device_info.instance_info().command_stream(),
-                                        device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator,
-                                        pCommandPool);
-}
 VKAPI_ATTR void VKAPI_CALL DestroyCommandPool(VkDevice device, VkCommandPool commandPool,
                                               const VkAllocationCallbacks* pAllocator) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   for (VkCommandBuffer command_buffer : GetCommandBuffersForPool(commandPool)) {
     RemoveCommandBuffer(command_buffer);
   }
@@ -22,7 +15,7 @@ VKAPI_ATTR void VKAPI_CALL DestroyCommandPool(VkDevice device, VkCommandPool com
 }
 VKAPI_ATTR VkResult VKAPI_CALL AllocateCommandBuffers(VkDevice device, const VkCommandBufferAllocateInfo* pAllocateInfo,
                                                       VkCommandBuffer* pCommandBuffers) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   VkResult result = PackAndCallVkAllocateCommandBuffers(device_info.instance_info().command_stream(),
                                                         device_info.instance_info().GetRemoteHandle(device),
                                                         pAllocateInfo, pCommandBuffers);
@@ -46,7 +39,7 @@ VKAPI_ATTR VkResult VKAPI_CALL AllocateCommandBuffers(VkDevice device, const VkC
 }
 VKAPI_ATTR void VKAPI_CALL FreeCommandBuffers(VkDevice device, VkCommandPool commandPool, uint32_t commandBufferCount,
                                               const VkCommandBuffer* pCommandBuffers) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   for (uint32_t i = 0; i < commandBufferCount; i++) {
     delete reinterpret_cast<DispatchableObject*>(const_cast<VkCommandBuffer>(pCommandBuffers[i]));
   }
@@ -65,12 +58,20 @@ VKAPI_ATTR void VKAPI_CALL FreeCommandBuffers(VkDevice device, VkCommandPool com
 
 VKAPI_ATTR VkResult VKAPI_CALL ResetCommandPool(VkDevice device, VkCommandPool commandPool,
                                                 VkCommandPoolResetFlags flags) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   for (VkCommandBuffer command_buffer : GetCommandBuffersForPool(commandPool)) {
     device_info.swapchain_render_command_buffers.erase(command_buffer);
   }
   return PackAndCallVkResetCommandPool(device_info.instance_info().command_stream(),
                                        device_info.instance_info().GetRemoteHandle(device), commandPool, flags);
+}
+
+VKAPI_ATTR VkResult VKAPI_CALL CreateCommandPool(VkDevice device, const VkCommandPoolCreateInfo* pCreateInfo,
+                                                 const VkAllocationCallbacks* pAllocator, VkCommandPool* pCommandPool) {
+  Device& device_info = GetDeviceInfo(device);
+  return PackAndCallVkCreateCommandPool(device_info.instance_info().command_stream(),
+                                        device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator,
+                                        pCommandPool);
 }
 
 }  // namespace vvk

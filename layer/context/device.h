@@ -21,12 +21,11 @@
 #include "layer/presentation/frame_stream.h"
 
 namespace vvk {
-struct DeviceInfo {
-  DeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
-             const VmaAllocatorCreateInfo& remote_allocator_create_info,
-             std::optional<uint32_t> present_queue_family_index, uint32_t remote_graphics_queue_family_index,
-             uint32_t remote_video_queue_family_index,
-             const vvk::server::StreamingCapabilities& streaming_capabilities);
+struct Device {
+  Device(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
+         const VmaAllocatorCreateInfo& remote_allocator_create_info, std::optional<uint32_t> present_queue_family_index,
+         uint32_t remote_graphics_queue_family_index, uint32_t remote_video_queue_family_index,
+         const vvk::server::StreamingCapabilities& streaming_capabilities);
 
   VmaAllocator remote_allocator() const { return remote_allocator_; }
   VmaAllocator local_allocator() const { return local_allocator_; }
@@ -105,14 +104,14 @@ struct DeviceInfo {
   std::unordered_map<VkFence, std::mutex> local_fence_mutexes_;
 };
 
-DeviceInfo& GetDeviceInfo(VkDevice device);
-DeviceInfo& GetDeviceInfo(VkCommandBuffer command_buffer);
-DeviceInfo& GetDeviceInfo(VkQueue queue);
-DeviceInfo& SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
-                          const VmaAllocatorCreateInfo& remote_allocator_create_info,
-                          std::optional<uint32_t> present_queue_family_index,
-                          uint32_t remote_graphics_queue_family_index, uint32_t remote_video_queue_family_index,
-                          const vvk::server::StreamingCapabilities& streaming_capabilities);
+Device& GetDeviceInfo(VkDevice device);
+Device& GetDeviceInfo(VkCommandBuffer command_buffer);
+Device& GetDeviceInfo(VkQueue queue);
+Device& SetDeviceInfo(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
+                      const VmaAllocatorCreateInfo& remote_allocator_create_info,
+                      std::optional<uint32_t> present_queue_family_index, uint32_t remote_graphics_queue_family_index,
+                      uint32_t remote_video_queue_family_index,
+                      const vvk::server::StreamingCapabilities& streaming_capabilities);
 void RemoveDeviceInfo(VkDevice device);
 
 void AssociateCommandBufferWithDevice(VkCommandBuffer command_buffer, VkDevice device);

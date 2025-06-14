@@ -7,7 +7,7 @@ namespace vvk {
 VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphoreCreateInfo* pCreateInfo,
                                                const VkAllocationCallbacks* pAllocator, VkSemaphore* pSemaphore) {
   *pSemaphore = new VkSemaphore_T;
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   InstanceInfo& instance_info = device_info.instance_info();
   VkResult result =
       device_info.dispatch_table().CreateSemaphore(device, pCreateInfo, pAllocator, &(*pSemaphore)->local_handle);
@@ -30,7 +30,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateSemaphore(VkDevice device, const VkSemaphor
 
 VKAPI_ATTR void VKAPI_CALL DestroySemaphore(VkDevice device, VkSemaphore semaphore,
                                             const VkAllocationCallbacks* pAllocator) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   InstanceInfo& instance_info = device_info.instance_info();
   device_info.dispatch_table().DestroySemaphore(device, semaphore->local_handle, pAllocator);
   PackAndCallVkDestroySemaphore(instance_info.command_stream(), instance_info.GetRemoteHandle(device),
@@ -39,7 +39,7 @@ VKAPI_ATTR void VKAPI_CALL DestroySemaphore(VkDevice device, VkSemaphore semapho
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL SignalSemaphore(VkDevice device, const VkSemaphoreSignalInfo* pSignalInfo) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   VkSemaphoreSignalInfo signal_info = *pSignalInfo;
   signal_info.semaphore = signal_info.semaphore->remote_handle;
   return PackAndCallVkSignalSemaphore(device_info.instance_info().command_stream(),

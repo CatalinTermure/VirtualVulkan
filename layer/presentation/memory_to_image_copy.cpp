@@ -8,7 +8,7 @@ namespace vvk {
 MemoryToImageCopyContext::MemoryToImageCopyContext(VkDevice device, std::span<VkImage> images, VkExtent2D image_extent,
                                                    BufferLayout buffer_layout, bool use_fence, bool use_semaphore) {
   device_ = device;
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   uint32_t queue_family_index = *device_info.present_queue_family_index();
   VkCommandPoolCreateInfo command_pool_create_info = {
       .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
@@ -156,7 +156,7 @@ MemoryToImageCopyContext::MemoryToImageCopyContext(MemoryToImageCopyContext&& ot
 
 MemoryToImageCopyContext& MemoryToImageCopyContext::operator=(MemoryToImageCopyContext&& other) noexcept {
   if (this != &other) {
-    DeviceInfo& device_info = GetDeviceInfo(device_);
+    Device& device_info = GetDeviceInfo(device_);
     for (auto& image_info : images_) {
       vmaDestroyBuffer(device_info.local_allocator(), image_info.staging_buffer, image_info.buffer_allocation);
       device_info.dispatch_table().FreeCommandBuffers(device_, command_pool_, 1, &image_info.command_buffer);
@@ -186,7 +186,7 @@ MemoryToImageCopyContext::~MemoryToImageCopyContext() {
   if (device_ == VK_NULL_HANDLE) {
     return;  // Already cleaned up
   }
-  DeviceInfo& device_info = GetDeviceInfo(device_);
+  Device& device_info = GetDeviceInfo(device_);
   for (auto& image_info : images_) {
     vmaDestroyBuffer(device_info.local_allocator(), image_info.staging_buffer, image_info.buffer_allocation);
     device_info.dispatch_table().FreeCommandBuffers(device_, command_pool_, 1, &image_info.command_buffer);
@@ -207,7 +207,7 @@ VkResult MemoryToImageCopyContext::CopyMemoryToImage(uint32_t image_index, std::
     throw std::runtime_error("image_index is out of bounds");
   }
 
-  DeviceInfo& device_info = GetDeviceInfo(device_);
+  Device& device_info = GetDeviceInfo(device_);
   VkResult result = vmaCopyMemoryToAllocation(device_info.local_allocator(), data.data(),
                                               images_[image_index].buffer_allocation, 0, data.size());
   if (result != VK_SUCCESS) {

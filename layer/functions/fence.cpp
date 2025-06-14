@@ -16,7 +16,7 @@ ctpl::thread_pool g_fence_wait_thread_pool(kThreadPoolSize);
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateFence(VkDevice device, const VkFenceCreateInfo* pCreateInfo,
                                            const VkAllocationCallbacks* pAllocator, VkFence* pFence) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   VkResult result = device_info.dispatch_table().CreateFence(device, pCreateInfo, pAllocator, pFence);
   if (result != VK_SUCCESS) {
     return result;
@@ -40,7 +40,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateFence(VkDevice device, const VkFenceCreateI
 }
 
 VKAPI_ATTR void VKAPI_CALL DestroyFence(VkDevice device, VkFence fence, const VkAllocationCallbacks* pAllocator) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   device_info.dispatch_table().DestroyFence(device, fence, pAllocator);
   PackAndCallVkDestroyFence(device_info.instance_info().command_stream(),
                             device_info.instance_info().GetRemoteHandle(device), device_info.GetRemoteHandle(fence),
@@ -54,7 +54,7 @@ VKAPI_ATTR VkResult VKAPI_CALL WaitForFences(VkDevice device, uint32_t fenceCoun
   if (!waitAll) {
     throw std::runtime_error("WaitForFences with waitAll=false is not supported");
   }
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
 
   std::vector<VkFence> local_fences;
   std::vector<std::unique_lock<std::mutex>> local_fence_locks;
@@ -100,7 +100,7 @@ VKAPI_ATTR VkResult VKAPI_CALL WaitForFences(VkDevice device, uint32_t fenceCoun
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL ResetFences(VkDevice device, uint32_t fenceCount, const VkFence* pFences) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
 
   std::vector<VkFence> local_fences;
   local_fences.reserve(fenceCount);

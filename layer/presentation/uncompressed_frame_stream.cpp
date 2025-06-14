@@ -98,7 +98,7 @@ void UncompressedFrameStream::SetupFrame(VkCommandBuffer remote_command_buffer, 
 }
 
 VkResult UncompressedFrameStream::PresentFrame(VkQueue queue, const VkPresentInfoKHR &original_present_info) {
-  DeviceInfo &device_info = GetDeviceInfo(queue);
+  Device &device_info = GetDeviceInfo(queue);
   InstanceInfo &instance_info = device_info.instance_info();
   const VkuDeviceDispatchTable &dispatch_table = device_info.dispatch_table();
 

@@ -18,7 +18,7 @@ constexpr uint64_t kVkQueueSubmitRemoteSemaphoreTimeout = UINT64_MAX - 3;
 VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, const VkSubmitInfo* pSubmits,
                                            VkFence fence) {
   VkDevice device = GetDeviceForQueue(queue);
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
 
   std::optional<VkFenceProxy> proxy_for_null_fence;
   if (fence == VK_NULL_HANDLE) {
@@ -164,7 +164,7 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmit(VkQueue queue, uint32_t submitCount, 
   return VK_SUCCESS;
 }
 VKAPI_ATTR VkResult VKAPI_CALL QueueWaitIdle(VkQueue queue) {
-  DeviceInfo& device_info = GetDeviceInfo(queue);
+  Device& device_info = GetDeviceInfo(queue);
   return PackAndCallVkQueueWaitIdle(device_info.instance_info().command_stream(), device_info.GetRemoteHandle(queue));
 }
 

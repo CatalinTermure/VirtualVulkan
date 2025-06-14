@@ -6,7 +6,7 @@ namespace vvk {
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateRenderPass(VkDevice device, const VkRenderPassCreateInfo* pCreateInfo,
                                                 const VkAllocationCallbacks* pAllocator, VkRenderPass* pRenderPass) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   VkRenderPassCreateInfo remote_create_info = *pCreateInfo;
   std::vector<VkAttachmentDescription> attachment_descriptions(remote_create_info.attachmentCount);
   remote_create_info.pAttachments = attachment_descriptions.data();
@@ -22,14 +22,14 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateRenderPass(VkDevice device, const VkRenderP
 }
 VKAPI_ATTR void VKAPI_CALL DestroyRenderPass(VkDevice device, VkRenderPass renderPass,
                                              const VkAllocationCallbacks* pAllocator) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   PackAndCallVkDestroyRenderPass(device_info.instance_info().command_stream(),
                                  device_info.instance_info().GetRemoteHandle(device), renderPass, pAllocator);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateFramebuffer(VkDevice device, const VkFramebufferCreateInfo* pCreateInfo,
                                                  const VkAllocationCallbacks* pAllocator, VkFramebuffer* pFramebuffer) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   VkResult result = PackAndCallVkCreateFramebuffer(device_info.instance_info().command_stream(),
                                                    device_info.instance_info().GetRemoteHandle(device), pCreateInfo,
                                                    pAllocator, pFramebuffer);
@@ -47,7 +47,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateFramebuffer(VkDevice device, const VkFrameb
 }
 VKAPI_ATTR void VKAPI_CALL DestroyFramebuffer(VkDevice device, VkFramebuffer framebuffer,
                                               const VkAllocationCallbacks* pAllocator) {
-  DeviceInfo& device_info = GetDeviceInfo(device);
+  Device& device_info = GetDeviceInfo(device);
   PackAndCallVkDestroyFramebuffer(device_info.instance_info().command_stream(),
                                   device_info.instance_info().GetRemoteHandle(device), framebuffer, pAllocator);
   device_info.swapchain_framebuffers.erase(framebuffer);
