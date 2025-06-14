@@ -32,7 +32,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
     layer_device_info_mut->u.pLayerInfo = layer_device_info->u.pLayerInfo->pNext;
   }
 
-  InstanceInfo& instance_info = GetInstanceInfo(physicalDevice);
+  Instance& instance_info = GetInstanceInfo(physicalDevice);
   VkResult result;
 
   VkInstance instance = GetInstanceForPhysicalDevice(physicalDevice);
@@ -332,7 +332,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice, con
 
 VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCallbacks* pAllocator) {
   Device& device_info = GetDeviceInfo(device);
-  InstanceInfo& instance_info = device_info.instance_info();
+  Instance& instance_info = device_info.instance_info();
 
   device_info.fence_pool().ForAllFences([&](VkFence& fence) {
     PackAndCallVkDestroyFence(instance_info.command_stream(), instance_info.GetRemoteHandle(device),
@@ -355,7 +355,7 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(VkPhysicalDevi
                                                                   const char* pLayerName, uint32_t* pPropertyCount,
                                                                   VkExtensionProperties* pProperties) {
   if (!pLayerName || strcmp(pLayerName, "VK_LAYER_VVK_virtual_vulkan") != 0) {
-    InstanceInfo& instance_info = GetInstanceInfo(physicalDevice);
+    Instance& instance_info = GetInstanceInfo(physicalDevice);
     return instance_info.dispatch_table().EnumerateDeviceExtensionProperties(physicalDevice, pLayerName, pPropertyCount,
                                                                              pProperties);
   }
@@ -381,7 +381,7 @@ VKAPI_ATTR void VKAPI_CALL GetDeviceQueue(VkDevice device, uint32_t queueFamilyI
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL DeviceWaitIdle(VkDevice device) {
-  InstanceInfo& instance_info = GetInstanceInfo(device);
+  Instance& instance_info = GetInstanceInfo(device);
   return PackAndCallVkDeviceWaitIdle(instance_info.command_stream(), instance_info.GetRemoteHandle(device));
 }
 

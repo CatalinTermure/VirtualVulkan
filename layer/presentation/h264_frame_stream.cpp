@@ -41,7 +41,7 @@ H264FrameStream::H264FrameStream(VkInstance instance, VkDevice device, uint32_t 
       local_device_(device),
       remote_video_queue_family_index_(video_queue_family_index),
       remote_graphics_queue_family_index_(graphics_queue_family_index) {
-  InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
+  Instance &instance_info = GetInstanceInfo(local_instance_);
   VkSemaphoreCreateInfo sempahore_create_info = {};
   sempahore_create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
   VkResult result =
@@ -54,7 +54,7 @@ H264FrameStream::H264FrameStream(VkInstance instance, VkDevice device, uint32_t 
 
 H264FrameStream::~H264FrameStream() {
   if (remote_encode_wait_semaphore_ != VK_NULL_HANDLE) {
-    InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
+    Instance &instance_info = GetInstanceInfo(local_instance_);
     PackAndCallVkDestroySemaphore(instance_info.command_stream(), instance_info.GetRemoteHandle(local_device_),
                                   remote_encode_wait_semaphore_, nullptr);
     remote_encode_wait_semaphore_ = VK_NULL_HANDLE;
@@ -62,7 +62,7 @@ H264FrameStream::~H264FrameStream() {
 }
 
 void H264FrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) {
-  InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
+  Instance &instance_info = GetInstanceInfo(local_instance_);
   SwapchainInfo &swapchain_info = GetSwapchainInfo(swapchain);
   vvk::server::VvkRequest request;
   request.set_method("setupPresentation");
@@ -124,7 +124,7 @@ void H264FrameStream::RemoveSwapchain(VkSwapchainKHR swapchain) {
 
 // Called during command buffer recording for a presentable frame.
 void H264FrameStream::SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t swapchain_image_index) {
-  InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
+  Instance &instance_info = GetInstanceInfo(local_instance_);
   Device &device_info = GetDeviceInfo(local_device_);
   device_info.additional_semaphores[remote_command_buffer] = remote_encode_wait_semaphore_;
   for (auto &swapchain_present_info : swapchains_) {
@@ -142,7 +142,7 @@ void H264FrameStream::SetupFrame(VkCommandBuffer remote_command_buffer, uint32_t
 
 // Called when a frame should be presented.
 VkResult H264FrameStream::PresentFrame(VkQueue queue, const VkPresentInfoKHR &original_present_info) {
-  InstanceInfo &instance_info = GetInstanceInfo(local_instance_);
+  Instance &instance_info = GetInstanceInfo(local_instance_);
 
   std::vector<VkSemaphore> remote_wait_semaphores;
   std::vector<VkSemaphore> local_wait_semaphores;

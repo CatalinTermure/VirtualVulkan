@@ -18,9 +18,9 @@
 
 namespace vvk {
 
-class InstanceInfo {
+class Instance {
  public:
-  InstanceInfo(VkInstance instance, PFN_vkGetInstanceProcAddr nxt_gipa, std::shared_ptr<grpc::Channel> channel);
+  Instance(VkInstance instance, PFN_vkGetInstanceProcAddr nxt_gipa, std::shared_ptr<grpc::Channel> channel);
 
   // Dispatch table for calling down the chain
   const VkuInstanceDispatchTable& dispatch_table() const { return dispatch_table_; }
@@ -40,8 +40,8 @@ class InstanceInfo {
 
   void RemoveRemoteHandle(void* local_handle) { local_to_remote_handle_.erase(local_handle); }
 
-  InstanceInfo(const InstanceInfo&) = delete;
-  InstanceInfo& operator=(const InstanceInfo&) = delete;
+  Instance(const Instance&) = delete;
+  Instance& operator=(const Instance&) = delete;
 
   std::optional<VkSurfaceKHR> surface() const { return surface_; }
   void set_surface(VkSurfaceKHR surface) { surface_ = surface; }
@@ -57,11 +57,11 @@ class InstanceInfo {
   std::optional<VkSurfaceKHR> surface_;
 };
 
-InstanceInfo& GetInstanceInfo(VkInstance instance);
-InstanceInfo& GetInstanceInfo(VkPhysicalDevice physical_device);
-InstanceInfo& GetInstanceInfo(VkDevice device);
-InstanceInfo& SetInstanceInfo(VkInstance instance, PFN_vkGetInstanceProcAddr nxt_gipa,
-                              std::shared_ptr<grpc::Channel> channel);
+Instance& GetInstanceInfo(VkInstance instance);
+Instance& GetInstanceInfo(VkPhysicalDevice physical_device);
+Instance& GetInstanceInfo(VkDevice device);
+Instance& SetInstanceInfo(VkInstance instance, PFN_vkGetInstanceProcAddr nxt_gipa,
+                          std::shared_ptr<grpc::Channel> channel);
 void RemoveInstanceInfo(VkInstance instance);
 
 void AssociatePhysicalDeviceWithInstance(VkPhysicalDevice physical_device, VkInstance instance);

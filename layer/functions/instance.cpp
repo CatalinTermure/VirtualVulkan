@@ -54,7 +54,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
     return VK_ERROR_INITIALIZATION_FAILED;
   }
   spdlog::info("Connecting to server at {}", server_address);
-  InstanceInfo& instance_info =
+  Instance& instance_info =
       SetInstanceInfo(*pInstance, nxt_gipa, grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()));
 
   // call remote create instance
@@ -101,7 +101,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo* pCreat
 VKAPI_ATTR void VKAPI_CALL DestroyInstance(VkInstance instance, const VkAllocationCallbacks* pAllocator) {
   spdlog::trace("DestroyInstance");
 
-  InstanceInfo& instance_info = GetInstanceInfo(instance);
+  Instance& instance_info = GetInstanceInfo(instance);
   instance_info.dispatch_table().DestroyInstance(instance, pAllocator);
 
   auto& reader_writer = instance_info.command_stream();

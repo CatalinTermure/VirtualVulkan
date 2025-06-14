@@ -10,7 +10,7 @@ std::unique_ptr<FrameStream> FrameStream::Create(
     VkInstance local_instance, VkDevice local_device, VkPhysicalDevice remote_physical_device,
     uint32_t remote_graphics_queue_family_index, uint32_t remote_video_queue_family_index,
     const vvk::server::StreamingCapabilities &client_streaming_capabilities) {
-  InstanceInfo &instance_info = GetInstanceInfo(local_instance);
+  Instance &instance_info = GetInstanceInfo(local_instance);
 
   vvk::server::StreamingCapabilities server_streaming_capabilities = [&]() {
     vvk::server::VvkGetFrameStreamingCapabilitiesRequest request;

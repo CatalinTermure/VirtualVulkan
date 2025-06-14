@@ -41,7 +41,7 @@ class SwapchainInfo {
  private:
   VkSwapchainKHR swapchain_handle_;
   VkDevice device_;
-  InstanceInfo& instance_info_;
+  Instance& instance_info_;
   VmaAllocator remote_allocator_;
   std::vector<std::pair<VkImage, VmaAllocation>> remote_images_;
   std::vector<VkImage> local_swapchain_images_;

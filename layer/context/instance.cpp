@@ -6,12 +6,12 @@ namespace vvk {
 
 namespace {
 std::mutex instance_info_lock;
-std::map<VkInstance, InstanceInfo> g_instance_infos;
+std::map<VkInstance, Instance> g_instance_infos;
 std::mutex physical_device_to_instance_lock;
 std::map<VkPhysicalDevice, VkInstance> g_physical_device_to_instance;
 }  // namespace
 
-InstanceInfo::InstanceInfo(VkInstance instance, PFN_vkGetInstanceProcAddr nxt_gipa,
+Instance::Instance(VkInstance instance, PFN_vkGetInstanceProcAddr nxt_gipa,
                            std::shared_ptr<grpc::Channel> channel)
     : nxt_gipa_(nxt_gipa),
       channel_(channel),
@@ -21,12 +21,12 @@ InstanceInfo::InstanceInfo(VkInstance instance, PFN_vkGetInstanceProcAddr nxt_gi
   dispatch_table_.CreateDevice = reinterpret_cast<PFN_vkCreateDevice>(nxt_gipa(instance, "vkCreateDevice"));
 }
 
-InstanceInfo& GetInstanceInfo(VkInstance instance) {
+Instance& GetInstanceInfo(VkInstance instance) {
   std::lock_guard lock(instance_info_lock);
   return g_instance_infos.at(instance);
 }
 
-InstanceInfo& SetInstanceInfo(VkInstance instance, PFN_vkGetInstanceProcAddr nxt_gipa,
+Instance& SetInstanceInfo(VkInstance instance, PFN_vkGetInstanceProcAddr nxt_gipa,
                               std::shared_ptr<grpc::Channel> channel) {
   std::lock_guard lock(instance_info_lock);
   auto [iter, inserted] = g_instance_infos.try_emplace(instance, instance, nxt_gipa, channel);
@@ -55,11 +55,11 @@ void RemoveInstanceInfo(VkInstance instance) {
   }
 }
 
-InstanceInfo& GetInstanceInfo(VkPhysicalDevice physical_device) {
+Instance& GetInstanceInfo(VkPhysicalDevice physical_device) {
   return GetInstanceInfo(GetInstanceForPhysicalDevice(physical_device));
 }
 
-InstanceInfo& GetInstanceInfo(VkDevice device) { return GetDeviceInfo(device).instance_info(); }
+Instance& GetInstanceInfo(VkDevice device) { return GetDeviceInfo(device).instance_info(); }
 
 void AssociatePhysicalDeviceWithInstance(VkPhysicalDevice physical_device, VkInstance instance) {
   std::lock_guard lock(physical_device_to_instance_lock);

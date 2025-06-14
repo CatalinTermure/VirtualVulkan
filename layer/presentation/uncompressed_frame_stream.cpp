@@ -16,7 +16,7 @@ UncompressedFrameStream::UncompressedFrameStream(VkInstance instance, VkDevice d
     : local_instance(instance), local_device(device), remote_graphics_queue_family_index(queue_family_index) {}
 
 void UncompressedFrameStream::AssociateSwapchain(VkSwapchainKHR swapchain, const VkExtent2D &swapchain_image_extent) {
-  InstanceInfo &instance_info = GetInstanceInfo(local_instance);
+  Instance &instance_info = GetInstanceInfo(local_instance);
   SwapchainInfo &swapchain_info = GetSwapchainInfo(swapchain);
   vvk::server::VvkRequest request;
   request.set_method("setupPresentation");
@@ -99,7 +99,7 @@ void UncompressedFrameStream::SetupFrame(VkCommandBuffer remote_command_buffer, 
 
 VkResult UncompressedFrameStream::PresentFrame(VkQueue queue, const VkPresentInfoKHR &original_present_info) {
   Device &device_info = GetDeviceInfo(queue);
-  InstanceInfo &instance_info = device_info.instance_info();
+  Instance &instance_info = device_info.instance_info();
   const VkuDeviceDispatchTable &dispatch_table = device_info.dispatch_table();
 
   std::vector<VkSemaphore> local_semaphores_to_wait;

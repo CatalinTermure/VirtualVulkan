@@ -29,7 +29,7 @@ struct Device {
 
   VmaAllocator remote_allocator() const { return remote_allocator_; }
   VmaAllocator local_allocator() const { return local_allocator_; }
-  InstanceInfo& instance_info() { return instance_info_; }
+  Instance& instance_info() { return instance_info_; }
   const VkuDeviceDispatchTable& dispatch_table() { return dispatch_table_; }
 
   template <typename T>
@@ -92,7 +92,7 @@ struct Device {
   VmaAllocator remote_allocator_;
   VmaAllocator local_allocator_;
   PFN_vkGetDeviceProcAddr nxt_gdpa_;
-  InstanceInfo& instance_info_;
+  Instance& instance_info_;
   VkuDeviceDispatchTable dispatch_table_;
   std::optional<uint32_t> present_queue_family_index_ = std::nullopt;
   std::optional<VkQueue> present_queue_ = std::nullopt;

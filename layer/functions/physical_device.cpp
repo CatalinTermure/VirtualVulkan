@@ -6,7 +6,7 @@ namespace vvk {
 
 VKAPI_ATTR VkResult VKAPI_CALL EnumeratePhysicalDevices(VkInstance instance, uint32_t* pPhysicalDeviceCount,
                                                         VkPhysicalDevice* pPhysicalDevices) {
-  InstanceInfo& instance_info = GetInstanceInfo(instance);
+  Instance& instance_info = GetInstanceInfo(instance);
 
   VkResult result =
       instance_info.dispatch_table().EnumeratePhysicalDevices(instance, pPhysicalDeviceCount, pPhysicalDevices);
@@ -58,13 +58,13 @@ VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevi
 
 VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceProperties2(VkPhysicalDevice physicalDevice,
                                                         VkPhysicalDeviceProperties2* pProperties) {
-  InstanceInfo& instance_info = GetInstanceInfo(physicalDevice);
+  Instance& instance_info = GetInstanceInfo(physicalDevice);
   PackAndCallVkGetPhysicalDeviceProperties2(instance_info.command_stream(), physicalDevice, pProperties);
 }
 
 VKAPI_ATTR void VKAPI_CALL GetPhysicalDeviceFeatures2(VkPhysicalDevice physicalDevice,
                                                       VkPhysicalDeviceFeatures2* pFeatures) {
-  InstanceInfo& instance_info = GetInstanceInfo(physicalDevice);
+  Instance& instance_info = GetInstanceInfo(physicalDevice);
   PackAndCallVkGetPhysicalDeviceFeatures2(instance_info.command_stream(), physicalDevice, pFeatures);
 }
 
