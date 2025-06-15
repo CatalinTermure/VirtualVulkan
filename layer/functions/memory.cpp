@@ -77,6 +77,47 @@ VKAPI_ATTR VkResult VKAPI_CALL FlushMappedMemoryRanges(VkDevice device, uint32_t
                                               pMemoryRanges);
 }
 
+VKAPI_ATTR VkResult VKAPI_CALL BindBufferMemory(VkDevice device, VkBuffer buffer, VkDeviceMemory memory,
+                                                VkDeviceSize memoryOffset) {
+  Device& device_info = GetDeviceInfo(device);
+  VkMemoryRequirements memory_requirements;
+  PackAndCallVkGetBufferMemoryRequirements(device_info.instance_info().command_stream(),
+                                           device_info.instance_info().GetRemoteHandle(device), buffer,
+                                           &memory_requirements);
+  device_info.RegisterBoundMemoryChunk(memory, buffer, memoryOffset, memory_requirements.size);
+  return PackAndCallVkBindBufferMemory(device_info.instance_info().command_stream(),
+                                       device_info.instance_info().GetRemoteHandle(device), buffer, memory,
+                                       memoryOffset);
+}
+
+VKAPI_ATTR VkResult VKAPI_CALL BindImageMemory(VkDevice device, VkImage image, VkDeviceMemory memory,
+                                               VkDeviceSize memoryOffset) {
+  Device& device_info = GetDeviceInfo(device);
+  VkMemoryRequirements memory_requirements;
+  PackAndCallVkGetImageMemoryRequirements(device_info.instance_info().command_stream(),
+                                          device_info.instance_info().GetRemoteHandle(device), image,
+                                          &memory_requirements);
+  device_info.RegisterBoundMemoryChunk(memory, image, memoryOffset, memory_requirements.size);
+  return PackAndCallVkBindImageMemory(device_info.instance_info().command_stream(),
+                                      device_info.instance_info().GetRemoteHandle(device), image, memory, memoryOffset);
+}
+
+VKAPI_ATTR VkResult VKAPI_CALL BindImageMemory2(VkDevice device, uint32_t bindInfoCount,
+                                                const VkBindImageMemoryInfo* pBindInfos) {
+  Device& device_info = GetDeviceInfo(device);
+  for (uint32_t i = 0; i < bindInfoCount; i++) {
+    const VkBindImageMemoryInfo& bind_info = pBindInfos[i];
+    VkMemoryRequirements memory_requirements;
+    PackAndCallVkGetImageMemoryRequirements(device_info.instance_info().command_stream(),
+                                            device_info.instance_info().GetRemoteHandle(device), bind_info.image,
+                                            &memory_requirements);
+    device_info.RegisterBoundMemoryChunk(bind_info.memory, bind_info.image, bind_info.memoryOffset,
+                                         memory_requirements.size);
+  }
+  return PackAndCallVkBindImageMemory2(device_info.instance_info().command_stream(),
+                                       device_info.instance_info().GetRemoteHandle(device), bindInfoCount, pBindInfos);
+}
+
 VKAPI_ATTR VkResult VKAPI_CALL InvalidateMappedMemoryRanges(VkDevice device, uint32_t memoryRangeCount,
                                                             const VkMappedMemoryRange* pMemoryRanges) {
   throw std::runtime_error("InvalidateMappedMemoryRanges is not supported in VirtualVulkan.");
@@ -107,28 +148,6 @@ VKAPI_ATTR void VKAPI_CALL GetBufferMemoryRequirements(VkDevice device, VkBuffer
   PackAndCallVkGetBufferMemoryRequirements(device_info.instance_info().command_stream(),
                                            device_info.instance_info().GetRemoteHandle(device), buffer,
                                            pMemoryRequirements);
-}
-
-VKAPI_ATTR VkResult VKAPI_CALL BindBufferMemory(VkDevice device, VkBuffer buffer, VkDeviceMemory memory,
-                                                VkDeviceSize memoryOffset) {
-  Device& device_info = GetDeviceInfo(device);
-  return PackAndCallVkBindBufferMemory(device_info.instance_info().command_stream(),
-                                       device_info.instance_info().GetRemoteHandle(device), buffer, memory,
-                                       memoryOffset);
-}
-
-VKAPI_ATTR VkResult VKAPI_CALL BindImageMemory(VkDevice device, VkImage image, VkDeviceMemory memory,
-                                               VkDeviceSize memoryOffset) {
-  Device& device_info = GetDeviceInfo(device);
-  return PackAndCallVkBindImageMemory(device_info.instance_info().command_stream(),
-                                      device_info.instance_info().GetRemoteHandle(device), image, memory, memoryOffset);
-}
-
-VKAPI_ATTR VkResult VKAPI_CALL BindImageMemory2(VkDevice device, uint32_t bindInfoCount,
-                                                const VkBindImageMemoryInfo* pBindInfos) {
-  Device& device_info = GetDeviceInfo(device);
-  return PackAndCallVkBindImageMemory2(device_info.instance_info().command_stream(),
-                                       device_info.instance_info().GetRemoteHandle(device), bindInfoCount, pBindInfos);
 }
 
 VKAPI_ATTR void VKAPI_CALL GetImageMemoryRequirements(VkDevice device, VkImage image,

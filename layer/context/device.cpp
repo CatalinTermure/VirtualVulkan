@@ -126,9 +126,14 @@ void Device::AddMappedMemory(void* local_address, void* remote_address, VkDevice
 void Device::UploadMappedMemory(VkDeviceMemory memory) {
   std::vector<std::future<void>> futures;
 
-  for (size_t offset = 0; offset < mapped_memory_infos_.at(memory).map_size; offset += kChunkSize) {
+  std::size_t max_bound_address = 0;
+  for (const auto& [_, offset, size] : bound_memory_chunks_[memory]) {
+    max_bound_address = std::max(max_bound_address, offset + size);
+  }
+
+  for (size_t offset = 0; offset < max_bound_address; offset += kChunkSize) {
     MappedMemoryInfo& mapped_memory_info = mapped_memory_infos_.at(memory);
-    size_t chunk_size = std::min(kChunkSize, mapped_memory_info.map_size - offset);
+    size_t chunk_size = std::min(kChunkSize, max_bound_address - offset);
     std::size_t hash = std::hash<std::string_view>()(
         std::string_view(reinterpret_cast<const char*>(mapped_memory_info.local_memory) + offset, chunk_size));
     if (mapped_memory_info.hashes[offset / kChunkSize] == hash) {

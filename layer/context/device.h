@@ -21,6 +21,9 @@
 #include "layer/presentation/frame_stream.h"
 
 namespace vvk {
+
+using MappedMemoryOwner = std::variant<VkImage, VkBuffer>;
+
 struct Device {
   Device(VkDevice device, PFN_vkGetDeviceProcAddr nxt_gdpa, VkPhysicalDevice physical_device,
          const VmaAllocatorCreateInfo& remote_allocator_create_info, std::optional<uint32_t> present_queue_family_index,
@@ -72,6 +75,21 @@ struct Device {
   std::size_t GetMemorySize(VkDeviceMemory memory_handle);
   void UnregisterMemorySize(VkDeviceMemory memory_handle);
 
+  void RegisterBoundMemoryChunk(VkDeviceMemory memory_handle, MappedMemoryOwner owner, std::size_t offset,
+                                std::size_t size) {
+    bound_memory_chunks_[memory_handle].push_back({owner, offset, size});
+    bound_memory_by_owner_[owner] = memory_handle;
+  }
+  void UnregisterBoundMemoryChunk(MappedMemoryOwner owner) {
+    if (bound_memory_by_owner_.find(owner) == bound_memory_by_owner_.end()) {
+      return;  // No memory chunk registered for this owner
+    }
+    auto& chunks = bound_memory_chunks_.at(bound_memory_by_owner_.at(owner));
+    chunks.erase(std::remove_if(chunks.begin(), chunks.end(),
+                                [&owner](const MemoryChunk& chunk) { return chunk.owner == owner; }),
+                 chunks.end());
+  }
+
   std::optional<uint32_t> present_queue_family_index() const { return present_queue_family_index_; }
   std::optional<VkQueue> present_queue() const { return present_queue_; }
   FrameStream* frame_stream() { return frame_stream_.get(); }
@@ -87,6 +105,12 @@ struct Device {
   std::unordered_map<VkCommandBuffer, VkSemaphore> additional_semaphores;
 
  private:
+  struct MemoryChunk {
+    MappedMemoryOwner owner;  // VkImage or VkBuffer
+    std::size_t offset;
+    std::size_t size;
+  };
+
   std::map<void*, void*> local_to_remote_handle_;
   std::unordered_set<void*> local_synchronization_primitives_;
   VmaAllocator remote_allocator_;
@@ -102,6 +126,8 @@ struct Device {
   std::unordered_map<VkDeviceMemory, MappedMemoryInfo> mapped_memory_infos_;
   std::unordered_map<VkDeviceMemory, std::size_t> memory_sizes_;
   std::unordered_map<VkFence, std::mutex> local_fence_mutexes_;
+  std::unordered_map<VkDeviceMemory, std::vector<MemoryChunk>> bound_memory_chunks_;
+  std::unordered_map<MappedMemoryOwner, VkDeviceMemory> bound_memory_by_owner_;
 };
 
 Device& GetDeviceInfo(VkDevice device);

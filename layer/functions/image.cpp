@@ -27,17 +27,18 @@ VKAPI_ATTR void VKAPI_CALL DestroyImageView(VkDevice device, VkImageView imageVi
   device_info.swapchain_image_views.erase(imageView);
 }
 
+VKAPI_ATTR void VKAPI_CALL DestroyImage(VkDevice device, VkImage image, const VkAllocationCallbacks* pAllocator) {
+  Device& device_info = GetDeviceInfo(device);
+  device_info.UnregisterBoundMemoryChunk(image);
+  PackAndCallVkDestroyImage(device_info.instance_info().command_stream(),
+                            device_info.instance_info().GetRemoteHandle(device), image, pAllocator);
+}
+
 VKAPI_ATTR VkResult VKAPI_CALL CreateImage(VkDevice device, const VkImageCreateInfo* pCreateInfo,
                                            const VkAllocationCallbacks* pAllocator, VkImage* pImage) {
   Device& device_info = GetDeviceInfo(device);
   return PackAndCallVkCreateImage(device_info.instance_info().command_stream(),
                                   device_info.instance_info().GetRemoteHandle(device), pCreateInfo, pAllocator, pImage);
-}
-
-VKAPI_ATTR void VKAPI_CALL DestroyImage(VkDevice device, VkImage image, const VkAllocationCallbacks* pAllocator) {
-  Device& device_info = GetDeviceInfo(device);
-  PackAndCallVkDestroyImage(device_info.instance_info().command_stream(),
-                            device_info.instance_info().GetRemoteHandle(device), image, pAllocator);
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateSampler(VkDevice device, const VkSamplerCreateInfo* pCreateInfo,
