@@ -7,6 +7,7 @@
 
 #include "server/h264_encoder.h"
 #include "server/implementations.h"
+#include "server/jpeg_encoder.h"
 
 using vvk::server::VvkRequest;
 using vvk::server::VvkResponse;
@@ -106,6 +107,23 @@ void SetupPresentationH264Stream(vvk::ExecutionContext& context, const vvk::serv
     setup_presentation_response->add_frame_keys(image);
   }
 }
+void SetupPresentationJpegStream(vvk::ExecutionContext& context, const vvk::server::VvkSetupPresentationRequest& params,
+                                 vvk::server::VvkResponse* response) {
+  std::vector<VkImage> remote_images;
+  for (uint64_t image_handle : params.remote_images()) {
+    remote_images.push_back(reinterpret_cast<VkImage>(image_handle));
+  }
+  auto encoder = std::make_unique<vvk::JpegEncoder>(
+      context, reinterpret_cast<VkDevice>(params.device()), vk::Extent2D{params.width(), params.height()},
+      std::move(remote_images), static_cast<VkFormat>(params.jpeg_stream_create_info().remote_images_format()));
+
+  context.set_encoder(std::move(encoder));
+  auto* setup_presentation_response = response->mutable_setuppresentation();
+  setup_presentation_response->set_session_key(reinterpret_cast<uint64_t>(context.encoder()));
+  for (uint64_t image : params.remote_images()) {
+    setup_presentation_response->add_frame_keys(image);
+  }
+}
 }  // namespace
 
 void UnpackAndExecuteVkCreateInstanceManual(vvk::ExecutionContext& context, const VvkRequest& request,
@@ -169,6 +187,8 @@ void UnpackAndExecuteSetupPresentation(vvk::ExecutionContext& context, const vvk
     SetupPresentationUncompressedStream(context, params, response);
   } else if (params.has_h264_stream_create_info()) {
     SetupPresentationH264Stream(context, params, response);
+  } else if (params.has_jpeg_stream_create_info()) {
+    SetupPresentationJpegStream(context, params, response);
   } else {
     spdlog::error("Unsupported presentation stream type");
   }

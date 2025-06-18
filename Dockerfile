@@ -33,6 +33,11 @@ WORKDIR /
 
 COPY 3rdparty/renderdoc_app.h /usr/include/renderdoc_app.h
 
+COPY 3rdparty /src/3rdparty/
+WORKDIR /src/3rdparty/libjpeg-turbo
+RUN cmake -S . -B build/ -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
+RUN cmake --build build/ --target install
+
 COPY CMakeLists.txt /src/CMakeLists.txt
 COPY tests /src/tests
 COPY server /src/server

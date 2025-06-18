@@ -33,6 +33,7 @@ add_library(
     presentation/frame_stream.h presentation/frame_stream.cpp
     presentation/uncompressed_frame_stream.h presentation/uncompressed_frame_stream.cpp
     presentation/h264_frame_stream.h presentation/h264_frame_stream.cpp
+    presentation/jpeg_frame_stream.h presentation/jpeg_frame_stream.cpp
     presentation/memory_to_image_copy.h presentation/memory_to_image_copy.cpp
     utils.h utils.cpp
 )
@@ -40,6 +41,7 @@ target_include_directories(VirtualVulkanLayer PRIVATE ../)
 target_include_directories(VirtualVulkanLayer PRIVATE ../Vulkan-Utility-Libraries/include)
 
 target_link_libraries(VirtualVulkanLayer PRIVATE spdlog::spdlog vvkproto VirtualVulkanCommons)
+target_link_libraries(VirtualVulkanLayer PRIVATE turbojpeg)
 set_target_properties(VirtualVulkanLayer PROPERTIES PREFIX "lib")
 set_target_properties(VirtualVulkanLayer PROPERTIES OUTPUT_NAME "virtualvulkanlayer")
 set_target_properties(VirtualVulkanLayer PROPERTIES SUFFIX ".so")

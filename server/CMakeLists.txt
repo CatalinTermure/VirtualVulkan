@@ -14,7 +14,7 @@ add_executable(
   )
 target_include_directories(VirtualVulkanServer PRIVATE ../)
 
-target_link_libraries(VirtualVulkanServer PRIVATE spdlog::spdlog vvkproto vulkan)
+target_link_libraries(VirtualVulkanServer PRIVATE spdlog::spdlog vvkproto vulkan turbojpeg)
 target_include_directories(VirtualVulkanServer PRIVATE ${Vulkan_INCLUDE_DIRS})
 
 add_custom_command(

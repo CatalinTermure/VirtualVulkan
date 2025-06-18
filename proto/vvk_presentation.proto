@@ -7,7 +7,7 @@ import "vvk_types.proto";
 enum VvkStreamType {
   VVK_STREAM_TYPE_UNCOMPRESSED = 0;
   VVK_STREAM_TYPE_H264 = 1;
-  VVK_STREAM_TYPE_H265 = 2;
+  VVK_STREAM_TYPE_JPEG = 2;
 }
 
 message VvkGetFrameStreamingCapabilitiesRequest {
@@ -17,7 +17,7 @@ message VvkGetFrameStreamingCapabilitiesRequest {
 message StreamingCapabilities {
   bool supports_uncompressed_stream = 1;
   bool supports_h264_stream = 2;
-  bool supports_h265_stream = 3;
+  bool supports_jpeg_stream = 3;
 }
 
 message UncompressedStreamCreateInfo {
@@ -29,6 +29,10 @@ message H264StreamCreateInfo {
   uint32 compute_queue_family_index = 2;
   VkFormat remote_images_format = 3;
   uint64 encode_wait_semaphore = 4;
+}
+
+message JpegStreamCreateInfo {
+  VkFormat remote_images_format = 1;
 }
 
 message UncompressedStreamInfo {
@@ -49,6 +53,7 @@ message VvkSetupPresentationRequest {
   oneof stream_create_info {
     UncompressedStreamCreateInfo uncompressed_stream_create_info = 6;
     H264StreamCreateInfo h264_stream_create_info = 7;
+    JpegStreamCreateInfo jpeg_stream_create_info = 8;
   }
 }
 

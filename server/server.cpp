@@ -67,12 +67,7 @@ grpc::Status VvkServerImpl::GetFrameStreamingCapabilities(
 
   response->set_supports_h264_stream(local_device_supports_h264_encode);
 
-  bool local_device_supports_h265_encode =
-      std::find_if(local_device_extensions_properties.begin(), local_device_extensions_properties.end(),
-                   [](const ::VkExtensionProperties& extension) {
-                     return strcmp(extension.extensionName, VK_KHR_VIDEO_ENCODE_H265_EXTENSION_NAME) == 0;
-                   }) != local_device_extensions_properties.end();
-  response->set_supports_h265_stream(local_device_supports_h265_encode);
+  response->set_supports_jpeg_stream(true);
 
   return grpc::Status::OK;
 }
@@ -101,12 +96,12 @@ grpc::Status VvkServerImpl::RequestFrame(grpc::ServerContext* context, const vvk
     }
 
     vmaUnmapMemory(allocator, buffer_allocation);
-  } else if (request->stream_type() == vvk::server::VvkStreamType::VVK_STREAM_TYPE_H264) {
+  } else {
     Encoder* encoder = reinterpret_cast<Encoder*>(request->session_key());
     VkImage image = reinterpret_cast<VkImage>(request->frame_key());
     vvk::server::VvkGetFrameResponse response;
     response.set_frame_data(encoder->GetEncodedData(image));
-    spdlog::trace("Sending H264 encoded data of size {}", response.frame_data().size());
+    spdlog::trace("Sending encoded data of size {}", response.frame_data().size());
     writer->Write(response);
   }
   return grpc::Status::OK;
