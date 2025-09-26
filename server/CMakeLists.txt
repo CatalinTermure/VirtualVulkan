@@ -13,7 +13,7 @@ add_executable(
   )
 target_include_directories(VirtualVulkanServer PRIVATE ../)
 
-target_link_libraries(VirtualVulkanServer PRIVATE spdlog::spdlog vvkproto vulkan turbojpeg Vulkan::Headers)
+target_link_libraries(VirtualVulkanServer PRIVATE spdlog::spdlog vvkproto vulkan turbojpeg Vulkan::Headers VulkanMemoryAllocator VulkanUtilityHeaders)
 
 add_custom_command(
   OUTPUT ${CMAKE_SOURCE_DIR}/shaders/rgb_to_ycrcb_2plane.comp.spv
