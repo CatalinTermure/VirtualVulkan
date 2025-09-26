@@ -10,6 +10,10 @@ ExternalProject_Add(
     INSTALL_COMMAND cmake -E echo "Skipping install step for libjpeg-turbo."
 )
 
+add_subdirectory(Vulkan-Headers EXCLUDE_FROM_ALL)
+add_subdirectory(Vulkan-Loader EXCLUDE_FROM_ALL)
+add_subdirectory(Vulkan-Utility-Libraries EXCLUDE_FROM_ALL)
+
 add_subdirectory(proto)
 add_subdirectory(commons)
 
@@ -24,8 +28,6 @@ if (VVK_LAYER)
 endif()
 
 add_subdirectory(server)
-
-add_subdirectory(Vulkan-Loader EXCLUDE_FROM_ALL)
 
 include(CTest)
 enable_testing()

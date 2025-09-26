@@ -6,5 +6,4 @@ add_library(
     synchronized_bidi_stream.h
 )
 
-target_link_libraries(VirtualVulkanCommons PRIVATE spdlog::spdlog vvkproto)
-target_include_directories(VirtualVulkanCommons PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Vulkan-Headers/include)
+target_link_libraries(VirtualVulkanCommons PRIVATE spdlog::spdlog vvkproto Vulkan::Headers)
