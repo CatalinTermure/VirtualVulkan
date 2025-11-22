@@ -3,6 +3,6 @@ build/
 CMakeUserPresets.json
 __pycache__
 ignore/
-shaders/
+shaders/*.spv
 compile_commands.json
 .cache/

@@ -17,8 +17,8 @@ target_link_libraries(VirtualVulkanServer PRIVATE spdlog::spdlog vvkproto vulkan
 
 add_custom_command(
   OUTPUT ${CMAKE_SOURCE_DIR}/shaders/rgb_to_ycrcb_2plane.comp.spv
-  COMMAND glslc ${CMAKE_CURRENT_SOURCE_DIR}/rgb_to_ycrcb_2plane.comp -o ${CMAKE_SOURCE_DIR}/shaders/rgb_to_ycrcb_2plane.comp.spv
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/rgb_to_ycrcb_2plane.comp
+  COMMAND glslc ${CMAKE_SOURCE_DIR}/shaders/rgb_to_ycrcb_2plane.comp -o ${CMAKE_SOURCE_DIR}/shaders/rgb_to_ycrcb_2plane.comp.spv
+  DEPENDS ${CMAKE_SOURCE_DIR}/shaders/rgb_to_ycrcb_2plane.comp
 )
 add_custom_target(
   compile_shaders
