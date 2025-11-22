@@ -1,6 +1,7 @@
 #ifndef VVK_SERVER_JPEG_ENCODER_H
 #define VVK_SERVER_JPEG_ENCODER_H
 
+#include <spdlog/spdlog.h>
 #include <vk_mem_alloc.h>
 #include <vulkan/vulkan.h>
 
@@ -24,7 +25,7 @@ constexpr std::array kJpegEncodableFormats = {
 
 class JpegEncoder : public Encoder {
  public:
-  JpegEncoder(const vvk::ExecutionContext &execution_context, VkDevice device, vk::Extent2D image_extent,
+  JpegEncoder(const vvk::ExecutionContext& execution_context, VkDevice device, vk::Extent2D image_extent,
               std::vector<VkImage> encodable_images, VkFormat encodable_images_format)
       : execution_context_(execution_context),
         dev_dispatch_(execution_context_.device_dispatch_table()),
@@ -73,6 +74,7 @@ class JpegEncoder : public Encoder {
                                            vk::Extent3D{image_extent_, 1},
                                        });
   }
+
   std::string GetEncodedData(VkImage image) override {
     uint32_t image_index = std::numeric_limits<uint32_t>::max();
     for (uint32_t i = 0; i < encodable_images_.size(); i++) {
@@ -85,15 +87,15 @@ class JpegEncoder : public Encoder {
       spdlog::error("Image index {} out of bounds for JPEG instances", image_index);
       return {};
     }
-    unsigned char *data = nullptr;
+    unsigned char* data = nullptr;
     size_t data_size = 0;
     int err = tj3Compress8(tjpeg_instances_[image_index],
-                           static_cast<unsigned char *>(encode_input_buffer_allocation_info_.pMappedData),
+                           static_cast<unsigned char*>(encode_input_buffer_allocation_info_.pMappedData),
                            image_extent_.width, 0, image_extent_.height, TJPF_BGRX, &data, &data_size);
     if (err != 0) {
       spdlog::error("Failed to compress image to JPEG: {}", tj3GetErrorStr(tjpeg_instances_[image_index]));
     }
-    return std::string(reinterpret_cast<char *>(data), data_size);
+    return std::string(reinterpret_cast<char*>(data), data_size);
   }
 
   virtual ~JpegEncoder() {
@@ -107,8 +109,8 @@ class JpegEncoder : public Encoder {
   }
 
  private:
-  const ExecutionContext &execution_context_;
-  const VkuDeviceDispatchTable &dev_dispatch_;
+  const ExecutionContext& execution_context_;
+  const VkuDeviceDispatchTable& dev_dispatch_;
   vk::Extent2D image_extent_;
   VkBuffer encode_input_buffer_ = VK_NULL_HANDLE;
   VmaAllocation encode_input_buffer_allocation_ = VK_NULL_HANDLE;

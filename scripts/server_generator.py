@@ -27,7 +27,6 @@ class ServerSrcGenerator(VvkGenerator):
 #include <vulkan/vulkan.h>
 
 #include <cassert>
-#include <unordered_map>
 #include <vector>
 #include <cstdlib>
 

@@ -13,3 +13,6 @@
 [submodule "3rdparty/libjpeg-turbo"]
 	path = 3rdparty/libjpeg-turbo
 	url = https://github.com/libjpeg-turbo/libjpeg-turbo.git
+[submodule "VulkanMemoryAllocator"]
+	path = VulkanMemoryAllocator
+	url = git@github.com:GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git

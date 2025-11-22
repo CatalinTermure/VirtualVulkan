@@ -1,7 +1,9 @@
 #include "server.h"
 
 #include <dlfcn.h>
+#if USE_RENDERDOC
 #include <renderdoc_app.h>
+#endif
 #include <spdlog/spdlog.h>
 #include <vulkan/vulkan.h>
 
@@ -12,9 +14,11 @@
 
 namespace vvk::server {
 
+#if USE_RENDERDOC
 namespace {
 RENDERDOC_API_1_1_2* rdoc_api = NULL;
 }  // namespace
+#endif
 
 grpc::Status VvkServerImpl::CallMethods(grpc::ServerContext* context,
                                         grpc::ServerReaderWriter<VvkResponse, VvkRequest>* stream) {
@@ -22,19 +26,23 @@ grpc::Status VvkServerImpl::CallMethods(grpc::ServerContext* context,
   VvkRequest request;
   ExecutionContext execution_context;
 
+#if USE_RENDERDOC
   if (void* mod = dlopen("librenderdoc.so", RTLD_NOW | RTLD_NOLOAD)) {
     pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)dlsym(mod, "RENDERDOC_GetAPI");
     int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_1_2, (void**)&rdoc_api);
     assert(ret == 1);
   }
+#endif
 
   while (stream->Read(&request)) {
     VvkResponse response;
     spdlog::trace("Request:\n{}", request.DebugString());
     spdlog::info("Calling {}", request.method());
+#if USE_RENDERDOC
     if (rdoc_api && request.method() == "setupPresentation") {
       rdoc_api->StartFrameCapture(nullptr, nullptr);
     }
+#endif
     UnpackAndExecuteFunction(execution_context, request, &response);
     if (response.response_case() == VvkResponse::RESPONSE_NOT_SET) {
       spdlog::trace("No response set for method {}", request.method());
@@ -74,7 +82,10 @@ grpc::Status VvkServerImpl::GetFrameStreamingCapabilities(
 
 grpc::Status VvkServerImpl::RequestFrame(grpc::ServerContext* context, const vvk::server::VvkGetFrameRequest* request,
                                          grpc::ServerWriter<vvk::server::VvkGetFrameResponse>* writer) {
-  if (rdoc_api) rdoc_api->EndFrameCapture(NULL, NULL);
+#if USE_RENDERDOC
+  if (rdoc_api)
+    rdoc_api->EndFrameCapture(NULL, NULL);
+#endif
 
   if (request->stream_type() == vvk::server::VvkStreamType::VVK_STREAM_TYPE_UNCOMPRESSED) {
     VmaAllocator allocator = reinterpret_cast<VmaAllocator>(request->session_key());

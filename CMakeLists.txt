@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.0)
 project(VirtualVulkan VERSION 0.1.0 LANGUAGES C CXX)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 include(ExternalProject)
 ExternalProject_Add(
@@ -9,6 +9,11 @@ ExternalProject_Add(
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libjpeg-turbo
     INSTALL_COMMAND cmake -E echo "Skipping install step for libjpeg-turbo."
 )
+
+add_subdirectory(Vulkan-Headers EXCLUDE_FROM_ALL)
+add_subdirectory(Vulkan-Loader EXCLUDE_FROM_ALL)
+add_subdirectory(Vulkan-Utility-Libraries EXCLUDE_FROM_ALL)
+add_subdirectory(VulkanMemoryAllocator EXCLUDE_FROM_ALL)
 
 add_subdirectory(proto)
 add_subdirectory(commons)
@@ -24,8 +29,6 @@ if (VVK_LAYER)
 endif()
 
 add_subdirectory(server)
-
-add_subdirectory(Vulkan-Loader EXCLUDE_FROM_ALL)
 
 include(CTest)
 enable_testing()

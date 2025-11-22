@@ -11,8 +11,6 @@
 
 using grpc::Server;
 using grpc::ServerBuilder;
-using grpc::ServerContext;
-using grpc::Status;
 using vvk::server::VvkServerImpl;
 
 void RunServer(uint16_t port) {

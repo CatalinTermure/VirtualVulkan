@@ -1,5 +1,4 @@
 find_package(spdlog CONFIG REQUIRED)
-find_package(Vulkan REQUIRED)
 
 add_executable(
   VirtualVulkanServer
@@ -14,8 +13,7 @@ add_executable(
   )
 target_include_directories(VirtualVulkanServer PRIVATE ../)
 
-target_link_libraries(VirtualVulkanServer PRIVATE spdlog::spdlog vvkproto vulkan turbojpeg)
-target_include_directories(VirtualVulkanServer PRIVATE ${Vulkan_INCLUDE_DIRS})
+target_link_libraries(VirtualVulkanServer PRIVATE spdlog::spdlog vvkproto vulkan turbojpeg Vulkan::Headers VulkanMemoryAllocator VulkanUtilityHeaders)
 
 add_custom_command(
   OUTPUT ${CMAKE_SOURCE_DIR}/shaders/rgb_to_ycrcb_2plane.comp.spv
