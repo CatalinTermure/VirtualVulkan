@@ -107,6 +107,7 @@ void SetupPresentationH264Stream(vvk::ExecutionContext& context, const vvk::serv
     setup_presentation_response->add_frame_keys(image);
   }
 }
+
 void SetupPresentationJpegStream(vvk::ExecutionContext& context, const vvk::server::VvkSetupPresentationRequest& params,
                                  vvk::server::VvkResponse* response) {
   std::vector<VkImage> remote_images;

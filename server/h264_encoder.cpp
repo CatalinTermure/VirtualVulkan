@@ -1,5 +1,8 @@
 #include "h264_encoder.h"
 
+#include <filesystem>
+#include <fstream>
+
 namespace vvk {
 namespace {
 constexpr uint32_t kIdrPeriod = 16;
@@ -10,8 +13,8 @@ constexpr uint32_t kPictureGranularity = 16;
 constexpr uint32_t kReferencePictureCount = 2;
 constexpr uint32_t kVirtualBufferSizeInMs = 200;
 constexpr uint32_t kInitialVirtualBufferSizeInMs = 100;
-constexpr uint32_t kAverageBitrate = 5'000'000;            // 5 Mbps
-constexpr uint32_t kMaxBitrate = 20'000'000;               // 20 Mbps
+constexpr uint32_t kAverageBitrate = 5000000;              // 5 Mbps
+constexpr uint32_t kMaxBitrate = 20000000;                 // 20 Mbps
 constexpr uint32_t kFrameRateNumerator = 30;               // 30 fps
 constexpr uint32_t kFrameRateDenominator = 1;              // 30 fps
 constexpr uint32_t kEncodedOutputSize = 10 * 1024 * 1024;  // 10 MB for encoded output
@@ -450,7 +453,7 @@ std::string H264Encoder::GetEncodedData(VkImage image) {
       dpb_image_views_[gop_frame_index & 1],
   };
   StdVideoEncodeH264ReferenceInfo std_dpb_reference_info = {
-      .flags = 0,
+      .flags = {0},
       .primary_pic_type = is_idr_frame ? STD_VIDEO_H264_PICTURE_TYPE_IDR : STD_VIDEO_H264_PICTURE_TYPE_P,
       .FrameNum = gop_frame_index,
       .PicOrderCnt = static_cast<int>((gop_frame_index * 2) % max_pic_order_cnt_lsb),
@@ -472,7 +475,7 @@ std::string H264Encoder::GetEncodedData(VkImage image) {
       dpb_image_views_[!(gop_frame_index & 1)],
   };
   StdVideoEncodeH264ReferenceInfo reference_picture_reference_info = {
-      .flags = 0,
+      .flags = {0},
       .primary_pic_type = (gop_frame_index - 1 == 0) ? STD_VIDEO_H264_PICTURE_TYPE_IDR : STD_VIDEO_H264_PICTURE_TYPE_P,
       .FrameNum = gop_frame_index - 1,
       .PicOrderCnt = static_cast<int>(((gop_frame_index - 1) * 2) % max_pic_order_cnt_lsb),
@@ -614,6 +617,7 @@ std::string H264Encoder::GetEncodedData(VkImage image) {
     uint32_t bitstreamSize;
     VkQueryResultStatusKHR status;
   };
+
   EncodeQueryResult query_result = {};
   result = dev_dispatch_.GetQueryPoolResults(device_, query_pool_, 0, 1, sizeof(EncodeQueryResult), &query_result,
                                              sizeof(EncodeQueryResult),

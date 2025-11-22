@@ -3,22 +3,17 @@
 
 #include <vulkan/vulkan.h>
 
-#include <cstddef>
-#include <filesystem>
-#include <fstream>
 #include <vector>
 #include <vulkan/vulkan.hpp>
 
 #include "server/encoder.h"
 #include "server/execution_context.h"
-#include "spdlog/spdlog.h"
 
 namespace vvk {
 
 namespace {
 template <typename T>
-  requires std::is_integral_v<T>
-constexpr T PadValueToMultipleOf(T value, T multiple) {
+requires std::is_integral_v<T> constexpr T PadValueToMultipleOf(T value, T multiple) {
   return (value + multiple - 1) / multiple * multiple;
 }
 }  // namespace
@@ -30,6 +25,7 @@ class H264Encoder : public Encoder {
               VkFormat encodable_images_format, VkSemaphore encode_wait_semaphore);
 
   ~H264Encoder() override;
+
   VkExtent2D GetPaddedSize() const { return padded_image_extent_; }
 
   void WriteEncodeCommands(VkCommandBuffer command_buffer, VkImage image) override;

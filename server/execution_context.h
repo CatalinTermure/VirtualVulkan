@@ -8,7 +8,6 @@
 #include <functional>
 #include <memory>
 #include <queue>
-#include <unordered_map>
 
 #include "server/encoder.h"
 
@@ -24,9 +23,11 @@ class ExecutionContext {
   ExecutionContext& operator=(ExecutionContext&&) = delete;
 
   VkPhysicalDevice physical_device() const { return physical_device_to_use_; }
+
   void set_physical_device(VkPhysicalDevice physical_device) { physical_device_to_use_ = physical_device; }
 
   VmaAllocator allocator() const { return allocator_; }
+
   void set_allocator(VmaAllocator allocator) { allocator_ = allocator; }
 
   void defer_deletion(std::function<void()> func) { deferred_deletion_queue_.emplace(std::move(func)); }
@@ -42,6 +43,7 @@ class ExecutionContext {
   }
 
   const VkuInstanceDispatchTable& instance_dispatch_table() const { return instance_dispatch_table_; }
+
   const VkuDeviceDispatchTable& device_dispatch_table() const { return device_dispatch_table_; }
 
   ~ExecutionContext() {
@@ -58,6 +60,7 @@ class ExecutionContext {
 
   // May return nullptr if no encoder is set.
   Encoder* encoder() const { return encoder_.get(); }
+
   void set_encoder(std::unique_ptr<Encoder> encoder) { encoder_ = std::move(encoder); }
 
  private:

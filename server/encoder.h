@@ -3,8 +3,7 @@
 
 #include <vulkan/vulkan_core.h>
 
-#include <cstddef>
-#include <vector>
+#include <string>
 
 namespace vvk {
 class Encoder {
